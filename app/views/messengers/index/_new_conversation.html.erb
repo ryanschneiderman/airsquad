@@ -1,0 +1,56 @@
+<script>
+  var selected_users = [];
+
+	function select_user(user, element){
+    if(element.style.backgroundColor == "grey"){
+      console.log("grey")
+      element.style.backgroundColor = "white";
+      element.style.color = "black";
+      remove_selected_user(user);
+    }
+    else{
+      selected_users.push(user);
+    element.style.backgroundColor = "grey";
+    element.style.color = "white";
+    }
+		
+	}
+
+  function remove_selected_user(user){
+    var arr_length = selected_users.length
+    for( var i = 0; i < arr_length; i++){ 
+       if ( selected_users[i] == user) {
+         selected_users.splice(i, 1); 
+       }
+    }
+  }
+
+	function new_conversation(){
+		$( "#create-conversation-box").toggle();
+	}
+
+	function create_conversation(){
+        var private_url = "private/conversations";
+        var group_url = "group/conversations";
+        var submit_url;
+        if(selected_users.length > 1){
+        	$.ajax({
+            url: group_url,
+            beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+            type: "POST",
+            data_type: 'json',
+            data: {user_ids: selected_users, creator_id: "<%= current_user.id%>", is_messenger: true}
+          });
+        }
+        else {
+        	$.ajax({
+            url: private_url,
+            beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+            type: "POST",
+            data_type: 'json',
+            data: {user_id: selected_users[0], is_messenger: true}
+          });
+        }
+      
+	}
+</script>

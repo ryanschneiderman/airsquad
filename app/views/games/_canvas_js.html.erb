@@ -1,0 +1,34 @@
+<script>
+
+    var canvas_height = 552;
+    var canvas_width = 775
+
+    var canvas = new fabric.Canvas('c',{
+        targetFindTolerance: 15,
+         perPixelTargetFind: true,
+         preserveObjectStacking: true,
+    }); 
+
+    function set_canvas_dimensions(canvas_height_ratio, canvas_width_ratio){
+        canvas.setHeight(canvas_height);
+        canvas.setWidth(canvas_width);
+    }
+
+     function background_to_halfcourt(canvas_height_ratio){
+        var img = new Image();
+        img.onload = function() {
+            // this is syncronous
+            var background_img = new fabric.Image(img);
+            background_img.objectCaching = false;
+            background_img.scaleToHeight(canvas_height);
+
+            canvas.setBackgroundImage(background_img, canvas.renderAll.bind(canvas), {
+                top: 0,
+                left: 0
+            });
+            canvas.requestRenderAll.bind(canvas);
+        };
+        img.src = "<%= asset_path('halfcourt.png')%>";
+    }
+
+</script>

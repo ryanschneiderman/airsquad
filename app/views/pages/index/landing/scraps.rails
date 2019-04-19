@@ -1,0 +1,3 @@
+	<%= link_to 'add_team', add_team_path %>
+	<%= link_to 'join_team', join_team_path %>
+	<%= render @teams %>

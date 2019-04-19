@@ -1,0 +1,48 @@
+<div id = "progression-header">
+    <div id = "play-name"> <%= @play_name %> - </div>
+    <div id = "progression_index"> <%= @progression.index %></div>
+</div>
+<div id = "show-grid">
+	<div><button class = "left" type = "button" onclick="loadCanvasFromJson(-1)"></button></div>
+	<canvas id ="c" class = "show-canvas"></canvas>
+	<div><button class = "right" type = "button" onclick="loadCanvasFromJson(1)"></button></div>
+</div>
+
+<%= render 'canvas_js' %>
+<%= render 'js_objects' %>
+<script>
+        var index = <%= @progression.index %> - 1
+		var json_data = "<%= @progression.json_diagram %>".replace(/&quot;/g,'"');
+		canvas.loadFromJSON(json_data, function() {
+		    canvas.renderAll();
+		    var objs = canvas.getObjects().map(function(o) {
+		  		return o.set({lockMovementX: true, lockMovementY: true, selectable: false,})
+			});
+		});	
+
+
+        var json_diagrams = []
+        <% @progressions.each do |progression| %>
+            json_diagrams.push("<%=progression.json_diagram%>");
+        <%end%>
+
+        function loadCanvasFromJson(change){
+            index = index + change;
+            json_diagrams_len = json_diagrams.length;
+            if(index > json_diagrams_len -1){
+                index = 0;
+            }
+            else if (index < 0 ){
+                index = json_diagrams_len -1;
+            }
+
+            var json_data = json_diagrams[index].replace(/&quot;/g,'"');
+            canvas.loadFromJSON(json_data, function() {
+                canvas.renderAll();
+                var objs = canvas.getObjects().map(function(o) {
+                    return o.set({lockMovementX: true, lockMovementY: true, selectable: false,})
+                });
+            }); 
+            $("#progression_index").html(index+1);
+        }
+</script>

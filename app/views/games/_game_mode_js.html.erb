@@ -1,0 +1,884 @@
+<script>
+	/**************************************************************/
+	/************************* <GLOBALS> **************************/
+	/**************************************************************/
+
+	var curr_player = null; 
+	var curr_player_button = null;
+	var curr_stat = null;
+	var curr_stat_button = null;
+	var curr_player_is_opponent = false;
+	var table = document.getElementById("stats_table");
+	var make_radius = 8;
+
+	var make_selected = false
+	var miss_selected = false;
+
+	var horiz_offset = $("#gm-tool-bar").width();
+	var vert_offset = $(".container").height() + $("#scoreboard").height();;
+
+	var arc_vert_radius = 332;
+	var arc_horiz_radius = 329;
+	var basket_x = 605;
+	var basket_y = 622;
+
+	var player_is_selected = false;
+
+	var stat_array = [];
+
+	var players_in_game = [];
+	var players_not_in_game = [];
+	var all_players = [];
+	var active_players = [];
+
+	var home_score = 0;
+	var opponent_score = 0;
+
+	var opponent_obj;
+
+	var periods = 4;
+	var curr_period = 1;
+	var minutes_per_period = 2;
+	var minutes = minutes_per_period;
+	var seconds = 0;
+
+	var minutes_index;
+
+	var select_inactives_html = ""
+
+	Element.prototype.remove = function() {
+    	this.parentElement.removeChild(this);
+	}		
+
+
+	$(document).click(function(event) {
+		var classname = $(event.target).attr('class')
+		if(curr_player != null ){
+			if (classname != "player-button" && classname != "stat-button"){
+				all_buttons = document.getElementsByTagName('button');
+				for(var i = 0; i < all_buttons.length; i++){
+					deselect_button(all_buttons[i]);
+				}
+				curr_player = null;
+				curr_player_button = null;
+			}
+		}
+	});
+
+
+
+
+	/**************************************************************/
+	/************************* </GLOBALS> *************************/
+	/**************************************************************/
+
+
+
+	/**************************************************************/
+	/*********************** <INITIALIZERS> ***********************/
+	/**************************************************************/
+
+	
+
+
+	function populate_players(){
+		var i = 0;
+		<% @players.each do |player| %>
+			var player_timer = new PlayerTimer(false, i);
+			player_obj = {"id" : "<%=player.id%>", "name" : "<%= player.nickname %>", "stat_index" : null, "timer": player_timer, "player" : true}
+			players_not_in_game.push(player_obj);
+			all_players.push(player_obj);
+			active_players.push(player_obj);
+			i++;
+		<% end %>
+	}
+
+	function populate_stat_arrays(){
+		var len = active_players.length
+		for (var i = 0; i < len; i++){
+			var player_obj = {"player_obj" : active_players[i], "cumulative_arr" : [], "gran_stat_arr" : []};
+			<% @stats.each do |stat| %>
+				player_obj.cumulative_arr.push({"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>"})
+			<% end %>
+			stat_array.push(player_obj);
+		}
+		opponent_player_obj = {"id" : "<%= @opponent.id %>",  "name" : "<%= @opponent.name %>", "stat_index" : null, "timer": null, "player" : false}
+		opponent_obj = {"player_obj" : opponent_player_obj,  "cumulative_arr" : [], "gran_stat_arr" : []};
+		
+		<% @stats.each do |stat| %>
+			opponent_obj.cumulative_arr.push({"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>"})
+		<% end %>
+	}
+
+	function start_game_mode(){
+		//remove overlays
+		$(".GM-modal").css("display", "none");
+		$(".modal-overlay").css("display", "none");
+
+		var in_game_len = players_in_game.length;
+		var not_in_game_len = players_not_in_game.length;
+
+		$("#in-game-players").html(populate_player_buttons(true, in_game_len));
+		$("#bench-players").html(populate_player_buttons(false, not_in_game_len));
+
+		opponent_button_html = "<button class = 'player-button' id = 'opponent-button' type = 'button' onclick = 'opponent_button( <%= @opponent.id %>, this)'> <%= @opponent.name %>  </button>"
+		$("#opponent").html(opponent_button_html);
+
+		populate_stat_arrays();
+		populate_stat_table();	
+		populate_player_shot_charts()
+	}
+
+	/**************************************************************/
+	/*********************** </INITIALIZERS> ***********************/
+	/**************************************************************/
+
+
+
+
+
+
+
+
+	/**************************************************************/
+	/************************* <TOOLBAR>***************************/
+	/**************************************************************/
+
+
+	function populate_player_buttons(are_starters, len){
+		var arr = (are_starters) ? players_in_game : players_not_in_game
+		html = "";
+		for(var i = 0; i < len; i++){
+			// set timer for players in game
+			if(are_starters){
+				arr[i].timer.toggleIsInGame();
+			}
+
+			arr[i].timer.setIndex(arr[i].stat_index);
+			
+			html += "<button class = 'player-button' id = 'player-"+ arr[i].id + "'" + " type = 'button' onclick = 'player_button(" +  arr[i].id + ", this)'> " + arr[i].name + " </button>"
+		}
+		return html;
+	}
+
+
+	function stat_button(stat_name, button){
+		if(curr_player != null && (is_in_game(curr_player.player_obj) || curr_player_is_opponent )){
+			if(miss_selected || make_selected){
+				deselect_stat();
+				make_selected = false;
+				miss_selected = false;
+			}
+			curr_stat_button = button;
+			if(stat_name == "Makes"){
+				select_button(button);
+				make_selected = true;
+
+			}
+			else if (stat_name == "Misses"){
+				select_button(button);
+				miss_selected = true;
+			} 
+			else {
+				add_stat(stat_name, curr_player.player_obj);
+				deselect_player();
+			}
+		}
+		else if (curr_player == null){
+			deselect_button(curr_stat_button);
+			select_button(button);
+			curr_stat_button = button;
+			curr_stat = stat_name;
+		}
+	}
+
+	function deselect_stat(){
+		curr_stat = null;
+		deselect_button(curr_stat_button);
+		curr_stat_button = null;
+	}
+
+
+	function is_in_game(player){
+		if (curr_player_is_opponent) return true; 
+		else {
+			var len = players_in_game.length
+			for(var i = 0; i < len; i++){
+				if (player.id == players_in_game[i].id) return true;
+			}
+			return false;
+		}
+	}
+
+	function player_html(player){
+		return "<button class = 'player-button' id = 'player-"+ player.id + "'" + " type = 'button' onclick = 'player_button(" +  player.id + ", this)'> " + player.name + " </button>"
+	}
+
+	function swap_players(player_to_game, player_to_bench){
+		// splice both in the arrays
+		splice_in_game(player_to_bench.player_obj.id);
+		splice_not_in_game(player_to_game.player_obj.id);
+
+		// push to new arrays respectively
+		player_to_game.player_obj.timer.toggleIsInGame();
+		player_to_bench.player_obj.timer.toggleIsInGame();
+
+		players_in_game.push(player_to_game.player_obj);
+		players_not_in_game.push(player_to_bench.player_obj);
+
+		// change HTML
+		var player_to_game_identifier = "#player-" + player_to_game.player_obj.id
+		var player_to_bench_identifier = "#player-" + player_to_bench.player_obj.id
+		$(player_to_game_identifier).remove();
+		$(player_to_bench_identifier).remove();
+		$("#bench-players").append(player_html(player_to_bench.player_obj));
+		$("#in-game-players").append(player_html(player_to_game.player_obj));
+		curr_player = null;
+	}
+
+	function select_player(new_curr_player, button){
+		curr_player = new_curr_player;
+		button.style.backgroundColor = "black";
+		button.style.color = "white";
+		curr_player_button = button;
+		curr_player_is_opponent = false;
+	}
+
+	function select_opponent(button){
+		curr_player = opponent_obj;
+		button.style.backgroundColor = "black";
+		button.style.color = "white";
+		curr_player_is_opponent = true;
+		curr_player_button = button;
+	}
+
+	function deselect_player(){
+		curr_player = null;
+		deselect_button(curr_player_button);
+		curr_player_button = null;
+	}
+
+	function opponent_button(id, button){
+
+		if (curr_stat != null){
+			curr_player_button = button;
+			curr_player = opponent_obj;
+			add_stat_to_player();
+		}
+		else{
+			deselect_button(curr_player_button)
+			select_opponent(button)
+		}
+	}
+
+	function add_stat_to_player(){
+		if(curr_stat == "Makes"){
+				select_button(curr_player_button);
+				make_selected = true;
+				//(curr_player_is_opponent) ? make(curr_player) : make(curr_player.player_obj);
+			}
+			else if (curr_stat == "Misses"){
+				select_button(curr_player_button);
+				miss_selected = true;
+				//(curr_player_is_opponent) ? miss(curr_player) : miss(curr_player.player_obj);
+			}
+			else{
+				add_stat(curr_stat, curr_player.player_obj);
+				deselect_player();
+				deselect_stat();
+			}
+	}
+
+
+	function player_button(id, button){
+		new_curr_player = stat_array.find(function(element) {
+  				return element.player_obj.id == id;
+		});
+
+		if (curr_stat != null && is_in_game(new_curr_player.player_obj)){
+			curr_player_button = button;
+			curr_player = new_curr_player;
+			add_stat_to_player();
+		}
+
+		else if(curr_player && !curr_player_is_opponent && is_in_game(curr_player.player_obj)  ){
+			if(!is_in_game(new_curr_player.player_obj)) 
+				swap_players(new_curr_player, curr_player) 
+			else {
+				deselect_player();
+				select_player(new_curr_player, button);
+			} 
+		}
+
+		else if (curr_player && !curr_player_is_opponent) {
+			if (is_in_game(new_curr_player.player_obj)) 
+				swap_players(curr_player, new_curr_player) 
+			else {
+				deselect_player();
+				select_player(new_curr_player, button);
+			}
+		}
+		else {
+			deselect_player();
+			select_player(new_curr_player, button);
+		}
+	}
+
+	function deselect_button(button){
+		if(button != null){
+			button.style.backgroundColor = "white";
+			button.style.color = "black";
+		}
+	}
+
+	function select_button(button){
+		if(button != null){
+			button.style.backgroundColor = "black";
+			button.style.color = "white";
+		}
+	}
+	/**************************************************************/
+	/************************* </TOOLBAR>**************************/
+	/**************************************************************/
+
+
+
+
+
+
+
+
+
+	/**************************************************************/
+	/************************* <SHOT CHART>************************/
+	/**************************************************************/
+
+	$(".show-canvas").on("click", function(e) {
+		console.log("in show canvas click")
+		if(make_selected && curr_player != null){
+			console.log("in make");
+			make(e);
+		}
+		else if (miss_selected && curr_player != null){
+			console.log("in miss")
+			miss(e);
+		}
+	}); 
+
+	function determine_3_or_2(x_loc, y_loc){
+		console.log("yloc: " + y_loc);
+		console.log("xloc" + x_loc);
+		var rel_pos_x = basket_x - x_loc;
+		var rel_pos_y = basket_y - y_loc;
+		if(rel_pos_y < 0){
+			if (Math.abs(rel_pos_x) > arc_horiz_radius){
+				return 3;
+			}
+			else{
+				return 2;
+			}
+		}
+		else {
+			var x_val = (rel_pos_x * rel_pos_x);
+			var x_denom = arc_horiz_radius * arc_horiz_radius;
+			var x_ratio = x_val/x_denom
+
+			var y_denom = arc_vert_radius * arc_vert_radius;
+			var y_val = rel_pos_y * rel_pos_y;
+			y_ratio = y_val/y_denom
+
+			var ellipse_val = x_ratio + y_ratio
+
+			if (ellipse_val > 1) return 3;
+			else return 2;
+		}
+	}
+
+	function make(e){
+		var x_loc = e.pageX - make_radius - horiz_offset;
+		var y_loc = e.pageY - make_radius - vert_offset;
+		var point_val = determine_3_or_2(e.pageX, e.pageY);
+		add_stat("Makes", curr_player.player_obj, {"x_loc" : x_loc, "y_loc": y_loc, "good_shot": true});
+		plot_make(y_loc, x_loc, make_radius, curr_player.player_obj.id, curr_player.player_obj.player);
+		//$(".show-canvas").off("click");
+		if(curr_player_is_opponent){
+			opponent_score += point_val;
+			to_opponent_shot_chart();
+			$("#opponent-score").text(function() {
+	  				return (opponent_score);
+			});
+		}
+		else{
+			home_score += point_val;
+			$("#home-score").text(function( index ) {
+	  				return ( home_score);
+			});
+			to_team_shot_chart();
+		}
+		deselect_player();
+		deselect_stat();
+		make_selected = false;	
+	}
+
+	function miss(e){
+		x_loc = e.pageX - horiz_offset;
+		y_loc = e.pageY - vert_offset;
+		var point_val = determine_3_or_2(e.pageX, e.pageY);
+		add_stat("Misses", curr_player.player_obj, {"x_loc" : x_loc, "y_loc": y_loc, "good_shot": true});
+		plot_miss([x_loc, y_loc, x_loc , y_loc ], curr_player.player_obj.id, curr_player.player_obj.player);
+		if(curr_player_is_opponent){
+			to_opponent_shot_chart();
+		}
+		else{
+			to_team_shot_chart();
+		}
+		//$(".show-canvas").off("click");
+		deselect_player();
+		deselect_stat();
+		miss_selected = false;
+	}
+
+
+	function shot_chart_button(id, button){
+		canvas.getObjects().forEach(function(o){	
+				o.set({opacity: 1,
+				selectable: true,
+				evented: true,})
+		});	
+
+		canvas.getObjects().forEach(function(o){
+			if(o.id != id || o.player == false){
+				o.set({opacity: 0,
+					selectable: false,
+					evented: false,
+
+				})
+			}
+		});	
+		canvas.renderAll();
+	}
+
+	function populate_player_shot_charts(){
+		var len = active_players.length;
+		var html_string = "";
+		for(var i = 0; i < len; i++){
+			html_string += "<button class = 'shot-chart-button' type = 'button' onclick='shot_chart_button(" + active_players[i].id +", this)'> " + active_players[i].name + " </button>"
+		}
+		$("#player-shot-chart-buttons").html(html_string)
+	}
+
+	function to_team_shot_chart(){
+		canvas.getObjects().forEach(function(o){	
+				o.set({opacity: 1,
+					selectable: true,
+					evented: true,})
+		});
+		canvas.getObjects().forEach(function(o){	
+				if(o.player == false ){
+					o.set({opacity: 0,
+					selectable: false,
+					evented: false,})
+				}
+		});	
+		canvas.renderAll();
+		
+	}
+
+	function to_opponent_shot_chart(){
+		canvas.getObjects().forEach(function(o){	
+				o.set({opacity: 1,
+					selectable: true,
+					evented: true})
+		});
+		canvas.getObjects().forEach(function(o){	
+				if(o.player == false ){
+					o.set({opacity: 1,
+						selectable: true,
+					evented: true,})
+				}
+				else{
+					o.set({opacity: 0,
+					selectable: false,
+					evented: false,})
+				}
+		});	
+		canvas.renderAll();
+		
+	}
+	/**************************************************************/
+	/************************* </SHOT CHART>***********************/
+	/**************************************************************/
+
+
+
+
+
+
+
+
+	/**************************************************************/
+	/************************ <STAT TABLE> ************************/
+	/**************************************************************/
+
+	function populate_stat_table(){
+		var cumulative_array_len = stat_array.length
+		var i = 0;
+		for(i; i < cumulative_array_len + 1; i++){
+			var row = table.insertRow(i);
+			populate_row(row, i, true);	
+		}
+		// Insert fields for opponent
+		var row = table.insertRow(i);
+		populate_row(row, i, false);
+
+	}
+
+	function populate_row(row, i, is_player){
+		var num_stats = stat_array[0].cumulative_arr.length
+		for(j = 0 ;j < num_stats + 1; j++){
+			var col = row.insertCell(j);
+			if (j == 0 && i > 0){
+				var obj;
+				obj = (is_player) ? stat_array[i-1].player_obj : opponent_obj.player_obj;
+				col.innerHTML += "<div>" + obj.name + "</div>";
+				obj.stat_index = i; 
+			}
+			else if(i == 0 && j > 0){
+				obj = (is_player) ? stat_array[0].player_obj : opponent_obj.player_obj;
+				col.innerHTML += "<div>" + stat_array[0].cumulative_arr[j-1].stat + "</div>";
+				if(stat_array[0].cumulative_arr[j-1].stat == "Minutes"){
+					minutes_index = j;
+				} 
+			}
+			else if (i > 0 && j > 0){
+				col.innerHTML += 0;
+			}
+		}
+	}
+
+	function update_minutes_played(player_i, new_val){
+		var row = table.rows[player_i+1]
+		var col = row.cells[minutes_index]
+		var seconds_str;
+		var player_minutes = Math.floor(new_val / 60)
+		var player_seconds = new_val - player_minutes * 60;
+		(player_seconds < 10) ? seconds_str = "0" + player_seconds.toString() : seconds_str = player_seconds.toString();
+		col.innerHTML = player_minutes.toString() + ":" + seconds_str
+	}
+
+	function update_stat_table(stat_i, player_i, new_val){
+		if(player_i >= 0){
+			var row = table.rows[player_i+1];
+			var col = row.cells[stat_i + 1];
+			col.innerHTML = new_val;
+		}
+		else {
+			var len = table.getElementsByTagName("tr").length
+			var row = table.rows[len-1];
+			var col = row.cells[stat_i+1];
+			col.innerHTML = new_val;
+		}
+		
+	}	
+
+	function add_stat_to_obj(stat, obj, metadata, player_i){
+		var stat_found = false;
+		var stat_i = 0;
+
+		while(!stat_found){
+			if(stat == obj.cumulative_arr[stat_i].stat){
+				stat_found = true;
+				obj.gran_stat_arr.push({"metadata" : metadata, "stat_list_id" : obj.cumulative_arr[stat_i].id});
+				update_stat_table(stat_i, player_i, ++obj.cumulative_arr[stat_i].total);
+			}
+			stat_i++;
+		}
+
+	}
+
+	function add_stat(stat, player, metadata,){
+		console.log("in add stat")
+		var player_found = false;
+		var player_i = 0;
+		
+		if(curr_player_is_opponent){
+			add_stat_to_obj(stat, opponent_obj, metadata, -1);
+		}
+		else if (is_in_game(player)){
+			while(!player_found){
+				var curr_player_obj = stat_array[player_i];
+				if(curr_player_obj.player_obj.id == player.id){
+					add_stat_to_obj(stat, curr_player_obj, metadata, player_i);
+					player_found = true;
+				}
+				player_i++;
+			}
+		}
+	}
+	/**************************************************************/
+	/********************** </STAT TABLE> *************************/
+	/**************************************************************/
+
+
+
+
+
+
+
+
+
+
+	/**************************************************************/
+	/************************** <TIMER> ***************************/
+	/**************************************************************/	
+
+
+
+	document.onkeydown = function(e){
+	    e = e || window.event;
+	    var key = e.which || e.keyCode;
+	    if(key===32){
+	    	e.preventDefault();
+	        toggle_timer();
+	    }
+	    if(key===13){
+	    	e.preventDefault();
+	        submit_game_mode();
+	    }
+	}
+	
+
+	var isRunning = false;
+	var interval = setInterval(function() {
+	    if (!isRunning) {
+	        
+	    } else {
+	        seconds--;
+	        if(seconds <0){
+	        	minutes--;
+	        	if(minutes < 0){
+	        		curr_period++;
+	        		if(curr_period > periods){
+	        			//PROMPT TO SUBMIT
+	        		}
+	        		else {
+	        			set_period();
+	        			minutes = minutes_per_period;
+	        			toggle_timer();
+	        			seconds = 0;
+	        		}
+	        	}
+	        	else 
+					seconds = 59;
+	        }
+	        set_timer()
+	    }
+	}, 1000);
+
+	function toggle_timer() {
+		(isRunning) ? isRunning = false : isRunning = true;
+		var len = active_players.length
+		for(var i = 0; i < len; i++){
+			active_players[i].timer.toggleClockMoving()
+		}
+	}
+
+	function set_period(){
+		$("#period").text(function(){
+			return curr_period.toString() + "Q"
+		});
+	}
+
+	function set_timer(){
+		$("#timer").text(function(){
+			var seconds_str;
+			(seconds < 10) ? seconds_str = "0" + seconds.toString() : seconds_str = seconds.toString();
+			return minutes.toString() + ":" + seconds_str
+		})
+	}
+
+	function PlayerTimer(is_in_game, player_index) {
+		  var self = this;
+		  this.time_played = 0;
+		  this.is_in_game = is_in_game;
+		  this.clock_moving = false;
+		  this.stat_index;
+		  this.player_index = player_index
+
+		  this.updatePlayingTime = function() {
+		      if(self.is_in_game && self.clock_moving){
+		      	self.time_played++;
+		      	update_minutes_played(self.player_index, self.time_played);
+		      }
+		  }
+		  this.returnPlayingTime = function(){
+		  	return self.time_played;
+		  }
+		  this.toggleClockMoving = function(){
+		  	self.clock_moving = !self.clock_moving;
+		  }
+		  this.toggleIsInGame = function(){
+		  	self.is_in_game = !self.is_in_game;
+		  }
+		  this.setIndex = function(stat_index){
+		  	self.stat_index = stat_index;
+		  }
+		  this.interval = setInterval(this.updatePlayingTime, 1000);
+	}
+
+
+
+
+
+	/**************************************************************/
+	/************************** </TIMER> **************************/
+	/**************************************************************/
+
+	/**************************************************************/
+	/*************** <STARTER AND INACTIVE SELECTION> *************/
+	/**************************************************************/
+
+	function populate_starter_selection(repopulate_not_in_game){
+
+		$("#personel-selection-header").html("Select Starters");
+		var len = all_players.length;
+		var html_string = "";
+		for(var i = 0; i < len; i++){
+			if (repopulate_not_in_game) players_not_in_game.push(all_players[i]);
+			html_string += "<button class = 'player-button' type = 'button' onclick = 'starter_button(" + all_players[i].id + " , this)' >" + all_players[i].name + "</button>";
+		}
+		players_in_game = [];
+		$("#personel-selection-body").html(html_string);
+		$("#GM-init-footer").html("Next");
+	}
+
+
+	function populate_inactive_selection(){
+		var header_html = "<button id = 'GM-init-back' type = 'button' onclick = 'toggle_GM_body(" + 2 + ")'>Back </button> <div>Select Inactives</div> ";
+	 		$("#personel-selection-header").html(header_html);
+			var len = players_not_in_game.length;
+			var html_string = "";
+			for(var i = 0; i < len; i++){
+				html_string += "<button class = 'player-button' type = 'button' onclick= 'inactive_button(" + players_not_in_game[i].id + ", this)' >" + players_not_in_game[i].name + "</button>"
+			}
+			$("#personel-selection-body").html(html_string);
+			$("#GM-init-footer").html("<button class = 'GM-start' type = 'button' onclick = 'start_game_mode()'> Start Game Mode </button>");
+	}
+
+	function splice_in_game(player_id){
+		var removeIndex = players_in_game.map(function(item) { return item.id; }).indexOf(player_id);
+        ~removeIndex && players_in_game.splice(removeIndex, 1);
+	}
+
+	function splice_not_in_game(player_id){
+		var removeIndex = players_not_in_game.map(function(item) {return item.id; }).indexOf(player_id); 
+        ~removeIndex && players_not_in_game.splice(removeIndex, 1);
+	}
+
+	function splice_active(player_id){
+		removeIndex = active_players.map(function(item) { return item.id; }).indexOf(player_id);
+        ~removeIndex && active_players.splice(removeIndex, 1);
+	}
+
+
+	function deselect_starter(button, player_id){
+		deselect_button(button);
+		splice_in_game(player_id);
+        var addBackPlayer = all_players.find(function(element) {
+  				return element.id == player_id;
+		});
+		players_not_in_game.push(addBackPlayer);
+	}
+
+	function select_starter(button, player_id){
+		select_button(button);
+		var player_obj = all_players.find(function(element) {
+  			return element.id == player_id;
+		});
+		players_in_game.push(player_obj);
+		splice_not_in_game(player_id)	
+	}
+
+	function starter_button(player_id, button){
+		player_id = player_id.toString()
+
+		// not crazy about using background color to decide if button is selected
+		if(button.style.backgroundColor != "black"){
+			select_starter(button, player_id);
+		}
+		else if (button.style.backgroundColor == "black"){
+			deselect_starter(button, player_id)
+		}
+		if(players_in_game.length >= 5){
+			toggle_GM_body(1);
+		}
+	}
+
+
+	// BREAK UP
+	function inactive_button(player_id, button){
+		player_id = player_id.toString();
+		if(button.style.backgroundColor != "black"){
+			select_button(button);
+			splice_not_in_game(player_id);
+			splice_active(player_id);
+		}
+
+		else if (button.style.backgroundColor == "black"){
+			deselect_button(button);
+            var addBackPlayer = all_players.find(function(element) {
+  				return element.id == player_id;
+			});
+			players_not_in_game.push(addBackPlayer);
+			active_players.push(addBackPlayer);
+		}
+	}
+
+
+	function toggle_GM_body(select_type){
+		switch(select_type){
+			case 1 :
+				populate_inactive_selection()
+				break;
+			case 2 :
+				players_not_in_game = []
+				populate_starter_selection(true);
+				break;
+		}
+	}
+	/**************************************************************/
+	/*************** </STARTER AND INACTIVE SELECTION> ************/
+	/**************************************************************/
+
+
+
+
+
+
+
+	/**************************************************************/
+	/************************* <SUBMIT>****************************/
+	/**************************************************************/
+
+
+
+	function submit_game_mode(){
+		var url = "/teams/" + <%= @team_id%> +  "/games/"+ <%=@game_id%> + "/game_mode"
+		var json_data = {"stats": stat_array}
+		 $.ajax({
+			url: url,
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			type: "post",
+			data_type: 'json',
+			data: json_data
+		});
+	}
+
+	/**************************************************************/
+	/************************* </SUBMIT>***************************/
+	/**************************************************************/
+
+
+
+
+</script>

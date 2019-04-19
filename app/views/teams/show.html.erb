@@ -1,0 +1,39 @@
+
+<div id = "main">
+	<div id = "content-grid">
+		<div id = "col1">
+			<div id = "feed">FEED
+				<div><%= link_to "new_post", new_team_post_path(@team.id) %></div>
+				<%= render @posts %>
+			</div>
+		</div>
+		<div id = "col2">
+			<div class = "horiz-rectangles">
+				<div id = "schedule" class = "horiz-rectangle">VIDEO</div>
+				<div id = "roster" class = "horiz-rectangle">ROSTER</div>	
+			</div>
+			<div id = "stats" class = "big-box"><%= link_to "STATS", team_stats_path(@team.id) %></div>
+		</div>
+		<div id = "col3">
+			<div id = "plays" class = "big-box"><%= link_to "PLAYS", team_plays_path(@team.id) %></div>
+			<div class = "vert-rectangles">
+				<div id = "video" class = "vert-rectangle"><%= link_to "SCHEDULE", team_games_path(@team.id) %></div>
+				<div id = "messages" class = "vert-rectangle">
+					<%= link_to "Messenger", messenger_path %>
+				</div>
+			</div>		
+		</div>
+	</div>
+</div>
+
+
+<script>
+	var window_height = $(window).height() - 75;
+
+	$(".big-box").height(window_height/2);
+	$(".horiz-rectangle").height(window_height/4);
+	$(".vert-rectangle").height(window_height/2);
+
+
+
+</script>

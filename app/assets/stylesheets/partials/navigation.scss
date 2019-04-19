@@ -1,0 +1,60 @@
+#logged-in-header{
+	display: grid;
+	grid-template-columns: 20vw 60vw 10vw 10vw ;
+	height: 75px;
+	font-size: 15px;
+	z-index: 2;
+	color: #333333;
+}
+
+
+#non-logged-in-header{
+	position: fixed;
+	display: grid;
+	grid-template-columns: 15vw 5vw 59vw 7vw 7vw 7vw;
+	height: 75px;
+	font-size: 15px;
+	z-index: 2;
+	color: #333333;
+}
+
+#header-white{
+	background-color: white;
+}
+#header-orange{
+	background-color: #E15E48;
+	display: flex;
+  	justify-content: center;
+  	align-items: center;
+  	color: white;
+  	font-size: 25px;
+}
+
+.header-left{
+	background-color: #4DA1A8;
+	color: white;
+	display: flex;
+  	justify-content: center;
+  	align-items: center;
+}
+
+#AS-logo{
+	font-size: 30px;
+	padding-right: 25px;
+}
+
+#curr-squad{
+	padding-left: 25px;
+	border-left: 1px solid white;
+}
+
+.header-right{
+	display: flex;
+  	justify-content: center;
+  	align-items: center;
+  	background-color: white;
+}
+
+.header-right a {
+	color: #333333;
+}

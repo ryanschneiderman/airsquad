@@ -13,10 +13,5 @@ RSpec.describe User, type: :model do
       expect(association.macro).to eq :has_many
       expect(association.options[:dependent]).to eq :destroy
     end
-    it 'has_many teams' do
-      association = described_class.reflect_on_association(:teams)
-      expect(association.macro).to eq :has_many
-      expect(association.options[:dependent]).to eq :destroy
-    end
   end
 end

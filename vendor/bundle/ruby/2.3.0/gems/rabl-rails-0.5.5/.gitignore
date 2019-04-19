@@ -1,0 +1,12 @@
+## General
+log
+doc
+rdoc
+
+## Bundler
+.bundle
+pkg
+Gemfile.lock
+
+.ruby-version
+.byebug_history

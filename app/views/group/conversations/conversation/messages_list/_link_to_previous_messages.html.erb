@@ -1,0 +1,13 @@
+
+<script>
+  var messages_url = "/group/messages/"
+  $(function(){
+    $.ajax({
+          url: messages_url,
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          type: "GET",
+          data_type: 'json',
+          data: {conversation_id: <%= conversation.id %> , messages_to_display_offset: 0, is_messenger: <%= @is_messenger %>}
+        });
+  });
+</script>

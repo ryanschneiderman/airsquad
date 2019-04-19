@@ -1,0 +1,32 @@
+<%= link_to "game mode", :controller => :games, :action => :game_mode %>
+<canvas id ="c" class = "show-canvas"></canvas>
+
+<%= render 'canvas_js' %>
+<%= render 'game_mode_js_objects' %>
+<script>
+	function populate_team_shot_chart (){
+		<% @makes.each do |make| %>
+			var make_raw_meta = "<%= make.metadata %>".replace(/&quot;/g,'"').replace(/=&gt;/g, ':');
+			var make_player_id = "<%= make.member_id %>"
+			var make_parsed_meta = JSON.parse(make_raw_meta);
+			plot_make(parseInt(make_parsed_meta.y_loc), parseInt(make_parsed_meta.x_loc), 8, make_player_id);
+		<%end%>
+		<% @misses.each do |miss| %>
+			var miss_raw_meta = "<%= miss.metadata %>".replace(/&quot;/g,'"').replace(/=&gt;/g, ':');
+			var miss_player_id = "<%= miss.member_id %>"
+			var miss_parsed_meta = JSON.parse(miss_raw_meta);
+			plot_miss([miss_parsed_meta.x_loc, miss_parsed_meta.y_loc, miss_parsed_meta.x_loc, miss_parsed_meta.y_loc], miss_player_id);
+		<%end%>
+		var objs = canvas.getObjects().map(function(o) {
+		  	return o.set({lockMovementX: true, lockMovementY: true, selectable: false,})
+		});
+		canvas.renderAll();
+
+	}
+
+	if(<%= @all_stat_granules.length %> > 0){
+		set_canvas_dimensions(.8, .75);
+		background_to_halfcourt(.8);
+		populate_team_shot_chart();
+	}
+</script>

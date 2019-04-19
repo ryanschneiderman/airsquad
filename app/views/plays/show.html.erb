@@ -1,0 +1,9 @@
+
+<div id = "play-header">
+	<%= @play.name %>
+</div>
+<div id = "play-progressions"><%= render @progressions %></div>
+<div id = "play-video"></div>	
+
+<%= link_to "delete play", play_path(@play.id), method: :delete %>
+<%= link_to "New progression", {:controller => "progressions", :action => "new", :play_id => @play.id, progression_index: 0 }%>

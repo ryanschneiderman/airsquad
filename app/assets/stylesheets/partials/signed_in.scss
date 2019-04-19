@@ -1,0 +1,103 @@
+#main{
+	font-family: 'Abril Fatface', cursive;
+}
+
+.navigation-bar{
+	padding-top: 15px;
+	display: grid;
+	grid-template-columns: 5vw 15vw 60vw 20vw; 
+	align-items: center;
+	position: sticky;
+	top: 0;
+	background-color: transparent;
+	height: 10vh;
+	z-index: 2;
+}
+
+.logout-link{
+	color: white;
+}
+
+.logout-link:hover{
+	color: grey;
+}
+
+#logo{
+	color: white;
+	font-size: 20px;
+}
+
+
+#page-links{
+	position: relative;
+	display: grid;
+	grid-template-columns: 33.3% 33.3% 33.3%;
+	justify-items: center; 
+	background-color: white;
+}
+
+.page-link{
+	color: grey;
+	background-color: white;
+	width: 33.3vw;
+	height: 25vh;
+	border-right: 1px solid #dbdbdb;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 20px;
+
+}
+
+#main-grid{
+	display: grid;
+	align-items: center;
+}
+.teams{
+	position: relative;
+}
+.header.teams{
+	width: 100%;
+	background-image: url(bball.JPG);
+	background-size: cover;
+	color: white;
+	height: 150px;
+	padding-top: 40px;
+	text-align: center;
+	font-size: 40px;
+}
+
+.header.teams:before{
+	content: '';
+	position: absolute;
+	background: rgba(0, 0, 0, 0.2);
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+}
+
+#team-text{
+	color: white;
+	position: relative;
+}
+
+.team-grid{
+	width: 100%;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+  	grid-template-rows: repeat(auto-fill, 250px);
+}
+
+#team-block{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-right: 1px solid #dbdbdb;
+}
+
+.add-join-team div{
+	width: 100%;
+	padding-left: 5px;
+	margin-top: 20%;
+}

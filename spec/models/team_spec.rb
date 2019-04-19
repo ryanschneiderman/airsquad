@@ -10,5 +10,9 @@ RSpec.describe Team, type: :model do
       association = described_class.reflect_on_association(:coaches)
       expect(association.macro).to eq :has_many
     end
+    it 'has_many games' do
+      association = described_class.reflect_on_association(:games)
+      expect(association.macro).to eq :has_many
+    end
   end
 end

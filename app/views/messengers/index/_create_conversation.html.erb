@@ -1,0 +1,10 @@
+
+<div id = "create-conversation-box" style="display: none;">
+	<div id = "create-conversation-header">New Conversation</div>
+	<div id = "select-conversation-members">
+		<% @all_related_members.each do |member| %>
+			<div><button id = "select_user" type = "button" onclick="select_user(<%= member.id %>, this)"><%= member.name %></button></div>
+		<%end%>
+	</div>
+	<button id = "new-conversation-submit" type = "button" onclick= "create_conversation()">Create Converstaion</button>
+</div>

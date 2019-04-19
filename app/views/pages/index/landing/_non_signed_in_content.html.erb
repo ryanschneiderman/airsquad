@@ -1,0 +1,52 @@
+
+<div id = "grey-canvas">
+	<div id = "space"></div>
+	<div id = "animation">
+		
+	</div>
+	<div id = "slogan">The Game, digitalized.</div>
+</div>
+
+
+<script>
+	var startingTop = 0;
+	var startingLeft = 0;
+	var isInCanvas = false;
+	var image_arr = [];
+	var image_i = 0;
+	var oldMath = 0;
+	var move_count = 0;
+
+	<% @images.each do |image| %>
+		image_arr.push('<%= image_tag "Jordan/#{image.split('/').last}", :class => "jordan" %>');
+	<% end %>
+
+	var image_arr_len = image_arr.length;
+
+	$('#animation').html(image_arr[0]);
+
+	$(document).mousemove(function(event) {
+		if (isInCanvas){
+			if(image_i + 1 > image_arr_len){
+				image_i = 0;
+			}
+			move_count++;
+			console.log(image_i);
+		    if (move_count % 100 == 0){
+		    	$('#animation').html(image_arr[image_i]);
+		    	image_i = image_i + 1;
+		    }
+		}
+	});
+
+	$("#grey-canvas")
+	.mouseenter(function(e){
+		startingTop = e.clientY;
+		startingLeft = e.clientX;
+		isInCanvas = true;
+	})
+	.mouseleave(function(e){
+		isInCanvas = false;
+	});
+		
+</script>

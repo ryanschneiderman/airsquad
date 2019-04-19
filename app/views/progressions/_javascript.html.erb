@@ -1,0 +1,392 @@
+<script>
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <BUTTON FUNCTIONS> *********************************************************/
+    /*********************************************************************************************************************************/
+
+    function validateAnchor(object){
+      var isValidAnchor = false;
+      var object_type = object.get("type");
+      if (object_type == "PlayerCircle" || object_type == "LineWithArrow" || object_type == "PassLine" || object_type == "DribbleLine" || object_type == "ScreenLine"){
+        isValidAnchor = true;
+      }
+      return isValidAnchor;
+    }
+
+    function lineToRun(event){
+        line_type = "run";
+        var anchor = canvas.getActiveObject()
+            if(anchor && validateAnchor(anchor)){
+                draw(anchor);
+                canvas.requestRenderAll.bind(canvas);
+            }    
+    }
+
+    function lineToPass(event){
+        line_type = "pass";
+         var anchor = canvas.getActiveObject()
+            if(anchor && validateAnchor(anchor)){
+                draw(anchor);
+                canvas.requestRenderAll.bind(canvas);
+            } 
+    }
+
+    function lineToScreen(event){
+        line_type = "screen";
+        var anchor = canvas.getActiveObject()
+            if(anchor && validateAnchor(anchor)){
+                draw(anchor);
+                canvas.requestRenderAll.bind(canvas);
+                
+            } 
+    }
+
+    function lineToDribble(event){
+        line_type = "dribble";
+        var anchor = canvas.getActiveObject()
+            if(anchor && validateAnchor(anchor)){
+                draw(anchor);
+                canvas.requestRenderAll.bind(canvas);
+            } 
+    }
+
+
+    /* 
+
+    function background_to_halfcourt(){
+        var img = new Image();
+        img.onload = function() {
+            // this is syncronous
+            var background_img = new fabric.Image(img);
+            background_img.objectCaching = false;
+            background_img.scaleToHeight(window.innerHeight * .9);
+
+            canvas.setBackgroundImage(background_img, canvas.renderAll.bind(canvas), {
+                top: 0,
+                left: halfcourt_img_left
+            });
+            canvas.requestRenderAll.bind(canvas);
+        };
+        img.src = "<%= asset_path('halfcourt.png')%>";
+    }
+
+    function background_to_fullcourt(){
+        var img = new Image();
+        img.onload = function() {
+            // this is syncronous
+            var background_img = new fabric.Image(img);
+            background_img.objectCaching = false;
+            background_img.scaleToHeight(window.innerHeight);
+
+            canvas.setBackgroundImage(background_img, canvas.renderAll.bind(canvas), {
+                top: 0,
+                left: fullcourt_img_left
+            });
+            canvas.requestRenderAll.bind(canvas);
+        };
+        img.src = "<%= asset_path('full_court.png')%>";
+    }
+    */
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <BUTTON FUNCTIONS/> *********************************************************/
+    /*********************************************************************************************************************************/
+
+
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <HELPER FUNCTIONS> *********************************************************/
+    /*********************************************************************************************************************************/
+
+    function setLine (LineId, obj, index) {
+        canvas.getObjects().forEach(function(o) {
+            if(o.id == LineId) {
+                obj.lines[index] = o;
+                return o;
+            }
+        });
+    }
+
+    function setToAnchor(toAnchorId, line, centerX, centerY){
+      canvas.getObjects().forEach(function(o) {
+            if(o.id == toAnchorId) {
+                o.set({top: centerY, left: centerX});
+                line.toAnchor = o;
+                return o;
+            }
+      });
+    }
+
+    function getToAnchor(toAnchorId, line){
+       canvas.getObjects().forEach(function(o) {
+            if(o.id == toAnchorId) {
+                line.toAnchor = o;
+                return o;
+            }
+      });
+    }
+    //COMMENT AND BREAK UP
+    function iterateLines(obj){
+      var line_arr_length = obj.lines.length;
+        for (var i = 0; i < line_arr_length; i++){
+          obj.lines[i].set({x1: obj.toAnchorPoint.x, y1: obj.toAnchorPoint.y});
+          rotateAnchor(obj.lines[i]);
+          obj.lines[i].setCoords();
+          if(obj.lines[i].lines){
+            var line_elem_arr_length = obj.lines[i].lines.length;
+            for(var j = 0; j < line_elem_arr_length; j++){
+              obj.lines[i].lines[j].set({x1: obj.lines[i].toAnchorPoint.x, y1: obj.lines[i].toAnchorPoint.y});
+              obj.lines[i].lines[j].setCoords();
+            }
+          }
+          else{
+            obj.lines[i].lines = [];
+            populateLines(obj.lines[i]);
+            var line_elem_arr_length = obj.lines[i].lines.length;
+            for(var j = 0; j < line_elem_arr_length; j++){
+              obj.lines[i].lines[j].set({x1: obj.lines[i].toAnchorPoint.x, y1: obj.lines[i].toAnchorPoint.y});
+              obj.lines[i].lines[j].setCoords();
+            }
+          }
+        }
+    }
+
+    function populateLines(obj){
+      var lineId_arr_length = obj.lineIds.length;
+      for(var i = 0; i < lineId_arr_length; i++){
+        setLine(obj.lineIds[i], obj, i);
+      }
+    }
+
+    function rotateAnchor(line){
+      var centerX = line.x2 - anchorOffset + (Math.cos(line.anchorAngle) * 10);
+      var centerY = line.y2 - anchorOffset + (Math.sin(line.anchorAngle) * 10);
+      setToAnchor(line.toAnchorId, line, centerX, centerY);
+      line.toAnchorPoint.x = centerX + anchorOffset
+      line.toAnchorPoint.y = centerY + anchorOffset;
+    }
+
+
+    function add_players(){
+
+        var off1 = makeCircle(bench, 25, 'blue', 'off1');
+        var off2 = makeCircle(bench, 75, 'blue', 'off2');
+        var off3 = makeCircle(bench, 125, 'blue', 'off3');
+        var off4 = makeCircle(bench, 175, 'blue', 'off4');
+        var off5 = makeCircle(bench, 225, 'blue', 'off5');
+
+        var def1 = makeCircle(bench, 350, 'red', 'def1');
+        var def2 = makeCircle(bench, 400, 'red', 'def2');
+        var def3 = makeCircle(bench, 450, 'red', 'def3');
+        var def4 = makeCircle(bench, 500, 'red', 'def4');
+        var def5 = makeCircle(bench, 550, 'red', 'def5');
+
+        canvas.add(off1);
+        canvas.add(off2);
+        canvas.add(off3);
+        canvas.add(off4);
+        canvas.add(off5);
+        canvas.add(def1);
+        canvas.add(def2);
+        canvas.add(def3);
+        canvas.add(def4);
+        canvas.add(def5);
+    }
+
+    function anchorPositioning(e){
+      var obj = e.target;
+      var type = obj.get('type');
+      if(validateLine(obj)){
+          obj.toAnchorPoint.x = canvas.getPointer(e.e).x + Math.cos(obj.anchorAngle) * 10;
+          obj.toAnchorPoint.y =  canvas.getPointer(e.e).y + Math.sin(obj.anchorAngle) * 10;
+          obj.set({x2: canvas.getPointer(e.e).x, y2: canvas.getPointer(e.e).y})
+          obj.setCoords();
+          rotateAnchor(obj);
+      }
+      else if (type == "PlayerCircle"){
+          obj.toAnchorPoint.x = obj.left + playerRadius;
+          obj.toAnchorPoint.y = obj.top + playerRadius;
+      } 
+      
+      if(obj.lines){ 
+        iterateLines(obj); 
+      }
+      else{
+        obj.lines = [];
+        populateLines(obj);
+        iterateLines(obj);
+      } 
+      
+      
+    }
+
+    function boundObjects(obj){
+      // if object is too big ignore
+      if(obj.currentHeight > obj.canvas.height -1 || obj.currentWidth > obj.canvas.width -1){
+          return;
+      }        
+      obj.setCoords();        
+      // top-left  corner
+      if(obj.getBoundingRect().top < 1 || obj.getBoundingRect().left < 1){
+          obj.top = Math.max(obj.top, obj.top-obj.getBoundingRect().top);
+          obj.left = Math.max(obj.left, obj.left-obj.getBoundingRect().left);
+      }
+          // bot-right corner
+      if(obj.getBoundingRect().top+obj.getBoundingRect().height  > obj.canvas.height || obj.getBoundingRect().left+obj.getBoundingRect().width  > obj.canvas.width){
+          obj.top = Math.min(obj.top, obj.canvas.height-obj.getBoundingRect().height+obj.top-obj.getBoundingRect().top);
+          obj.left = Math.min(obj.left, obj.canvas.width-obj.getBoundingRect().width+obj.left-obj.getBoundingRect().left);
+      }
+    }
+
+    function validateLine(obj){
+      var type = obj.get("type");
+      if (type == 'LineWithArrow' || type == 'ScreenLine' || type == "PassLine" || type == "DribbleLine"){
+        return true;
+      }
+      else return false;
+    }
+
+    function removeLineRef(line){
+      canvas.getObjects().forEach(function(o){
+        if(o.id == line.anchorId){
+          var array_length = o.lineIds.length
+          for(var i = 0; i < array_length; i++){ 
+             if (o.lineIds[i] == line.id) {
+               o.lineIds.splice(i, 1); 
+               if(o.lines){
+                o.lines.splice(i, 1);
+               }
+             }
+          }
+        }
+      });
+    }
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <HELPER FUNCTIONS/> ********************************************************/
+    /*********************************************************************************************************************************/
+
+
+
+
+
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <DOCUMENT ON READY> ********************************************************/
+    /*********************************************************************************************************************************/
+
+ 
+
+    canvas.on('selection:created', function() {
+        canvas.getActiveObjects().forEach(function(o) {
+            var type = o.get('type');
+            if(type == "PlayerCircle"){
+                o.lockMovementY = false;
+                o.lockMovementX = false;
+                o.set({stroke: "black"});
+            }
+            if(validateLine(o)){
+              if(!o.toAnchor){
+                getToAnchor(o.toAnchorId, o);
+              }
+              o.toAnchor.animate('opacity', '1', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+            } 
+        });
+    });
+
+    canvas.on('before:selection:cleared', function() {
+         canvas.getActiveObjects().forEach(function(o) {
+            var type = o.get('type');
+            if(type == "PlayerCircle"){
+                o.set({stroke: o.color});
+            } 
+            if(validateLine(o)){
+              if(!o.toAnchor){
+                getToAnchor(o.toAnchorId, o);
+              }
+              o.toAnchor.animate('opacity', '0', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+            }       
+        });
+    });
+
+    canvas.on('selection:updated', function() {
+        canvas.getActiveObjects().forEach(function(o) {
+            var type = o.get('type');
+            if(type == "PlayerCircle"){
+                o.lockMovementY = false;
+                o.lockMovementX = false;
+            }   
+        });
+    });
+
+    $(document).keyup(function(e){
+        if(e.keyCode == 46 || e.keyCode == 8) {
+            canvas.getActiveObjects().forEach(function(o) {
+                var type = o.get('type');
+                if(type == 'LineWithArrow' || type == 'ScreenLine' || type == "PassLine" || type == "DribbleLine"){
+                    removeLineRef(o);
+                    canvas.remove(o.toAnchor);
+                    canvas.remove(o);
+                }   
+        });
+        }
+    });
+
+
+/*
+    $(document).keydown(function(e) {
+        if(e.keyCode == 16) {
+            var anchor = canvas.getActiveObject();
+            if(anchor && validateValidAnchor(anchor)){
+                draw(anchor);
+                canvas.renderAll();
+            } 
+        } 
+    }
+);*/
+
+function save_progression(){
+  /* get values from elements on the page: */
+    var json_data = JSON.stringify(canvas.toJSON(['id']));
+    var create_url = "/plays/" + <%= @play.id %> + "/progressions/"
+
+  /* Send the data using post and put the results in a div */
+    $.ajax({
+      url: create_url,
+      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type: "post",
+      data_type: 'json',
+      data: {progression: {json_diagram: json_data , index: <%= @progression_index %>, play_id: <%= @play.id %> }}
+    });
+}
+
+function save_and_next_progression(){
+  /* get values from elements on the page: */
+    var json_data = JSON.stringify(canvas.toJSON(['id']));
+    var create_url = "/plays/" + <%= @play.id %> + "/progressions/next"
+
+  /* Send the data using post and put the results in a div */
+    $.ajax({
+      url: create_url,
+      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type: "post",
+      data_type: 'json',
+      data: {progression: {json_diagram: json_data , index: <%= @progression_index %>, play_id: <%= @play.id %> }}
+    });
+}
+
+
+    
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <DOCUMENT ON READY/> *******************************************************/
+    /*********************************************************************************************************************************/
+
+
+</script>

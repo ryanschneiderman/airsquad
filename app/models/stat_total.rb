@@ -1,0 +1,2 @@
+class StatTotal < ApplicationRecord
+end

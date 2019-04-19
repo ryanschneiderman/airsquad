@@ -1,0 +1,13 @@
+
+#play-header{
+	font-size: 60px;
+	text-align: center;
+}
+
+#play-progressions{
+	margin-left: 50px;
+	display:grid;
+	grid-template-columns: repeat(3, 1fr);
+  	grid-template-rows: repeat(auto-fill, 300px);
+  	align-items: center;
+}

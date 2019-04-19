@@ -2,14 +2,31 @@
 <html>
   <head>
     <title>BballSite</title>
+    <link href="https://fonts.googleapis.com/css?family=Abril+Fatface|Fredoka+One|Libre+Baskerville|Noto+Serif+SC" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <% if !Rails.env.test? %>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <% end %>
+
+
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
+    <%= Gon::Base.render_data(init: true) %>
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+
   </head>
 
   <body>
+    <%= render 'layouts/navigation' %>
     <%= yield %>
+    
+    <%= render 'layouts/application/private_conversations_windows' %>
+    <%= render 'layouts/application/group_conversations_windows' %>
   </body>
 </html>
+

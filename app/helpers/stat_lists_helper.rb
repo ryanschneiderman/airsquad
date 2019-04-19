@@ -1,0 +1,2 @@
+module StatListsHelper
+end

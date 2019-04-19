@@ -1,0 +1,17 @@
+<%= bootstrap_form_for(@post) do |f| %>
+  <%= f.text_field  :title, 
+                    maxlength: 100, 
+                    placeholder: 'Title', 
+                    class: 'form-control',
+                    required: true, 
+                    minlength: 1 %>
+  <%= f.text_field  :content, 
+                    maxlength: 5000, 
+                    placeholder: 'Content', 
+                    class: 'form-control',
+                    required: true, 
+                    minlength: 1,
+                    maxlength: 5000 %>
+<%= f.hidden_field :team_id,  value: @team_id  %> 
+  <%= f.submit "Post!", class: 'form-control' %>
+<% end %>

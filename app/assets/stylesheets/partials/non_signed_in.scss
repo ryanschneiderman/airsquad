@@ -1,0 +1,21 @@
+
+
+#grey-canvas{
+	background-color: #333333;
+	height: 100vh;
+	display: grid;
+	grid-template-rows: 20vh 60vh 20vh;
+}
+
+#slogan{
+	font-family: 'Abril Fatface', cursive;
+	color: white;
+	text-align: center;
+	font-size: 50px;
+}
+
+.jordan{
+	height: 400px;
+	display: block;
+    margin: auto;
+}

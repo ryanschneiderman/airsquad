@@ -1,0 +1,37 @@
+#main{
+	text-align: center;
+}
+
+#content-grid{
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	border: 1px solid #000;
+}
+
+#col2{
+	display: grid;
+	grid-template-rows: 1fr 1fr;
+	border: 1px solid #000;
+}
+
+#col3{
+	display: grid;
+	grid-template-rows: 1fr 1fr;
+	border: 1px solid #000;
+}
+
+.vert-rectangles{
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	border: 1px solid #000;
+}
+
+.horiz-rectangles{
+	display: grid;
+	grid-template-rows: 1fr 1fr;
+	border: 1px solid #000;
+}
+
+
+
+

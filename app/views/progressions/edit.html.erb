@@ -1,0 +1,82 @@
+
+<div id = "edit-header"><%= @play.name %> Progression <%= @progression_index %></div>
+<div id = "tactical-grid">
+    <div id = "tool-bar">
+        <div id = "drawing-buttons">
+          <button id = "run" class = "drawing-button" type = "button" onclick="lineToRun(event)">
+            <div class = "drawing-button-name">RUN</div>
+            <div class = "drawing-button-arrow">
+              <div class="line"></div>
+              <div class="triangle-point"></div>
+            </div>
+          </button>
+          
+          <button id = "pass" class = "drawing-button" type = "button" onclick="lineToPass(event)">
+            <div class = "drawing-button-name">PASS</div>
+            <div class = "drawing-button-arrow">
+              <div class="dotted-line"></div>
+              <div class="triangle-point"></div>
+            </div>
+          </button>
+          
+          <button id = "drive" class = "drawing-button" type = "button" onclick="lineToDribble(event)">
+            <div class = "drawing-button-name">DRIBBLE</div>
+            <div class = "drawing-button-arrow">
+              <div class="zigzag"></div>
+              <div class="triangle-point"></div>
+            </div>
+          </button>
+          
+          <button id = "screen" class = "drawing-button" type = "button" onclick="lineToScreen(event)">
+            <div class = "drawing-button-name">SCREEN</div>
+            <div class = "drawing-button-arrow">
+               <div class="line"></div>
+               <div class="vert-line"></div>
+            </div>
+          </button>          
+        </div>
+        <div id = "save-block">
+          <button id = "save-button" type ="button" onclick="update_progression()"> SAVE </button>
+        </div>
+    </div>
+    <canvas id ="c"></canvas>
+</div>
+
+<%= render 'canvas_js' %>
+<%= render 'js_objects' %>
+<%= render 'javascript' %>
+<script>
+  var all_added = false;
+	var json_data = "<%= @progression.json_diagram %>".replace(/&quot;/g,'"');
+		canvas.loadFromJSON(json_data, function() {
+	    	canvas.requestRenderAll.bind(canvas);
+		});
+    canvas.on('object:added', function(e) {
+          var object = e.target;
+          object.added = true;
+    });
+    canvas.on('object:moving', function (e) {
+            var obj = e.target;
+            if(obj.get("anchorable") == true && obj.added){
+              anchorPositioning(e);
+            }
+    });
+
+    function update_progression(){
+      /* get values from elements on the page: */
+        var json_data = JSON.stringify(canvas.toJSON(['id']));
+        var patch_url = "/plays/" + <%= @play.id %> + "/progressions/" + <%= @progression.id %>
+
+      /* Send the data using post and put the results in a div */
+        $.ajax({
+          url: patch_url,
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          type: "PATCH",
+          data_type: 'json',
+          data: {progression: {json_diagram: json_data , progression_id: <%= @progression.id %>, play_id: <%= @play.id %>}}
+        });
+    }
+
+
+</script>
+
