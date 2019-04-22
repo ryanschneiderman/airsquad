@@ -1,9 +1,50 @@
+<div id = "team-stat-grid">
+	<div id = "team-stat-header">
+		<div id = "ts-header-title">Stat Selection</div>
+		<div id = "ts-header-body">
+			Welcome! Here you will select the stats you would like to keep for you squad. Some stats are default and essential to the function of the application. Others you can choose to keep if you want. The more you keep, the more advanced stats the application can derive for you. 
+		</div>
+	</div>
+	<div id = "stat-choice-grid">
+		<div id = "choose-stats"></div>
+		<div id = "your-stats"></div>
+	</div>
+</div>
 
-<%= form_for @team_stat, :url => url_for(:controller => 'team_stats', :action => 'create') do |f| %>
-  <% @stat_list.each do |stat| %>
-    <%= f.check_box :stat_list_id, {multiple: true}, stat.id, '' %>
-    <%= f.label :stat_list_id, stat.stat %>
-    <br> </br>
-  <% end %>
-  <%= f.submit "Create stats to be recorded", class: 'form-control' %>
+
+
+
+
+<div id = "default-collectable">These are the stats that must be collected in order for the application to perform its basic functions</div>
+<% @default_collectable.each do |stat| %>
+	<div> <%= stat.stat %> </div>
 <% end %>
+<br>
+<div id = "non-default-collectable">These are the stats that you may choose to collect using our application. The more you collect, the more advanced stats the application can derive</div>
+
+<% @non_default_collectable.each do |stat| %>
+	<div> <%= stat.stat %> </div>
+<% end %>
+<br>
+<div id = "default_application_basic"> These are the basic stats that the application automatically derives from the default stats </div>
+
+<% @default_application_basic.each do |stat| %>
+	<div> <%= stat.stat %> </div>
+<% end %>
+<br>
+<div id = "default_application_advanced"> These are the advanced stats that the applicaiton automatically derives from the default stats </div>
+<% @default_application_advanced.each do |stat| %>
+	<div> <%=stat.stat %> </div>
+<% end %>
+<br>
+<div id = "non_default_advanced"> These are the advanced stats that may be collected depending on the non default stats you choose to collect </div>
+<% @non_default_advanced.each do |stat| %>
+	<div> <%= stat.stat%> </div>
+<% end %>
+
+<br>
+<div id = "team_advanced"> These are the advanced team stats that may be collected depending on the non default stats you choose to collect </div>
+
+<% @team_advanced.each do |stat| %>
+	<div> <%= stat.stat %>
+<%end %>

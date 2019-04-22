@@ -1,7 +1,26 @@
 class TeamStatsController < ApplicationController
 	def new 
 		@team_stat = TeamStat.new()
-		@stat_list = StatList.all()
+		## stats that user has to collect in order for the app to perform its basic functions
+		@default_collectable = StatList.where(default: true, collectable: true)
+
+		## stats the user may collect but arent required
+		@non_default_collectable = StatList.where(default: false, collectable: true)
+
+		## basic stats that the application automatically collects based on the default stats
+		@default_application_basic = StatList.where(default: true, collectable: false, advanced: false)
+
+		##advanced stats the application automatically collects based on the default stats
+		@default_application_advanced = StatList.where(default: true, collectable: false, advanced: true)
+
+		## advanced stats the application may collect depending on non default stats collected
+		@non_default_advanced = StatList.where(default: false, advanced: true)
+
+		## advanced team stats the application may collect depending on non default stats collected
+		@team_advanced = StatList.where(advanced: true, team_stat: true)
+
+
+
 	end
 
 	def create

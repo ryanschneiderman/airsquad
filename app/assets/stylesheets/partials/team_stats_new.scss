@@ -1,0 +1,13 @@
+#team-stat-grid{
+	display: grid;
+	grid-template-rows: 20vh 80vh;
+}
+
+#stat-choice-grid{
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
+#team-stat-header{
+	width: 100%;
+}
