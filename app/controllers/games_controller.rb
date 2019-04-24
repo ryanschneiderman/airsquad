@@ -68,11 +68,23 @@ class GamesController < ApplicationController
 		@players = Member.where(team_id: params[:team_id], isPlayer: true)
 		@opponent = Opponent.where(game_id: @game_id).take
 		team_stats = TeamStat.where(team_id: params[:team_id])
-		@show_stats = Array.new
-		@aux_stats = Array.new
-		team_stats.each do |team_stat|
-			@stats.push(StatList.find_by_id(team_stat.stat_list_id))
+
+		@collection_stats = []
+		@basic_stats = []
+		collection_team_stats = TeamStat.where(team_id: params[:team_id]).joins(:stat_list).where('stat_lists.collectable' => true);
+		basic_team_stats = TeamStat.where(team_id: params[:team_id], show: true).joins(:stat_list).where('stat_lists.advanced' => false, 'stat_lists.team_stat' =>false);
+		collection_team_stats.each do |stat|
+			@collection_stats.push(StatList.find_by_id(stat.stat_list_id))
 		end
+		basic_team_stats.each do |stat|
+			@basic_stats.push(StatList.find_by_id(stat.stat_list_id))
+		end
+
+		## return an array which has the fields that we will want to display in the stat table, and their corresponding ordering number.
+		@stat_table_columns = StatTableColumnsService.new({
+			stats: @basic_stats
+		}).call
+
 	end
 
 	## service

@@ -5,46 +5,184 @@
 			Welcome! Here you will select the stats you would like to keep for you squad. Some stats are default and essential to the function of the application. Others you can choose to keep if you want. The more you keep, the more advanced stats the application can derive for you. 
 		</div>
 	</div>
-	<div id = "stat-choice-grid">
-		<div id = "choose-stats"></div>
-		<div id = "your-stats"></div>
+	<div id = "stat-choices-grid">
+		<div id = "choose-stats"> 
+			<div class = "stat-choice-header">Choose stats</div>
+			<div class = "stat-choice-grid">
+				<div class = "stats-choice-box">
+					<div class = "stat-choice-subheader">Basic collectors</div>
+					<div id = "choose-basic-collectors">
+						<% @non_default_collectable.each do |stat| %>
+							<button class = "stat-choice" type = "button" onclick="to_your_stats(this, 'basic', '<%= stat.stat %>', <%= stat.id %>)"> <%= stat.stat %> </button>
+						<% end %>
+					</div>
+				</div>
+				<div class = "stats-choice-box">
+					<div class = "stat-choice-subheader">Advanced individual stats</div>
+					<div id = "choose-advanced-stats">
+						<% @non_default_advanced.each do |stat| %>
+							<button class = "stat-choice"type = "button" onclick="to_your_stats(this, 'advanced', '<%= stat.stat %>', <%= stat.id %>)"> <%= stat.stat%> </button>
+						<% end %>
+					</div>
+				</div>
+				<div class = "stats-choice-box">
+					<div class = "stat-choice-subheader">Advanced team stats</div>
+					<div id = "choose-team-stats">
+						<% @team_advanced.each do |stat| %>
+							<button class = "stat-choice"type = "button" onclick="to_your_stats(this, 'team', '<%= stat.stat %>', <%= stat.id %>)"> <%= stat.stat %></button>
+						<%end %>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id = "your-stats"> 
+			<div class = "stat-choice-header">Your stats</div>
+			<div class = "your-stats-grid">
+				<div class = "stats-choice-box">
+					<div class = "stat-choice-subheader">Basic collectors</div>
+					<div id = "basic-collectors">
+						<% @default_collectable.each do |stat| %>
+							<div class = "stat-choice"> <%= stat.stat %> </div>
+						<% end %>
+					</div>
+				</div>
+				<div class = "stats-choice-box">
+					<div class = "stat-choice-subheader">Other basic stats</div>
+					<div id = "other-basic-stats">
+						<% @default_application_basic.each do |stat| %>
+							<div class = "stat-choice"> <%= stat.stat %> </div>
+						<% end %>
+					</div>
+				</div>
+				<div class = "stats-choice-box">
+					<div class = "stat-choice-subheader">Advanced individual stats</div>
+					<div id = "advanced-stats">
+						<% @default_application_advanced.each do |stat| %>
+							<div class = "stat-choice"> <%=stat.stat %> </div>
+						<% end %>
+					</div>
+				</div>
+				<div class = "stats-choice-box">
+					<div class = "stat-choice-subheader">Advanced team stats</div>
+					<div id = "team-stats">
+						
+					</div>
+				</div>
+			</div>
+			<button id = "team-stats-submit" type = "button" onclick = "submit_team_stats()">SUBMIT</button>
+		</div>
 	</div>
 </div>
 
+<script>
+	var basic_stats = [];
+	var collection_stats = [];
+	var advanced_stats = [];
+	var team_stats = [];
+
+	function add_basic_stat(stat_name, stat_id, destination){
+		switch(destination){
+			case "your_stats" :
+				collection_stats.push(stat_id);
+				$("#basic-collectors").append('<button class = "stat-choice" type = "button" onclick = "to_choose_stats(this, \'basic\', \''+ stat_name +'\', '+ stat_id +')">' + stat_name +'</button>')
+				break;
+			case "choose_stats" :
+				var removeIndex = collection_stats.map(function(item) { return item;}).indexOf(stat_id);
+        		~removeIndex && collection_stats.splice(removeIndex, 1);
+				$("#choose-basic-collectors").append('<button class = "stat-choice" type = "button" onclick = "to_your_stats(this, \'basic\', \''+ stat_name +'\', '+ stat_id +')">' + stat_name +'</button>')
+				break;
+		}
+		
+	}
+
+	function add_advanced_stat(stat_name, stat_id, destination){
+		switch(destination){
+			case "your_stats" :
+				advanced_stats.push(stat_id);
+				$("#advanced-stats").append('<button class = "stat-choice" type = "button" onclick = "to_choose_stats(this, \'advanced\', \''+ stat_name +'\', '+ stat_id +')">' + stat_name +'</button>')
+				break;
+			case "choose_stats" :
+				var removeIndex = advanced_stats.map(function(item) { return item;}).indexOf(stat_id);
+        		~removeIndex && advanced_stats.splice(removeIndex, 1);
+				$("#choose-advanced-stats").append('<button class = "stat-choice" type = "button" onclick = "to_your_stats(this, \'advanced\', '+ stat_name +', '+ stat_id +')">' + stat_name +'</button>')
+				break;
+		}
+		
+	}
+
+	function add_team_stat(stat_name, stat_id, destination){
+		switch(destination){
+			case "your_stats" :
+				team_stats.push(stat_id);
+				$("#team-stats").append('<button class = "stat-choice" type = "button" onclick = "to_choose_stats(this, \'team\', \''+ stat_name +'\', '+ stat_id +')">' + stat_name +'</button>')
+				break;
+			case "choose_stats" :
+				var removeIndex = team_stats.map(function(item) { return item;}).indexOf(stat_id);
+        		~removeIndex && team_stats.splice(removeIndex, 1);
+				$("#choose-team-stats").append('<button class = "stat-choice" type = "button" onclick = "to_your_stats(this, \'team\', \''+ stat_name +'\', '+ stat_id +')">' + stat_name +'</button>')
+				break;
+		}
+		
+	}
+
+	function to_your_stats(button, stat_type, stat_name, stat_id){
+		$(button).remove();
+		switch(stat_type){
+			case "basic" :
+				add_basic_stat(stat_name, stat_id, "your_stats");
+				break;
+			case "advanced" :
+				add_advanced_stat(stat_name, stat_id, "your_stats");
+				break;
+			case "team" :
+				add_team_stat(stat_name, stat_id, "your_stats");
+				break;
+		}
+	}
+
+	function to_choose_stats(button, stat_type, stat_name, stat_id){
+		$(button).remove();
+		switch(stat_type){
+			case "basic" :
+				add_basic_stat(stat_name, stat_id, "choose_stats");
+				break;
+			case "advanced" :
+				add_advanced_stat(stat_name, stat_id, "choose_stats");
+				break;
+			case "team" :
+				add_team_stat(stat_name, stat_id, "choose_stats");
+				break;
+		}
+	}
+
+	function initialize_stat_arr(){
+		<% @default_collectable.each do |stat| %>
+			collection_stats.push(<%=stat.id%>);
+		<% end %>
+
+		<% @default_application_basic.each do |stat| %>
+			basic_stats.push(<%=stat.id%>);
+		<% end %>
+		<% @default_application_advanced.each do |stat| %>
+			advanced_stats.push(<%=stat.id%>);
+		<% end %>
+	}
+
+	function submit_team_stats(){
+		var url = "/teams/" + <%= @team_id%> +  "/team_stats/";
+		var stat_arr = collection_stats.concat(basic_stats).concat(advanced_stats).concat(team_stats);
+		var json_data = {"team_stats": stat_arr}
+		 $.ajax({
+			url: url,
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			type: "post",
+			data_type: 'json',
+			data: json_data
+		});
+	}
+
+	initialize_stat_arr();
+	
+</script>
 
 
-
-
-<div id = "default-collectable">These are the stats that must be collected in order for the application to perform its basic functions</div>
-<% @default_collectable.each do |stat| %>
-	<div> <%= stat.stat %> </div>
-<% end %>
-<br>
-<div id = "non-default-collectable">These are the stats that you may choose to collect using our application. The more you collect, the more advanced stats the application can derive</div>
-
-<% @non_default_collectable.each do |stat| %>
-	<div> <%= stat.stat %> </div>
-<% end %>
-<br>
-<div id = "default_application_basic"> These are the basic stats that the application automatically derives from the default stats </div>
-
-<% @default_application_basic.each do |stat| %>
-	<div> <%= stat.stat %> </div>
-<% end %>
-<br>
-<div id = "default_application_advanced"> These are the advanced stats that the applicaiton automatically derives from the default stats </div>
-<% @default_application_advanced.each do |stat| %>
-	<div> <%=stat.stat %> </div>
-<% end %>
-<br>
-<div id = "non_default_advanced"> These are the advanced stats that may be collected depending on the non default stats you choose to collect </div>
-<% @non_default_advanced.each do |stat| %>
-	<div> <%= stat.stat%> </div>
-<% end %>
-
-<br>
-<div id = "team_advanced"> These are the advanced team stats that may be collected depending on the non default stats you choose to collect </div>
-
-<% @team_advanced.each do |stat| %>
-	<div> <%= stat.stat %>
-<%end %>

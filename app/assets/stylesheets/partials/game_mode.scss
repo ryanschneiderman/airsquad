@@ -28,13 +28,6 @@
 	font-size: 35px;
 	justify-content: center;
 	align-items: center;
-
-}
-
-#home-scoreboard{
-}
-
-#opponent-scoreboard{
 }
 
 #scoreboard{
@@ -44,7 +37,7 @@
 }
 #game-mode-grid{
 	display: grid;
-	grid-template-rows: 600px 300px;
+	grid-template-rows: 700px 300px;
 }
 
 
@@ -124,7 +117,7 @@
 #stat-buttons{
 	display: grid;
 	grid-template-columns: repeat(2, 8vw);
-	grid-template-rows: repeat(5, 40px);
+	grid-template-rows: repeat(5, 60px);
 	padding-bottom: 15px;
 }
 
@@ -182,4 +175,7 @@
 	padding: 8px;
 }
 
+#shot-chart-buttons{
+	padding-top: 85px;
+}
 

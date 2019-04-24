@@ -8,6 +8,7 @@
 	var curr_stat = null;
 	var curr_stat_button = null;
 	var curr_player_is_opponent = false;
+	var on_game_page = false;
 	var table = document.getElementById("stats_table");
 	var make_radius = 8;
 
@@ -25,6 +26,7 @@
 	var player_is_selected = false;
 
 	var stat_array = [];
+	var display_stats = [];
 
 	var players_in_game = [];
 	var players_not_in_game = [];
@@ -97,7 +99,7 @@
 		var len = active_players.length
 		for (var i = 0; i < len; i++){
 			var player_obj = {"player_obj" : active_players[i], "cumulative_arr" : [], "gran_stat_arr" : []};
-			<% @stats.each do |stat| %>
+			<% @basic_stats.each do |stat| %>
 				player_obj.cumulative_arr.push({"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>"})
 			<% end %>
 			stat_array.push(player_obj);
@@ -105,8 +107,14 @@
 		opponent_player_obj = {"id" : "<%= @opponent.id %>",  "name" : "<%= @opponent.name %>", "stat_index" : null, "timer": null, "player" : false}
 		opponent_obj = {"player_obj" : opponent_player_obj,  "cumulative_arr" : [], "gran_stat_arr" : []};
 		
-		<% @stats.each do |stat| %>
+		<% @basic_stats.each do |stat| %>
 			opponent_obj.cumulative_arr.push({"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>"})
+		<% end %>
+	}
+
+	function populate_display_stats(){
+		<% @stat_table_columns.each do |stat| %>
+			display_stats.push({"stat": "<%= stat.stat_name %>", "display_priority": "<%= stat.display_priority %>"})
 		<% end %>
 	}
 
@@ -123,10 +131,12 @@
 
 		opponent_button_html = "<button class = 'player-button' id = 'opponent-button' type = 'button' onclick = 'opponent_button( <%= @opponent.id %>, this)'> <%= @opponent.name %>  </button>"
 		$("#opponent").html(opponent_button_html);
-
+		on_game_page = true;
 		populate_stat_arrays();
 		populate_stat_table();	
-		populate_player_shot_charts()
+		populate_player_shot_charts();
+		populate_display_stats();
+
 	}
 
 	/**************************************************************/
@@ -161,7 +171,7 @@
 		return html;
 	}
 
-
+	//potentially change (think offensive/defensive rebounds -> rebounds)
 	function stat_button(stat_name, button){
 		if(curr_player != null && (is_in_game(curr_player.player_obj) || curr_player_is_opponent )){
 			if(miss_selected || make_selected){
@@ -170,12 +180,12 @@
 				miss_selected = false;
 			}
 			curr_stat_button = button;
-			if(stat_name == "Makes"){
+			if(stat_name == "Make"){
 				select_button(button);
 				make_selected = true;
 
 			}
-			else if (stat_name == "Misses"){
+			else if (stat_name == "Miss"){
 				select_button(button);
 				miss_selected = true;
 			} 
@@ -272,15 +282,13 @@
 	}
 
 	function add_stat_to_player(){
-		if(curr_stat == "Makes"){
+		if(curr_stat == "Make"){
 				select_button(curr_player_button);
 				make_selected = true;
-				//(curr_player_is_opponent) ? make(curr_player) : make(curr_player.player_obj);
 			}
-			else if (curr_stat == "Misses"){
+			else if (curr_stat == "Miss"){
 				select_button(curr_player_button);
 				miss_selected = true;
-				//(curr_player_is_opponent) ? miss(curr_player) : miss(curr_player.player_obj);
 			}
 			else{
 				add_stat(curr_stat, curr_player.player_obj);
@@ -354,13 +362,10 @@
 	/**************************************************************/
 
 	$(".show-canvas").on("click", function(e) {
-		console.log("in show canvas click")
 		if(make_selected && curr_player != null){
-			console.log("in make");
 			make(e);
 		}
 		else if (miss_selected && curr_player != null){
-			console.log("in miss")
 			miss(e);
 		}
 	}); 
@@ -394,13 +399,13 @@
 		}
 	}
 
+	// change to use function update_field_goals instead of add_stat
 	function make(e){
 		var x_loc = e.pageX - make_radius - horiz_offset;
 		var y_loc = e.pageY - make_radius - vert_offset;
 		var point_val = determine_3_or_2(e.pageX, e.pageY);
-		add_stat("Makes", curr_player.player_obj, {"x_loc" : x_loc, "y_loc": y_loc, "good_shot": true});
+		add_stat("Make", curr_player.player_obj, {"x_loc" : x_loc, "y_loc": y_loc, "good_shot": true});
 		plot_make(y_loc, x_loc, make_radius, curr_player.player_obj.id, curr_player.player_obj.player);
-		//$(".show-canvas").off("click");
 		if(curr_player_is_opponent){
 			opponent_score += point_val;
 			to_opponent_shot_chart();
@@ -420,11 +425,12 @@
 		make_selected = false;	
 	}
 
+	// change to use function update_field_goals instead of add_stat
 	function miss(e){
 		x_loc = e.pageX - horiz_offset;
 		y_loc = e.pageY - vert_offset;
 		var point_val = determine_3_or_2(e.pageX, e.pageY);
-		add_stat("Misses", curr_player.player_obj, {"x_loc" : x_loc, "y_loc": y_loc, "good_shot": true});
+		add_stat("Miss", curr_player.player_obj, {"x_loc" : x_loc, "y_loc": y_loc, "good_shot": true});
 		plot_miss([x_loc, y_loc, x_loc , y_loc ], curr_player.player_obj.id, curr_player.player_obj.player);
 		if(curr_player_is_opponent){
 			to_opponent_shot_chart();
@@ -432,7 +438,6 @@
 		else{
 			to_team_shot_chart();
 		}
-		//$(".show-canvas").off("click");
 		deselect_player();
 		deselect_stat();
 		miss_selected = false;
@@ -581,6 +586,7 @@
 		
 	}	
 
+	// will likely need to change
 	function add_stat_to_obj(stat, obj, metadata, player_i){
 		var stat_found = false;
 		var stat_i = 0;
@@ -596,8 +602,8 @@
 
 	}
 
+	// will need to change
 	function add_stat(stat, player, metadata,){
-		console.log("in add stat")
 		var player_found = false;
 		var player_i = 0;
 		
@@ -637,11 +643,11 @@
 	document.onkeydown = function(e){
 	    e = e || window.event;
 	    var key = e.which || e.keyCode;
-	    if(key===32){
+	    if(key===32 && on_game_page){
 	    	e.preventDefault();
 	        toggle_timer();
 	    }
-	    if(key===13){
+	    if(key===13 && on_game_page){
 	    	e.preventDefault();
 	        submit_game_mode();
 	    }
@@ -863,6 +869,7 @@
 
 
 	function submit_game_mode(){
+		on_game_page = false;
 		var url = "/teams/" + <%= @team_id%> +  "/games/"+ <%=@game_id%> + "/game_mode"
 		var json_data = {"stats": stat_array}
 		 $.ajax({

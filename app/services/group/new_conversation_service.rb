@@ -14,10 +14,8 @@ class Group::NewConversationService
   end
 
   def call
-    ## GOOD
     creator = User.find(@creator_id)
 
-    ## OKAY
     new_group_conversation = Group::Conversation.new
 
     new_group_conversation.name = creator.name

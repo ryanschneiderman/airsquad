@@ -1,9 +1,10 @@
 #team-stat-grid{
 	display: grid;
-	grid-template-rows: 20vh 80vh;
+	grid-template-rows: 25vh 75vh;
 }
 
-#stat-choice-grid{
+#stat-choices-grid{
+	padding-left: 20px;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 }
@@ -11,3 +12,64 @@
 #team-stat-header{
 	width: 100%;
 }
+
+#ts-header-title{
+	text-align: center;
+	font-size: 40px;
+}
+
+#ts-header-body{
+	margin-top: 20px;
+	font-size: 17px;
+	margin-left: 100px;
+	margin-right: 100px;
+}
+
+.stat-choice-header{
+	text-align: center;
+	font-size: 20px;
+	text-decoration: underline;
+}
+
+#choose-stats{
+	border-right: 1px solid black;
+}
+
+.stat-choice-grid{
+	padding-left: 0px;
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	justify-content: center;
+}
+
+.your-stats-grid{
+	padding-left: 20px;
+	display: grid;
+	grid-template-rows: 1fr 1fr;
+	grid-template-columns: 1fr 1fr;
+	justify-content: center;
+}
+
+.stat-choice-subheader{
+	font-size: 15px;
+	font-weight: bold;
+	padding-bottom: 10px;
+}
+
+.stats-choice-box{
+	margin: 10px;
+}
+
+.stat-choice{
+	display: block;
+}
+
+#team-stats-submit{
+	font-size: 17px;
+	padding-bottom: 25px;
+	width: 100%;
+}
+
+
+
+

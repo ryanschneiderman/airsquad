@@ -21,22 +21,13 @@ class SubmitGameModeService
 			if granule_arr 
 				granule_arr.each do |granule|
 					metadata = granule[1]["metadata"]
-					puts "metadata"
-					puts metadata
 					stat_list_id = granule[1]["stat_list_id"]
-					puts "stat_list_id"
-					puts stat_list_id.class
-					puts "game_id"
-					puts @game_id.class
-					puts "member_id"
-					puts player_id.class
 					stat_gran = StatGranule.create(
 						metadata: metadata,
 						member_id: player_id.to_i,
 						game_id: @game_id.to_i,
 						stat_list_id: stat_list_id.to_i,
 					)
-					puts "***************************************"
 					if stat_gran.save
 						puts "saved!!!"
 					else

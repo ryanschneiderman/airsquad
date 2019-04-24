@@ -1,5 +1,6 @@
 class TeamStatsController < ApplicationController
 	def new 
+		@team_id = params[:team_id]
 		@team_stat = TeamStat.new()
 		## stats that user has to collect in order for the app to perform its basic functions
 		@default_collectable = StatList.where(default: true, collectable: true)
@@ -14,7 +15,7 @@ class TeamStatsController < ApplicationController
 		@default_application_advanced = StatList.where(default: true, collectable: false, advanced: true)
 
 		## advanced stats the application may collect depending on non default stats collected
-		@non_default_advanced = StatList.where(default: false, advanced: true)
+		@non_default_advanced = StatList.where(default: false, advanced: true, team_stat: false)
 
 		## advanced team stats the application may collect depending on non default stats collected
 		@team_advanced = StatList.where(advanced: true, team_stat: true)
@@ -24,12 +25,13 @@ class TeamStatsController < ApplicationController
 	end
 
 	def create
-		@team_stats = params[:team_stat][:stat_list_id]
+		@team_stats = params[:team_stats]
 		@team_id = params[:team_id]
 		@team_stats.each do |stat_id|
 			@team_stat = TeamStat.new(
 				stat_list_id: stat_id,
-				team_id: @team_id
+				team_id: @team_id,
+				show: true,
 			)
 			@team_stat.save
 		end
