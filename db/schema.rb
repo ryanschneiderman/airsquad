@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_24_161541) do
+ActiveRecord::Schema.define(version: 2019_04_25_210630) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -157,6 +157,7 @@ ActiveRecord::Schema.define(version: 2019_04_24_161541) do
     t.integer "total"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_opponent"
     t.index ["game_id"], name: "index_stat_totals_on_game_id"
     t.index ["stat_list_id"], name: "index_stat_totals_on_stat_list_id"
     t.index ["team_id"], name: "index_stat_totals_on_team_id"
@@ -169,10 +170,8 @@ ActiveRecord::Schema.define(version: 2019_04_24_161541) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "member_id"
-    t.bigint "opponent_id"
     t.index ["game_id"], name: "index_stats_on_game_id"
     t.index ["member_id"], name: "index_stats_on_member_id"
-    t.index ["opponent_id"], name: "index_stats_on_opponent_id"
     t.index ["stat_list_id"], name: "index_stats_on_stat_list_id"
   end
 

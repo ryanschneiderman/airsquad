@@ -37,7 +37,7 @@
 }
 #game-mode-grid{
 	display: grid;
-	grid-template-rows: 700px 300px;
+	grid-template-rows: 700px 500px;
 }
 
 
@@ -49,6 +49,11 @@
 #bottom-grid{
 	display: flex;
 	justify-content: center;
+	flex-direction: column;
+}
+
+#player-stats-table{
+	margin-bottom: 20px;
 }
 
 

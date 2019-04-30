@@ -72,13 +72,14 @@ class GamesController < ApplicationController
 		@collection_stats = []
 		@basic_stats = []
 		collection_team_stats = TeamStat.where(team_id: params[:team_id]).joins(:stat_list).where('stat_lists.collectable' => true);
-		basic_team_stats = TeamStat.where(team_id: params[:team_id], show: true).joins(:stat_list).where('stat_lists.advanced' => false, 'stat_lists.team_stat' =>false);
+		basic_team_stats = TeamStat.where(team_id: params[:team_id]).joins(:stat_list).where('stat_lists.advanced' => false, 'stat_lists.team_stat' =>false, 'stat_lists.granular' => true);
 		collection_team_stats.each do |stat|
 			@collection_stats.push(StatList.find_by_id(stat.stat_list_id))
 		end
 		basic_team_stats.each do |stat|
 			@basic_stats.push(StatList.find_by_id(stat.stat_list_id))
 		end
+
 
 		## return an array which has the fields that we will want to display in the stat table, and their corresponding ordering number.
 		@stat_table_columns = StatTableColumnsService.new({
@@ -90,6 +91,7 @@ class GamesController < ApplicationController
 	## service
 	def game_mode_submit
 		stats = params[:stats]
+		puts stats
 		game_id = params[:id]
 		team_id = params[:team_id]
 		
@@ -98,7 +100,5 @@ class GamesController < ApplicationController
 			game_id: game_id}).call
 
 		redirect_to team_game_path(team_id, game_id)
-
-		
 	end
 end
