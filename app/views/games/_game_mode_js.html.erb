@@ -497,12 +497,20 @@
 		deselect_stat();
 		miss_selected = false;
 	}
-
-
-	function move_make(obj, point, e){
+	
+	function move_make(obj, point){
     	obj.set({left: point.x - make_radius, top: point.y - make_radius})
     	if(obj.point_value != determine_3_or_2(point.x, point.y)){
-    		update_make_data(obj, obj.point_value);
+    		update_shot_data(obj, obj.point_value, "Make");
+    		obj.point_value = determine_3_or_2(point.x, point.y);
+    	}
+    }
+
+    function move_miss(obj, point){
+    	obj.set({x1: point.x, x2: point.x, y1: point.y, y2: point.y})
+    	obj.setCoords();
+    	if(obj.point_value != determine_3_or_2(point.x, point.y)){
+    		update_shot_data(obj, obj.point_value, "Miss");
     		obj.point_value = determine_3_or_2(point.x, point.y);
     	}
     }
@@ -529,29 +537,56 @@
     	return granule_return_array;
     }
 
-    // BREAK UP
-    function update_make_data(obj, point_value){
-    	var player = find_player(obj);
-    	var granule_array = find_stat_granule(player, obj.index);
-    	var make = granule_array[0];
-    	var make_w_point = granule_array[1];
-
+    function update_make_data(obj, player, result, result_w_point, point_value){
     	if(point_value == 3){
     		var new_stat_string = "2 point make";
     		var old_stat_string = "3 point make";
-    		make.metadata.shot_value = "2";
-    		make_w_point.stat_list_id = "9";
+    		result.metadata.shot_value = "2";
+    		result_w_point.stat_list_id = "9";
     		update_score(-1, !obj.player);
     		increment_points(player.player_obj.stat_index -1, -1, stat_array[player.player_obj.stat_index -1])
     	}
     	else if (point_value == 2){
     		var old_stat_string = "2 point make";
     		var new_stat_string = "3 point make";
-    		make.metadata.shot_value = "3";
-    		make_w_point.stat_list_id = "11";
+    		result.metadata.shot_value = "3";
+    		result_w_point.stat_list_id = "11";
     		update_score(1, !obj.player);
     		increment_points(player.player_obj.stat_index -1, 1, stat_array[player.player_obj.stat_index -1])
     	}
+    	return [new_stat_string, old_stat_string];
+    }
+
+    function update_miss_data(obj, player, result, result_w_point, point_value){
+    	if(point_value == 3){
+    		var new_stat_string = "2 point miss";
+    		var old_stat_string = "3 point miss";
+    		result.metadata.shot_value = "2";
+    		result_w_point.stat_list_id = "10";
+    	}
+    	else if (point_value == 2){
+    		var old_stat_string = "2 point make";
+    		var new_stat_string = "3 point make";
+    		result.metadata.shot_value = "3";
+    		result_w_point.stat_list_id = "12";
+    	}
+    	return [new_stat_string, old_stat_string];
+    }
+
+    // BREAK UP
+    function update_shot_data(obj, point_value, shot_result){
+
+    	var player = find_player(obj);
+    	var granule_array = find_stat_granule(player, obj.index);
+
+    	var result = granule_array[0];
+    	var result_w_point = granule_array[1];
+
+    	var string_array = (shot_result == "Make") ? update_make_data(obj, player, result, result_w_point, point_value) : update_miss_data(obj, player, result, result_w_point, point_value)
+
+    	var new_stat_string = string_array[0];
+    	var old_stat_string = string_array[1];
+
 
     	var player_row = (obj.player) ? player_stats_table.rows[player.player_obj.stat_index] : team_stats_table.rows[2];
     	var team_row = team_stats_table.rows[1];
@@ -563,12 +598,12 @@
     	var new_player_stat_index = find_stat_in_player_arr(new_stat_string);
     	var new_index = find_stat_index(stat_array[0].cumulative_arr[new_player_stat_index]) + 1;
     	
-    	undo_fg_in_table(old_index, "Make", player_row);
-    	fg_in_table(new_index, "Make", player_row);
+    	undo_table_cell(old_index, shot_result, player_row);
+    	fg_in_table(new_index, shot_result, player_row);
     	
     	if(obj.player){
-    		undo_fg_in_table(old_index, "Make", team_row);
-    		fg_in_table(new_index, "Make", team_row);
+    		undo_table_cell(old_index, shot_result, team_row);
+    		fg_in_table(new_index, shot_result, team_row);
     		player.cumulative_arr[old_player_stat_index].total--;
     		player.cumulative_arr[new_player_stat_index].total++;
 

@@ -142,7 +142,7 @@
       callback && callback(new fabric.MissSymbol([object.x1, object.y1, object.x2, object.y2], object));
     };
 
-    function plot_miss(points, id, player, point_value, index) {
+    function plot_miss(points, id, player, point_value, index, player_index) {
       var miss = new fabric.MissSymbol(points, {
         strokeWidth: 3,
         stroke: "red",
@@ -156,6 +156,7 @@
         player_index: player_index
       });
       canvas.add(miss);
+      console.log(miss);
       return miss;
     }
 
