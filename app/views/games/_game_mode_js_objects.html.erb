@@ -153,12 +153,13 @@
         player: player,
         point_value: point_value,
         index: index,
+        player_index: player_index
       });
       canvas.add(miss);
       return miss;
     }
 
-    function plot_make(top, left, r, id, player, point_value, index){
+    function plot_make(top, left, r, id, player, point_value, index, player_index){
       var m = new fabric.MakeSymbol({
         left: left,
         top: top,
@@ -171,6 +172,7 @@
         player: player,
         point_value: point_value,
         index: index,
+        player_index: player_index, 
       });
       canvas.add(m);
       return m;
