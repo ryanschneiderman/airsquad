@@ -1,7 +1,7 @@
 <script>
 
     var canvas_height = 552;
-    var canvas_width = 775
+    var canvas_width = 775;
 
     var canvas = new fabric.Canvas('c',{
         targetFindTolerance: 15,
@@ -9,12 +9,14 @@
          preserveObjectStacking: true,
     }); 
 
+    canvas.setHeight(canvas_height);
+    canvas.setWidth(canvas_width);
+
     function set_canvas_dimensions(canvas_height_ratio, canvas_width_ratio){
-        canvas.setHeight(canvas_height);
-        canvas.setWidth(canvas_width);
+
     }
 
-     function background_to_halfcourt(canvas_height_ratio){
+    function background_to_halfcourt(canvas_height_ratio){
         var img = new Image();
         img.onload = function() {
             // this is syncronous
