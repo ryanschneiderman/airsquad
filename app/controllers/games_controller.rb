@@ -27,38 +27,22 @@ class GamesController < ApplicationController
 	end
 
 	def show
-		@team_id = params[:team_id]
+		@team = Team.find_by_id(params[:team_id])
 		@game = Game.find_by_id(params[:id])
-
-		@makes = []
-		@misses = []
-		@rebounds = []
-		@steals = []
-		@blocks = []
-		@free_throws = []
-		@fouls = []
-
-		@all_stat_granules = StatGranule.where(game_id: params[:id], member_id: !nil)
-
-		@all_stat_granules.each do |granule|
-			case granule.stat_list_id
-			when 2
-				@rebounds.push(granule)
-			when 3
-				@makes.push(granule)
-			when 4
-				@misses.push(granule)
-			when 5
-				@steals.push(granule)
-			when 6
-				@blocks.push(granule)
-			when 7 
-				@free_throws.push(granule)
-			when 8 
-				@fouls.push(granule)
-			end
+		@players = Member.where(team_id: params[:team_id], isPlayer: true)
+		@opponent = Opponent.where(team_id: @team.id, game_id: @game.id).take
+		@basic_stats = []
+		basic_team_stats = TeamStat.where(team_id: params[:team_id]).joins(:stat_list).where('stat_lists.advanced' => false, 'stat_lists.team_stat' =>false, 'stat_lists.granular' => true);
+		basic_team_stats.each do |stat|
+			@basic_stats.push(StatList.find_by_id(stat.stat_list_id))
 		end
-		
+		@stat_table_columns = StatTableColumnsService.new({
+			stats: @basic_stats
+		}).call
+		@player_stats_unsorted = Stat.select("*").joins(:stat_list).where(game_id: @game.id)
+		@player_stats = @player_stats_unsorted.sort_by{|e| e.member_id}
+		@team_stats = StatTotal.select("*").joins(:stat_list).where(team_id: params[:team_id], game_id: @game.id, is_opponent: false)
+		@opponent_stats = StatTotal.select("*").joins(:stat_list).where(team_id: params[:team_id], game_id: @game.id, is_opponent: true)
 	end
 
 	def game_mode
@@ -76,6 +60,7 @@ class GamesController < ApplicationController
 		collection_team_stats.each do |stat|
 			@collection_stats.push(StatList.find_by_id(stat.stat_list_id))
 		end
+
 		basic_team_stats.each do |stat|
 			@basic_stats.push(StatList.find_by_id(stat.stat_list_id))
 		end
@@ -90,14 +75,19 @@ class GamesController < ApplicationController
 
 	## service
 	def game_mode_submit
-		stats = params[:stats]
-		puts stats
+		player_stats = params[:player_stats]
+		team_stats = params[:team_stats]
+		opponent_stats = params[:opponent_stats]
 		game_id = params[:id]
 		team_id = params[:team_id]
 		
 		SubmitGameModeService.new({
-			stats: stats,
-			game_id: game_id}).call
+			player_stats: player_stats,
+			team_stats: team_stats,
+			opponent_stats: opponent_stats,
+			game_id: game_id,
+			team_id: team_id,
+		}).call
 
 		redirect_to team_game_path(team_id, game_id)
 	end

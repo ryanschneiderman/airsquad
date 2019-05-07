@@ -1,32 +1,173 @@
 <%= link_to "game mode", :controller => :games, :action => :game_mode %>
-<canvas id ="c" class = "show-canvas"></canvas>
+
+<table id = "player-stats-table">
+				
+</table>
+
+<table id = "team-stats-table">
+				
+</table>
 
 <%= render 'canvas_js' %>
 <%= render 'game_mode_js_objects' %>
 <script>
-	function populate_team_shot_chart (){
-		<% @makes.each do |make| %>
-			var make_raw_meta = "<%= make.metadata %>".replace(/&quot;/g,'"').replace(/=&gt;/g, ':');
-			var make_player_id = "<%= make.member_id %>"
-			var make_parsed_meta = JSON.parse(make_raw_meta);
-			plot_make(parseInt(make_parsed_meta.y_loc), parseInt(make_parsed_meta.x_loc), 8, make_player_id);
-		<%end%>
-		<% @misses.each do |miss| %>
-			var miss_raw_meta = "<%= miss.metadata %>".replace(/&quot;/g,'"').replace(/=&gt;/g, ':');
-			var miss_player_id = "<%= miss.member_id %>"
-			var miss_parsed_meta = JSON.parse(miss_raw_meta);
-			plot_miss([miss_parsed_meta.x_loc, miss_parsed_meta.y_loc, miss_parsed_meta.x_loc, miss_parsed_meta.y_loc], miss_player_id);
-		<%end%>
-		var objs = canvas.getObjects().map(function(o) {
-		  	return o.set({lockMovementX: true, lockMovementY: true, selectable: false,})
-		});
-		canvas.renderAll();
+	var player_stats_table = document.getElementById("player-stats-table");
+	var team_stats_table = document.getElementById("team-stats-table");
+	var display_stats = [];
+	var player_array = [];
+	var player_stats = [];
+	var team_stat_array = [];
+	var opponent_stat_array = [];
 
+	function populate_display_stats(){
+		<% @stat_table_columns.each do |display_stat| %>
+			display_stats.push({"stat": "<%= display_stat[:stat_name] %>", "display_priority": "<%= display_stat[:display_priority] %>", "display_type" : "<%= display_stat[:display_type] %>", "percentage_string":  "<%= display_stat[:percentage_string] %>"})
+		<% end %>
 	}
 
-	if(<%= @all_stat_granules.length %> > 0){
-		set_canvas_dimensions(.8, .75);
-		background_to_halfcourt(.8);
-		populate_team_shot_chart();
+	function populate_player_array(){
+		<% @players.each do |player| %>
+			player_array.push({"name": "<%= player.nickname%>", "id" : "<%= player.id%>"})
+		<% end %>
 	}
+
+	function populate_stat_array(){
+		var i = 0;
+		player_id_arr = [];
+		<% @player_stats.each do |stat|%>
+			var len = player_id_arr.length
+			if(player_id_arr[len - 1] !=  "<%= stat.member_id%>"){
+				player_id_arr.push("<%= stat.member_id%>");
+				var player_obj = {"id" : "<%= stat.member_id%>", "stat_arr" : []}
+				player_stats.push(player_obj);
+				i++;
+			}
+			player_stats[i-1].stat_arr.push({"value": "<%= stat.value%>", "stat_list_id" : "<%= stat.stat_list_id%>", "display_priority" : "<%= stat.display_priority%>"})
+		<%end%>
+	}
+
+	function populate_team_stats(){
+		<% @team_stats.each do |stat| %>
+			team_stat_array.push({"value": "<%= stat.total%>", "stat_list_id" : "<%= stat.stat_list_id%>", "display_priority" : "<%= stat.display_priority%>", "name" : "<%= @team.name %>"})
+		<%end %>
+
+		<% @opponent_stats.each do |stat| %>
+			opponent_stat_array.push({"value": "<%= stat.total%>", "stat_list_id" : "<%= stat.stat_list_id%>", "display_priority" : "<%= stat.display_priority%>", "name" : "<%= @opponent.name %>"})
+		<%end %>
+		console.log("<%= @opponent.name%>")
+	}
+
+	function populate_stat_table(){
+		var stats_row = team_stats_table.insertRow(0);
+		var team_row = team_stats_table.insertRow(1);
+		var opponent_row = team_stats_table.insertRow(2);
+		
+		populate_row(stats_row, 0, false);
+		populate_row(team_row, 1, false, team_stat_array);
+		populate_row(opponent_row, 2, false, opponent_stat_array);
+
+		var num_players = player_array.length
+		var i = 0;
+		for(i; i < num_players +1; i++){
+			var row = player_stats_table.insertRow(i);
+			populate_row(row, i, true);	
+		}
+		
+	}
+
+	function populate_row(row, i, is_player, team){
+		var insert_index = 0;
+		var num_stats = display_stats.length
+		var player = (is_player) ? player_stats[i-1] : team;
+
+		for(j = 0 ;j < num_stats + 1; j++){
+			var col = row.insertCell(insert_index);
+
+			if (j == 0 && i > 0){
+				if(is_player){
+					column_header = player_array[i-1].name;
+				}else{
+					column_header = team[0].name;
+				}
+				col.innerHTML += "<div>" + column_header + "</div>";
+			}
+			else if(i == 0 && j > 0){
+				col.innerHTML += "<div>" + display_stats[j - 1].stat + "</div>";
+				if(display_stats[j - 1].display_type == "fraction"){
+					insert_index++;
+					var pct_col = row.insertCell(insert_index);
+					pct_col.innerHTML = "<div>" + display_stats[j - 1].percentage_string + "</div>"; 
+				}
+			}
+			else if (i > 0 && j > 0){
+				if(display_stats[j-1].display_type == "fraction"){
+					insert_fraction_data(row, col, display_stats[j - 1].display_priority, ++insert_index, player, is_player);
+				}
+				else if (display_stats[j-1].display_type == "minutes"){
+					insert_minutes_data(col, display_stats[j - 1].display_priority, player, is_player);
+				}
+				else{
+					insert_standard_data(col, display_stats[j - 1].display_priority, player, is_player)
+				}
+			}
+			insert_index++;
+		}
+	}
+
+
+
+	function find_player_fraction_stat(display_priority, player, is_player){
+		var stat_arr = (is_player) ? player.stat_arr : player
+		var len = stat_arr.length
+
+		var return_arr = [];
+		for(var i = 0; i < len; i++){
+			if(stat_arr[i].display_priority == display_priority){
+				return_arr.push(stat_arr[i].value);
+			}
+		}
+
+		return return_arr;
+	}
+
+	function find_player_stat(display_priority, player, is_player){
+		var stat_arr = (is_player) ? player.stat_arr : player
+		var len = stat_arr.length
+		for(var i = 0; i < len; i++){
+			if(stat_arr[i].display_priority == display_priority){
+				return stat_arr[i].value
+			}
+		}
+	}
+
+	//TODO : not stat.value; need to find the stat in the array of player stats. the parameter stat does not have a value associated with it
+	function insert_standard_data(col, display_priority, player, is_player){
+		col.innerHTML = find_player_stat(display_priority, player, is_player)
+	}
+	//TODO
+	function insert_minutes_data(col, display_priority, player, is_player){
+		var stat = find_player_stat(display_priority, player, is_player);
+		var seconds_str;
+		var player_minutes = Math.floor(stat / 60)
+		var player_seconds = stat - player_minutes * 60;
+		(player_seconds < 10) ? seconds_str = "0" + player_seconds.toString() : seconds_str = player_seconds.toString();
+		col.innerHTML = player_minutes.toString() + ":" + seconds_str
+	}
+	//TODO
+	function insert_fraction_data(row, col, display_priority, index, player, is_player){
+		var pct_col = row.insertCell(index)
+		make_miss = find_player_fraction_stat(display_priority, player, is_player);
+		makes = parseInt(make_miss[0]);
+		misses = parseInt(make_miss[1]);
+		numerator = makes;
+		denomenator = makes + misses;
+		col.innerHTML = numerator + "/" + denomenator;
+		pct_col.innerHTML = (denomenator != 0) ? Math.round(numerator / denomenator * 100) + "%" : "0%"  
+	}
+	populate_display_stats();
+	populate_player_array();
+	populate_stat_array();
+	populate_team_stats();
+	populate_stat_table();
+
 </script>

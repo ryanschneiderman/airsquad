@@ -6,14 +6,61 @@
 class SubmitGameModeService
 
 	def initialize(params)
-		@stats = params[:stats]
+		@player_stats = params[:player_stats]
 		@game_id = params[:game_id]
+		@team_stats = params[:team_stats]
+		@opponent_obj = params[:opponent_stats]
+		@opponent_stats =  @opponent_obj["cumulative_arr"]
+
+
+		@team_id = params[:team_id]
 	end
 
 
 	def call
-		@stats.each do |stat|
+		create_player_stats()
+		create_team_stats()
+	end
 
+	private
+
+	def create_team_stats()
+		@team_stats.each do |stat|
+			puts stat[1]["total"]
+			puts stat[1]["id"]
+
+			stat_total = StatTotal.create(
+				total: stat[1]["total"],
+				stat_list_id: stat[1]["id"],
+				game_id: @game_id,
+				team_id: @team_id,
+				is_opponent: false
+			)
+			if stat_total.save 
+				puts "yay team stats saved"
+			else 
+				puts stat_total.save!
+			end
+
+		end
+		@opponent_stats.each do |stat|
+			stat_total = StatTotal.create(
+				total: stat[1]["total"],
+				stat_list_id: stat[1]["id"],
+				game_id: @game_id,
+				team_id: @team_id,
+				is_opponent: true
+			)
+			if stat_total.save 
+				puts "yay oppoenents saved"
+			else 
+				puts stat_total.save!
+			end
+		end
+	end
+
+	def create_player_stats()
+		@player_stats.each do |stat|
 			player_id = stat[1]["player_obj"]["id"]
 			granule_arr = stat[1]["gran_stat_arr"]
 
@@ -50,5 +97,6 @@ class SubmitGameModeService
 			end
 		end
 	end
+
 
 end

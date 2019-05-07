@@ -173,7 +173,10 @@
 	function populate_display_stats(){
 		var i = 0;
 		<% @stat_table_columns.each do |stat| %>
-			display_stats.push({"stat": "<%= stat[:stat_name] %>", "display_priority": "<%= stat[:display_priority] %>"})
+			display_stats.push({"stat": "<%= stat[:stat_name] %>", "display_priority": "<%= stat[:display_priority] %>", "display_type" : "<%= stat[:display_type] %>", "percentage_string" : "<%= stat[:percentage_string]%>"})
+			if("<%= stat[:display_type] %>" == "fraction"){
+				i++;
+			}
 			i++;
 			if("<%= stat[:stat_name] %>" == "Points") points_index = i;
 		<% end %>
@@ -486,7 +489,7 @@
 		y_loc = e.pageY - vert_offset;
 		var fg_counter = stat_array_counter;
 		var point_val = determine_3_or_2(x_loc, y_loc);
-		plot_miss([x_loc, y_loc, x_loc , y_loc ], curr_player.player_obj.id, curr_player.player_obj.player, point_val, fg_counter + 1), curr_player.player_obj.stat_index;
+		plot_miss([x_loc, y_loc, x_loc , y_loc ], curr_player.player_obj.id, curr_player.player_obj.player, point_val, fg_counter + 1, curr_player.player_obj.stat_index) ;
 		add_stat("Miss", curr_player.player_obj, {"x_loc" : x_loc, "y_loc": y_loc, "shot_value" : point_val}, fg_counter + 1);
 
 		if(point_val == 2)  add_stat("2 point miss",  curr_player.player_obj, {"x_loc" : x_loc, "y_loc": y_loc}, fg_counter + 1);
@@ -497,7 +500,7 @@
 		deselect_stat();
 		miss_selected = false;
 	}
-	
+
 	function move_make(obj, point){
     	obj.set({left: point.x - make_radius, top: point.y - make_radius})
     	if(obj.point_value != determine_3_or_2(point.x, point.y)){
@@ -573,12 +576,10 @@
     	return [new_stat_string, old_stat_string];
     }
 
-    // BREAK UP
     function update_shot_data(obj, point_value, shot_result){
 
     	var player = find_player(obj);
     	var granule_array = find_stat_granule(player, obj.index);
-
     	var result = granule_array[0];
     	var result_w_point = granule_array[1];
 
@@ -740,9 +741,10 @@
 	}
 
 	function populate_row(row, i, is_player, team_name){
-		var num_stats = display_stats.length
+		var insert_index = 0;
+		var num_stats = display_stats.length;
 		for(j = 0 ;j < num_stats + 1; j++){
-			var col = row.insertCell(j);
+			var col = row.insertCell(insert_index);
 			if (j == 0 && i > 0){
 				var column_header;
 				if(is_player){
@@ -755,22 +757,32 @@
 			}
 			else if(i == 0 && j > 0){
 				col.innerHTML += "<div>" + display_stats[j - 1].stat + "</div>";
+				if(display_stats[j - 1].display_type == "fraction"){
+					insert_index++;
+					var pct_col = row.insertCell(insert_index);
+					pct_col.innerHTML = "<div>" + display_stats[j - 1].percentage_string + "</div>"; 
+				}
 			}
 			else if (i > 0 && j > 0){
-				if(j == fg_index || j == two_pt_fg_index || j == three_pt_fg_index || j == ft_index){
+				if(display_stats[j - 1].display_type == "fraction"){
 					col.innerHTML = 0+ "/" + 0;
+					insert_index++;
+					var pct_col = row.insertCell(insert_index);
+					pct_col.innerHTML = "0%";
 				}
-				else if (j == minutes_index){
+				else if (display_stats[j - 1].display_type == "minutes"){
 					col.innerHTML = "0:00";
 				}
 				else{
 					col.innerHTML += 0;
 				}
 			}
+			insert_index++;
 		}
 	}
 
 	function update_minutes_played(player_i, new_val){
+		console.log("updating_minutes")
 		var row = player_stats_table.rows[player_i+1]
 		var col = row.cells[minutes_index]
 		var seconds_str;
@@ -799,10 +811,15 @@
 
 	function find_stat_index(stat){
 		var display_stats_len = display_stats.length;
+		var actual_index = 0;
 		for (var i = 0; i < display_stats_len; i++){
 			if (stat.display_priority == display_stats[i].display_priority){
-				return i;
+				return actual_index;
 			}
+			if(display_stats[i].display_type == "fraction"){
+				actual_index++;
+			}
+			actual_index++;
 		}
 	}
 
@@ -966,6 +983,7 @@
 
 	function undo_table_cell(index, shot_result, row){
 		var col = row.cells[index];
+
 		var pct_col = row.cells[index+1];
 		contents = col.innerHTML;
 		split_contents = contents.split('/');
@@ -993,12 +1011,10 @@
 		    undo_table_cell(stat_index, result, player_row);
 		    undo_table_cell(stat_index, result, team_row);
 		    stat_array[stat_object.player.stat_index -1].cumulative_arr[player_stat_index].total--;
-	    	stat_array[stat_object.player.stat_index -1].gran_stat_arr.pop();
 	    }
 	    else{
 	    	undo_table_cell(stat_index, result, opponent_row);
 	    	opponent_obj.cumulative_arr[player_result_index].total--;
-	    	opponent_obj.gran_stat_arr.pop();
 	    } 
 	}
 
@@ -1125,7 +1141,6 @@
 	}
 
 
-
 	document.onkeydown = function(e){
 	    e = e || window.event;
 	    var key = e.which || e.keyCode;
@@ -1146,9 +1161,7 @@
 
 	var isRunning = false;
 	var interval = setInterval(function() {
-	    if (!isRunning) {
-	        
-	    } else {
+	    if (isRunning == true) {
 	        seconds--;
 	        if(seconds <0){
 	        	minutes--;
@@ -1202,6 +1215,7 @@
 		  this.player_index = player_index
 
 		  this.updatePlayingTime = function() {
+		  		console.log("updating playing time")
 		      if(self.is_in_game && self.clock_moving){
 		      	self.time_played++;
 		      	update_minutes_played(self.player_index, self.time_played);
@@ -1379,7 +1393,7 @@
 	function update_fg_locations(){
 		canvas.getObjects().forEach(function(o){
 			if (o.type != "Basket"){
-				player = stat_array[o.player_index-1];
+				player = (o.player) ? stat_array[o.player_index-1] : opponent_obj;
 				granule_array_len = player.gran_stat_arr.length
 				for(var i = 0; i < granule_array_len; i++){
 					if(player.gran_stat_arr[i].index == o.index){						
@@ -1392,13 +1406,12 @@
 	}
 
 	function submit_game_mode(){
-		//on_game_page = false;
-
+		isRunning = false
 		update_fg_locations();
 
 		var url = "/teams/" + <%= @team_id%> +  "/games/"+ <%=@game_id%> + "/game_mode"
 		set_minutes_in_player_array();
-		var json_data = {"stats": stat_array}
+		var json_data = {"player_stats": stat_array, "team_stats": team_stat_totals, "opponent_stats": opponent_obj}
 		
 		 $.ajax({
 			url: url,
