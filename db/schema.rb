@@ -10,10 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_25_210630) do
+ActiveRecord::Schema.define(version: 2019_05_24_015831) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "advanced_stats", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "stat_list_id"
+    t.bigint "member_id"
+    t.bigint "game_id"
+    t.float "value"
+    t.json "constituent_stats"
+    t.index ["game_id"], name: "index_advanced_stats_on_game_id"
+    t.index ["member_id"], name: "index_advanced_stats_on_member_id"
+    t.index ["stat_list_id"], name: "index_advanced_stats_on_stat_list_id"
+  end
 
   create_table "games", force: :cascade do |t|
     t.date "date"
@@ -21,6 +34,7 @@ ActiveRecord::Schema.define(version: 2019_04_25_210630) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "opponent_id"
+    t.boolean "played"
     t.index ["team_id"], name: "index_games_on_team_id"
   end
 
@@ -124,6 +138,27 @@ ActiveRecord::Schema.define(version: 2019_04_25_210630) do
     t.index ["play_id"], name: "index_progressions_on_play_id"
   end
 
+  create_table "season_advanced_stats", force: :cascade do |t|
+    t.bigint "stat_list_id"
+    t.bigint "member_id"
+    t.float "value"
+    t.json "constituent_stats"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["member_id"], name: "index_season_advanced_stats_on_member_id"
+    t.index ["stat_list_id"], name: "index_season_advanced_stats_on_stat_list_id"
+  end
+
+  create_table "season_stats", force: :cascade do |t|
+    t.bigint "stat_list_id"
+    t.bigint "member_id"
+    t.integer "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["member_id"], name: "index_season_stats_on_member_id"
+    t.index ["stat_list_id"], name: "index_season_stats_on_stat_list_id"
+  end
+
   create_table "stat_granules", force: :cascade do |t|
     t.string "metadata"
     t.bigint "game_id"
@@ -143,18 +178,18 @@ ActiveRecord::Schema.define(version: 2019_04_25_210630) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "granular"
-    t.boolean "advanced"
     t.boolean "default"
     t.boolean "collectable"
     t.boolean "team_stat"
     t.integer "display_priority"
+    t.boolean "advanced"
   end
 
   create_table "stat_totals", force: :cascade do |t|
     t.bigint "stat_list_id"
     t.bigint "team_id"
     t.bigint "game_id"
-    t.integer "total"
+    t.integer "value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "is_opponent"
@@ -184,6 +219,17 @@ ActiveRecord::Schema.define(version: 2019_04_25_210630) do
     t.index ["team_id"], name: "index_team_plays_on_team_id"
   end
 
+  create_table "team_season_stats", force: :cascade do |t|
+    t.bigint "stat_list_id"
+    t.bigint "team_id"
+    t.float "value"
+    t.boolean "is_opponent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stat_list_id"], name: "index_team_season_stats_on_stat_list_id"
+    t.index ["team_id"], name: "index_team_season_stats_on_team_id"
+  end
+
   create_table "team_stats", force: :cascade do |t|
     t.bigint "stat_list_id"
     t.bigint "team_id"
@@ -206,6 +252,7 @@ ActiveRecord::Schema.define(version: 2019_04_25_210630) do
     t.integer "division"
     t.string "primary_color"
     t.string "secondary_color"
+    t.integer "minutes_p_q"
   end
 
   create_table "users", force: :cascade do |t|

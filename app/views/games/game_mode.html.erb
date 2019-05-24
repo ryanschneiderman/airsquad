@@ -62,10 +62,10 @@
 			<button class = "game-mode-submit" type = "button" onclick = "submit_game_mode()">Submit</button>
 		</div>
 		-->
-		<table id = "player-stats-table">
+		<table class = "stats-table" id = "player-stats-table">
 				
 		</table>
-		<table id = "team-stats-table">
+		<table class = "stats-table" id = "team-stats-table">
 				
 		</table>
 	</div>	
@@ -76,7 +76,7 @@
 	<div id = "GM-initializer">
 		<div id = "GM-init-header" class = "GM-init">Welcome to Game Mode!</div>
 		<div id = "GM-init-body" class = "GM-init">
-			<div id = "personel-selection-header">Select Starters</div>
+			<div id = "personel-selection-header">Select Inactives</div>
 			<div id = "personel-selection-body">
 
 			</div>
@@ -89,11 +89,10 @@
 <%= render 'game_mode_js' %>
 <%= render 'game_mode_js_objects' %>
 <script>
-	set_timer()
+
 	populate_players();
-	populate_starter_selection(false);
-	set_canvas_dimensions(.8, .75);
-	plotBasket(canvas.getWidth()/2, canvas.getHeight() - canvas.getHeight()/6.13, 13);
-	background_to_halfcourt(.8);
+	populate_inactive_selection(false);
+	plotBasket(gm_canvas_width/2, gm_canvas_height - gm_canvas_height/6.13, 13, gm_canvas_width, canvas);
+
 	
 </script>

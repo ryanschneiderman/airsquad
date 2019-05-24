@@ -33,7 +33,7 @@
 
     });
 
-    function plotBasket(basket_left, basket_top, r){
+    function plotBasket(basket_left, basket_top, r, canvas_width, canvas){
       var basket = new fabric.Basket({
         left: basket_left - r,
         top: basket_top,
@@ -41,6 +41,7 @@
         radius: r,
         fill: "white",
         stroke: "black",
+        canvas_width: canvas_width,
       });
       canvas.add(basket);
       return basket;
@@ -142,24 +143,26 @@
       callback && callback(new fabric.MissSymbol([object.x1, object.y1, object.x2, object.y2], object));
     };
 
-    function plot_miss(points, id, player, point_value, index, player_index) {
+    function plot_miss(points, id, player, point_value, index, player_index, canvas_width, canvas) {
       var miss = new fabric.MissSymbol(points, {
         strokeWidth: 3,
         stroke: "red",
         objectCaching: false,
         selectable: false,
-        padding: 10,
+        padding: 15,
         id: id,
         player: player,
         point_value: point_value,
         index: index,
         player_index: player_index,
+        canvas_width: canvas_width,
       });
       canvas.add(miss);
+      //console.log(miss)
       return miss;
     }
 
-    function plot_make(top, left, r, id, player, point_value, index, player_index){
+    function plot_make(top, left, r, id, player, point_value, index, player_index, canvas_width, canvas){
       var m = new fabric.MakeSymbol({
         left: left,
         top: top,
@@ -173,6 +176,7 @@
         point_value: point_value,
         index: index,
         player_index: player_index, 
+        canvas_width: canvas_width,
       });
       canvas.add(m);
       return m;

@@ -26,12 +26,15 @@
 	var horiz_offset = $("#gm-tool-bar").width();
 	var vert_offset = $(".container").height() + $("#scoreboard").height();;
 
-	var arc_vert_radius = 332;
-	var arc_horiz_radius = 329;
+	// keep consistent on canvas resize
+	var arc_vert_radius = gm_canvas_width/2.343;
+	var arc_horiz_radius = gm_canvas_width/2.365;
 
 	var basket_x;
 	var basket_y;
-	var basket_radius = 13;
+
+	// keep consistent on canvas resize
+	var basket_radius = gm_canvas_width/59.855;
 
 	var player_is_selected = false;
 
@@ -41,10 +44,10 @@
 
 	var all_stat_granules = [];
 
-	var players_in_game = [];
-	var players_not_in_game = [];
 	var all_players = [];
 	var active_players = [];
+	var players_in_game = 0;
+
 
 	var home_score = 0;
 	var opponent_score = 0;
@@ -55,25 +58,26 @@
 
 	var periods = 4;
 	var curr_period = 1;
-	var minutes_per_period = 2;
+	var minutes_per_period = 6;
 	var minutes = minutes_per_period;
 	var seconds = 0;
 
 	var minutes_index;
 	var points_index;
 
+	var total_minutes;
+
 	var select_inactives_html = "";
 
 	$( window ).load(function() {
   		canvas.getObjects().forEach(function(o){
 			if (o.type == "Basket"){
-				basket_x = o.left + 13;
-				basket_y = o.top + 13;
+				basket_x = o.left + basket_radius;
+				basket_y = o.top + basket_radius;
 			}
 		});
 	});
 
-	
 
 	canvas.on('object:moving', function (e) {
 		var obj = e.target
@@ -86,6 +90,35 @@
          move_miss(obj, point);
         }
     });
+
+    $(window).resize(function(){
+        canvas.getObjects().forEach(function(o){
+        	switch(o.type){
+        		case "MakeSymbol" :
+	        		old_canvas_width = o.canvas_width;
+	        		change_ratio = old_canvas_width/gm_canvas_width;
+	        		new_radius = gm_canvas_width 
+
+	        		o.set({left: o.left/ change_ratio, top: o.top / change_ratio, canvas_width: gm_canvas_width });
+	        		o.setCoords();
+	        		canvas.calcOffset();
+	  				canvas.renderAll();
+        		break;
+        		case "Basket" :
+
+        			old_canvas_width = o.canvas_width;
+	        		change_ratio = old_canvas_width/gm_canvas_width;
+
+	        		o.set({left: o.left/ change_ratio, top: o.top / change_ratio, canvas_width: gm_canvas_width, radius: basket_radius});
+	        		o.setCoords();
+	        		canvas.calcOffset();
+	  				canvas.renderAll();
+	  			break;
+        		case "MissSymbol" :
+        		break
+        	}
+    	})
+    })
 
 
 	Element.prototype.remove = function() {
@@ -110,6 +143,7 @@
 			}
 		}
 	});
+
 
 	function find_player(player){
 		if(player.player == false){
@@ -142,13 +176,21 @@
 	function populate_players(){
 		var i = 0;
 		<% @players.each do |player| %>
-			var player_timer = new PlayerTimer(false, i);
-			player_obj = {"id" : "<%=player.id%>", "name" : "<%= player.nickname %>", "stat_index" : null, "timer": player_timer, "player" : true}
-			players_not_in_game.push(player_obj);
+			var player_obj = {"id" : "<%=player.id%>", "name" : "<%= player.nickname %>"}
 			all_players.push(player_obj);
 			active_players.push(player_obj);
 			i++;
 		<% end %>
+	}
+
+	function create_player_objects(){
+		var active_players_len = active_players.length
+		for(var i =0; i < active_players_len; i++){
+			var player_timer = new PlayerTimer(false, i);
+			var player_obj = {"id" : active_players[i].id, "name" : active_players[i].name, "stat_index" : null, "is_in_game" : false, "timer": player_timer, "player" : true}
+			active_players[i] = player_obj;
+			var j = 0;
+		}
 	}
 
 	function populate_stat_arrays(){
@@ -168,6 +210,7 @@
 			opponent_obj.cumulative_arr.push({"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>", "display_priority" : "<%= stat.display_priority %>"})
 			team_stat_totals.push({"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>", "display_priority" : "<%= stat.display_priority %>"})
 		<% end %>
+		console.log(team_stat_totals)
 	}
 
 	function populate_display_stats(){
@@ -188,11 +231,8 @@
 		$(".GM-modal").css("display", "none");
 		$(".modal-overlay").css("display", "none");
 
-		var in_game_len = players_in_game.length;
-		var not_in_game_len = players_not_in_game.length;
-
-		$("#in-game-players").html(populate_player_buttons(true, in_game_len));
-		$("#bench-players").html(populate_player_buttons(false, not_in_game_len));
+		$("#in-game-players").html(populate_player_buttons(true));
+		$("#bench-players").html(populate_player_buttons(false));
 
 		opponent_button_html = "<button class = 'player-button' id = 'opponent-button' type = 'button' onclick = 'opponent_button( <%= @opponent.id %>, this)'> <%= @opponent.name %>  </button>"
 		$("#opponent").html(opponent_button_html);
@@ -211,6 +251,123 @@
 
 
 
+	/**************************************************************/
+	/*************** <STARTER AND INACTIVE SELECTION> *************/
+	/**************************************************************/
+
+	function populate_starter_selection(){
+		var header_html = "<button id = 'GM-init-back' type = 'button' onclick = 'toggle_GM_body(" + 1 + ")'>Back </button> <div>Select Starters</div> ";
+		$("#personel-selection-header").html(header_html);
+		var len = active_players.length;
+		var html_string = "";
+		for(var i = 0; i < len; i++){
+			html_string += "<button class = 'player-button' type = 'button' onclick = 'starter_button(" + active_players[i].id + " , this)' >" + active_players[i].name + "</button>";
+		}
+		$("#personel-selection-body").html(html_string);
+		$("#GM-init-footer").html("");
+	}
+
+
+	function populate_inactive_selection(repopulate_active_players){
+		
+	 		$("#personel-selection-header").html("Select Inactives");
+			var len = all_players.length;
+			var html_string = "";
+			for(var i = 0; i < len; i++){
+				if (repopulate_active_players) players_not_in_game.push(all_players[i]);
+				html_string += "<button class = 'player-button' type = 'button' onclick= 'inactive_button(" + all_players[i].id + ", this)' >" + all_players[i].name + "</button>"
+			}
+			$("#personel-selection-body").html(html_string);
+			$("#GM-init-footer").html("<button class = 'next' type = 'button' onclick = 'toggle_GM_body(" + 2 + ")'> To Starter Selection </button>");
+	}
+
+	function set_all_players_to_bench(){
+		active_players.map(function(item){item.is_in_game = false });
+	}
+
+	function set_not_in_game(player_id){
+		active_players.map(function(item) { if(item.id == player_id) item.is_in_game = false });
+	}
+
+	function set_in_game(player_id){
+		active_players.map(function(item) {if(item.id == player_id) item.is_in_game = true })
+		players_in_game++;
+	}
+
+	function splice_active(player_id){
+		removeIndex = active_players.map(function(item) { return item.id; }).indexOf(player_id);
+        ~removeIndex && active_players.splice(removeIndex, 1);
+	}
+
+
+	function deselect_starter(button, player_id){
+		deselect_button(button);
+		set_not_in_game(player_id);
+        var addBackPlayer = all_players.find(function(element) {
+  				return element.id == player_id;
+		});
+	}
+
+	function select_starter(button, player_id){
+		select_button(button);
+		var player_obj = active_players.find(function(element) {
+  			return element.id == player_id;
+		});
+		set_in_game(player_id)	
+	}
+
+	function starter_button(player_id, button){
+		player_id = player_id.toString()
+
+		// not crazy about using background color to decide if button is selected
+		if(button.style.backgroundColor != "black"){
+			select_starter(button, player_id);
+		}
+		else if (button.style.backgroundColor == "black"){
+			deselect_starter(button, player_id)
+		}
+		if(players_in_game >= 5){
+			start_game_mode();
+		}
+	}
+
+	function inactive_button(player_id, button){
+		player_id = player_id.toString();
+		if(button.style.backgroundColor != "black"){
+			select_button(button);
+			splice_active(player_id);
+		}
+
+		else if (button.style.backgroundColor == "black"){
+			deselect_button(button);
+            var addBackPlayer = all_players.find(function(element) {
+  				return element.id == player_id;
+			});
+			active_players.push(addBackPlayer);
+		}
+	}
+
+	function toggle_GM_body(select_type){
+		switch(select_type){
+			case 1 :
+				active_players = all_players;
+				populate_inactive_selection(true)
+				break;
+			case 2 :
+				players_in_game = 0;
+				set_all_players_to_bench()
+				create_player_objects();
+				populate_starter_selection();
+				break;
+		}
+	}
+	/**************************************************************/
+	/*************** </STARTER AND INACTIVE SELECTION> ************/
+	/**************************************************************/
+
+
+
+
 
 
 
@@ -221,18 +378,16 @@
 	/**************************************************************/
 
 
-	function populate_player_buttons(are_starters, len){
-		var arr = (are_starters) ? players_in_game : players_not_in_game
+	function populate_player_buttons(is_in_game){
 		html = "";
+		var len = active_players.length
 		for(var i = 0; i < len; i++){
 			// set timer for players in game
-			if(are_starters){
-				arr[i].timer.toggleIsInGame();
+			if(active_players[i].is_in_game == is_in_game){
+				if(is_in_game) active_players[i].timer.toggleIsInGame();
+				active_players[i].timer.setIndex(active_players[i].stat_index);
+				html += "<button class = 'player-button' id = 'player-"+ active_players[i].id + "'" + " type = 'button' onclick = 'player_button(" +  active_players[i].id + ", this)'> " + active_players[i].name + " </button>"
 			}
-
-			arr[i].timer.setIndex(arr[i].stat_index);
-			
-			html += "<button class = 'player-button' id = 'player-"+ arr[i].id + "'" + " type = 'button' onclick = 'player_button(" +  arr[i].id + ", this)'> " + arr[i].name + " </button>"
 		}
 		return html;
 	}
@@ -278,11 +433,12 @@
 	function is_in_game(player){
 		if (curr_player_is_opponent) return true; 
 		else {
-			var len = players_in_game.length
+			var len = active_players.length
 			for(var i = 0; i < len; i++){
-				if (player.id == players_in_game[i].id) return true;
+				if (player.id == active_players[i].id){
+					return player.is_in_game;
+				}
 			}
-			return false;
 		}
 	}
 
@@ -292,15 +448,12 @@
 
 	function swap_players(player_to_game, player_to_bench){
 		// splice both in the arrays
-		splice_in_game(player_to_bench.player_obj.id);
-		splice_not_in_game(player_to_game.player_obj.id);
+		set_not_in_game(player_to_bench.player_obj.id);
+		set_in_game(player_to_game.player_obj.id);
 
 		// push to new arrays respectively
 		player_to_game.player_obj.timer.toggleIsInGame();
 		player_to_bench.player_obj.timer.toggleIsInGame();
-
-		players_in_game.push(player_to_game.player_obj);
-		players_not_in_game.push(player_to_bench.player_obj);
 
 		// change HTML
 		var player_to_game_identifier = "#player-" + player_to_game.player_obj.id
@@ -436,6 +589,8 @@
 		}
 	}); 
 
+
+	// TODO: SHOULD BE GOOD!!!
 	function determine_3_or_2(x_loc, y_loc){
 
 		var rel_pos_x = basket_x - x_loc;
@@ -464,13 +619,14 @@
 		}
 	}
 
+
 	function make(e){
 		var x_loc = e.pageX - make_radius - horiz_offset;
 		var y_loc = e.pageY - make_radius - vert_offset;
 		var point_val = determine_3_or_2(x_loc, y_loc);
 		var fg_counter = stat_array_counter;
 
-		plot_make(y_loc, x_loc, make_radius, curr_player.player_obj.id, curr_player.player_obj.player, point_val, fg_counter + 1, curr_player.player_obj.stat_index);
+		plot_make(y_loc, x_loc, make_radius, curr_player.player_obj.id, curr_player.player_obj.player, point_val, fg_counter + 1, curr_player.player_obj.stat_index, gm_canvas_width, canvas);
 		add_stat("Make", curr_player.player_obj, {"x_loc" : x_loc, "y_loc": y_loc, "shot_value" : point_val}, fg_counter + 1);
 
 		if(point_val == 2) add_stat("2 point make",  curr_player.player_obj, {"x_loc" : x_loc, "y_loc": y_loc}, fg_counter + 1);
@@ -489,7 +645,7 @@
 		y_loc = e.pageY - vert_offset;
 		var fg_counter = stat_array_counter;
 		var point_val = determine_3_or_2(x_loc, y_loc);
-		plot_miss([x_loc, y_loc, x_loc , y_loc ], curr_player.player_obj.id, curr_player.player_obj.player, point_val, fg_counter + 1, curr_player.player_obj.stat_index) ;
+		plot_miss([x_loc, y_loc, x_loc , y_loc ], curr_player.player_obj.id, curr_player.player_obj.player, point_val, fg_counter + 1, curr_player.player_obj.stat_index, gm_canvas_width, canvas) ;
 		add_stat("Miss", curr_player.player_obj, {"x_loc" : x_loc, "y_loc": y_loc, "shot_value" : point_val}, fg_counter + 1);
 
 		if(point_val == 2)  add_stat("2 point miss",  curr_player.player_obj, {"x_loc" : x_loc, "y_loc": y_loc}, fg_counter + 1);
@@ -615,19 +771,6 @@
     	}
     }
 
-    /*****************************************************************/
-    /*****************************************************************/
-    /*****************************************************************/
-    /*****************************************************************/
-    /*****************************************************************/
-    /*****************************************************************/
-
-
-
-
-
-
-
 
 	function shot_chart_button(id, button){
 		canvas.getObjects().forEach(function(o){
@@ -659,6 +802,7 @@
 			html_string += "<button class = 'shot-chart-button' type = 'button' onclick='shot_chart_button(" + active_players[i].id +", this)'> " + active_players[i].name + " </button>"
 		}
 		$("#player-shot-chart-buttons").html(html_string)
+		$("#player-shot-chart-buttons").css("grid-template-rows", "repeat( "+ len/3 + ", 81px)"); ;
 	}
 
 	function to_team_shot_chart(){
@@ -782,7 +926,6 @@
 	}
 
 	function update_minutes_played(player_i, new_val){
-		console.log("updating_minutes")
 		var row = player_stats_table.rows[player_i+1]
 		var col = row.cells[minutes_index]
 		var seconds_str;
@@ -798,9 +941,10 @@
 			var player_col = player_row.cells[stat_i + 1];
 			var team_row = team_stats_table.rows[1];
 			var team_col = team_row.cells[stat_i + 1]
+			console.log(team_col.innerHTML)
 
 			player_col.innerHTML = new_val;
-			team_col.innerHTML = new_val;
+			team_col.innerHTML = parseInt(team_col.innerHTML) + 1;
 		}
 		else {
 			var row = team_stats_table.rows[2];
@@ -886,7 +1030,7 @@
 			default :
 				var index = find_stat_index(obj.cumulative_arr[stat_i]);
 				update_stat_table(index, player_i, ++obj.cumulative_arr[stat_i].total);
-				if (!curr_player_is_opponent) ++team_stat_totals[stat_i].total
+				if (!curr_player_is_opponent) team_stat_totals[stat_i].total++;
 		}
 	}
 
@@ -1140,13 +1284,15 @@
 		}
 	}
 
+	var scoreboard_clock = new ScoreboardClock();
+	scoreboard_clock.set_timer();
 
 	document.onkeydown = function(e){
 	    e = e || window.event;
 	    var key = e.which || e.keyCode;
 	    if(key===32){
 	    	e.preventDefault();
-	        toggle_timer();
+	        scoreboard_clock.toggle_timer();
 	    }
 	    if(key===13){
 	    	e.preventDefault();
@@ -1159,52 +1305,66 @@
 	}
 	
 
-	var isRunning = false;
-	var interval = setInterval(function() {
-	    if (isRunning == true) {
-	        seconds--;
-	        if(seconds <0){
-	        	minutes--;
-	        	if(minutes < 0){
-	        		curr_period++;
-	        		if(curr_period > periods){
-	        			//PROMPT TO SUBMIT
-	        		}
-	        		else {
-	        			set_period();
-	        			minutes = minutes_per_period;
-	        			toggle_timer();
-	        			seconds = 0;
-	        		}
-	        	}
-	        	else 
-					seconds = 59;
-	        }
-	        set_timer()
-	    }
-	}, 1000);
 
-	function toggle_timer() {
-		(isRunning) ? isRunning = false : isRunning = true;
-		var len = active_players.length
-		for(var i = 0; i < len; i++){
-			active_players[i].timer.toggleClockMoving()
+	function ScoreboardClock(){
+		var self = this;
+		this.isRunning = false;
+		this.toggle_timer = function(){
+			self.isRunning = !self.isRunning;
+			var len = active_players.length
+			for(var i = 0; i < len; i++){
+				active_players[i].timer.toggleClockMoving()
+			}
 		}
-	}
+		this.stop_timer = function(){
+			self.isRunning = false;
+			var len = active_players.length
+			for(var i = 0; i < len; i++){
+				active_players[i].timer.stopClockMoving()
+			}
+		}
+		this.set_timer = function(){
+			$("#timer").text(function(){
+				var seconds_str;
+				(seconds < 10) ? seconds_str = "0" + seconds.toString() : seconds_str = seconds.toString();
+				return minutes.toString() + ":" + seconds_str
+			});
+		}
+		this.set_period = function(){
+			$("#period").text(function(){
+				return curr_period.toString() + "Q"
+			});
+		}
+		this.interval = setInterval(function() {
 
-	function set_period(){
-		$("#period").text(function(){
-			return curr_period.toString() + "Q"
-		});
+		    if (self.isRunning == true) {
+		        seconds--;
+		        total_minutes++;
+		        if(seconds <0){
+		        	minutes--;
+		        	if(minutes < 0){
+		        		curr_period++;
+		        		if(curr_period > periods){
+		        			//PROMPT TO SUBMIT
+		        		}
+		        		else {
+		        			self.set_period();
+		        			minutes = minutes_per_period;
+		        			self.toggle_timer();
+		        			seconds = 0;
+		        		}
+		        	}
+		        	else seconds = 59;
+		        }
+		        //console.log(seconds)
+		        self.set_timer()
+		    }
+		    else{
+		    	
+		    }
+		}, 1000);
 	}
-
-	function set_timer(){
-		$("#timer").text(function(){
-			var seconds_str;
-			(seconds < 10) ? seconds_str = "0" + seconds.toString() : seconds_str = seconds.toString();
-			return minutes.toString() + ":" + seconds_str
-		})
-	}
+	
 
 	function PlayerTimer(is_in_game, player_index) {
 		  var self = this;
@@ -1215,7 +1375,6 @@
 		  this.player_index = player_index
 
 		  this.updatePlayingTime = function() {
-		  		console.log("updating playing time")
 		      if(self.is_in_game && self.clock_moving){
 		      	self.time_played++;
 		      	update_minutes_played(self.player_index, self.time_played);
@@ -1233,6 +1392,9 @@
 		  this.setIndex = function(stat_index){
 		  	self.stat_index = stat_index;
 		  }
+		  this.stopClockMoving = function(){
+		  	self.clock_moving = false;
+		  }
 		  this.interval = setInterval(this.updatePlayingTime, 1000);
 	}
 
@@ -1244,123 +1406,7 @@
 	/************************** </TIMER> **************************/
 	/**************************************************************/
 
-	/**************************************************************/
-	/*************** <STARTER AND INACTIVE SELECTION> *************/
-	/**************************************************************/
-
-	function populate_starter_selection(repopulate_not_in_game){
-		$("#personel-selection-header").html("Select Starters");
-		var len = all_players.length;
-		var html_string = "";
-		for(var i = 0; i < len; i++){
-			if (repopulate_not_in_game) players_not_in_game.push(all_players[i]);
-			html_string += "<button class = 'player-button' type = 'button' onclick = 'starter_button(" + all_players[i].id + " , this)' >" + all_players[i].name + "</button>";
-		}
-		players_in_game = [];
-		$("#personel-selection-body").html(html_string);
-		$("#GM-init-footer").html("Next");
-	}
-
-
-	function populate_inactive_selection(){
-		var header_html = "<button id = 'GM-init-back' type = 'button' onclick = 'toggle_GM_body(" + 2 + ")'>Back </button> <div>Select Inactives</div> ";
-	 		$("#personel-selection-header").html(header_html);
-			var len = players_not_in_game.length;
-			var html_string = "";
-			for(var i = 0; i < len; i++){
-				html_string += "<button class = 'player-button' type = 'button' onclick= 'inactive_button(" + players_not_in_game[i].id + ", this)' >" + players_not_in_game[i].name + "</button>"
-			}
-			$("#personel-selection-body").html(html_string);
-			$("#GM-init-footer").html("<button class = 'GM-start' type = 'button' onclick = 'start_game_mode()'> Start Game Mode </button>");
-	}
-
-	function splice_in_game(player_id){
-		var removeIndex = players_in_game.map(function(item) { return item.id; }).indexOf(player_id);
-        ~removeIndex && players_in_game.splice(removeIndex, 1);
-	}
-
-	function splice_not_in_game(player_id){
-		var removeIndex = players_not_in_game.map(function(item) {return item.id; }).indexOf(player_id); 
-        ~removeIndex && players_not_in_game.splice(removeIndex, 1);
-	}
-
-	function splice_active(player_id){
-		removeIndex = active_players.map(function(item) { return item.id; }).indexOf(player_id);
-        ~removeIndex && active_players.splice(removeIndex, 1);
-	}
-
-
-	function deselect_starter(button, player_id){
-		deselect_button(button);
-		splice_in_game(player_id);
-        var addBackPlayer = all_players.find(function(element) {
-  				return element.id == player_id;
-		});
-		players_not_in_game.push(addBackPlayer);
-	}
-
-	function select_starter(button, player_id){
-		select_button(button);
-		var player_obj = all_players.find(function(element) {
-  			return element.id == player_id;
-		});
-		players_in_game.push(player_obj);
-		splice_not_in_game(player_id)	
-	}
-
-	function starter_button(player_id, button){
-		player_id = player_id.toString()
-
-		// not crazy about using background color to decide if button is selected
-		if(button.style.backgroundColor != "black"){
-			select_starter(button, player_id);
-		}
-		else if (button.style.backgroundColor == "black"){
-			deselect_starter(button, player_id)
-		}
-		if(players_in_game.length >= 5){
-			toggle_GM_body(1);
-		}
-	}
-
-
-	// BREAK UP
-	function inactive_button(player_id, button){
-		player_id = player_id.toString();
-		if(button.style.backgroundColor != "black"){
-			select_button(button);
-			splice_not_in_game(player_id);
-			splice_active(player_id);
-		}
-
-		else if (button.style.backgroundColor == "black"){
-			deselect_button(button);
-            var addBackPlayer = all_players.find(function(element) {
-  				return element.id == player_id;
-			});
-			players_not_in_game.push(addBackPlayer);
-			active_players.push(addBackPlayer);
-		}
-	}
-
-
-	function toggle_GM_body(select_type){
-		switch(select_type){
-			case 1 :
-				populate_inactive_selection()
-				break;
-			case 2 :
-				players_not_in_game = []
-				populate_starter_selection(true);
-				break;
-		}
-	}
-	/**************************************************************/
-	/*************** </STARTER AND INACTIVE SELECTION> ************/
-	/**************************************************************/
-
-
-
+	
 
 
 
@@ -1383,11 +1429,20 @@
 			var col = row.cells[minutes_index];
 			var contents = col.innerHTML;
 			var split_contents = contents.split(':');
-			var minutes = parseInt(split_contents[0])
-			var seconds = parseInt(split_contents[1])/60
+			var minutes = parseInt(split_contents[0])*60
+			var seconds = parseInt(split_contents[1])
 			minutes = minutes + seconds;
 			stat_array[j].cumulative_arr[arr_minutes_index].total = minutes;
 		}
+	}
+
+	function set_team_minutes(){
+		var team_stat_arr_len = team_stat_totals.length
+		var minutes_index;
+		for(var i = 0; i < team_stat_arr_len; i++){
+			if(team_stat_totals[i].stat == "Minutes") minutes_index = i;
+		}
+		team_stat_totals[minutes_index].total = total_minutes * 5;
 	}
 
 	function update_fg_locations(){
@@ -1406,11 +1461,13 @@
 	}
 
 	function submit_game_mode(){
-		isRunning = false
+		scoreboard_clock.stop_timer();
+
 		update_fg_locations();
 
 		var url = "/teams/" + <%= @team_id%> +  "/games/"+ <%=@game_id%> + "/game_mode"
 		set_minutes_in_player_array();
+		set_team_minutes();
 		var json_data = {"player_stats": stat_array, "team_stats": team_stat_totals, "opponent_stats": opponent_obj}
 		
 		 $.ajax({

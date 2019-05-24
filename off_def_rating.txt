@@ -1,0 +1,54 @@
+	def offensive_rating(team_off_reb, off_reb, opponent_trb, opponent_off_reb,  field_goals_made, team_field_goals_made, team_three_ptm, three_pm,  points, team_points, free_throw_att, free_throws_made, team_free_throws_made, field_goal_att, team_field_goal_att,  minutes_played, team_minutes_played, team_assists, assists, turnovers, team_turnovers)
+
+		qassists = 
+
+		fg_part = field_goals_made * (1- 0.5 * ((points - free_throws_made) / (2 * field_goal_att)) * qassists)
+		assists_part = 0.5 * (((team_points - team_free_throws_made) - (points - free_throws_made)) / (2 * (team_field_goal_att - field_goal_att))) * assists
+
+		ft_part = (1-(1-(free_throws_made/free_throw_att)) ^2)*0.4 *free_throw_att
+
+		team_scoring_poss = team_field_goals_made + (1-(1-(team_free_throws_made/team_free_throw_att))^2) * team_free_throw_att * 0.4
+
+		team_off_reb_pct = team_off_reb / (team_off_reb + (opponent_trb - opponent_off_reb))
+
+		team_play_pct = team_scoring_poss / (team_field_goal_att + team_free_throw_att * 0.4 + team_turnovers)
+
+		team_off_reb_weight = ((1 - team_off_reb_pct) * team_play_pct) / ((1 - team_off_reb_pct) * team_play_pct + team_off_reb_pct * (1 - team_play_pct))
+
+		off_reb_part = off_reb * team_off_reb_weight * team_play_pct
+
+
+		sc_poss = (fg_part + assists_part + ft_part) * (1 - (team_off_reb / team_scoring_poss) * team_off_reb_weight * team_play_pct) + off_reb_part
+
+		fg_x_poss = (field_goal_att - field_goals_made) * (1 - 1.07 * team_off_reb_pct)
+		ft_x_poss = ((1 - (free_throws_made / free_throw_att))^2) * 0.4 * free_throw_att
+
+		tot_poss = sc_poss + fg_x_poss + ft_x_poss + turnovers
+
+		pprod_fg_part = 2 * (field_goals_made + 0.5 * three_pm) * (1 - 0.5 * ((points - free_throws_made) / (2 * field_goal_att)) * qassists)
+		pprod_assists_part = 2 * ((team_field_goals_made - field_goals_made + 0.5 * (team_three_ptm - three_pm)) / (team_field_goals_made - field_goals_made)) * 0.5 * (((team_points - team_free_throws_made) - (points - free_throws_made)) / (2 * (team_field_goal_att - field_goal_att))) * assists
+		pprod_off_reb_part = off_reb * team_off_reb_weight * team_play_pct * (team_points / (team_field_goals_made + (1 - (1 - (team_free_throws_made / team_free_throw_att))^2) * 0.4 * team_free_throw_att))
+
+		pprod = (pprod_fg_part + pprod_assists_part + free_throws_made) * (1 - (team_off_reb / team_scoring_poss) * team_off_reb_weight * team_play_pct) + pprod_off_reb_part
+		return (100 * (pprod / tot_poss))
+	end
+
+	def defensive_rating(steals, team_steals,  blocks, team_blocks, drb, team_drb, opponet_off_reb,  opponent_field_goals_made, opponent_field_goal_att, team_minutes_played, minutes_played, opponent_minutes_played,  opponent_turnovers,  fouls, team_fouls,  opponent_free_throw_att, opponent_free_throws_made,  team_possessions,  opponent_points)
+
+		dor_pct = opponent_off_reb / (opponent_off_reb + team_drb)
+		dfg_pct = opponent_field_goals_made / opponent_field_goals_made
+
+		fm_wt = (dfg_pct * (1 - dor_pct)) / (dfg_pct * (1 - dor_pct) + (1 - dfg_pct) * dor_pct)
+
+		stops_a = steals + blocks * fm_wt * (1 - 1.07 * dor_pct) + drb * (1 - fm_wt)
+
+		stops_b = (((opponent_field_goal_att - opponent_field_goals_made - team_blocks) / team_minutes_played) * fm_wt * (1 - 1.07 * dor_pct) + ((opponent_turnovers - team_steals) / team_minutes_played)) * minutes_played + (pf / team_pf) * 0.4 * opponent_free_throw_att * (1 - (opponent_free_throws_made / opponent_free_throw_att))^2
+
+		stops = stops_a+stops_b
+
+		stop_pct = (stops * opponent_minutes_played) / (team_possessions * minutes_played)
+		team_def_rtg = 100 * (opponent_points / team_possessions)
+		d_points_per_scposs = opponent_points / (Opponent_field_goals_made + (1 - (1 - (opponent_free_throws_made / opponent_free_throw_att))^2) * opponent_free_throw_atta*0.4)
+
+		return (team_def_rtg + 0.2 * (100 * d_points_per_scposs * (1 - stop_pct) - team_def_rtg))
+	end

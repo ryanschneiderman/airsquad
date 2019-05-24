@@ -37,7 +37,7 @@
 }
 #game-mode-grid{
 	display: grid;
-	grid-template-rows: 700px 500px;
+	grid-template-rows: 800px 500px;
 }
 
 
@@ -52,15 +52,17 @@
 	flex-direction: column;
 }
 
-#player-stats-table{
+.stats-table{
 	margin-bottom: 20px;
+}
+
+#player-stats-table{
 }
 
 
 #player-shot-chart-buttons{
 	display: grid;
-	grid-template-rows: repeat(5, 81px);
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: 1fr 1fr 1fr;
 	overflow-x: scroll;
 	scroll-snap-type: x proximity;
 }
@@ -161,7 +163,7 @@
 
 #personel-selection-body{
 	display: grid;
-	grid-template-columns: repeat(4, 100px);
+	grid-template-columns: repeat(5, 100px);
 	grid-template-rows: repeat(3, 60px);
 }
 

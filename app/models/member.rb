@@ -4,5 +4,5 @@ class Member < ApplicationRecord
 	has_many :stats
 	has_many :stat_granules
 	has_many :posts
-	
+	has_many :season_stats
 end

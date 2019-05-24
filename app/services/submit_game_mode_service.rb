@@ -3,100 +3,415 @@
 ## save them both 
 ## redirect to game path
 
+require 'json'
+
 class SubmitGameModeService
 
 	def initialize(params)
 		@player_stats = params[:player_stats]
+		@team_id = params[:team_id]
 		@game_id = params[:game_id]
+		@game_id = @game_id.to_i
 		@team_stats = params[:team_stats]
 		@opponent_obj = params[:opponent_stats]
 		@opponent_stats =  @opponent_obj["cumulative_arr"]
-
-
 		@team_id = params[:team_id]
+		## @bpm_sums[0] == off_bpm sum, @bpm_sum[1] == regular bpm sum
+		@bpm_sums = [0, 0]
+		@season_bpm_sums = [0, 0]
+		@all_bpms = []
 	end
 
 
 	def call
-		create_player_stats()
 		create_team_stats()
+		create_player_stats()
+		adjust_bpm()
 	end
 
 	private
 
 	def create_team_stats()
 		@team_stats.each do |stat|
-			puts stat[1]["total"]
-			puts stat[1]["id"]
-
+			puts stat[1]["stat"]
 			stat_total = StatTotal.create(
-				total: stat[1]["total"],
+				value: stat[1]["total"],
 				stat_list_id: stat[1]["id"],
 				game_id: @game_id,
 				team_id: @team_id,
 				is_opponent: false
 			)
-			if stat_total.save 
-				puts "yay team stats saved"
-			else 
-				puts stat_total.save!
-			end
+			season_total = SeasonTeamStat.where(team_id: @team_id, stat_list_id: stat[1]["id"], is_opponent: false).take
 
+			if season_total 
+				season_total.value += stat_total.to_i
+				season_total.save
+			else 
+				season_total = SeasonTeamStat.create({
+					value: stat_total.to_i,
+					stat_list_id: stat[1]["id"],
+					team_id: @team_id,
+					is_opponent: false
+				})
+			end		
+			if stat[1]["id"] == 16
+				@team_season_minutes = season_total.value
+			end
+			instantiate_stat_variable(stat_total, true, false)
 		end
 		@opponent_stats.each do |stat|
 			stat_total = StatTotal.create(
-				total: stat[1]["total"],
+				value: stat[1]["total"],
 				stat_list_id: stat[1]["id"],
 				game_id: @game_id,
 				team_id: @team_id,
 				is_opponent: true
 			)
-			if stat_total.save 
-				puts "yay oppoenents saved"
+			season_total = SeasonTeamStat.where(team_id: @team_id, stat_list_id: stat[1]["id"]. is_opponent: true).take
+
+			if season_total 
+				season_total.value += stat_total.to_i
+				season_total.save
 			else 
-				puts stat_total.save!
-			end
+				SeasonTeamStat.create({
+					value: stat_total.to_i,
+					stat_list_id: stat[1]["id"],
+					team_id: @team_id,
+					is_opponent: true
+				})
+			end			
+			instantiate_stat_variable(stat_total, true, true)
 		end
+
+		team_stats = Advanced::TeamAdvancedStatsService.new({
+			team_field_goals: @team_field_goals,
+			opp_field_goals: @opp_field_goals,
+			team_field_goal_misses: @team_field_goal_misses,
+			opp_field_goal_misses: @opp_field_goal_misses,
+			team_off_reb: @team_off_reb,
+			opp_off_reb: @opp_off_reb,
+			team_turnovers: @team_turnovers,
+			opp_turnovers: @opp_turnovers,
+			team_free_throw_makes: @team_free_throw_makes,
+			opp_free_throw_makes: @opp_free_throw_makes,
+			team_free_throw_misses: @team_free_throw_misses,
+			opp_free_throw_misses: @team_free_throw_misses,
+			team_points: @team_points,
+			opp_points: @opp_points,
+		}).call
+
+		@possessions = team_stats["possessions"]
+		@opp_possessions = team_stats["opp_possessions"]
+
+		@defensive_efficiency = team_stats["defensive_efficiency"]
+		@offensive_efficiency = team_stats["offensive_efficiency"]
+
+		@season_offensive_efficiency = team_stats["season_offensive_efficiency"]
+		@season_defensive_efficiency = team_stats["season_defensive_efficiency"]
+
+		@season_team_rating = @season_offensive_efficiency - @season_defensive_efficiency
+		@team_rating = @offensive_efficiency - @defensive_efficiency
+
 	end
 
 	def create_player_stats()
 		@player_stats.each do |stat|
 			player_id = stat[1]["player_obj"]["id"]
 			granule_arr = stat[1]["gran_stat_arr"]
+			player_id = player_id.to_i
 
 			cumulative_arr = stat[1]["cumulative_arr"]
 			if granule_arr 
 				granule_arr.each do |granule|
 					metadata = granule[1]["metadata"]
-					puts metadata
 					stat_list_id = granule[1]["stat_list_id"]
 					stat_gran = StatGranule.create(
 						metadata: metadata,
 						member_id: player_id.to_i,
-						game_id: @game_id.to_i,
+						game_id: @game_id,
 						stat_list_id: stat_list_id.to_i,
 					)
-					if stat_gran.save
-						puts "saved!!!"
-					else
-						puts stat_gran.save!
-					end
 				end
 			end
 			if cumulative_arr 
 				cumulative_arr.each do |cumulative_stat|
-				stat_id = cumulative_stat[1]["id"]
-				stat_total = cumulative_stat[1]["total"]
-				cumulative_stat = Stat.create(
-					value: stat_total,
-					game_id: @game_id,
-					stat_list_id: stat_id,
-					member_id: player_id,
-				)
+					stat_id = cumulative_stat[1]["id"]
+					stat_total = cumulative_stat[1]["total"]
+					stat_id = stat_id.to_i
+					stat_total = stat_total.to_i
+					cumulative_stat = Stat.create(
+						value: stat_total,
+						game_id: @game_id,
+						stat_list_id: stat_id,
+						member_id: player_id,
+					)
+					season_total = SeasonStat.where(member_id: player_id, stat_list_id: stat_id).take
+					if season_total 
+						season_total.value += stat_total
+						season_total.save
+					else 
+						season_total = SeasonStat.create({
+							value: stat_total,
+							stat_list_id: stat_id,
+							member_id: player_id,
+						})
+					end
+					if stat_id == 16
+						@season_minutes = season_total.value
+					end
+					instantiate_stat_variable(cumulative_stat, false, false)
+				end
+				bpms = Advanced::AdvancedStatsService.new({
+					field_goals: @field_goals,
+					team_field_goals: @team_field_goals,
+					opp_field_goals: @opp_field_goals,
+					field_goal_misses: @field_goal_misses,
+					team_field_goal_misses: @team_field_goal_misses,
+					opp_field_goal_misses: @opp_field_goal_misses,
+					assists: @assists,
+					team_assists: @team_assists,
+					opp_assists: @opp_assists,
+					off_reb: @off_reb,
+					team_off_reb: @team_off_reb,
+					opp_off_reb: @opp_off_reb,
+					def_reb: @def_reb,
+					team_def_reb: @team_def_reb,
+					opp_def_reb: @opp_def_reb,
+					steals: @steals,
+					team_steals: @team_steals,
+					opp_steals: @opp_steals,
+					turnovers: @turnovers,
+					team_turnovers: @team_turnovers,
+					opp_turnovers: @opp_turnovers,
+					blocks: @blocks,
+					team_blocks: @team_blocks,
+					opp_blocks: @opp_blocks,
+					three_point_fg: @three_point_fg,
+					team_three_point_fg: @team_three_point_fg,
+					opp_three_point_fg: @opp_three_point_fg,
+					three_point_miss: @three_point_miss,
+					team_three_point_miss: @team_three_point_miss,
+					opp_three_point_miss: @opp_three_point_miss,
+					free_throw_makes: @free_throw_makes,
+					team_free_throw_makes: @team_free_throw_makes,
+					opp_free_throw_makes: @opp_free_throw_makes,
+					free_throw_misses: @free_throw_misses,
+					team_free_throw_misses: @team_free_throw_misses,
+					opp_free_throw_misses: @opp_free_throw_misses,
+					points: @points,
+					team_points: @team_points,
+					opp_points: @opp_points,
+					minutes: @minutes,
+					team_minutes: @team_minutes,
+					opp_minutes: @team_minutes,
+					fouls: @fouls,
+					team_fouls: @team_fouls,
+					opp_fouls: @opp_fouls,
+					possessions: @possessions,
+					opp_possessions: @opp_possessions,
+					member_id: player_id.to_i,
+					game_id: @game_id.to_i,
+				}).call
+
+				@bpm_sums[0] += bpms["obpm"].value * (@minutes / (@team_minutes / 5))
+				@bpm_sums[1] += bpms["bpm"].value * (@minutes / (@team_minutes / 5))
+
+				@season_bpm_sums[0] += bpms["new_obpm"].value * (@season_minutes / (@team_season_minutes / 5))
+				@season_bpm_sums[1] += bpms["new_bpm"].value * (@season_minutes / (@team_season_minutes / 5))
+				@all_season_bpms.push()
+				@all_bpms.push(bpms)
+			end
+		end
+	end
+
+	def adjust_bpm()
+		@all_bpms.each do |bpm|
+			new_bpm = bpm["bpm"].value + (@team_rating * 1.2 - @bpm_sums[1])/5
+			new_bpm = new_bpm * 100 
+			new_bpm = new_bpm.round / 100.0
+			bpm["bpm"].value = new_bpm
+			bpm["bpm"].save
+
+			new_obpm = bpm["obpm"].value + (@team_rating * 1.2 - @bpm_sums[0])/5
+			new_obpm = new_obpm * 100
+			new_obpm = new_obpm.round / 100.0
+			bpm["obpm"].value = new_obpm
+			bpm["obpm"].save
+		end
+
+		@all_season_bpms.each do |bpm|
+			new_bpm = bpm["new_bpm"].value + (@season_team_rating * 1.2 - @season_bpm_sums[1])/5
+			new_bpm = new_bpm * 100 
+			new_bpm = new_bpm.round / 100.0
+			bpm["new_bpm"].value = new_bpm
+			bpm["new_bpm"].save
+
+			new_obpm = bpm["new_obpm"].value + (@season_team_rating * 1.2 - @season_bpm_sums[0])/5
+			new_obpm = new_obpm * 100
+			new_obpm = new_obpm.round / 100.0
+			bpm["new_obpm"].value = new_obpm
+			bpm["new_obpm"].save
+		end	
+	end
+
+
+
+	def instantiate_stat_variable(stat, is_team, is_opponent)
+		
+
+		case stat.stat_list_id
+
+		when 1
+			if !is_team
+				@field_goals = stat.value
+			else
+				if is_opponent
+					@opp_field_goals = stat.value
+				else
+					@team_field_goals = stat.value
+				end
+			end
+		when 2
+			if !is_team
+				@field_goal_misses = stat.value
+			else
+				if is_opponent
+					@opp_field_goal_misses = stat.value
+				else
+					@team_field_goal_misses = stat.value
+				end
+			end
+		when 3
+			if !is_team
+				@assists = stat.value
+			else
+				if is_opponent
+					@opp_assists = stat.value
+				else
+					@team_assists = stat.value
+				end
+			end
+		when 4
+			if !is_team
+				@off_reb = stat.value
+			else
+				if is_opponent
+					@opp_off_reb = stat.value
+				else
+					@team_off_reb = stat.value
+				end
+			end
+		when 5
+			if !is_team
+				@def_reb = stat.value
+			else
+				if is_opponent
+					@opp_def_reb = stat.value
+				else
+					@team_def_reb = stat.value
+				end
+			end
+		when 6
+			if !is_team
+				@steals = stat.value
+			else
+				if is_opponent
+					@opp_steals = stat.value
+				else
+					@team_steals = stat.value
+				end
+			end
+		when 7
+			if !is_team
+				@turnovers = stat.value
+			else
+				if is_opponent
+					@opp_turnovers = stat.value
+				else
+					@team_turnovers = stat.value
+				end
+			end
+		when 8
+			if !is_team
+				@blocks = stat.value
+			else
+				if is_opponent
+					@opp_blocks = stat.value
+				else
+					@team_blocks = stat.value
+				end
+			end
+		when 11
+			if !is_team
+				@three_point_fg = stat.value
+			else
+				if is_opponent
+					@opp_three_point_fg = stat.value
+				else
+					@team_three_point_fg = stat.value
+				end
+			end
+		when 12
+			if !is_team
+				@three_point_miss = stat.value
+			else
+				if is_opponent
+					@opp_three_point_miss = stat.value
+				else
+					@team_three_point_miss = stat.value
+				end
+			end
+		when 13
+			if !is_team
+				@free_throw_makes = stat.value
+			else
+				if is_opponent
+					@opp_free_throw_makes = stat.value
+				else
+					@team_free_throw_makes = stat.value
+				end
+			end
+		when 14
+			if !is_team
+				@free_throw_misses = stat.value
+			else
+				if is_opponent
+					@opp_free_throw_misses = stat.value
+				else
+					@team_free_throw_misses = stat.value
+				end
+			end
+		when 15
+			if !is_team
+				@points = stat.value
+			else
+				if is_opponent
+					@opp_points = stat.value
+				else
+					@team_points = stat.value
+				end
+			end
+		when 16
+			if !is_team
+				@minutes = stat.value / 60.0
+			else
+				if !is_opponent
+					@team_minutes = stat.value / 60.0
+				end
+			end
+		when 17
+			if !is_team
+				@fouls = stat.value
+			else
+				if is_opponent
+					@opp_fouls = stat.value
+				else
+					@team_fouls = stat.value
 				end
 			end
 		end
 	end
+
 
 
 end

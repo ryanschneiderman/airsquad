@@ -15,7 +15,9 @@ class TeamStatsController < ApplicationController
 		@default_application_advanced = StatList.where(default: true, collectable: false, advanced: true)
 
 		## advanced stats the application may collect depending on non default stats collected
-		@non_default_advanced = StatList.where(default: false, advanced: true, team_stat: false)
+		@non_default_advanced = StatList.where(advanced: true, team_stat: false, default: false)
+
+		@advanced_stats = AdvStatDependenciesService.new({adv_stats: @non_default_advanced}).call
 
 		## advanced team stats the application may collect depending on non default stats collected
 		@team_advanced = StatList.where(advanced: true, team_stat: true)

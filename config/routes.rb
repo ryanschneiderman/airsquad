@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   resources :posts
   resources :stat_lists
   resources :game_stats
+  resources :games 
   
   devise_for :users, :controllers => {:registrations => "registrations"}
 
