@@ -5,6 +5,6 @@ class Team < ApplicationRecord
 	has_many :team_stats
 	has_many :posts
 	has_many :opponents
-	has_many :team_advanced_stats
-	has_many :season_team_stats
+	has_many :team_season_stats
+	has_many :sesaon_team_adv_stats
 end

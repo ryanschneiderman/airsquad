@@ -26,12 +26,7 @@ class Advanced::DefensiveRatingService
 		@opp_free_throw_att = params[:opp_free_throw_att]
 		@opp_free_throws_made = params[:opp_free_throws_made]
 
-		@opp_possessions = Advanced::PossessionsService.new({
-			team_field_goal_att: @opp_field_goal_att,
-			team_free_throw_att: @opp_free_throw_att,
-			team_turnovers: @opp_turnovers,
-			team_off_reb: @opp_off_reb
-		}).call
+		@opp_possessions = params[:opp_possessions]
 		@opp_points = params[:opp_points]
 
 	end
@@ -71,34 +66,18 @@ class Advanced::DefensiveRatingService
 		if @opp_possessions == 0
 			return 0.0
 		else
-			puts "stops"
-			puts stops
-
-			puts "opp_minutes"
-			puts @opp_minutes
-
-			puts "opp_possessions"
-			puts @opp_possessions
-
 			if @minutes == 0 || @opp_possessions == 0
 				stop_pct = 0.0
 			else 
 				stop_pct = (stops * @opp_minutes) / (@opp_possessions * @minutes)
 			end
 
-			puts "stop_pct"
-			puts stop_pct
-
 			team_def_rtg = 100 * (@opp_points / @opp_possessions)
-			puts "team_def_rtg"
-			puts team_def_rtg
 
 			d_points_per_scposs = @opp_points / (@opp_field_goals_made + (1 - (1 - (opp_free_throw_quot))**2) * @opp_free_throw_att*0.4)
-			puts "d_points_per_scposs"
-			puts d_points_per_scposs
 
 			raw_def_rtg = (team_def_rtg + 0.2 * (100 * d_points_per_scposs * (1 - stop_pct) - team_def_rtg)) * 100
-			def_rtg = raw_def_rtg.round/100.0
+			def_rtg = raw_def_rtg.round / 100.0
 			return def_rtg
 		end
 	end

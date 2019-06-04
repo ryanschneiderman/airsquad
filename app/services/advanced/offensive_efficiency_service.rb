@@ -8,6 +8,10 @@ class Advanced::OffensiveEfficiencyService
 	def initialize(params)
 		@possessions = params[:possessions]
 		@team_points = params[:team_points]
+		puts "POSSSESSIONS"
+		puts @possessions
+		puts "TEAM POINTS"
+		puts @team_points
 	end
 
 	def call()

@@ -18,7 +18,7 @@
 
 	var player_stats_table = document.getElementById("player-stats-table");
 	var team_stats_table = document.getElementById("team-stats-table");
-	var make_radius = 8;
+	var make_radius = 7;
 
 	var make_selected = false
 	var miss_selected = false;
@@ -65,9 +65,11 @@
 	var minutes_index;
 	var points_index;
 
-	var total_minutes;
+	var total_minutes = 0;
 
 	var select_inactives_html = "";
+
+	console.log(gm_canvas_width)
 
 	$( window ).load(function() {
   		canvas.getObjects().forEach(function(o){
@@ -97,17 +99,16 @@
         		case "MakeSymbol" :
 	        		old_canvas_width = o.canvas_width;
 	        		change_ratio = old_canvas_width/gm_canvas_width;
-	        		new_radius = gm_canvas_width 
 
-	        		o.set({left: o.left/ change_ratio, top: o.top / change_ratio, canvas_width: gm_canvas_width });
+	        		o.set({left: o.left/ change_ratio, top: o.top / change_ratio, canvas_width: gm_canvas_width});
 	        		o.setCoords();
 	        		canvas.calcOffset();
 	  				canvas.renderAll();
         		break;
         		case "Basket" :
-
         			old_canvas_width = o.canvas_width;
 	        		change_ratio = old_canvas_width/gm_canvas_width;
+	        		basket_radius = basket_radius /change_ratio
 
 	        		o.set({left: o.left/ change_ratio, top: o.top / change_ratio, canvas_width: gm_canvas_width, radius: basket_radius});
 	        		o.setCoords();
@@ -115,6 +116,12 @@
 	  				canvas.renderAll();
 	  			break;
         		case "MissSymbol" :
+        			old_canvas_width = o.canvas_width;
+	        		change_ratio = old_canvas_width/gm_canvas_width;
+	        		o.set({x1: o.x1 / change_ratio, y1: o.y1 / change_ratio, x2: o.x2 / change_ratio, y2: o.y2 / change_ratio, canvas_width: gm_canvas_width});
+	        		o.setCoords();
+	        		canvas.calcOffset();
+	        		canvas.renderAll();
         		break
         	}
     	})
@@ -627,10 +634,9 @@
 		var fg_counter = stat_array_counter;
 
 		plot_make(y_loc, x_loc, make_radius, curr_player.player_obj.id, curr_player.player_obj.player, point_val, fg_counter + 1, curr_player.player_obj.stat_index, gm_canvas_width, canvas);
-		add_stat("Make", curr_player.player_obj, {"x_loc" : x_loc, "y_loc": y_loc, "shot_value" : point_val}, fg_counter + 1);
+		add_stat("Make", curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width, "shot_value" : point_val}, fg_counter + 1);
 
-		if(point_val == 2) add_stat("2 point make",  curr_player.player_obj, {"x_loc" : x_loc, "y_loc": y_loc}, fg_counter + 1);
-		else add_stat("3 point make",  curr_player.player_obj, {"x_loc" : x_loc, "y_loc": y_loc}, fg_counter + 1);
+		if(point_val == 3)  add_stat("3 point make",  curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width}, fg_counter + 1);
 
 		update_score(point_val, curr_player_is_opponent);
 		(curr_player_is_opponent) ? to_opponent_shot_chart() : to_team_shot_chart();
@@ -646,10 +652,9 @@
 		var fg_counter = stat_array_counter;
 		var point_val = determine_3_or_2(x_loc, y_loc);
 		plot_miss([x_loc, y_loc, x_loc , y_loc ], curr_player.player_obj.id, curr_player.player_obj.player, point_val, fg_counter + 1, curr_player.player_obj.stat_index, gm_canvas_width, canvas) ;
-		add_stat("Miss", curr_player.player_obj, {"x_loc" : x_loc, "y_loc": y_loc, "shot_value" : point_val}, fg_counter + 1);
+		add_stat("Miss", curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width, "shot_value" : point_val}, fg_counter + 1);
 
-		if(point_val == 2)  add_stat("2 point miss",  curr_player.player_obj, {"x_loc" : x_loc, "y_loc": y_loc}, fg_counter + 1);
-		else add_stat("3 point miss",  curr_player.player_obj, {"x_loc" : x_loc, "y_loc": y_loc}, fg_counter + 1);
+		if(point_val == 3) add_stat("3 point miss",  curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width}, fg_counter + 1);
 
 		(curr_player_is_opponent) ? to_opponent_shot_chart() : to_team_shot_chart();
 		deselect_player();
@@ -1440,9 +1445,13 @@
 		var team_stat_arr_len = team_stat_totals.length
 		var minutes_index;
 		for(var i = 0; i < team_stat_arr_len; i++){
-			if(team_stat_totals[i].stat == "Minutes") minutes_index = i;
+			if(team_stat_totals[i].stat == "Minutes") {
+				console.log("FOUND MINUTES!")
+				minutes_index = i;
+			}
 		}
 		team_stat_totals[minutes_index].total = total_minutes * 5;
+		console.log(team_stat_totals)
 	}
 
 	function update_fg_locations(){
@@ -1463,7 +1472,7 @@
 	function submit_game_mode(){
 		scoreboard_clock.stop_timer();
 
-		update_fg_locations();
+		//update_fg_locations();
 
 		var url = "/teams/" + <%= @team_id%> +  "/games/"+ <%=@game_id%> + "/game_mode"
 		set_minutes_in_player_array();

@@ -14,19 +14,19 @@ class Advanced::BoxPlusMinusService
 		
 		@def_reb = params[:def_reb]
 		
-		@total_rebounds = @off_reb + @def_reb
+		@total_reb = @off_reb + @def_reb
 		
 		@opp_def_reb = params[:opp_def_reb]
 		
 		@opp_off_reb = params[:opp_off_reb]
 		
-		@opp_total_rebounds = @opp_def_reb + @opp_off_reb
+		@opp_total_reb = @opp_def_reb + @opp_off_reb
 		
 		@team_off_reb = params[:team_off_reb]
 		
 		@team_def_reb = params[:team_def_reb]
 		
-		@team_total_rebounds = @team_off_reb + @team_def_reb
+		@team_total_reb = @team_off_reb + @team_def_reb
 		
 		@steals = params[:steals]
 		
@@ -180,16 +180,26 @@ class Advanced::BoxPlusMinusService
 			field_goal_att: @team_field_goal_att,
 		}).call / 100
 		total_rebound_pct = Advanced::TotalReboundPctService.new({
-			total_rebounds: @total_rebounds,
+			total_reb: @total_reb,
 			team_minutes: @team_minutes,
 			minutes: @minutes,
-			team_total_reb: @team_total_rebounds,
-			opp_total_reb: @opp_total_rebounds
+			team_total_reb: @team_total_reb,
+			opp_total_reb: @opp_total_reb
 		}).call 
 
 
 		raw_bpm = 100 * @a * 48 * (@minutes / (@team_minutes/5)) + @b*off_reb_pct  + @c*def_reb_pct + @d*steal_pct + @e*block_pct + @f*ast_pct - @g*usage_rate *turnover_pct + @h*usage_rate *(1- turnover_pct) * (2*(true_shooting - team_true_shooting) + @i*ast_pct  + @j*(three_point_att_rate - team_three_point_att_rate) - @k) + @l * Math.sqrt(ast_pct * total_rebound_pct)
+		puts "********************************************** RAW BPM ****************************************************"
+		puts "********************************************** RAW BPM ****************************************************"
+		puts "********************************************** RAW BPM ****************************************************"
+		puts "********************************************** RAW BPM ****************************************************"
+		puts "********************************************** RAW BPM ****************************************************"
+		puts "********************************************** RAW BPM ****************************************************"
+		puts "********************************************** RAW BPM ****************************************************"
+		puts "********************************************** RAW BPM ****************************************************"	
+		
 		raw_bpm = raw_bpm.round / 100.0
+		puts raw_bpm 
 		return raw_bpm
 
 	end

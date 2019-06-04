@@ -34,46 +34,41 @@ class GamesController < ApplicationController
 		played = @game.played
 
 		if played 
-			
 		else
-			render :partial => "game_preview" 
+			render :partial => "game_preview" and return
 		end
 
 		@players = Member.where(team_id: params[:team_id], isPlayer: true)
 		@opponent = Opponent.where(team_id: @team.id, game_id: @game.id).take
 
-		@basic_stats = []
-		basic_team_stats = TeamStat.where(team_id: params[:team_id]).joins(:stat_list).where('stat_lists.advanced' => false, 'stat_lists.team_stat' =>false, 'stat_lists.granular' => true);
-		basic_team_stats.each do |stat|
-			@basic_stats.push(StatList.find_by_id(stat.stat_list_id))
-		end
-
-		@stat_table_columns = StatTableColumnsService.new({
-			stats: @basic_stats,
-			is_advanced: false,
+		@stat_table_columns = Stats::BasicStatService.new({
+			team_id: params[:team_id]
 		}).call
 
-		@player_stats_unsorted = Stat.select("*").joins(:stat_list).select("*").joins(:member).where(game_id: @game.id)
-		@player_stats = @player_stats_unsorted.sort_by{|e| e.member_id}
+		@adv_stat_table_columns = Stats::AdvancedStatListService.new({
+			team_id: params[:team_id]
+		}).call
+
+		@team_adv_stat_table_columns = Stats::TeamAdvancedStatListService.new({
+			team_id: params[:team_id]
+		}).call
+
+
+		player_stats_unsorted = Stat.select("*").joins(:stat_list).select("*").joins(:member).where(game_id: @game.id)
+		@player_stats = player_stats_unsorted.sort_by{|e| [e.member_id, e.stat_list_id]}
 
 		@team_stats = StatTotal.select("*").joins(:stat_list).where(team_id: params[:team_id], game_id: @game.id, is_opponent: false)
+
 		@opponent_stats = StatTotal.select("*").joins(:stat_list).where(team_id: params[:team_id], game_id: @game.id, is_opponent: true)
 
 		@shot_chart_data = StatGranule.select("*").joins(:member).where(game_id: @game.id).where("stat_list_id IN (?)", [1,2])
 
 		@advanced_stats = AdvancedStat.select("*").joins(:stat_list).where(game_id: @game.id).sort_by{|e| e.member_id}
+		@advanced_stats = @advanced_stats.sort_by{|e| [e.member_id, e.stat_list_id]}
 
-		@advanced_stat_list = [] 
-		adv_stat_instance = TeamStat.where(team_id: params[:team_id]).joins(:stat_list).where('stat_lists.advanced' => true, 'stat_lists.team_stat' =>false);
-		adv_stat_instance.each do |stat|
-			@advanced_stat_list.push(StatList.find_by_id(stat.stat_list_id))
-		end
+		@team_advanced_stats = TeamAdvancedStat.select("*").joins(:stat_list).where(game_id: @game.id)
 
-		@adv_stat_table_columns = StatTableColumnsService.new({
-			stats: @advanced_stat_list,
-			is_advanced: true
-		}).call
-
+		render file: "games/show_test"
 		
 	end
 
@@ -98,7 +93,7 @@ class GamesController < ApplicationController
 		end
 
 		## return an array which has the fields that we will want to display in the stat table, and their corresponding ordering number.
-		@stat_table_columns = StatTableColumnsService.new({
+		@stat_table_columns = Stats::StatTableColumnsService.new({
 			stats: @basic_stats,
 			is_advanced: false
 		}).call
@@ -122,10 +117,8 @@ class GamesController < ApplicationController
 			opponent_stats: opponent_stats,
 			game_id: game_id,
 			team_id: team_id,
-			team_minutes: team.minutes_p_q * 20
+			minutes_p_q: team.minutes_p_q
 		}).call
-
-		akkkkk
 
 		redirect_to team_game_path(team_id, game_id)
 	end

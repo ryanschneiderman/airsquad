@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_24_015831) do
+ActiveRecord::Schema.define(version: 2019_06_04_184245) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -159,8 +159,20 @@ ActiveRecord::Schema.define(version: 2019_05_24_015831) do
     t.index ["stat_list_id"], name: "index_season_stats_on_stat_list_id"
   end
 
+  create_table "season_team_adv_stats", force: :cascade do |t|
+    t.bigint "stat_list_id"
+    t.bigint "team_id"
+    t.float "value"
+    t.boolean "is_opponent"
+    t.json "constituent_stats"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stat_list_id"], name: "index_season_team_adv_stats_on_stat_list_id"
+    t.index ["team_id"], name: "index_season_team_adv_stats_on_team_id"
+  end
+
   create_table "stat_granules", force: :cascade do |t|
-    t.string "metadata"
+    t.json "metadata"
     t.bigint "game_id"
     t.bigint "stat_list_id"
     t.datetime "created_at", null: false
@@ -208,6 +220,18 @@ ActiveRecord::Schema.define(version: 2019_05_24_015831) do
     t.index ["game_id"], name: "index_stats_on_game_id"
     t.index ["member_id"], name: "index_stats_on_member_id"
     t.index ["stat_list_id"], name: "index_stats_on_stat_list_id"
+  end
+
+  create_table "team_advanced_stats", force: :cascade do |t|
+    t.bigint "stat_list_id"
+    t.bigint "game_id"
+    t.json "constituent_stats"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.float "value"
+    t.boolean "is_opponent"
+    t.index ["game_id"], name: "index_team_advanced_stats_on_game_id"
+    t.index ["stat_list_id"], name: "index_team_advanced_stats_on_stat_list_id"
   end
 
   create_table "team_plays", force: :cascade do |t|

@@ -1,5 +1,7 @@
 <script>
+	var player_stats_table;
 	var team_stats_table;
+	var adv_stats_player_table; 
 	var adv_stats_team_table; 
 	var display_stats = [];
 	var display_stats_adv = []
@@ -10,18 +12,11 @@
 	var opponent_stat_array = [];
 
 
-	function initialize_tables(team, adv_team){
+	function initialize_tables(player, team, adv_player, adv_team){
+		player_stats_table = player;
 		team_stats_table = team;
+		adv_stats_player_table = adv_player;
 		adv_stats_team_table = adv_team;
-	}
-
-	function insert_player_modules(){
-		//iterate over sorted player array
-		var len = player_stats.length
-
-			// for each player:
-			// create 3 tables -> one for basic stats, one for advanced stats and one for per 3/4 * (minutes/game)
-			// create a shot chart 
 	}
 
 	/**********************************************************************************************************************************************/
@@ -48,19 +43,50 @@
 		}
 	}
 
+	function rerender_basic_table(table){
+		var num_rows = table.rows.length
+		for(var i = 1; i < num_rows; i++){
+			populate_basic_row(table.rows[i], i, true)
+		}
+	}
+
+	function rerender_adv_table(table){
+		var num_rows = table.rows.length
+		for(var i = 1; i < num_rows; i++){
+			populate_advanced_row(table.rows[i], i)
+		}
+	}
 
 	function return_table_by_name(table_name){
 		var return_table
 		switch(table_name){
+		case "player_stats_table" :
+			return_table =  player_stats_table;
 		case "team_stats_table" :
 			return_table =  team_stats_table;
+		case "adv_stats_player_table" :
+			return_table =  adv_stats_player_table;
 		case "adv_stats_team_table" :
 			return_table =  adv_stats_team_table;
 		}
 		return return_table
 	}
 
+	function sort_basic_table(display_priority){
+		var sort_index = find_player_stat_index(display_priority, player_stats[0].stat_arr)
+		player_stats.sort(function(a, b){
+			return parseInt(b.stat_arr[sort_index].value) -  parseInt(a.stat_arr[sort_index].value)
+		});
+		rerender_basic_table(player_stats_table);
+	}
 
+	function sort_advanced_table(display_priority){
+		var sort_index = find_player_stat_index(display_priority, player_stats[0].adv_stat_arr)
+		player_stats.sort(function(a,b){
+			return parseInt(b.adv_stat_arr[sort_index].value) -  parseInt(a.adv_stat_arr[sort_index].value)
+		})
+		rerender_adv_table(adv_stats_player_table);
+	}
 
 	function populate_display_stats_basic(){
 		<% @stat_table_columns.each do |display_stat| %>
@@ -135,6 +161,19 @@
 		populate_team_advanced_row(team_advanced_row, 2)
 	}
 
+	function populate_player_stat_tables(){
+		populate_basic_player_stat_header(player_stats_table, "player_stats_table");	
+		populate_adv_stat_header(adv_stats_player_table, "adv_stats_player_table");
+
+		var num_players = player_stats.length
+		var i = 1;
+		for(i; i < num_players +1; i++){
+			var basic_row = player_stats_table.insertRow(i);
+			var advanced_row = adv_stats_player_table.insertRow(i)
+			populate_basic_row(basic_row, i, true);	
+			populate_advanced_row(advanced_row, i);
+		}
+	}
 
 	function populate_basic_player_stat_header(table, table_name){
 		var insert_index = 0;
@@ -360,7 +399,14 @@
 
 
 
-	// TODO: MAKE WORK FOR SMALL INDIVIDUAL SHOT CHARTS
+
+
+
+
+
+
+
+
 
 	/**********************************************************************************************************************************************/
 	/**********************************************************************************************************************************************/
@@ -373,9 +419,9 @@
          preserveObjectStacking: true,
     }); 
 
-	var gr_canvas_height = $(document).width()/4.6;
-    var gr_canvas_width = $(document).width()/3.2;
-    var make_radius = 5;
+	var gr_canvas_height = $(document).width()/2.31;
+    var gr_canvas_width = $(document).width()/1.645;
+    var make_radius = 8;
     var img = new Image();
     var background_img;
 
@@ -395,8 +441,8 @@
     img.src = "<%= asset_path('halfcourt.png')%>";
 
     $(window).resize(function(){
-        gr_canvas_height = $(document).width()/4.6;
-        gr_canvas_width = $(document).width()/3.2;
+        gr_canvas_height = $(document).width()/2.31;
+        gr_canvas_width = $(document).width()/1.645;
         set_canvas_dimensions();
     })
 
@@ -416,10 +462,8 @@
     		var metadata = "<%=shot.metadata%>"
     		metadata = metadata.replace(/&quot;/g,'"');
     		metadata = JSON.parse(metadata.replace(/=&gt;/g, ':'));
-    		var y_loc = parseFloat(metadata.y_loc) * gr_canvas_width - 5;
-    		var x_loc = parseFloat(metadata.x_loc) * gr_canvas_width - 5;
-    		console.log("y_loc: " + y_loc);
-    		console.log("x_loc: " + x_loc);
+    		var y_loc = parseInt(metadata.y_loc);
+    		var x_loc = parseInt(metadata.x_loc);
     		var shot_val = parseInt(metadata.shot_val);
     		var player_id = "<%=shot.member_id%>";
     		

@@ -1,0 +1,119 @@
+html{
+    min-height:100%;/* make sure it is at least as tall as the viewport */
+    position:relative;
+}
+body{
+    height:100%; /* force the BODY element to match the height of the HTML element */
+}
+
+#cloud-container{
+   
+}
+
+#game-review-stats{
+}
+
+#gr-team-stats{
+	position:absolute;
+    top:100px;
+    bottom:0;
+    left:0;
+    right:50%;
+    overflow-y:scroll;
+
+	display: inline-block;
+	width: 50%;
+	vertical-align: top;
+}
+
+#gr-player-stats{
+	position:absolute;
+    top:100px;
+    bottom:0;
+    left:50%;
+    right: 0;
+    overflow-y:scroll;
+
+	display: inline-block;
+	width: 50%;
+	vertical-align: top;
+}
+
+#gr-team-stats-content{
+	height: auto;
+	overflow-y: scroll;
+	display: none;
+}
+#gr-player-stats-content{
+	display: none;
+}
+
+#gr-header{
+	font-size: 40px;
+	text-align: center;
+}
+
+.gr-stat-header{
+	color: black;
+	position: relative;
+	text-align: center;
+	font-size: 30px;
+}
+
+.team-stat-header{
+	text-align: center;
+	font-size:25px;
+}
+
+.white-overlay{
+	z-index: 2000;
+	display: block;
+	position:absolute;
+	height: 100%;
+	width: 100%;
+	background: rgba(255,255,255, 1);
+}
+
+.colored-overlay{
+	z-index: 2001;
+	display: block;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	cursor:pointer;
+}
+
+#team-stats-color-overlay{
+	background: rgba(225, 94, 72, 1);
+}
+
+#team-stats-color-overlay:hover{
+	background: rgba(225, 94, 72, .5);
+}
+
+#player-stats-color-overlay{
+	background: rgba(77, 161, 168, 1);
+}
+
+#player-stats-color-overlay:hover{
+	background: rgba(77, 161, 168, .5);
+}
+
+
+.text-overlay{
+	z-index: 2001;
+	position: absolute;
+	text-align: center;
+	color: black;
+	width: 100%;
+	top: 35%;
+}
+.overlay-message{
+	font-size: 17px;
+	display:none;
+}
+
+.overlay-header{
+	font-size: 30px;
+}
+

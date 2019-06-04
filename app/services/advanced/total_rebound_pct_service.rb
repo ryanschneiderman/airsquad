@@ -6,7 +6,7 @@ NOTE: final value is muliplied by 100 and then rounded and divided by 100.0 to r
 
 class Advanced::TotalReboundPctService
 	def initialize(params)
-		@total_rebounds = params[:total_rebounds]
+		@total_reb = params[:total_reb]
 		@team_minutes_played = params[:team_minutes]
 		@minutes_played = params[:minutes]
 		@team_total_reb = params[:team_total_reb]
@@ -17,7 +17,7 @@ class Advanced::TotalReboundPctService
 		if (@minutes_played * (@team_total_reb + @opp_total_reb)) == 0
 			return 0.0
 		else 
-			raw_trb = 100 * (@total_rebounds * (@team_minutes_played / 5)) / (@minutes_played * (@team_total_reb + @opp_total_reb))
+			raw_trb = 100 * (@total_reb * (@team_minutes_played / 5)) / (@minutes_played * (@team_total_reb + @opp_total_reb))
 			trb = raw_trb.round / 100.0
 			return trb
 		end

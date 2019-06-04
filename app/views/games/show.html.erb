@@ -1,17 +1,18 @@
 <h1 class = "stats-table-header">Standard Stats</h1>
+<h3 class = "player-stats">Player Stats</h3>
 <table class = "stats-table" id = "player-stats-table">
 				
 </table>
-
-<table class = "stats-table" id = "team-stats-table">
-				
+<h3 class = "player-stats">Team Stats</h3>
+<table class = "stats-table" id = "team-stats-table">		
 </table>
 
 <h1 class = "stats-table-header">Advanced Stats</h1>
+<h3 class = "player-stats">Player Stats</h3>
 <table class = "stats-table" id = "adv-player-stats-table">
 				
 </table>
-
+<h3 class = "player-stats">Team Stats</h3>
 <table class = "stats-table" id = "adv-team-stats-table">
 				
 </table>
@@ -33,12 +34,22 @@
 <%= render 'game_mode_js_objects' %>
 <%= render 'game_review_js' %>
 <script>
+	var show_player_stats_table = document.getElementById("player-stats-table");
+	var show_team_stats_table = document.getElementById("team-stats-table");
+	var show_adv_stats_player_table = document.getElementById("adv-player-stats-table");
+	var show_adv_stats_team_table = document.getElementById("adv-team-stats-table");
 
+	initialize_tables(show_player_stats_table, show_team_stats_table, show_adv_stats_player_table, show_adv_stats_team_table)
 	populate_display_stats_basic();
 	populate_display_stats_adv();
+	populate_team_display_stats_adv()
+	populate_team_advanced_stats();
 	populate_stat_array();
 	populate_team_stats();
-	populate_stat_table();
+	populate_opponent_stats();
+	sort_basic_table(17);
+	populate_stat_tables(true);
+
 	populate_shot_chart();
 	populate_player_shot_charts();
 

@@ -1,0 +1,81 @@
+
+<div id = "cloud-container">
+	<div id = "gr-header">Game Review</div>
+	<div id = "game-review-stats">
+		<div id = "gr-team-stats">
+			<div class = "white-overlay" id = "team-stats-white-overlay"></div>
+			<div id = "team-stats-color-overlay" class = "colored-overlay">
+				<div id = "team-stats-text-overlay" class = "text-overlay">
+					<div class = "overlay-header">Team Stats</div>
+					<div class = "overlay-message" id = "team-overlay-message">(click to view more)</div>
+				</div>
+			</div>
+			<div id = "gr-team-stats-content">
+				<div class = "gr-stat-header">Team Stats</div>
+				<div class = "team-stat-header">Basic Stats</div>
+				<div id = "basic-stats-table">
+					<table class = "stats-table" id = "team-stats-table"></table>
+				</div>
+				<div class = "team-stat-header">Advanced Stats</div>
+				<div id = "advanced-stats-table">
+					<table class = "stats-table" id = "adv-team-stats-table"></table>
+				</div>
+				<div class = "team-stat-header">Shot Charts</div>
+				<div id = "gr-team-shot-charts">
+					<div class = "shot-distribution">
+						<canvas id ="gr-canvas"></canvas>
+					</div>
+					<div class = "heat-map">
+						
+					</div>
+					<div class = "expected-points"></div>
+				</div>
+			</div>
+		</div>
+		<div id = "gr-player-stats">
+			<div class = "white-overlay" id = "player-stats-white-overlay"></div>
+			<div id = "player-stats-color-overlay" class = "colored-overlay">
+				<div id = "player-stats-text-overlay" class = "text-overlay">
+				<div class = "overlay-header">Player Stats</div>
+				<div class = "overlay-message" id = "player-overlay-message">(click to view more)</div>
+			</div>
+			</div>
+			<div id = "gr-player-stats-content">
+				<div class = "gr-stat-header">Player Stats</div>
+				<div id = "gr-player-modules">
+					
+				</div>
+			</div>
+			
+		</div>
+	</div>
+</div>
+
+
+<%= render 'game_mode_js_objects' %>
+<%= render 'game_review_js' %>
+<%= render 'game_review_slide_js' %>
+
+
+<script>
+
+	var show_team_stats_table = document.getElementById("team-stats-table");
+	var show_adv_stats_team_table = document.getElementById("adv-team-stats-table");
+
+	initialize_tables(show_team_stats_table, show_adv_stats_team_table);
+	populate_display_stats_basic();
+	populate_display_stats_adv();
+	populate_team_display_stats_adv()
+	populate_team_advanced_stats();
+	populate_stat_array();
+	populate_team_stats();
+	populate_opponent_stats();
+
+	//sort_basic_table(17);
+	populate_team_stat_tables(true);
+	//populate_player_stat_tables()
+	populate_shot_chart();
+	//populate_player_shot_charts();
+
+</script>
+

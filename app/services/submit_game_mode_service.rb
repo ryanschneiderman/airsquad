@@ -16,6 +16,7 @@ class SubmitGameModeService
 		@opponent_obj = params[:opponent_stats]
 		@opponent_stats =  @opponent_obj["cumulative_arr"]
 		@team_id = params[:team_id]
+		@minutes_p_q = params[:minutes_p_q]
 		## @bpm_sums[0] == off_bpm sum, @bpm_sum[1] == regular bpm sum
 		@bpm_sums = [0, 0]
 		@season_bpm_sums = [0, 0]
@@ -41,20 +42,21 @@ class SubmitGameModeService
 				team_id: @team_id,
 				is_opponent: false
 			)
-			season_total = SeasonTeamStat.where(team_id: @team_id, stat_list_id: stat[1]["id"], is_opponent: false).take
+			season_total = TeamSeasonStat.where(team_id: @team_id, stat_list_id: stat[1]["id"], is_opponent: false).take
 
 			if season_total 
-				season_total.value += stat_total.to_i
+				season_total.value += stat_total.value
 				season_total.save
 			else 
-				season_total = SeasonTeamStat.create({
-					value: stat_total.to_i,
+				season_total = TeamSeasonStat.create({
+					value: stat_total.value,
 					stat_list_id: stat[1]["id"],
 					team_id: @team_id,
 					is_opponent: false
 				})
 			end		
-			if stat[1]["id"] == 16
+			if stat[1]["id"] == "16"
+				puts season_total.value
 				@team_season_minutes = season_total.value
 			end
 			instantiate_stat_variable(stat_total, true, false)
@@ -67,14 +69,14 @@ class SubmitGameModeService
 				team_id: @team_id,
 				is_opponent: true
 			)
-			season_total = SeasonTeamStat.where(team_id: @team_id, stat_list_id: stat[1]["id"]. is_opponent: true).take
+			season_total = TeamSeasonStat.where(team_id: @team_id, stat_list_id: stat[1]["id"], is_opponent: true).take
 
 			if season_total 
-				season_total.value += stat_total.to_i
+				season_total.value += stat_total.value
 				season_total.save
 			else 
-				SeasonTeamStat.create({
-					value: stat_total.to_i,
+				TeamSeasonStat.create({
+					value: stat_total.value,
 					stat_list_id: stat[1]["id"],
 					team_id: @team_id,
 					is_opponent: true
@@ -98,6 +100,16 @@ class SubmitGameModeService
 			opp_free_throw_misses: @team_free_throw_misses,
 			team_points: @team_points,
 			opp_points: @opp_points,
+			game_id: @game_id,
+			team_id: @team_id,
+			minutes_p_q: @minutes_p_q,
+			team_minutes: @team_minutes,
+			team_season_minutes: @team_season_minutes,
+			team_three_point_makes: @team_three_point_fg,
+			team_three_point_misses: @team_three_point_miss,
+			opp_def_reb: @opp_def_reb,
+			team_def_reb: @team_def_reb,
+			opp_three_point_makes: @opp_three_point_fg
 		}).call
 
 		@possessions = team_stats["possessions"]
@@ -110,6 +122,7 @@ class SubmitGameModeService
 		@season_defensive_efficiency = team_stats["season_defensive_efficiency"]
 
 		@season_team_rating = @season_offensive_efficiency - @season_defensive_efficiency
+
 		@team_rating = @offensive_efficiency - @defensive_efficiency
 
 	end
@@ -218,7 +231,6 @@ class SubmitGameModeService
 
 				@season_bpm_sums[0] += bpms["new_obpm"].value * (@season_minutes / (@team_season_minutes / 5))
 				@season_bpm_sums[1] += bpms["new_bpm"].value * (@season_minutes / (@team_season_minutes / 5))
-				@all_season_bpms.push()
 				@all_bpms.push(bpms)
 			end
 		end
@@ -226,32 +238,87 @@ class SubmitGameModeService
 
 	def adjust_bpm()
 		@all_bpms.each do |bpm|
-			new_bpm = bpm["bpm"].value + (@team_rating * 1.2 - @bpm_sums[1])/5
+			bpm_team_adjustment = (@team_rating * 1.2 - @bpm_sums[1])/5
+			new_bpm = bpm["bpm"].value + bpm_team_adjustment
 			new_bpm = new_bpm * 100 
 			new_bpm = new_bpm.round / 100.0
-			bpm["bpm"].value = new_bpm
-			bpm["bpm"].save
+			AdvancedStat.create({
+				stat_list_id: 42,
+				member_id: bpm["member_id"],
+				game_id: @game_id,
+				constituent_stats: {
+					"team_adjustment" => bpm_team_adjustment,
+					"raw_bpm" => bpm["bpm"].value
+				},
+				value: new_bpm
+			})
 
-			new_obpm = bpm["obpm"].value + (@team_rating * 1.2 - @bpm_sums[0])/5
+			obpm_team_adjustment = (@team_rating * 1.2 - @bpm_sums[0])/5
+			new_obpm = bpm["obpm"].value + obpm_team_adjustment
 			new_obpm = new_obpm * 100
 			new_obpm = new_obpm.round / 100.0
-			bpm["obpm"].value = new_obpm
-			bpm["obpm"].save
+			AdvancedStat.create({
+				stat_list_id: 40,
+				member_id: bpm["member_id"],
+				game_id: @game_id,
+				constituent_stats: {
+					"team_adjustment" => obpm_team_adjustment,
+					"raw_bpm" => bpm["bpm"].value
+				},
+				value: new_obpm
+			})
+			
+			bpm_season_adjustment = (@season_team_rating * 1.2 - @season_bpm_sums[1])/5
+			new_season_bpm = bpm["new_bpm"].value + bpm_season_adjustment
+			new_season_bpm = new_season_bpm * 100 
+			new_season_bpm = new_season_bpm.round / 100.0
+
+			season_stat = SeasonAdvancedStat.where(stat_list_id: 42, member_id: bpm["member_id"]).take
+			if season_stat
+				season_stat.value = new_season_bpm
+				season_stat.constituent_stats = {
+					"team_adjustment" => bpm_season_adjustment,
+					"raw_bpm" => bpm["new_bpm"].value
+				}
+				season_stat.save
+			else
+				SeasonAdvancedStat.create({
+					stat_list_id: 42,
+					member_id: bpm["member_id"],
+					constituent_stats: {
+						"team_adjustment" => bpm_season_adjustment,
+						"raw_bpm" =>  bpm["new_bpm"].value
+					},
+					value: new_season_bpm
+				})
+			end
+
+			obpm_season_adjustment = (@season_team_rating * 1.2 - @season_bpm_sums[0])/5
+			new_season_obpm = bpm["new_obpm"].value + obpm_season_adjustment
+			new_season_obpm = new_season_obpm * 100
+			new_season_obpm = new_season_obpm.round / 100.0
+
+			season_stat = SeasonAdvancedStat.where(stat_list_id: 40, member_id: bpm["member_id"]).take
+			if season_stat
+				season_stat.value = new_season_obpm
+				season_stat.constituent_stats = {
+					"team_adjustment" => obpm_season_adjustment,
+					"raw_bpm" => bpm["new_obpm"].value
+				}
+				season_stat.save
+			else
+				SeasonAdvancedStat.create({
+					stat_list_id: 40,
+					member_id: bpm["member_id"],
+					constituent_stats: {
+						"team_adjustment" => obpm_season_adjustment,
+						"raw_bpm" =>  bpm["new_obpm"].value
+					},
+					value: new_season_obpm
+				})
+			end
+
 		end
-
-		@all_season_bpms.each do |bpm|
-			new_bpm = bpm["new_bpm"].value + (@season_team_rating * 1.2 - @season_bpm_sums[1])/5
-			new_bpm = new_bpm * 100 
-			new_bpm = new_bpm.round / 100.0
-			bpm["new_bpm"].value = new_bpm
-			bpm["new_bpm"].save
-
-			new_obpm = bpm["new_obpm"].value + (@season_team_rating * 1.2 - @season_bpm_sums[0])/5
-			new_obpm = new_obpm * 100
-			new_obpm = new_obpm.round / 100.0
-			bpm["new_obpm"].value = new_obpm
-			bpm["new_obpm"].save
-		end	
 	end
 
 

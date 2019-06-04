@@ -10,6 +10,7 @@ class Advanced::PossessionsService
 		@team_free_throw_att = params[:team_free_throw_att]
 		@team_turnovers = params[:team_turnovers]
 		@team_off_reb = params[:team_off_reb]
+
 	end
 
 	def call()
