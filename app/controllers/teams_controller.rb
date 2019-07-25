@@ -63,6 +63,32 @@ class TeamsController < ApplicationController
 		redirect_to root_path
 	end
 
+	def lineup_explorer
+		@team_id = params[:team_id]
+
+		## need season stats for each player
+		@def_season_stats = SeasonStat.joins(:stat_list, :member).select("members.games_played as games_played, members.season_minutes as season_minutes, stat_lists.stat as stat, stat_lists.stat_kind as stat_kind, members.nickname as nickname, stat_lists.display_priority as display_priority, season_stats.*").where('members.team_id' => @team_id, 'stat_lists.stat_kind' => 2).sort_by{|e| [e.member_id, e.stat_list_id]}
+		@off_season_stats = SeasonStat.joins(:stat_list, :member).select("members.games_played as games_played, members.season_minutes as season_minutes, stat_lists.stat as stat, stat_lists.stat_kind as stat_kind, members.nickname as nickname, stat_lists.display_priority as display_priority, season_stats.*").where('members.team_id' => @team_id, 'stat_lists.stat_kind' => 1).sort_by{|e| [e.member_id, e.stat_list_id]}
+		## need advanced stats for each player
+		@off_advanced_stats = SeasonAdvancedStat.joins(:stat_list, :member).select("stat_lists.stat as stat, members.nickname as nickname, stat_lists.stat_kind as stat_kind, stat_lists.display_priority as display_priority, season_advanced_stats.*").where('members.team_id' => @team_id, 'stat_lists.stat_kind' => 1).sort_by{|e| [e.member_id, e.stat_list_id]}
+		@def_advanced_stats = SeasonAdvancedStat.joins(:stat_list, :member).select("stat_lists.stat as stat, members.nickname as nickname, stat_lists.stat_kind as stat_kind, stat_lists.display_priority as display_priority, season_advanced_stats.*").where('members.team_id' => @team_id, 'stat_lists.stat_kind' => 2).sort_by{|e| [e.member_id, e.stat_list_id]}
+		@neut_advanced_stats = SeasonAdvancedStat.joins(:stat_list, :member).select("stat_lists.stat as stat, members.nickname as nickname, stat_lists.stat_kind as stat_kind, stat_lists.display_priority as display_priority, season_advanced_stats.*").where('members.team_id' => @team_id, 'stat_lists.stat_kind' => 3).sort_by{|e| [e.member_id, e.stat_list_id]}
+		## add offense/defense stat distinction
+		##TODO
+		## stat table columns
+		@stat_table_columns = Stats::BasicStatService.new({
+			team_id: params[:team_id]
+		}).call
+		@adv_stat_table_columns = Stats::AdvancedStatListService.new({
+			team_id: params[:team_id]
+		}).call
+		## way to calculate ranks in the front end -- this is a big problem. Maybe not actually. This could call for a more elaborate data structure. Let's draw it out. HASH TABLE OR BST
+		## QUERY PREVIOUS LINEUPS
+
+		
+		@members = Member.where(team_id: @team_id, isPlayer: true);
+	end
+
 
 	private
 

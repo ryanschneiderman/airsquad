@@ -61,6 +61,7 @@ class SubmitGameModeService
 			end
 			instantiate_stat_variable(stat_total, true, false)
 		end
+
 		@opponent_stats.each do |stat|
 			stat_total = StatTotal.create(
 				value: stat[1]["total"],
@@ -112,6 +113,8 @@ class SubmitGameModeService
 			opp_three_point_makes: @opp_three_point_fg
 		}).call
 
+
+		## ENSURE NOT NIL BEFORE USE AT A LATER POINT
 		@possessions = team_stats["possessions"]
 		@opp_possessions = team_stats["opp_possessions"]
 
@@ -121,9 +124,10 @@ class SubmitGameModeService
 		@season_offensive_efficiency = team_stats["season_offensive_efficiency"]
 		@season_defensive_efficiency = team_stats["season_defensive_efficiency"]
 
-		@season_team_rating = @season_offensive_efficiency - @season_defensive_efficiency
-
-		@team_rating = @offensive_efficiency - @defensive_efficiency
+		if(offensive_efficiency != nil && defensive_efficiency != nil)
+			@season_team_rating = @season_offensive_efficiency - @season_defensive_efficiency
+			@team_rating = @offensive_efficiency - @defensive_efficiency
+		end
 
 	end
 
@@ -147,6 +151,10 @@ class SubmitGameModeService
 				end
 			end
 			if cumulative_arr 
+				player = Member.find_by_id(player_id)
+				player.games_played +=1
+
+				counter = 0
 				cumulative_arr.each do |cumulative_stat|
 					stat_id = cumulative_stat[1]["id"]
 					stat_total = cumulative_stat[1]["total"]
@@ -160,6 +168,7 @@ class SubmitGameModeService
 					)
 					season_total = SeasonStat.where(member_id: player_id, stat_list_id: stat_id).take
 					if season_total 
+
 						season_total.value += stat_total
 						season_total.save
 					else 
@@ -169,11 +178,173 @@ class SubmitGameModeService
 							member_id: player_id,
 						})
 					end
+
 					if stat_id == 16
 						@season_minutes = season_total.value
+					elsif stat_id == 1
+						@season_makes = season_total.value
+					elsif stat_id == 2 
+						@season_misses = season_total.value
+					elsif stat_id == 11 
+						@season_three_point_makes = season_total.value
+					elsif stat_id == 12 
+						@season_three_point_misses = season_total.value
+					elsif stat_id == 13
+						@season_free_throw_makes = season_total.value
+					elsif stat_id == 14 
+						@season_free_throw_misses = season_total.value
 					end
 					instantiate_stat_variable(cumulative_stat, false, false)
 				end
+				player.season_minutes = @season_minutes
+				player.save
+
+
+				## create stats for field goal %
+				if (@field_goals + @field_goal_misses) == 0 
+					field_goal_pct = 0 
+				else 
+					field_goal_pct = 100 * @field_goals/(@field_goals + @field_goal_misses)
+				end
+
+				Stat.create({
+					value: field_goal_pct,
+					game_id: @game_id,
+					stat_list_id: 27,
+					member_id: player_id
+				})
+
+				if (@season_makes + @season_misses) == 0 
+					season_field_goal_pct = 0 
+				else 
+					season_field_goal_pct = 100 * @season_makes/(@season_makes + @season_misses)
+				end
+
+				season_total = SeasonStat.where(member_id: player_id, stat_list_id: 27).take
+				if season_total 
+					season_total.value = season_field_goal_pct
+					season_total.save
+				else 
+					SeasonStat.create({
+						value: season_field_goal_pct,
+						stat_list_id: 27,
+						member_id: player_id
+					})
+				end
+
+				if (@free_throw_makes + @free_throw_misses) == 0 
+					free_throw_pct = 0 
+				else 
+					free_throw_pct = 100* @free_throw_makes/(@free_throw_makes + @free_throw_misses)
+				end
+
+				## create stats for free throw %
+				Stat.create({
+					value: free_throw_pct,
+					stat_list_id: 29,
+					member_id: player_id
+				})
+
+				if (@season_free_throw_makes + @season_free_throw_misses) == 0 
+					season_free_throw_pct = 0 
+				else 
+					season_free_throw_pct = 100 * @season_free_throw_makes/(@season_free_throw_makes + @season_free_throw_misses)
+				end
+				season_total = SeasonStat.where(member_id: player_id, stat_list_id: 29).take
+				if season_total 
+					season_total.value = season_free_throw_pct
+					season_total.save
+				else 
+					SeasonStat.create({
+						value: season_free_throw_pct,
+						stat_list_id: 29,
+						member_id: player_id
+					})
+				end
+
+				if (@three_point_fg + @three_point_miss) == 0 
+					three_point_pct = 0 
+				else 
+					three_point_pct = 100 * @three_point_fg/(@three_point_fg + @three_point_miss)
+				end
+				## create stats for 3 point %
+				Stat.create({
+					value: three_point_pct,
+					stat_list_id: 28,
+					member_id: player_id
+				})
+
+				if (@season_three_point_makes + @season_three_point_misses) == 0 
+					season_three_point_pct = 0 
+				else 
+					season_three_point_pct = 100 * @season_three_point_makes/(@season_three_point_makes + @season_three_point_misses)
+				end
+				season_total = SeasonStat.where(member_id: player_id, stat_list_id: 28).take
+				if season_total 
+					season_total.value = season_three_point_pct
+					season_total.save
+				else 
+					SeasonStat.create({
+						value: season_three_point_pct,
+						stat_list_id: 28,
+						member_id: player_id
+					})
+				end
+
+				Stat.create({
+					value: @three_point_fg + @three_point_miss,
+					stat_list_id: 53,
+					member_id: player_id
+				})
+				season_total = SeasonStat.where(member_id: player_id, stat_list_id: 53).take
+				if season_total 
+					season_total.value = @season_three_point_makes + @season_three_point_misses
+					season_total.save
+				else 
+					SeasonStat.create({
+						value: @season_three_point_makes + @season_three_point_misses,
+						stat_list_id: 53,
+						member_id: player_id
+					})
+				end
+
+				Stat.create({
+					value: @field_goals + @field_goal_misses,
+					stat_list_id: 52,
+					member_id: player_id
+				})
+				season_total = SeasonStat.where(member_id: player_id, stat_list_id: 52).take
+				if season_total 
+					season_total.value = @season_makes + @season_misses
+					season_total.save
+				else 
+					SeasonStat.create({
+						value: @season_makes + @season_misses,
+						stat_list_id: 52,
+						member_id: player_id
+					})
+				end
+
+				## create stats for 3 point %
+				Stat.create({
+					value: @free_throw_makes + @free_throw_misses,
+					stat_list_id: 54,
+					member_id: player_id
+				})
+				season_total = SeasonStat.where(member_id: player_id, stat_list_id: 54).take
+				if season_total 
+					season_total.value = @season_free_throw_makes + @season_free_throw_misses
+					season_total.save
+				else 
+				SeasonStat.create({
+					value: @season_free_throw_makes + @season_free_throw_misses,
+					stat_list_id: 54,
+					member_id: player_id
+				})
+				end
+
+
+
 				bpms = Advanced::AdvancedStatsService.new({
 					field_goals: @field_goals,
 					team_field_goals: @team_field_goals,
@@ -226,12 +397,15 @@ class SubmitGameModeService
 					game_id: @game_id.to_i,
 				}).call
 
-				@bpm_sums[0] += bpms["obpm"].value * (@minutes / (@team_minutes / 5))
-				@bpm_sums[1] += bpms["bpm"].value * (@minutes / (@team_minutes / 5))
+				## TODO: CHECK TO MAKE SURE WORKS CORRECTLY
+				if(bpms["obpm"].value != nil)
+					@bpm_sums[0] += bpms["obpm"].value * (@minutes / (@team_minutes / 5))
+					@bpm_sums[1] += bpms["bpm"].value * (@minutes / (@team_minutes / 5))
 
-				@season_bpm_sums[0] += bpms["new_obpm"].value * (@season_minutes / (@team_season_minutes / 5))
-				@season_bpm_sums[1] += bpms["new_bpm"].value * (@season_minutes / (@team_season_minutes / 5))
-				@all_bpms.push(bpms)
+					@season_bpm_sums[0] += bpms["new_obpm"].value * (@season_minutes / (@team_season_minutes / 5))
+					@season_bpm_sums[1] += bpms["new_bpm"].value * (@season_minutes / (@team_season_minutes / 5))
+					@all_bpms.push(bpms)
+				end
 			end
 		end
 	end

@@ -17,7 +17,6 @@ class StatListsController < ApplicationController
 
 		@stat_list = StatList.new(
 			stat: params[:stat_list][:stat],
-			granular: granular,
 			advanced: advanced,
 			default: default,
 			collectable: collectable,

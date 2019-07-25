@@ -1,0 +1,9 @@
+TRUNCATE table advanced_stats restart identity;
+TRUNCATE table season_advanced_stats restart identity;
+TRUNCATE table season_stats restart identity;
+TRUNCATE table season_team_adv_stats restart identity;
+TRUNCATE table stat_granules restart identity;
+TRUNCATE table stat_totals restart identity;
+TRUNCATE table team_advanced_stats restart identity;
+TRUNCATE table team_season_stats restart identity;
+TRUNCATE table stats restart identity;

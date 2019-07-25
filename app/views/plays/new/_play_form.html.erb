@@ -10,9 +10,10 @@
   <div>Is this an offensive or defensive play?</div>
   <%= f.radio_button :offense_defense, true, label: "Offense", value: true  %>
   <%= f.radio_button :offense_defense, false, label: "Defense",  value: false%>
-  <div>Is this play in the half court or the full court?</div>
-  <%= f.radio_button :halfcourt_fullcourt, true, label: "Halfcourt", value: true  %>
-  <%= f.radio_button :halfcourt_fullcourt, false, label: "Fullcourt", value: false  %> 
+  <div>What kind of play is it?</div>
+  <% @play_types.each do|type|%>
+    <%= f.radio_button :play_type_id, type.id, label: type.play_type, value: type.id %>
+  <%end%>
   <%= f.hidden_field :team_id,  value: @team_id  %> 
   <%= f.submit "Create play", class: 'form-control' %>
 <% end %>

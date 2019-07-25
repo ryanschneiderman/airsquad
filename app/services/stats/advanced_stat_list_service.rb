@@ -10,10 +10,6 @@ class Stats::AdvancedStatListService
 			advanced_stat_list.push(StatList.find_by_id(stat.stat_list_id))
 		end
 
-		advanced_stat_list.each do |stat|
-			puts stat.id
-		end
-
 		adv_stat_table_columns = Stats::StatTableColumnsService.new({
 			stats: advanced_stat_list,
 			is_advanced: true,

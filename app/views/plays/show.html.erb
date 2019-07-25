@@ -1,9 +1,104 @@
-
 <div id = "play-header">
-	<%= @play.name %>
+    <div id = "play-name"> <%= @play.name %> - </div>
+    <div id = "progression_index">1</div>
 </div>
-<div id = "play-progressions"><%= render @progressions %></div>
-<div id = "play-video"></div>	
+<div id = "show-grid">
+	<div><button class = "left" type = "button" onclick="change_progression(-1)"></button></div>
+	<canvas id ="c" class = "show-canvas"></canvas>
+	<div id = "progression-notes">
+		<div class = "progression-notes-header">Notes</div>
+		<div class = "progression-notes-text"></div>
+	</div>
+	<div><button class = "right" type = "button" onclick="change_progression(1)"></button></div>
+</div>
+<div id = "play-scrollbar">
+	<%@progressions.each do |progression|%>
+	<div id = "progression-block">
+		<div id = "progression-img">
+			<button onclick = "loadCanvasFromJson(<%=progression.index%>)">
+				<%= image_tag("example-progression.png", :alt => "progression", :class => "progression-img") %>
+				<div class = "progression-num"><%=progression.index + 1%></div>
+			</button>
 
-<%= link_to "delete play", play_path(@play.id), method: :delete %>
-<%= link_to "New progression", {:controller => "progressions", :action => "new", :play_id => @play.id, progression_index: 0 }%>
+		</div>
+	</div>
+	<%end%>
+	
+</div>
+
+<%= render 'progressions/js_objects' %>
+<script>
+
+        var index = 0
+
+
+        var json_diagrams = []
+        <% @progressions.each do |progression| %>
+        console.log("<%= simple_format(progression.notes) %>")
+            json_diagrams.push({"json": "<%=progression.json_diagram%>" , "canvas_width" : parseFloat("<%=progression.canvas_width%>"), "notes" : "<%=simple_format(progression.notes)%>"});
+        <%end%>
+
+        //canvas.requestRenderAll.bind(canvas);
+        
+        var canvas = new fabric.Canvas("c",{
+            targetFindTolerance: 15,
+             perPixelTargetFind: true,
+             preserveObjectStacking: true,
+        }); 
+        var canvas_width = window.innerWidth * .5;
+        var canvas_height = canvas_width * .7;
+        canvas.setHeight(canvas_height);
+        canvas.setWidth(canvas_width);
+
+        loadCanvasFromJson(index);
+
+        function change_progression(change){
+        	index = index + change;
+        	loadCanvasFromJson(index);
+        }
+
+        function loadCanvasFromJson(new_index){
+        	$(".progression-notes-text").html(json_diagrams[new_index].notes)
+            var json_diagrams_len = json_diagrams.length;
+            index = new_index;
+           
+            if(new_index > json_diagrams_len -1){
+                index = 0;
+            }
+            else if (new_index < 0 ){
+                index = json_diagrams_len -1;
+            }
+
+            var old_canvas_width = json_diagrams[index].canvas_width;
+            var width_ratio = old_canvas_width/canvas.width;
+
+            var json_data = json_diagrams[index].json.replace(/&quot;/g,'"');
+            canvas.loadFromJSON(json_data, function() {
+                var objs = canvas.getObjects().map(function(o) {
+                	o.set({lockMovementX: true, lockMovementY: true, selectable: false, left: o.left / width_ratio, top: o.top/width_ratio})
+                	if(o.type == "circle"){
+                		o.set({radius: o.radius / width_ratio})
+                	}
+                	else if (o.type == "rect"){
+                		o.set({width: o.width / width_ratio, height: o.height / width_ratio})
+                	}
+                	else if (o.type == "PlayerCircle"){
+                		o.set({radius: o.radius / width_ratio})
+                		o.moveTo(10)
+                	}
+                	else if (o.type == "LineWithArrow" || o.type == "DribbleLine"){
+                		o.set({x1: o.x1 / width_ratio, x2: o.x2 / width_ratio, y1: o.y1 / width_ratio, y2: o.y2 / width_ratio})
+                		o.moveTo(10)
+                	}
+                	o.setCoords()
+                	//console.log(o)
+                    return o
+                });
+                canvas.renderAll();
+            }); 
+            $("#progression_index").html(index+1);
+        }
+</script>
+
+
+

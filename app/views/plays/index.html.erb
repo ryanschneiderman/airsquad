@@ -1,3 +1,155 @@
+<div id = "plays-landing">
+	<%= image_tag("Tactical-2.JPG", :alt => "plays", :class => "plays-img") %>
+	<div id = "plays-landing-title">Plays</div>
+</div>
+<div id = "plays-layout">
+	<div id = "offense" class = "plays-column">
+		<div class = "plays-header">Offense - <button type = "button" onclick = "new_play_form(true)">New Play</button></div>
+		<div class = "plays-grid">
+			<div class = "play-type-header"><%=@offensive_plays[0].p_type%></div>
+			<div class = "play-type-grid">
+			<%@offensive_plays.each do |play| %>
+			<%if @curr_off_play.p_type != play.p_type%>
+				</div>
+				<div class = "play-type-header"><%=play.p_type%></div>
+				<div class = "play-type-grid">
+			<%end%>
+			<% @curr_off_play = play%>
+			<div class ="play-block">
+				<div class= "play-image">
+					<%= link_to team_play_path(@team_id, play.id), :class => "play-link" do %>
+						<%= image_tag("example-progression.png", :alt => "play", :class => "play-img") %>
+						<div class = "play-link-text"><%=play.name%></div>
+					<%end%>
+					<%= link_to team_play_path(@team_id, play.id), :class => "progression-link" do %>
+						<div class = "show-link-block">
+							<div class = "progression-link-text">Show</div>
+						</div>
+					<%end%>
+					
+					
+					<%= link_to edit_team_play_path(@team_id, play.id), :class => "progression-link" do %>
+						<div class = "edit-link-block">
+							<div class = "progression-link-text">Edit</div>
+						</div>	
+					<% end %>
+				</div>
+			</div>
+			<%end%>
+		</div>
+		</div>
+		<div class = "plays-footer">
+		</div>
+	</div>
+	<div id = "defense" class = "plays-column">
+		<div class = "plays-header">Defense - <button type = "button" onclick = "new_play_form(false)">New Play</button></div>
+		<div class = "plays-grid">
+			<div class = "play-type-header"><%=@defensive_plays[0].p_type%></div>
+			<div class = "play-type-grid">
+			<%@defensive_plays.each do |play| %>
+			<%if @curr_def_play.p_type != play.p_type%>
+				</div>
+				<div class = "play-type-header"><%=play.p_type%></div>
+				<div class = "play-type-grid">
+			<%end%>
+			<% @curr_def_play = play%>
+			<div class ="play-block">
+				<div class= "play-image">
+					<%= link_to team_play_path(@team_id, play.id), :class => "play-link" do %>
+						<%= image_tag("example-progression.png", :alt => "play", :class => "play-img") %>
+						<div class = "play-link-text"><%=play.name%></div>
+					<%end%>
+					<%= link_to team_play_path(@team_id, play.id), :class => "progression-link" do %>
+						<div class = "show-link-block">
+							<div class = "progression-link-text">Show</div>
+						</div>
+					<%end%>
+					
+					
+					<%= link_to edit_team_play_path(@team_id, play.id), :class => "progression-link" do %>
+						<div class = "edit-link-block">
+							<div class = "progression-link-text">Edit</div>
+						</div>	
+					<% end %>
+				</div>
+			</div>
+			<%end%>
+		</div>
+		</div>
+		<div class = "plays-footer">
+			
+		</div>
+	</div>
+</div>
 
-<%= render plays_partial_path %>
+<div class = "modal-overlay" style= "display: none;"></div>
+<div class = "new-play-overlay modal-overlay" style= "display: none;">
+	<div class = "new-play-box" id = "new-offensive-play" style= "display: none;">
+
+		<div class = "new-play-header">
+			<button class = "close-button" onclick="hide_new_play_form(false)">x</button>
+			<div id = "new-play-header-text">New Offensive Play</div>
+		</div>
+		<div class = "new-play-form">
+			<%= bootstrap_form_for(@play) do |f| %>
+			  <%= f.text_field  :name, 
+			                    maxlength: 100, 
+			                    placeholder: 'What is the name of the play?', 
+			                    class: 'form-control',
+			                    required: true, 
+			                    minlength: 1,
+			                    maxlength: 100 %>
+			  <div>What kind of play is it?</div>
+			  <% @play_types.each do|type|%>
+			    <%= f.radio_button :play_type_id, type.id, label: type.o_type, value: type.id %>
+			  <%end%>
+			  <%= f.hidden_field :team_id,  value: @team_id  %>
+			  <%= f.hidden_field :offense_defense,  value: true  %>
+			  <%= f.submit "Create play", class: 'form-control' %>
+			<% end %>
+		</div>
+	</div>
+
+	<div class = "new-play-box" id = "new-defensive-play" style= "display: none;">
+		<div class = "new-play-header">
+			<button class = "close-button" onclick="hide_new_play_form(true)">x</button>
+			<div id = "new-play-header-text">New Defensive Play</div>
+		</div>
+		<div class = "new-play-form">
+			<%= bootstrap_form_for(@play) do |f| %>
+			  <%= f.text_field  :name, 
+			                    maxlength: 100, 
+			                    placeholder: 'What is the name of the play?', 
+			                    class: 'form-control',
+			                    required: true, 
+			                    minlength: 1,
+			                    maxlength: 100 %>
+			  <div>What kind of play is it?</div>
+			  <% @play_types.each do|type|%>
+			    <%= f.radio_button :play_type_id, type.id, label: type.d_type, :class => "new-play-label", value: type.id %>
+			  <%end%>
+			  <%= f.hidden_field :team_id,  value: @team_id  %>
+			  <%= f.hidden_field :offense_defense,  value: false  %>
+			  <%= f.submit "Create play", class: 'form-control' %>
+			<% end %>
+		</div>
+	</div>
+</div>
+
+
+<script>
+	function new_play_form(is_offense){
+		 (is_offense) ? $("#new-offensive-play").show() : $("#new-defensive-play").show();
+		$(".modal-overlay").show()
+		$(".new-play-overlay").show()
+	}
+
+	function hide_new_play_form(is_offense){
+		$("#new-offensive-play").hide()
+		 $("#new-defensive-play").hide();
+		$(".modal-overlay").hide()
+		$(".new-play-overlay").hide()
+	}
+</script>
+
 

@@ -4,9 +4,9 @@
 	/**************************************************************/
 	var fg_index = 1;
 	var two_pt_fg_index = 3;
-	var three_pt_fg_index = 5;
-	var ft_index = 7;
-	var ft_pct_index = 8;
+	var three_pt_fg_index = 3;
+	var ft_index = 5;
+	var ft_pct_index = 6;
 
 
 	var curr_player = null; 
@@ -26,15 +26,20 @@
 	var horiz_offset = $("#gm-tool-bar").width();
 	var vert_offset = $(".container").height() + $("#scoreboard").height();;
 
-	// keep consistent on canvas resize
-	var arc_vert_radius = gm_canvas_width/2.343;
-	var arc_horiz_radius = gm_canvas_width/2.365;
+	// TODO - set in initializer
+	var arc_vert_radius;
+	var arc_horiz_radius; 
+
+	var canvas;
+	var gm_canvas_width;
+	var gm_canvas_height;
+
 
 	var basket_x;
 	var basket_y;
 
-	// keep consistent on canvas resize
-	var basket_radius = gm_canvas_width/59.855;
+	// TODO - set in initializer
+	var basket_radius; 
 
 	var player_is_selected = false;
 
@@ -56,8 +61,11 @@
 
 	var team_stat_totals = [];
 
+
+	// TODO make dynamic
 	var periods = 4;
 	var curr_period = 1;
+	// TODO make dynamic
 	var minutes_per_period = 6;
 	var minutes = minutes_per_period;
 	var seconds = 0;
@@ -69,69 +77,10 @@
 
 	var select_inactives_html = "";
 
-	console.log(gm_canvas_width)
-
-	$( window ).load(function() {
-  		canvas.getObjects().forEach(function(o){
-			if (o.type == "Basket"){
-				basket_x = o.left + basket_radius;
-				basket_y = o.top + basket_radius;
-			}
-		});
-	});
-
-
-	canvas.on('object:moving', function (e) {
-		var obj = e.target
-        var type = obj.get('type');
-        var point = canvas.getPointer(e);
-        if(type == "MakeSymbol"){
-        	move_make(obj, point)
-        }
-        else if (type == "MissSymbol"){
-         move_miss(obj, point);
-        }
-    });
-
-    $(window).resize(function(){
-        canvas.getObjects().forEach(function(o){
-        	switch(o.type){
-        		case "MakeSymbol" :
-	        		old_canvas_width = o.canvas_width;
-	        		change_ratio = old_canvas_width/gm_canvas_width;
-
-	        		o.set({left: o.left/ change_ratio, top: o.top / change_ratio, canvas_width: gm_canvas_width});
-	        		o.setCoords();
-	        		canvas.calcOffset();
-	  				canvas.renderAll();
-        		break;
-        		case "Basket" :
-        			old_canvas_width = o.canvas_width;
-	        		change_ratio = old_canvas_width/gm_canvas_width;
-	        		basket_radius = basket_radius /change_ratio
-
-	        		o.set({left: o.left/ change_ratio, top: o.top / change_ratio, canvas_width: gm_canvas_width, radius: basket_radius});
-	        		o.setCoords();
-	        		canvas.calcOffset();
-	  				canvas.renderAll();
-	  			break;
-        		case "MissSymbol" :
-        			old_canvas_width = o.canvas_width;
-	        		change_ratio = old_canvas_width/gm_canvas_width;
-	        		o.set({x1: o.x1 / change_ratio, y1: o.y1 / change_ratio, x2: o.x2 / change_ratio, y2: o.y2 / change_ratio, canvas_width: gm_canvas_width});
-	        		o.setCoords();
-	        		canvas.calcOffset();
-	        		canvas.renderAll();
-        		break
-        	}
-    	})
-    })
-
 
 	Element.prototype.remove = function() {
     	this.parentElement.removeChild(this);
-	}		
-
+	}	
 
 	$(document).click(function(event) {
 		var classname = $(event.target).attr('class')
@@ -177,7 +126,23 @@
 	/*********************** <INITIALIZERS> ***********************/
 	/**************************************************************/
 
-	
+	function initialize_globals(c, canvas_width, canvas_height){
+		canvas = c;
+		gm_canvas_width = canvas_width;
+		gm_canvas_height = canvas_height;
+		arc_vert_radius = gm_canvas_width/2.343;
+		arc_horiz_radius = gm_canvas_width/2.365;
+		basket_radius = gm_canvas_width/59.855;
+
+		$(window).on('load', function() {
+	  		canvas.getObjects().forEach(function(o){
+				if (o.type == "Basket"){
+					basket_x = o.left + basket_radius;
+					basket_y = o.top + basket_radius;
+				}
+			});
+		});
+	}
 
 
 	function populate_players(){
@@ -217,7 +182,6 @@
 			opponent_obj.cumulative_arr.push({"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>", "display_priority" : "<%= stat.display_priority %>"})
 			team_stat_totals.push({"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>", "display_priority" : "<%= stat.display_priority %>"})
 		<% end %>
-		console.log(team_stat_totals)
 	}
 
 	function populate_display_stats(){
@@ -228,7 +192,7 @@
 				i++;
 			}
 			i++;
-			if("<%= stat[:stat_name] %>" == "Points") points_index = i;
+			if("<%= stat[:stat_name] %>" == "PTS") points_index = i;
 		<% end %>
 		minutes_index = i;
 	}
@@ -276,12 +240,12 @@
 
 
 	function populate_inactive_selection(repopulate_active_players){
-		
 	 		$("#personel-selection-header").html("Select Inactives");
 			var len = all_players.length;
 			var html_string = "";
+			if(repopulate_active_players) active_players = [];
 			for(var i = 0; i < len; i++){
-				if (repopulate_active_players) players_not_in_game.push(all_players[i]);
+				if (repopulate_active_players) active_players.push(all_players[i]);
 				html_string += "<button class = 'player-button' type = 'button' onclick= 'inactive_button(" + all_players[i].id + ", this)' >" + all_players[i].name + "</button>"
 			}
 			$("#personel-selection-body").html(html_string);
@@ -294,6 +258,7 @@
 
 	function set_not_in_game(player_id){
 		active_players.map(function(item) { if(item.id == player_id) item.is_in_game = false });
+		players_in_game--;
 	}
 
 	function set_in_game(player_id){
@@ -399,8 +364,9 @@
 		return html;
 	}
 
-	//potentially change (think offensive/defensive rebounds -> rebounds)
-	function stat_button(stat_name, button){
+	// TODO -- CHANGE STAT_NAME TO STAT_ID
+	function stat_button(stat_id, button){
+		stat_id = parseInt(stat_id)
 		if(curr_player != null && (is_in_game(curr_player.player_obj) || curr_player_is_opponent )){
 			if(miss_selected || make_selected){
 				deselect_stat();
@@ -408,17 +374,17 @@
 				miss_selected = false;
 			}
 			curr_stat_button = button;
-			if(stat_name == "Make"){
+			if(stat_id == 1){
 				select_button(button);
 				make_selected = true;
 
 			}
-			else if (stat_name == "Miss"){
+			else if (stat_id == 2){
 				select_button(button);
 				miss_selected = true;
 			} 
 			else {
-				add_stat(stat_name, curr_player.player_obj);
+				add_stat(stat_id, curr_player.player_obj);
 				deselect_player();
 			}
 		}
@@ -426,9 +392,11 @@
 			deselect_button(curr_stat_button);
 			select_button(button);
 			curr_stat_button = button;
-			curr_stat = stat_name;
+			curr_stat = stat_id;
 		}
 	}
+
+
 
 	function deselect_stat(){
 		curr_stat = null;
@@ -508,11 +476,11 @@
 	}
 
 	function add_stat_to_player(){
-		if(curr_stat == "Make"){
+		if(curr_stat == 1){
 				select_button(curr_player_button);
 				make_selected = true;
 			}
-			else if (curr_stat == "Miss"){
+			else if (curr_stat == 2){
 				select_button(curr_player_button);
 				miss_selected = true;
 			}
@@ -578,37 +546,22 @@
 
 
 
-
-
-
-
-
 	/**************************************************************/
 	/************************* <SHOT CHART>************************/
 	/**************************************************************/
 
-	$(".show-canvas").on("click", function(e) {
-		if(make_selected && curr_player != null){
-			make(e);
-		}
-		else if (miss_selected && curr_player != null){
-			miss(e);
-		}
-	}); 
+	
 
-
-	// TODO: SHOULD BE GOOD!!!
+	// TO CHECK***************
 	function determine_3_or_2(x_loc, y_loc){
 
 		var rel_pos_x = basket_x - x_loc;
-		var rel_pos_y = basket_y - y_loc;
-		if(rel_pos_y < 0){
-			if (Math.abs(rel_pos_x) > arc_horiz_radius){
+		var rel_pos_y = y_loc - basket_y;
+		if(y_loc < gm_canvas_height * .202 + 1){
+			if(x_loc < gm_canvas_width * .088 || x_loc > gm_canvas_width *.9172){
 				return 3;
 			}
-			else{
-				return 2;
-			}
+			else return 2;
 		}
 		else {
 			var x_val = (rel_pos_x * rel_pos_x);
@@ -628,15 +581,18 @@
 
 
 	function make(e){
-		var x_loc = e.pageX - make_radius - horiz_offset;
+		var x_loc = e.pageX - make_radius - horiz_offset - 3;
 		var y_loc = e.pageY - make_radius - vert_offset;
 		var point_val = determine_3_or_2(x_loc, y_loc);
 		var fg_counter = stat_array_counter;
 
 		plot_make(y_loc, x_loc, make_radius, curr_player.player_obj.id, curr_player.player_obj.player, point_val, fg_counter + 1, curr_player.player_obj.stat_index, gm_canvas_width, canvas);
-		add_stat("Make", curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width, "shot_value" : point_val}, fg_counter + 1);
+		add_stat(1, curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width, "shot_value" : point_val}, fg_counter + 1);
 
-		if(point_val == 3)  add_stat("3 point make",  curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width}, fg_counter + 1);
+		if(point_val == 3)  add_stat(11,  curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width}, fg_counter + 1);
+		else{
+			add_stat(9,  curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width}, fg_counter + 1);
+		}
 
 		update_score(point_val, curr_player_is_opponent);
 		(curr_player_is_opponent) ? to_opponent_shot_chart() : to_team_shot_chart();
@@ -647,14 +603,17 @@
 
 	// change to use function update_field_goals instead of add_stat
 	function miss(e){
-		x_loc = e.pageX - horiz_offset;
+		x_loc = e.pageX - horiz_offset - 3;
 		y_loc = e.pageY - vert_offset;
 		var fg_counter = stat_array_counter;
 		var point_val = determine_3_or_2(x_loc, y_loc);
 		plot_miss([x_loc, y_loc, x_loc , y_loc ], curr_player.player_obj.id, curr_player.player_obj.player, point_val, fg_counter + 1, curr_player.player_obj.stat_index, gm_canvas_width, canvas) ;
-		add_stat("Miss", curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width, "shot_value" : point_val}, fg_counter + 1);
+		add_stat(2, curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width, "shot_value" : point_val}, fg_counter + 1);
 
-		if(point_val == 3) add_stat("3 point miss",  curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width}, fg_counter + 1);
+		if(point_val == 3) add_stat(12,  curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width}, fg_counter + 1);
+		else {
+			add_stat(10,  curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width}, fg_counter + 1);
+		}
 
 		(curr_player_is_opponent) ? to_opponent_shot_chart() : to_team_shot_chart();
 		deselect_player();
@@ -703,38 +662,42 @@
 
     function update_make_data(obj, player, result, result_w_point, point_value){
     	if(point_value == 3){
-    		var new_stat_string = "2 point make";
-    		var old_stat_string = "3 point make";
+    		// 2 point make
+    		var new_stat_id = 9;
+    		// 3 point make
+    		var old_stat_id = 11;
     		result.metadata.shot_value = "2";
     		result_w_point.stat_list_id = "9";
     		update_score(-1, !obj.player);
     		increment_points(player.player_obj.stat_index -1, -1, stat_array[player.player_obj.stat_index -1])
     	}
     	else if (point_value == 2){
-    		var old_stat_string = "2 point make";
-    		var new_stat_string = "3 point make";
+    		var old_stat_id = 9;
+    		var new_stat_id = 11;
     		result.metadata.shot_value = "3";
     		result_w_point.stat_list_id = "11";
     		update_score(1, !obj.player);
     		increment_points(player.player_obj.stat_index -1, 1, stat_array[player.player_obj.stat_index -1])
     	}
-    	return [new_stat_string, old_stat_string];
+    	return [new_stat_id, old_stat_id];
     }
 
     function update_miss_data(obj, player, result, result_w_point, point_value){
     	if(point_value == 3){
-    		var new_stat_string = "2 point miss";
-    		var old_stat_string = "3 point miss";
+    		// 2 point miss
+    		var new_stat_id = 10;
+    		// 3 point miss
+    		var old_stat_id = 12;
     		result.metadata.shot_value = "2";
     		result_w_point.stat_list_id = "10";
     	}
     	else if (point_value == 2){
-    		var old_stat_string = "2 point make";
-    		var new_stat_string = "3 point make";
+    		var old_stat_id = 10;
+    		var new_stat_id = 12;
     		result.metadata.shot_value = "3";
     		result_w_point.stat_list_id = "12";
     	}
-    	return [new_stat_string, old_stat_string];
+    	return [new_stat_id, old_stat_id];
     }
 
     function update_shot_data(obj, point_value, shot_result){
@@ -744,28 +707,36 @@
     	var result = granule_array[0];
     	var result_w_point = granule_array[1];
 
-    	var string_array = (shot_result == "Make") ? update_make_data(obj, player, result, result_w_point, point_value) : update_miss_data(obj, player, result, result_w_point, point_value)
+    	var stat_id_array = (shot_result == "Make") ? update_make_data(obj, player, result, result_w_point, point_value) : update_miss_data(obj, player, result, result_w_point, point_value)
 
-    	var new_stat_string = string_array[0];
-    	var old_stat_string = string_array[1];
-
+    	var new_stat_id = stat_id_array[0];
+    	var old_stat_id = stat_id_array[1];
 
     	var player_row = (obj.player) ? player_stats_table.rows[player.player_obj.stat_index] : team_stats_table.rows[2];
     	var team_row = team_stats_table.rows[1];
     	
-    	var old_player_stat_index = find_stat_in_player_arr(old_stat_string);
+    	var old_player_stat_index = find_stat_in_player_arr(old_stat_id);
     	
     	var old_index = find_stat_index(stat_array[0].cumulative_arr[old_player_stat_index]) + 1;
 
-    	var new_player_stat_index = find_stat_in_player_arr(new_stat_string);
+    	var new_player_stat_index = find_stat_in_player_arr(new_stat_id);
     	var new_index = find_stat_index(stat_array[0].cumulative_arr[new_player_stat_index]) + 1;
-    	
-    	undo_table_cell(old_index, shot_result, player_row);
-    	fg_in_table(new_index, shot_result, player_row);
+
+    	//3 point make
+    	if(new_stat_id == 11){
+    		fg_in_table(new_index, shot_result, player_row);
+    	}
+    	else {
+    		undo_table_cell(old_index, shot_result, player_row);
+    	}
     	
     	if(obj.player){
-    		undo_table_cell(old_index, shot_result, team_row);
-    		fg_in_table(new_index, shot_result, team_row);
+    		if(new_stat_id == 11){
+    			fg_in_table(new_index, shot_result, team_row);
+	    	}
+	    	else {
+	    		undo_table_cell(old_index, shot_result, team_row);
+	    	}
     		player.cumulative_arr[old_player_stat_index].total--;
     		player.cumulative_arr[new_player_stat_index].total++;
 
@@ -891,7 +862,7 @@
 
 	function populate_row(row, i, is_player, team_name){
 		var insert_index = 0;
-		var num_stats = display_stats.length;
+		var num_stats = (is_player) ? display_stats.length : display_stats.length -1;
 		for(j = 0 ;j < num_stats + 1; j++){
 			var col = row.insertCell(insert_index);
 			if (j == 0 && i > 0){
@@ -905,7 +876,9 @@
 				col.innerHTML += "<div>" + column_header + "</div>";
 			}
 			else if(i == 0 && j > 0){
-				col.innerHTML += "<div>" + display_stats[j - 1].stat + "</div>";
+				if(display_stats[j - 1].stat_list_id != 16){
+					col.innerHTML += "<div>" + display_stats[j - 1].stat + "</div>";
+				}
 				if(display_stats[j - 1].display_type == "fraction"){
 					insert_index++;
 					var pct_col = row.insertCell(insert_index);
@@ -920,7 +893,7 @@
 					pct_col.innerHTML = "0%";
 				}
 				else if (display_stats[j - 1].display_type == "minutes"){
-					col.innerHTML = "0:00";
+					if(is_player) col.innerHTML = "0:00";
 				}
 				else{
 					col.innerHTML += 0;
@@ -946,7 +919,6 @@
 			var player_col = player_row.cells[stat_i + 1];
 			var team_row = team_stats_table.rows[1];
 			var team_col = team_row.cells[stat_i + 1]
-			console.log(team_col.innerHTML)
 
 			player_col.innerHTML = new_val;
 			team_col.innerHTML = parseInt(team_col.innerHTML) + 1;
@@ -963,6 +935,9 @@
 		var actual_index = 0;
 		for (var i = 0; i < display_stats_len; i++){
 			if (stat.display_priority == display_stats[i].display_priority){
+				/*console.log("FOUND INDEX")
+				console.log("actual_index: " + actual_index)
+				console.log("stat: " + stat)*/
 				return actual_index;
 			}
 			if(display_stats[i].display_type == "fraction"){
@@ -975,8 +950,9 @@
 	function find_stat_in_player_arr(stat){
 		var stat_found = false;
 		var stat_i = 0;
+		//console.log(stat)
 		while(!stat_found){
-			if(stat == stat_array[0].cumulative_arr[stat_i].stat){
+			if(stat == stat_array[0].cumulative_arr[stat_i].id){
 				stat_found = true;
 				return stat_i;
 			}
@@ -984,50 +960,59 @@
 		}
 	}
 
+	// TODO -- CHANGE STAT_NAME TO STAT_ID
 	function add_stat_to_obj(stat, obj, metadata, player_i, index){
 		var stat_i = find_stat_in_player_arr(stat)
 		obj.gran_stat_arr.push({"metadata" : metadata, "stat_list_id" : obj.cumulative_arr[stat_i].id, "index" : index});
 		switch(stat){
-			case "Make" :
+			//FG Make
+			case 1 :
 				update_field_goals_make(player_i, stat_i, fg_index);
 				++obj.cumulative_arr[stat_i].total;
 				if (!curr_player_is_opponent) ++team_stat_totals[stat_i].total;
 				break;
-			case "Miss" :
+			// FG Miss
+			case 2 :
 				update_field_goals_miss(player_i, stat_i, fg_index);
 				++obj.cumulative_arr[stat_i].total;
 				if (!curr_player_is_opponent) ++team_stat_totals[stat_i].total;
 				break;
-			case "2 point make" :
-				update_field_goals_make(player_i, stat_i, two_pt_fg_index);
+			// 2 point make
+			case 9 :
+				//update_field_goals_make(player_i, stat_i, two_pt_fg_index);
 				increment_points(player_i, 2, obj);
 				++obj.cumulative_arr[stat_i].total;
 				if (!curr_player_is_opponent) ++team_stat_totals[stat_i].total;
 				break;
-			case "2 point miss" :
-				update_field_goals_miss(player_i, stat_i, two_pt_fg_index);
+			// 2 point miss
+			case 10 :
+				//update_field_goals_miss(player_i, stat_i, two_pt_fg_index);
 				++obj.cumulative_arr[stat_i].total;
 				if (!curr_player_is_opponent) ++team_stat_totals[stat_i].total;
 				break;
-			case "3 point make" :
+			// 3 point make
+			case 11 :
 				update_field_goals_make(player_i, stat_i, three_pt_fg_index);
 				increment_points(player_i, 3, obj);
 				++obj.cumulative_arr[stat_i].total;
 				if (!curr_player_is_opponent) ++team_stat_totals[stat_i].total;
 				break;
-			case "3 point miss" :
+			// 3 point miss
+			case 12 :
 				update_field_goals_miss(player_i, stat_i, three_pt_fg_index);
 				++obj.cumulative_arr[stat_i].total;
 				if (!curr_player_is_opponent) ++team_stat_totals[stat_i].total;
 				break;
-			case "Free throw make" :
+			// Ft make
+			case 13 :
 				insert_fg_in_table(player_i, ft_index, "Make", obj);
 				increment_points(player_i, 1, obj);
 				update_score(1, curr_player_is_opponent);
 				++obj.cumulative_arr[stat_i].total;
 				if (!curr_player_is_opponent) ++team_stat_totals[stat_i].total
 				break;
-			case "Free throw miss" :
+			// Ft miss
+			case 14 :
 				insert_fg_in_table(player_i, ft_index, "Miss", obj);
 				++obj.cumulative_arr[stat_i].total;
 				if (!curr_player_is_opponent) ++team_stat_totals[stat_i].total
@@ -1043,7 +1028,7 @@
 		var player_found = false;
 		var player_i = 0;
 		var stat_object;
-		
+
 		if(curr_player_is_opponent){
 			stat_object = {"player": player, "stat": stat, "metadata" : metadata, "is_opponent": true, "index": index};
 			add_stat_to_obj(stat, opponent_obj, metadata, -1, index);
@@ -1102,7 +1087,7 @@
 	}
 
 	function increment_points(player_i, shot_value, player_obj){
-		var stat_i = find_stat_in_player_arr("Points")
+		var stat_i = find_stat_in_player_arr(15)
 		// if player is a player (not the opponent)
 		if(player_i >= 0 ){
 			var player_row = player_stats_table.rows[player_i+1];
@@ -1139,22 +1124,22 @@
 		numerator = parseInt(split_contents[0]);
 		denomenator = parseInt(split_contents[1]);
 		denomenator--;
-		if(shot_result == "Make") numerator--;
+		if(shot_result == 1) numerator--;
 		col.innerHTML = numerator + "/" + denomenator;
 		if(denomenator == 0){
-			pct_col.innerHTML = 0
+			pct_col.innerHTML = "0%"
 		}
 		else{
 			pct_col.innerHTML = Math.round(numerator / denomenator * 100) + "%"
 		}
 	}
 
-	function undo_ft(stat_object, result, stat_string, stat_index){
+	function undo_ft(stat_object, result, stat_id, stat_index){
 	    var player_row = player_stats_table.rows[stat_object.player.stat_index];
 	    var team_row = team_stats_table.rows[1];
 	    var opponent_row = team_stats_table.rows[2];
 
-		var player_stat_index = find_stat_in_player_arr(stat_string)
+		var player_stat_index = find_stat_in_player_arr(stat_id)
 	    
 	    if(!stat_object.is_opponent){
 		    undo_table_cell(stat_index, result, player_row);
@@ -1167,14 +1152,14 @@
 	    } 
 	}
 
-	function undo_fg(stat_object, result, stat_string, stat_index, result_index){
+
+	function undo_fg(stat_object, result, stat_id, stat_index, result_index){
 		//find shot chart object
 		canvas.getObjects().forEach(function(o){
 			if (o.index == stat_object.index){
 				canvas.remove(o);
 			}
 		});
-
 		// eliminate double counting for field goals
 		all_stat_granules.pop()
 
@@ -1182,20 +1167,26 @@
 	    var team_row = team_stats_table.rows[1];
 	    var opponent_row = team_stats_table.rows[2];
 
-		var player_stat_index = find_stat_in_player_arr(stat_string)
+		var player_stat_index = find_stat_in_player_arr(stat_id)
 	    var player_result_index = find_stat_in_player_arr(result)
 	    
 	    if(!stat_object.is_opponent){
-		    undo_table_cell(stat_index, result, player_row);
+	    	// only undo for 3pt granules because we don't have a separate column for 2pt shots in table
+		    if(stat_id== 11 || stat_id == 12) {
+		    	undo_table_cell(stat_index, result, player_row);
+		    	undo_table_cell(stat_index, result, team_row);
+		    }
 		    undo_table_cell(result_index, result, player_row);
-		    undo_table_cell(stat_index, result, team_row);
 		    undo_table_cell(result_index, result, team_row);
 		    stat_array[stat_object.player.stat_index -1].cumulative_arr[player_stat_index].total--;
 	    	stat_array[stat_object.player.stat_index -1].cumulative_arr[player_result_index].total--;
 	    	stat_array[stat_object.player.stat_index -1].gran_stat_arr.pop();
 	    }
 	    else{
-	    	undo_table_cell(stat_index, result, opponent_row);
+	    	// only undo for 3pt granules because we don't have a separate column for 2pt shots in table
+	    	if(stat_id == 11 || stat_id == 12) {
+	    		undo_table_cell(stat_index, result, opponent_row);
+	    	}
 	    	undo_table_cell(result_index, result, opponent_row);
 	    	opponent_obj.cumulative_arr[player_result_index].total--;
 	    	opponent_obj.gran_stat_arr.pop();
@@ -1213,34 +1204,40 @@
 	}
 
 	function undo_player_array_stat(stat_object){
-		var stat_string = stat_object.stat;
-	    	switch(stat_string){
-	    		case "3 point make":
-	    			undo_fg(stat_object, "Make", stat_string, three_pt_fg_index, fg_index);
+		var stat_id = stat_object.stat;
+	    	switch(stat_id){
+	    		// 3 point make
+	    		case 11:
+	    			undo_fg(stat_object, 1, stat_id, three_pt_fg_index, fg_index);
 	    			increment_points(stat_object.player.stat_index -1, -3, stat_array[stat_object.player.stat_index -1])
 	    			update_score(-3, stat_object.is_opponent);
 	    			break;
-	    		case "2 point make":
-	    			undo_fg(stat_object, "Make", stat_string, two_pt_fg_index, fg_index);
+	    		// 2 point make
+	    		case 9:
+	    			undo_fg(stat_object, 1, stat_id, two_pt_fg_index, fg_index);
 	    			increment_points(stat_object.player.stat_index -1, -2, stat_array[stat_object.player.stat_index -1])
 	    			update_score(-2, stat_object.is_opponent);
 	    			break;
-	    		case "3 point miss" :
-	    			undo_fg(stat_object, "Miss", stat_string, three_pt_fg_index, fg_index);
+	    		// 3 point miss
+	    		case 12 :
+	    			undo_fg(stat_object, 2, stat_id, three_pt_fg_index, fg_index);
 	    			break;
-	    		case "2 point miss" :
-	    			undo_fg(stat_object, "Miss", stat_string, two_pt_fg_index, fg_index);
+	    		// 2 point miss
+	    		case 10 :
+	    			undo_fg(stat_object, 2, stat_id, two_pt_fg_index, fg_index);
 	    			break;
-	    		case "Free throw make" :
-	    			undo_ft(stat_object, "Make", stat_string, ft_index);
+	    		// free throw make
+	    		case 13 :
+	    			undo_ft(stat_object, 1, stat_id, ft_index);
 	    			increment_points(stat_object.player.stat_index -1, -1, stat_array[stat_object.player.stat_index -1])
 	    			update_score(-1, stat_object.is_opponent);
 	    			break;
-	    		case "Free throw miss":
-	    			undo_ft(stat_object, "Miss", stat_string, ft_index);
+	    		// free throw miss
+	    		case 14:
+	    			undo_ft(stat_object, 2, stat_id, ft_index);
 	    			break;
 	    		default : 
-	    			var player_stat_index = find_stat_in_player_arr(stat_string);
+	    			var player_stat_index = find_stat_in_player_arr(stat_id);
 	    			if(stat_object.is_opponent){
 	    				var stat_index = find_stat_index(opponent_obj.cumulative_arr[player_stat_index]);
 	    				undo_stat_in_table(stat_object, stat_index, --opponent_obj.cumulative_arr[player_stat_index].total);
@@ -1446,12 +1443,10 @@
 		var minutes_index;
 		for(var i = 0; i < team_stat_arr_len; i++){
 			if(team_stat_totals[i].stat == "Minutes") {
-				console.log("FOUND MINUTES!")
 				minutes_index = i;
 			}
 		}
 		team_stat_totals[minutes_index].total = total_minutes * 5;
-		console.log(team_stat_totals)
 	}
 
 	function update_fg_locations(){

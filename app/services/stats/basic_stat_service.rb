@@ -5,7 +5,7 @@ class Stats::BasicStatService
 
 	def call()
 		basic_stats = []
-		basic_team_stats = TeamStat.where(team_id: @team_id).joins(:stat_list).where('stat_lists.advanced' => false, 'stat_lists.team_stat' =>false, 'stat_lists.granular' => true);
+		basic_team_stats = TeamStat.where(team_id: @team_id).joins(:stat_list).where('stat_lists.advanced' => false, 'stat_lists.team_stat' =>false);
 		basic_team_stats.each do |stat|
 			basic_stats.push(StatList.find_by_id(stat.stat_list_id))
 		end

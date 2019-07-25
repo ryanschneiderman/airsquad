@@ -53,6 +53,7 @@ class GamesController < ApplicationController
 			team_id: params[:team_id]
 		}).call
 
+		@minutes_p_q = @team.minutes_p_q
 
 		player_stats_unsorted = Stat.select("*").joins(:stat_list).select("*").joins(:member).where(game_id: @game.id)
 		@player_stats = player_stats_unsorted.sort_by{|e| [e.member_id, e.stat_list_id]}
@@ -68,8 +69,16 @@ class GamesController < ApplicationController
 
 		@team_advanced_stats = TeamAdvancedStat.select("*").joins(:stat_list).where(game_id: @game.id)
 
-		render file: "games/show_test"
-		
+		@players = Stats::SortStatService.new({
+			game_id: @game.id
+		}).call
+
+		@team_stat_table_columns = Stats::BasicStatService.new({
+			team_id: params[:team_id]
+		}).call
+
+		@team_stat_table_columns.delete_if{|h| h[:stat_name] == "Minutes"}
+	
 	end
 
 	def game_mode
@@ -80,13 +89,17 @@ class GamesController < ApplicationController
 		@opponent = Opponent.where(game_id: @game_id).take
 		team_stats = TeamStat.where(team_id: params[:team_id])
 
-		@collection_stats = []
+		collection_stat_list = []
 		@basic_stats = []
 		collection_team_stats = TeamStat.where(team_id: params[:team_id]).joins(:stat_list).where('stat_lists.collectable' => true);
-		basic_team_stats = TeamStat.where(team_id: params[:team_id]).joins(:stat_list).where('stat_lists.advanced' => false, 'stat_lists.team_stat' =>false, 'stat_lists.granular' => true);
+		basic_team_stats = TeamStat.where(team_id: params[:team_id]).joins(:stat_list).where('stat_lists.advanced' => false, 'stat_lists.team_stat' =>false, 'stat_lists.is_percent' => false);
 		collection_team_stats.each do |stat|
-			@collection_stats.push(StatList.find_by_id(stat.stat_list_id))
+			collection_stat_list.push(StatList.find_by_id(stat.stat_list_id))
 		end
+
+		@collection_stats = Stats::CollectableStatsService.new({
+			stats: collection_stat_list
+		}).call
 
 		basic_team_stats.each do |stat|
 			@basic_stats.push(StatList.find_by_id(stat.stat_list_id))
@@ -118,6 +131,10 @@ class GamesController < ApplicationController
 			game_id: game_id,
 			team_id: team_id,
 			minutes_p_q: team.minutes_p_q
+		}).call
+
+		Stats::StatRankingsService.new({
+			team_id: team_id
 		}).call
 
 		redirect_to team_game_path(team_id, game_id)

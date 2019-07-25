@@ -1,0 +1,47 @@
+.stat-page-header{
+	text-align: center;
+	font-size: 35px;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
+#table-toggle-buttons{
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.table-toggle-button{
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.stats-table{
+	font-size: 12px;
+	width: 95vw;
+	text-align: center;
+	margin: auto;
+	margin-top: 20px;
+}
+
+#per-game-stats-button{
+	text-decoration: underline;
+}
+/*add jquery to make compatible with any number of team members!!!*/
+#player-links{
+	margin: 30px;
+	text-align: center;
+	display: grid;
+	grid-template-columns: repeat(7, 13.5vw);
+	grid-template-rows: repeat(2, 13.5vw);
+	align-items: center;
+	grid-gap: 3px;
+}
+
+.player-link{
+	font-size: 17px;
+	padding-top: 42%;
+	padding-bottom: 42%;
+	border: 1px solid black;
+	border-radius: 4px;
+	color: black;
+}

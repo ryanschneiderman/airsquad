@@ -1,0 +1,39 @@
+{
+  "name": "rails-assets-datatables",
+  "downloads": null,
+  "version": "1.10.19",
+  "version_downloads": null,
+  "platform": "ruby",
+  "authors": "rails-assets.org",
+  "info": "",
+  
+  "licenses": "MIT",
+  
+  "metadata": {
+
+  },
+  "sha": null,
+  "project_uri": "https://github.com/DataTables/DataTables",
+  "gem_uri": null,
+  "homepage_uri": "https://github.com/DataTables/DataTables",
+  "wiki_uri": null,
+  "documentation_uri": null,
+  "mailing_list_uri": null,
+  "source_code_uri": "https://github.com/DataTables/DataTables",
+  "bug_tracker_uri": null,
+  "dependencies": {
+    "development": [
+    
+    
+    {
+      "name": "rails-assets-jquery",
+      "requirements": ">= 1.7.0"
+    },
+    
+    
+    ],
+    "runtime": [
+
+    ]
+  }
+}

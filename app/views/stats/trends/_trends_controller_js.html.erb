@@ -1,0 +1,84 @@
+<script>
+
+var basic_trend_array = []
+var advanced_trend_array = []
+var minutes_array = []
+var per_minute_trend_array = []
+
+
+var margin = {top: 50, right: 50, bottom: 50, left: 150}
+  , width = window.innerWidth * 0.9 - margin.left - margin.right // Use the window's width 
+  , height = window.innerWidth * 0.4 - margin.top - margin.bottom; // Use the window's height
+
+
+function find_trend_index(trend_array, stat_list_id){
+	var len = trend_array.length;
+	for (var i = 0; i < len; i++){
+		if(trend_array[i].stat_list_id == stat_list_id){
+			return i;
+		}
+	}
+}
+
+function select_basic_trend_stat(arr_index, button){
+	style = window.getComputedStyle(button)
+	color = style.getPropertyValue('border-color')
+	$(".btn").css("background-color", "white");
+	button.style.backgroundColor = color;
+	curr_basic_button = button 
+	curr_basic_index = arr_index;
+
+	TrendChart("#trends-chart", basic_trend_array[arr_index].arr, color, button.innerText)
+}
+
+function select_advanced_trend_stat(arr_index, button){
+	style = window.getComputedStyle(button)
+	color = style.getPropertyValue('border-color')
+	$(".btn").css("background-color", "white");
+	button.style.backgroundColor = color;
+	curr_advanced_button = button;
+	curr_advanced_index = arr_index;
+	TrendChart("#trends-chart", advanced_trend_array[arr_index].arr, color)
+}
+
+function select_per_minute_trend_stat(arr_index, button){
+	style = window.getComputedStyle(button)
+	color = style.getPropertyValue('border-color')
+	$(".btn").css("background-color", "white");
+	button.style.backgroundColor = color;
+	curr_per_minute_button = button;
+	curr_per_minute_index = arr_index;
+	TrendChart("#trends-chart", per_minute_trend_array[arr_index].arr, color)
+}
+
+function toggle_trend_buttons(stat_case, button){
+	$(".trend-type").css("text-decoration", "none")
+	button.style.textDecoration = "underline";
+	switch (stat_case){
+		case 1 :
+			$("#basic-trend-buttons").show()
+			$("#advanced-trend-buttons").hide()
+			$("#per-minute-trend-buttons").hide()
+			select_basic_trend_stat(curr_basic_index, curr_basic_button)
+			break;
+		case 2 :
+			$("#basic-trend-buttons").hide()
+			$("#advanced-trend-buttons").show()
+			$("#per-minute-trend-buttons").hide()
+			select_advanced_trend_stat(curr_advanced_index, curr_advanced_button)
+			break;
+		case 3 :
+			$("#basic-trend-buttons").hide()
+			$("#advanced-trend-buttons").hide()
+			$("#per-minute-trend-buttons").show()
+			select_per_minute_trend_stat(curr_per_minute_index, curr_per_minute_button)
+			break;
+	}
+}
+
+
+
+
+
+//TrendChart("#trends-chart", [{"value": 20 , "date": "11/6/2019"}, {"value": 10 , "date": "11/16/2019"}, {"value": 3 , "date": "11/26/2019"}, {"value": 15 , "date": "12/6/2019"}, {"value": 6 , "date": "12/16/2019"}, {"value": 11 , "date": "12/26/2019"}, {"value": 25 , "date": "1/6/2020"}, {"value": 30 , "date": "1/16/2020"}, {"value": 21 , "date": "1/26/2020"}, {"value": 17 , "date": "2/6/2020"},])
+</script>

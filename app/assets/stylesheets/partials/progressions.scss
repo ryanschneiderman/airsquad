@@ -3,9 +3,11 @@
 	position: relative;
 	text-align: center;
 	display: inline-block;
+	margin-right: 2px;
+	background-color: white;
 }
 .progression-img{
-	width: 250px;
+	width: 17vw;
 	transition: .2s ease;
 }
 
@@ -28,6 +30,17 @@
 
 .show-link-block:hover{
 	background-color: #333333;
+}
+
+.progression-num{
+	display: none;
+	position:absolute;
+	bottom: 50%;
+	width: 100%;
+	font-size: 25px;
+}
+#progression-block:hover .progression-num{
+	display: block;
 }
 
 .show-link-block{
@@ -55,7 +68,7 @@
 }
 
 .progression-link-text{
-	padding-top: 12%;
+	padding-top: 6%;
 }
 
 .delete-progression{
@@ -160,13 +173,6 @@ button.left{
   }
 
 
-#show-grid{
-	display: grid;
-	grid-template-columns: 7vw 86vw 7vw;
-	align-items: center;
-	justify-items: center;
-}
-
 #progression-header{
 	text-align: center;
 }
@@ -190,5 +196,17 @@ button.left{
 #progression-title{
 	padding-left: 21%;
 	padding-top: 3%;
+}
+
+.progression-note{
+	width: 90%;
+	height: 75%;
+	border-radius: 3px;
+	margin-left: 5%;
+}
+
+.progression-notes-header{
+	text-align: center;
+	font-size: 20px;
 }
 

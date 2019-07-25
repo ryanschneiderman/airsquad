@@ -36,26 +36,37 @@ class Advanced::TeamAdvancedStatsService
 	end
 
 	def call
-		possessions()
-		opp_possessions()
-		off_efficiency()
-		def_efficiency()
-		pace()
-		free_throw_att_rate()
-		three_point_rate()
-
-		effective_fg_pct()
-		opp_effective_fg_pct()
-
-		turnover_pct()
-		opp_turnover_pct()
-
-		offensive_reb_pct()
-		defensive_reb_pct()
-
-		free_throw_rate()
-		opp_free_throw_rate()
-
+		team_advanced_stats = TeamStat.joins(:stat_list).select("stat_lists.advanced as advanced, team_stats.*").where("stat_lists.advanced" => true, "team_stat.team_id" => @team_id).sort_by{|e| e.stat_list_id}
+		team_advanced_stats.each do |stat|
+			case stat.stat_list_id
+			when 18
+				effective_fg_pct()
+				opp_effective_fg_pct()
+			when 21
+				three_point_rate()
+			when 22
+				free_throw_att_rate()
+			when 30
+				off_efficiency()
+			when 31
+				def_efficiency()
+			when 33
+				offensive_reb_pct()
+			when 34
+				defensive_reb_pct()
+			when 38
+				turnover_pct()
+				opp_turnover_pct()
+			when 43
+				possessions()
+				opp_possessions()
+			when 48
+				pace()
+			when 49
+				free_throw_rate()
+				opp_free_throw_rate()
+			end
+		end
 
 		return {"offensive_efficiency" => @offensive_efficiency, "season_offensive_efficiency" => @new_off_eff,  "defensive_efficiency" => @defensive_efficiency, "season_defensive_efficiency" => @new_def_eff, "possessions" => @possessions, "opp_possessions" => @opp_possessions}
 
@@ -698,7 +709,11 @@ class Advanced::TeamAdvancedStatsService
 	end
 
 	def free_throw_rate()
-		free_throw_rate = (100 * @team_free_throw_makes / @team_field_goal_att).round / 100.0
+		if @team_field_goal_att == 0
+			free_throw_rate = 0.0
+		else 
+			free_throw_rate = (100 * @team_free_throw_makes / @team_field_goal_att).round / 100.0
+		end
 		TeamAdvancedStat.create({
 			stat_list_id: 49,
 			game_id: @game_id,
@@ -733,7 +748,11 @@ class Advanced::TeamAdvancedStatsService
 	end
 
 	def opp_free_throw_rate()
-		free_throw_rate = (100 * @opp_free_throw_makes / @opp_field_goal_att).round / 100.0
+		if @opp_field_goal_att == 0 
+			free_throw_rate = 0.0
+		else 
+			free_throw_rate = (100 * @opp_free_throw_makes / @opp_field_goal_att).round / 100.0
+		end
 		TeamAdvancedStat.create({
 			stat_list_id: 49,
 			game_id: @game_id,

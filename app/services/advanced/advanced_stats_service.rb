@@ -76,25 +76,47 @@ class Advanced::AdvancedStatsService
 	end
 
 	def call
-		steal_pct()
-		turnover_pct()
-		offensive_rb_pct()
-		block_pct()
-		total_reb_pct()
-		defensive_reb_pct()
-		usage_rate()
-		assist_pct()
-		three_pt_attempt_rate()
-		linear_per()
-		free_throw_att_rate()
-		effective_fg_pct()
-		true_shooting()
-		defensive_rating()
-		offensive_rating()
-		net_rating()
-		box_plus_minus()
-		off_box_plus_minus()
-		def_box_plus_minus()
+		advanced_stats = TeamStat.joins(:stat_list).select("stat_lists.advanced as advanced, team_stats.*").where("stat_lists.advanced" => true, "team_stat.team_id" => @team_id).sort_by{|e| e.stat_list_id}
+		advanced_stats.each do |stat|
+			case stat.stat_list_id
+			when 18 
+				effective_fg_pct()
+			when 19
+				true_shooting()
+			when 20 
+				linear_per()
+			when 21 
+				three_pt_attempt_rate()
+			when 22
+				free_throw_att_rate()
+			when 23
+				usage_rate()
+			when 24
+				offensive_rating()
+			when 25
+				defensive_rating()
+			when 26
+				net_rating()
+			when 33
+				offensive_rb_pct()
+			when 34
+				defensive_reb_pct()
+			when 35
+				total_reb_pct()
+			when 36
+				steal_pct()
+			when 37
+				block_pct()
+			when 38
+				turnover_pct()
+			when 39
+				assist_pct()
+			when 42
+				box_plus_minus()
+				off_box_plus_minus()
+				def_box_plus_minus()
+			end		
+		end
 
 		## return box plus minus values to adjust later
 		return {"obpm" => @obpm, "bpm" => @bpm , "new_obpm" => @season_obpm, "new_bpm" => @season_bpm, "member_id" => @member_id}
@@ -480,7 +502,7 @@ class Advanced::AdvancedStatsService
 		}).call
 
 		AdvancedStat.create({
-			stat_list_id: 44,
+			stat_list_id: 35,
 			member_id: @member_id,
 			game_id: @game_id,
 			constituent_stats: {
@@ -493,7 +515,7 @@ class Advanced::AdvancedStatsService
 			value: total_rebound_pct
 		})
 
-		season_stat = SeasonAdvancedStat.where(stat_list_id: 44, member_id: @member_id).take
+		season_stat = SeasonAdvancedStat.where(stat_list_id: 35, member_id: @member_id).take
 		if season_stat
 			new_treb_pct = Advanced::TotalReboundPctService.new({
 				total_reb: @total_reb + season_stat.constituent_stats["total_reb"],
@@ -515,7 +537,7 @@ class Advanced::AdvancedStatsService
 		else
 			
 			SeasonAdvancedStat.create({
-				stat_list_id: 44,
+				stat_list_id: 35,
 				member_id: @member_id,
 				constituent_stats: {
 					"total_reb" => @total_reb,

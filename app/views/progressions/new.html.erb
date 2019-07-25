@@ -32,38 +32,47 @@
                <div class="line"></div>
                <div class="vert-line"></div>
             </div>
-          </button>          
+          </button>  
+          <button id = "has-ball" class = "drawing-button" type = "button" onclick="hasBall()">
+            <div class = "drawing-button-name">Has Ball</div>
+            <%= image_tag("basketball-icon.png", :alt => "basketball", :class => "basketball-icon") %>
+          </button>         
         </div>
         <div id = "save-block">
-          <button id = "save-button" type ="button" onclick="save_progression()"> SAVE AND FINISH </button>
-          <button id = "save-button" type ="button" onclick="save_and_next_progression()"> NEXT PROGRESSION</button>
+          <button class = "save-button" type ="button" onclick="save_progression()"> SAVE AND FINISH </button>
         </div>
     </div>
     <canvas id ="c"></canvas>
+    <div id ="progression-notes">
+      <div class = "progression-notes-header">Notes</div>
+      <textarea class = "progression-note"></textarea>
+    </div>
 </div>
 
-
-<%= render 'canvas_js' %>
+<%= render 'games/canvas_js' %>
 <%= render 'js_objects' %>
 <%= render 'javascript' %>
 
 <script>
-  $( document ).ready(function() {
-        if("<%= @prev_json_diagram %>"){
-          var json_data = "<%= @prev_json_diagram %>".replace(/&quot;/g,'"');
-          canvas.loadFromJSON(json_data, function() {
-            canvas.requestRenderAll.bind(canvas);
-          });
-          canvas.on('object:added', function(e) {
-            var object = e.target;
-            object.added = true;
-          });
-        }
-        else{
-          background_to_halfcourt();
-          add_players();
-        }  
-  });
+
+   
+    var anchorRadius = 3;
+    var anchorOffset = anchorRadius - .5;
+
+    var line_type;
+    
+    var line, isDown, evented;
+
+    
+
+
+  
+    var canvas_vars = initialize_canvas(0.6, 0.7, 'c', 3);
+    var canvas = canvas_vars.canvas
+    var playerRadius = canvas.height * .03;
+    var bench = canvas.width - canvas.width * .05;
+    plotBasket(canvas_vars.canvas_width/1.978, canvas_vars.canvas_height/11.5, 14, canvas_vars.canvas_width, canvas_vars.canvas);
+    add_players();
 
   canvas.on('object:moving', function (e) {
             var obj = e.target;
@@ -72,5 +81,100 @@
             }
 
     });
+
+  canvas.on('selection:created', function() {
+        canvas.getActiveObjects().forEach(function(o) {
+            var type = o.get('type');
+            if(type == "PlayerCircle"){
+                o.lockMovementY = false;
+                o.lockMovementX = false;
+                o.set({stroke: "black"});
+            }
+            if(validateLine(o)){
+              if(!o.toAnchor){
+                getToAnchor(o.toAnchorId, o);
+              }
+              o.toAnchor.animate('opacity', '1', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+            } 
+        });
+    });
+
+    canvas.on('before:selection:cleared', function() {
+         canvas.getActiveObjects().forEach(function(o) {
+            var type = o.get('type');
+            if(type == "PlayerCircle"){
+                o.set({stroke: o.color});
+            } 
+            if(validateLine(o)){
+              if(!o.toAnchor){
+                getToAnchor(o.toAnchorId, o);
+              }
+              o.toAnchor.animate('opacity', '0', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+            }       
+        });
+    });
+
+    canvas.on('selection:updated', function() {
+        canvas.getActiveObjects().forEach(function(o) {
+            var type = o.get('type');
+            if(type == "PlayerCircle"){
+                o.lockMovementY = false;
+                o.lockMovementX = false;
+            }   
+        });
+    });
+
+  /*********************************************************************************************************************************/
+  /**************************************************** <DOCUMENT ON READY> ********************************************************/
+  /*********************************************************************************************************************************/
+
+
+  function save_progression(){
+  /* get values from elements on the page: */
+
+    deselect_all_active()
+    var json_data = JSON.stringify(canvas.toJSON(['id']));
+    var create_url = "/plays/" + <%= @play.id %> + "/progressions/";
+    var notes_text = $(".progression-note").val().replace(/\n/g, "<br>");
+    console.log(notes_text)
+
+  /* Send the data using post and put the results in a div */
+  
+    $.ajax({
+      url: create_url,
+      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type: "post",
+      data_type: 'json',
+      data: {progression: {json_diagram: json_data , index: <%= @progression_index %>, play_id: <%= @play.id %>, team_id:  <%= @team_id %>, canvas_width: canvas.width, notes: notes_text}}
+    });
+}
+
+
+function save_and_next_progression(){
+  deselect_all_active()
+  /* get values from elements on the page: */
+    var json_data = JSON.stringify(canvas.toJSON(['id']));
+    var create_url = "/plays/" + <%= @play.id %> + "/progressions/next";
+    var notes_text = $(".progression-note").val().replace(/\n/g, "<br />");
+
+  /* Send the data using post and put the results in a div */
+    $.ajax({
+      url: create_url,
+      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type: "post",
+      data_type: 'json',
+      data: {progression: {json_diagram: json_data , index: <%= @progression_index %>, play_id: <%= @play.id %> , team_id:  <%= @team_id %>, canvas_width: canvas.width, notes: notes_text}}
+    });
+}
+ 
+
+    
+
 
 </script>

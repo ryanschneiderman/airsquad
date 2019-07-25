@@ -13,6 +13,22 @@
 //= require rails-ujs
 //= require activestorage
 //= require turbolinks
+//= require react
+//= require react_ujs
+//= require components
 //= require_tree .
 //= require jquery
 //= require bootstrap-sprockets
+//= require jquery
+//= require datatables
+
+
+$(document).on('turbolinks:load', function(){
+  $("table[role='datatable']").each(function(){
+    $(this).DataTable({
+      processing: true,
+      serverSide: true,
+      ajax: $(this).data('url')
+    });
+  });  
+})

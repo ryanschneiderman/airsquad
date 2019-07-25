@@ -6,8 +6,41 @@ body{
     height:100%; /* force the BODY element to match the height of the HTML element */
 }
 
+
 #cloud-container{
    
+}
+
+.canvas-container{
+	margin: auto;
+}
+
+.player-canvas{
+	border: 2px solid black;
+
+}
+
+.expand{
+	margin: auto;
+	margin-bottom: 10px;
+	margin-top: 20px;
+}
+
+.arrow{
+	border: solid grey;
+    border-width: 0 2px 2px 0;
+    display: block;
+    padding: 7px;
+}
+
+.arrow:hover{
+	border: solid black;
+	border-width: 0 2px 2px 0;
+}
+
+.down{
+	transform: rotate(45deg);
+  	-webkit-transform: rotate(45deg);
 }
 
 #game-review-stats{
@@ -24,6 +57,53 @@ body{
 	display: inline-block;
 	width: 50%;
 	vertical-align: top;
+}
+
+.player-table{
+	margin-left: 20px;
+	width: 90%;
+	font-size: 12px;
+}
+
+.see-more{
+	background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	outline: inherit;
+	font-family: 'Orbitron', sans-serif;
+	font-size: 18px;
+	display: block;
+	margin: auto;
+}
+
+.player-advanced-stats{
+	display: none;
+}
+
+.player-per-minute-stats{
+	display: none;
+}
+
+.player-name{
+	text-align: center;
+}
+
+.table-header{
+	font-size: 17px;
+	margin-left: 60px;
+	margin-bottom: 10px;
+}
+
+.player-module{
+	display: block;
+    width: 95%;
+    margin: auto;
+    border: 2px solid grey;
+    border-radius: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 #gr-player-stats{
@@ -116,4 +196,18 @@ body{
 .overlay-header{
 	font-size: 30px;
 }
+
+.gr-stats-table{
+	margin: auto;
+	width: 80%;
+	margin-bottom: 40px;
+}
+
+.full-profile{
+	display: none;
+	text-align: right;
+	margin-right: 30px;
+}
+
+
 

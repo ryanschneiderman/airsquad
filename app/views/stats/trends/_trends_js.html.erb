@@ -1,0 +1,118 @@
+<script>
+
+function TrendChart(id, data, color, y_axis_label){
+  var maxValue = d3.max(data, function(i){return i.value;});
+  var n = data.length
+
+  // 5. X scale will use the index of our data
+    var xScale = d3.scaleBand().rangeRound([0, width]).padding(1);
+
+  // 6. Y scale will use the randomly generate number 
+  var yScale = d3.scaleLinear()
+      .domain([0, maxValue * 1.25]) // input 
+      .range([height, 0]); // output 
+
+  // 7. d3's line generator
+  var line = d3.line()
+    .x(function(d) { return xScale(d.date); }) // set the x values for the line generator
+    .y(function(d) { return yScale(d.value); }) // set the y values for the line generator 
+    .curve(d3.curveMonotoneX) // apply smoothing to the line
+
+       xScale.domain(data.map(function(d) { return d.date; }));
+
+  d3.select(id).select("svg").remove();
+
+    // 1. Add the SVG to the page and employ #2
+  var svg = d3.select(id).append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  // 3. Call the x axis in a group tag
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(xScale)); // Create an axis component with d3.axisBottom
+
+    // X axis label == date
+  svg.append("text")             
+      .attr("transform",
+            "translate(" + (width/2) + " ," + 
+                           (height + margin.top) + ")")
+      .style("text-anchor", "middle")
+      .text("Date");
+
+  // 4. Call the y axis in a group tag
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(d3.axisLeft(yScale)); // Create an axis component with d3.axisLeft
+
+    // text label for the y axis
+  svg.append("text")
+      .attr("class", "y-axis-label")
+      .attr("transform", "rotate(-90)")
+      .attr("y", -60)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text(y_axis_label);   
+
+
+  // 9. Append the path, bind the data, and call the line generator 
+  svg.append("path")
+      .datum(data) // 10. Binds data to the line 
+      .attr("stroke", color)
+      .attr("class", "line") // Assign a class for styling 
+      .attr("d", line); // 11. Calls the line generator 
+
+  // 12. Appends a circle for each datapoint 
+  svg.selectAll(".dot")
+      .data(data)
+    .enter().append("circle") // Uses the enter().append() method
+      .attr("class", "dot") // Assign a class for styling
+      .style("fill", color)
+      .attr("cx", function(d) { return xScale(d.date) })
+      .attr("cy", function(d) { return yScale(d.value) })
+      .attr("r", 5)
+        .on("mouseover", function(a, b, c) { 
+          console.log(a) 
+          //this.attr('class', 'focus')
+      })
+        .on("mouseout", function() {  })
+
+}
+
+
+
+//       .on("mousemove", mousemove);
+
+//   var focus = svg.append("g")
+//       .attr("class", "focus")
+//       .style("display", "none");
+
+//   focus.append("circle")
+//       .attr("r", 4.5);
+
+//   focus.append("text")
+//       .attr("x", 9)
+//       .attr("dy", ".35em");
+
+//   svg.append("rect")
+//       .attr("class", "overlay")
+//       .attr("width", width)
+//       .attr("height", height)
+//       .on("mouseover", function() { focus.style("display", null); })
+//       .on("mouseout", function() { focus.style("display", "none"); })
+//       .on("mousemove", mousemove);
+  
+//   function mousemove() {
+//     var x0 = x.invert(d3.mouse(this)[0]),
+//         i = bisectDate(data, x0, 1),
+//         d0 = data[i - 1],
+//         d1 = data[i],
+//         d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+//     focus.attr("transform", "translate(" + x(d.date) + "," + y(d.close) + ")");
+//     focus.select("text").text(d);
+//   }
+</script>

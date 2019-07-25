@@ -2,10 +2,12 @@
  /*********************************************************************************************************************************/
     /**************************************************** <GLOBAL VARIABLES> *********************************************************/
     /*********************************************************************************************************************************/
-    var fullcourt_ratio = 1.754;
+ /*  var fullcourt_ratio = 1.754;
     var halfcourt_ratio = .88;
-    var canvas_height_ratio = .9
-    var canvas_width_ratio = .85
+    var canvas_width_ratio = .5
+    var canvas_height_ratio = .7
+    var canvas_width = window.innerWidth * canvas_width_ratio;
+    var canvas_height = canvas_width * canvas_height_ratio;
     var playerRadius = 20;
     var anchorRadius = 3;
     var anchorOffset = anchorRadius - .5;
@@ -13,15 +15,15 @@
     var line_type;
     
     var line, isDown, evented;
+    canvas.setWidth(canvas_width);
+    canvas.setHeight(canvas_height);
 
-    canvas.setHeight(window.innerHeight * canvas_height_ratio);
-    canvas.setWidth(window.innerWidth * canvas_width_ratio);
 
-    halfcourt_img_width = window.innerHeight / halfcourt_ratio;
-    halfcourt_img_left = canvas.width / 2 - halfcourt_img_width /2;
-    fullcourt_img_width = window.innerHeight / fullcourt_ratio;
-    fullcourt_img_left = canvas.width / 2 - fullcourt_img_width /2;
-    var bench = (canvas.width - (halfcourt_img_width + halfcourt_img_left))/2 + halfcourt_img_width + halfcourt_img_left;
+    halfcourt_img_width = canvas_width;
+    halfcourt_img_left = canvas_width / 2 - halfcourt_img_width /2;
+    fullcourt_img_width = canvas_width / fullcourt_ratio;
+    fullcourt_img_left = canvas_width / 2 - fullcourt_img_width /2;
+    var bench = (canvas.width - (halfcourt_img_width + halfcourt_img_left))/2 + halfcourt_img_width + halfcourt_img_left;*/
 
     /*********************************************************************************************************************************/
     /**************************************************** <GLOBAL VARIABLES/> ********************************************************/
@@ -37,7 +39,56 @@
     /**************************************************** <DRAWING OBJECTS> **********************************************************/
     /*********************************************************************************************************************************/
 
+    fabric.Basket = fabric.util.createClass(fabric.Circle, {
+        type: 'Basket',
+        initialize(options) {
+            options || (options = { });
+            this.callSuper('initialize', options);
+            this.set({
+              hasControls: false,
+              selectable: false,
+              hasBorders: false,
+              evented: false,
+              perPixelTargetFind: true,
+            });
+        },
 
+        _render(ctx) {
+            this.callSuper('_render', ctx);
+        }, 
+
+        toObject() {
+            return fabric.util.object.extend(this.callSuper('toObject'), {
+              customProps: this.customProps,
+              color: this.color,
+              hasControls: this.hasControls,
+              selectable: this.selectable,
+              hasBorders: this.hasBorders,
+              evented: this.evented,
+              perPixelTargetFind: this.perPixelTargetFind,
+              id: this.id,
+            });
+        },
+
+    });
+
+    function plotBasket(basket_left, basket_top, r, canvas_width, canvas){
+      var basket = new fabric.Basket({
+        left: basket_left - r,
+        top: basket_top,
+        strokeWidth: 2,
+        radius: r,
+        fill: "white",
+        stroke: "black",
+        canvas_width: canvas_width,
+      });
+      canvas.add(basket);
+      return basket;
+    }
+
+    fabric.Basket.fromObject = function(object, callback) {
+        return fabric.Object._fromObject('Basket', object, callback);
+    };
 
     /**************************************************** <LINE WITH ARROW> **********************************************************/
 
@@ -404,7 +455,6 @@
 
     function triangle_line(x){
       let g = x % 6;
-      console.log(g);
       if(g<=3) return g*5;
       if(g>3) return (6-g)*5;
     }
@@ -587,6 +637,9 @@
         initialize(options) {
             options || (options = { });
             this.callSuper('initialize', options);
+            this.set({
+              id: this.id
+            })
         },
         _render(ctx) {
             this.callSuper('_render', ctx);
@@ -595,6 +648,7 @@
         toObject() {
             return fabric.util.object.extend(this.callSuper('toObject'), {
               customProps: this.customProps,
+              id: this.id,
               toAnchorPoint: this.toAnchorPoint,
               color: this.color,
               anchorable: this.anchorable,
@@ -604,6 +658,7 @@
               evented: this.evented,
               perPixelTargetFind: this.perPixelTargetFind,
               lineIds: this.lineIds,
+              has_ball: this.has_ball,
             });
         },
 
@@ -614,10 +669,138 @@
     };
 
 
+    fabric.Basketball = fabric.util.createClass(fabric.Group, {
+        type : 'basketball',
+
+        initialize : function(objects, options) {
+            options || ( options = { });
+            this.callSuper('initialize', objects, options);
+        },
+
+        toObject() {
+            return fabric.util.object.extend(this.callSuper('toObject'), {
+                // insert custom attributes
+            });
+        },
+
+        _render : function(ctx) {
+            this.callSuper('_render', ctx);
+        }
+    })
+
+    fabric.Basketball.fromObject = function (object, callback) {
+        fabric.util.enlivenObjects(object.objects, function (enlivenedObjects) {
+            delete object.objects;
+            callback && callback(new fabric.Basketball(enlivenedObjects, object));
+        });
+    };
+
+    //fabric.CustomGroup.async = true;
+
+
 
     /******************************************************** <CIRCLE> ***************************************************************/
 
-    function makeCircle(left, top, color, id) {
+
+    function makeBasketball(top, left, playerRadius){
+      var angle = Math.atan((10-0.75)/(70))* 180 / Math.PI
+      var start_angle = (angle+90)*(Math.PI/180)
+      var end_angle = (270-angle)*(Math.PI/180)
+
+      var c = new fabric.Circle({
+        radius: 6,
+        stroke: "black",
+        strokeWidth: 1,
+        fill: 'orange'
+      });
+
+      var arc = new fabric.Circle({
+        radius: 3.5,
+        originX: 'center',
+        originY: 'center',
+        top: 12,
+        left: 6.5,
+        angle: 90,
+        startAngle: start_angle,
+        endAngle: end_angle,
+        stroke: 'black',
+        strokeWidth: 1,
+        fill: '',
+        hasControls: false,
+        selectable: false,
+        hasBorders: false,
+        evented: false,
+      });
+
+      var line = new fabric.Rect({
+        stroke: 'black',
+        strokeWidth: 1,
+        width: 13,
+        top: 6,
+        left: -0.5,
+        fill: '',
+      })
+
+      var arc2 = new fabric.Circle({
+        radius: 3.5,
+        originX: 'center',
+        originY: 'center',
+        top: 1,
+        left: 6.5 ,
+        angle: 270,
+        startAngle: start_angle,
+        endAngle: end_angle,
+        stroke: 'black',
+        strokeWidth: 1,
+        fill: '',
+        perPixelTargetFind: true,
+        objectCaching: false,
+      });
+
+      var line2 = new fabric.Rect({
+        stroke: 'black',
+        strokeWidth: 1,
+        height: 13,
+        top: -0.5,
+        left: 6,
+        fill: '',
+      })
+
+
+
+      var g = new fabric.Basketball([c, arc, line, arc2, line2], {
+        top: top + 1.7* playerRadius,
+        left: left + 1.7* playerRadius,
+        hasControls: false,
+        hasBorders: false,
+      })
+      console.log(g)
+      canvas.add(g)
+
+      return g;
+
+    }
+
+    function makeCircle(left, top, color, id, num, has_ball) {
+        var ball = null;
+        var text = new fabric.Text(num, {
+          id: id,
+          left: left + playerRadius + 2,
+          top: top + playerRadius + 2,
+          fontSize: 14,
+          fill: 'white',
+          originX: 'center',
+          originY: 'center',
+          hasBorders: false,
+          hasControls: false,
+          selectable: false,
+          evented: false,
+          fontFamily: 'Helvetica',
+        });
+
+        if(has_ball){
+          ball = makeBasketball(top, left, playerRadius)
+        }
         var c = new fabric.PlayerCircle({
           id: id,
           left: left,
@@ -635,7 +818,15 @@
           lines: [],
           lineIds: [],
           added: true,
+          text: text,
+          has_ball: has_ball,
+          ball: ball,
         });
+
+        
+        canvas.add(c);
+        canvas.add(text)
+
         return c;
       }
 

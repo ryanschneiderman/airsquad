@@ -3,7 +3,9 @@ class StatsController < ApplicationController
 	def index
 		@team = Team.find_by_id(params[:team_id])
 		@players = Member.where(team_id: params[:team_id], isPlayer: true)
-		@opponent = nil
+		@per_minutes = @team.minutes_p_q * 3
+		@num_games = Game.where(team_id: params[:team_id]).count
+		@opponent_name = "Opponents"
 
 		@stat_table_columns = Stats::BasicStatService.new({
 			team_id: params[:team_id]
@@ -17,24 +19,18 @@ class StatsController < ApplicationController
 			team_id: params[:team_id]
 		}).call
 
-
-		@player_stats_unsorted = SeasonStat.select("*").joins(:stat_list).select("*").joins(:member).where('members.team_id' => @team.id)
-		@player_stats = @player_stats_unsorted.sort_by{|e| [e.member_id, e.stat_list_id]}
+		@player_stats = SeasonStat.joins(:stat_list, :member).select("members.games_played as games_played, members.season_minutes as season_minutes, stat_lists.stat as stat, members.nickname as nickname, stat_lists.display_priority as display_priority, season_stats.*").where('members.team_id' => @team.id).sort_by{|e| [e.member_id, e.stat_list_id]}
 
 		@team_stats = TeamSeasonStat.select("*").joins(:stat_list).where(team_id: params[:team_id], is_opponent: false)
 		@opponent_stats = TeamSeasonStat.select("*").joins(:stat_list).where(team_id: params[:team_id], is_opponent: true)
 
 		@shot_chart_data = StatGranule.select("*").joins(:member).where('members.team_id' => @team.id).where("stat_list_id IN (?)", [1,2])
 
-		@shot_chart_data.each do |shot|
-			puts shot.metadata
-		end
-
-		@advanced_stats = SeasonAdvancedStat.select("*").joins(:stat_list, :member).where('members.team_id' => @team.id).sort_by{|e| e.member_id}
+		@advanced_stats = SeasonAdvancedStat.joins(:stat_list, :member).select("stat_lists.stat as stat, members.nickname as nickname, stat_lists.display_priority as display_priority, season_advanced_stats.*").where('members.team_id' => @team.id).sort_by{|e| [e.member_id, e.stat_list_id]}
 
 		@team_advanced_stats = SeasonTeamAdvStat.select("*").joins(:stat_list, :team).where('teams.id' => @team.id)
-
-		
+		@stat_totals = StatTotal.joins(:game, :stat_list).select("games.date as date, stat_lists.stat as stat, stat_totals.*").where("stat_lists.team_stat" => false, "stat_totals.team_id" => @team.id, "stat_totals.is_opponent" => false, "stat_lists.rankable" => true).sort_by{|e| [e.stat_list_id, e.date]}
+		@trend_stat_lists = TeamStat.joins(:stat_list).select("stat_lists.stat as stat, team_stats.*").where("team_stats.team_id" => @team.id, "stat_lists.team_stat" => false, "stat_lists.rankable" => true, "stat_lists.advanced" => false).sort_by{|e| e.stat_list_id}
 	end 
 
 	def new

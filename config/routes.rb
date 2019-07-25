@@ -20,6 +20,10 @@ Rails.application.routes.draw do
 
   post '/teams/:team_id/games/:id/game_mode(.:format)' => 'games#game_mode_submit'
 
+  get '/teams/:team_id/members/:member_id(.:format)' => 'members#player_profile'
+
+  get "/teams/:team_id/lineup_explorer" => "teams#lineup_explorer", :as => "lineup_explorer"
+
   get 'messenger', to: 'messengers#index'
   get 'get_private_conversation', to: 'messengers#get_private_conversation'
   get 'get_group_conversation', to: 'messengers#get_group_conversation'
@@ -60,8 +64,11 @@ Rails.application.routes.draw do
     resources :games do 
     end
     resources :plays do 
+      resources :progressions 
     end
     resources :posts do 
+    end
+    resources :members do 
     end
   end
 

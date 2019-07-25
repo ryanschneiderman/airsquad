@@ -9,7 +9,7 @@ class Stats::StatTableColumnsService
 
 	def call
 		if !@is_advanced
-			@display_stats = [{:stat_name => "FG", :display_priority => 1, :display_type => "fraction", :percentage_string => "FG%"}, {:stat_name =>"3pt FG", :display_priority => 5, :display_type => "fraction", :percentage_string => "3pt%"}, {:stat_name =>"FT", :display_priority => 7, :display_type => "fraction", :percentage_string => "FT%"}, {:stat_name =>"Points", :display_priority => 15, :display_type => "standard"}, {:stat_name =>"Fouls", :display_priority => 16, :display_type => "standard"}, {:stat_name =>"Minutes", :display_priority => 17, :display_type => "minutes"}]
+			@display_stats = [{:stat_name => "FG", :display_priority => 1, :display_type => "fraction", :percentage_string => "FG%"}, {:stat_name =>"3pt FG", :display_priority => 5, :display_type => "fraction", :percentage_string => "3pt%"}, {:stat_name =>"FT", :display_priority => 7, :display_type => "fraction", :percentage_string => "FT%"}, {:stat_name =>"PTS", :display_priority => 15, :display_type => "standard", :stat_list_id => 15}, {:stat_name =>"Fouls", :display_priority => 16, :display_type => "standard", :stat_list_id => 17}, {:stat_name =>"Minutes", :display_priority => 17, :display_type => "minutes", :stat_list_id => 16}]
 			@stats.each do |stat|
 				determine_display_name_basic(stat)
 			end
@@ -62,17 +62,17 @@ class Stats::StatTableColumnsService
 	def determine_display_name_basic(stat)
 		case stat.id
 		when 3
-			@display_stats.push({:stat_name =>"Assists", :display_priority => 9, :display_type => "standard", stat_list_id: stat.id})
+			@display_stats.push({:stat_name =>"AST", :display_priority => 9, :display_type => "standard", stat_list_id: stat.id})
 		when 4
-			@display_stats.push({:stat_name =>"O - Rebounds", :display_priority => 10, :display_type => "standard", stat_list_id: stat.id})
+			@display_stats.push({:stat_name =>"OReb", :display_priority => 10, :display_type => "standard", stat_list_id: stat.id})
 		when 5
-			@display_stats.push({:stat_name =>"D - Rebounds", :display_priority => 11, :display_type => "standard", stat_list_id: stat.id})
+			@display_stats.push({:stat_name =>"DReb", :display_priority => 11, :display_type => "standard", stat_list_id: stat.id})
 		when 6
-			@display_stats.push({:stat_name =>"Steals", :display_priority => 12, :display_type => "standard", stat_list_id: stat.id})
+			@display_stats.push({:stat_name =>"STL", :display_priority => 12, :display_type => "standard", stat_list_id: stat.id})
 		when 7
-			@display_stats.push({:stat_name =>"Turnovers", :display_priority => 14, :display_type => "standard", stat_list_id: stat.id})
+			@display_stats.push({:stat_name =>"TOV", :display_priority => 14, :display_type => "standard", stat_list_id: stat.id})
 		when 8
-			@display_stats.push({:stat_name =>"Blocks", :display_priority => 13, :display_type => "standard", stat_list_id: stat.id})
+			@display_stats.push({:stat_name =>"BLK", :display_priority => 13, :display_type => "standard", stat_list_id: stat.id})
 		end
 	end
 

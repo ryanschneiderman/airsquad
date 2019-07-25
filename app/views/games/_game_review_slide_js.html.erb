@@ -17,15 +17,18 @@
 		$(this).css("cursor", "default")
 		$("#gr-player-stats-content").hide();
   		$("#gr-team-stats").animate({
-	    	width: "85%",
-        right: "15%",
+	    	width: "90%",
+        right: "10%",
   		}, 500);
   		$("#gr-player-stats").animate({
-        width: "15%",
-	    	left: "85%",
+        width: "10%",
+	    	left: "90%",
   		}, 500);
-  		$("#team-stats-white-overlay").css("width", "85%");
-  		$("#player-stats-white-overlay").css("width", "15%");
+  		$("#team-stats-white-overlay").css("width", "90%");
+      $("#player-stats-white-overlay").css({ 'width' : '10%', 'z-index' : '2000'});
+      $("#player-stats-color-overlay").css({ 'z-index' : '2001'});
+      $("#player-overlay-header").show()
+      $("#team-overlay-header").hide()
 
   		$("#player-stats-color-overlay").animate({
 	    	width: "100%",
@@ -53,16 +56,18 @@
 	  $(this).css("cursor", "default")
 	  	$("#gr-team-stats-content").hide();
   		$("#gr-team-stats").animate({
-        width: "15%",
-	    	right: "85%",
+        width: "10%",
+	    	right: "90%",
   		}, 500);
   		$("#gr-player-stats").animate({
-	    	width: "85%",
-        left: "15%",
+	    	width: "90%",
+        left: "10%",
   		}, 500);
-  		$("#team-stats-white-overlay").css("width", "15%");
-  		$("#player-stats-white-overlay").css("width", "85%");
-
+  		$("#team-stats-white-overlay").css({ 'width' : '10%', 'z-index' : '2000'});
+  		$("#player-stats-white-overlay").css({ 'width' : '90%', 'z-index' : '-2'});
+      $("#player-overlay-header").hide()
+      $("#team-overlay-header").show()
+      
 
   		$("#player-stats-color-overlay").animate({
 	    	width: "100%",
@@ -70,6 +75,7 @@
     		$( this ).animate({
     			opacity: 0
     		}, 100);
+        $("#player-stats-color-overlay").css({ 'z-index' : '-2'});
     		$("#player-stats-white-overlay").animate({
     			opacity: 0
     		}, 100);

@@ -4,15 +4,16 @@
 
 #tactical-grid{
 	display: grid;
-	grid-template-columns: 15vw 85vw;
+	grid-template-columns: 15vw 70vw 15vw;
+	max-height: 100vh;
 }
 
 #c{
 }
 
 #tool-bar{
-	display: grid;
-	grid-template-rows: 75vh 15vh;
+	display: flex;
+	flex-direction: column;
 }
 
 #graphs{
@@ -26,6 +27,19 @@
 	width: 100px;
 	height: 45px;
 	margin-left: 10px;
+	border-radius: 3px;
+}
+
+.save-button{
+	display: block;
+	color: white;
+	background-color: black;
+	margin-top: 20px;
+	margin-bottom: 10px;
+	width: 100px;
+	height: 45px;
+	margin-left: 10px;
+	border-radius: 3px;
 }
 
 .line {
@@ -54,6 +68,10 @@
 
 .drawing-button-arrow{
 	padding-left: 10px;
+}
+
+.drawing-button-name{
+	text-align: center;
 }
 
 $height: 16px;

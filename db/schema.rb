@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_04_184245) do
+ActiveRecord::Schema.define(version: 2019_07_24_161044) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -72,6 +72,8 @@ ActiveRecord::Schema.define(version: 2019_06_04_184245) do
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.bigint "team_id"
+    t.integer "season_minutes"
+    t.integer "games_played"
     t.index ["team_id"], name: "index_members_on_team_id"
     t.index ["user_id"], name: "index_members_on_user_id"
   end
@@ -86,14 +88,22 @@ ActiveRecord::Schema.define(version: 2019_06_04_184245) do
     t.index ["team_id"], name: "index_opponents_on_team_id"
   end
 
+  create_table "play_types", force: :cascade do |t|
+    t.string "o_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "d_type"
+  end
+
   create_table "plays", force: :cascade do |t|
     t.string "name"
     t.boolean "offense_defense"
-    t.boolean "halfcourt_fullcourt"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.integer "num_progressions"
+    t.bigint "play_type_id"
+    t.index ["play_type_id"], name: "index_plays_on_play_type_id"
     t.index ["user_id"], name: "index_plays_on_user_id"
   end
 
@@ -135,6 +145,8 @@ ActiveRecord::Schema.define(version: 2019_06_04_184245) do
     t.bigint "play_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.float "canvas_width"
+    t.text "notes"
     t.index ["play_id"], name: "index_progressions_on_play_id"
   end
 
@@ -145,6 +157,7 @@ ActiveRecord::Schema.define(version: 2019_06_04_184245) do
     t.json "constituent_stats"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "team_rank"
     t.index ["member_id"], name: "index_season_advanced_stats_on_member_id"
     t.index ["stat_list_id"], name: "index_season_advanced_stats_on_stat_list_id"
   end
@@ -155,6 +168,8 @@ ActiveRecord::Schema.define(version: 2019_06_04_184245) do
     t.integer "value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "per_game_rank"
+    t.integer "per_minute_rank"
     t.index ["member_id"], name: "index_season_stats_on_member_id"
     t.index ["stat_list_id"], name: "index_season_stats_on_stat_list_id"
   end
@@ -189,12 +204,14 @@ ActiveRecord::Schema.define(version: 2019_06_04_184245) do
     t.string "stat"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "granular"
     t.boolean "default"
     t.boolean "collectable"
     t.boolean "team_stat"
     t.integer "display_priority"
     t.boolean "advanced"
+    t.boolean "rankable"
+    t.boolean "is_percent"
+    t.integer "stat_kind"
   end
 
   create_table "stat_totals", force: :cascade do |t|

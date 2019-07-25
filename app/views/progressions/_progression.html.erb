@@ -1,38 +1,23 @@
 <div id = "progression-block">
 	<div id = "progression-img">
-		<%= link_to play_progression_path(@play.id, progression.id), :class => "progression-link" do %>
+		<button onclick = "loadCanvasFromJson(<%=progression.index%>)">
 			<%= image_tag("example-progression.png", :alt => "progression", :class => "progression-img") %>
-		<%end%>
+		</button>
 		
 		
-		<%= link_to play_progression_path(@play.id, progression.id), :class => "progression-link" do %>
+		<%= link_to team_play_progression_path(@team_id, @play.id, progression.id), :class => "progression-link", method: :delete  do %>
 			<div class = "show-link-block">
-				<div class = "progression-link-text">Show</div>
+				<div class = "progression-link-text">Delete</div>
 			</div>
 		<%end%>
 		
 		
-		<%= link_to edit_play_progression_path(@play.id, progression.id), :class => "progression-link" do %>
+		<%= link_to({:controller => "progressions", :action => "new", :play_id => @play.id, progression_index: progression.index}) do %>
 			<div class = "edit-link-block">
-				<div class = "progression-link-text">Edit</div>
+				<div class = "progression-link-text">Insert new &rarr;</div>
 			</div>	
 		<% end %>
 	</div>
-	<div id = "progression-actions">
-		<%= link_to play_progression_path(@play.id, progression.id), method: :delete  do %>
-			<div class = "delete-progression"> 
-				<%= image_tag("X-thick.png", :alt => "delete", :id => "X-sign") %>
-				<div id = "delete-text">Delete progression</div>
-			</div>
-		<% end %> 
-		<%= link_to({:controller => "progressions", :action => "new", :play_id => @play.id, progression_index: progression.index}) do %> 
-			<div class = "next-progression"> 
-				<%= image_tag("plus-thick.png", :alt => "delete", :id => "plus-sign") %>
-				<div id = "next-text">Insert progression</div>
-			</div>
-		<%end %>
-	</div>
-	<div id = "progression-title">Progression <%= progression.index %></div>
 </div>
 
 

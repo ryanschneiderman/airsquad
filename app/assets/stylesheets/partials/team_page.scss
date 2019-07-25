@@ -4,34 +4,50 @@
 
 #content-grid{
 	display: grid;
-	grid-template-columns: 1fr 1fr 1fr;
-	border: 1px solid #000;
+	grid-template-columns: 1.5fr 1fr 1fr;
 }
 
 #col2{
 	display: grid;
 	grid-template-rows: 1fr 1fr;
-	border: 1px solid #000;
 }
 
 #col3{
 	display: grid;
 	grid-template-rows: 1fr 1fr;
-	border: 1px solid #000;
 }
 
-.vert-rectangles{
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	border: 1px solid #000;
+#col1{
+	border-radius: 3px;
+	background-color: #a8d2ff;
+	margin-top: 5px;
+	margin-left: 5px;
 }
 
-.horiz-rectangles{
-	display: grid;
-	grid-template-rows: 1fr 1fr;
-	border: 1px solid #000;
+.big-box{
+	margin-top: 5px;
+	margin-left: 5px;
 }
 
+#schedule{
+	background-color: #ff2b4f;
+	border-radius: 3px;
+}
+
+#plays{
+	background-color: #6be8e2;
+	border-radius: 3px;
+}
+
+#roster{
+	background-color: #ff5921;
+	border-radius: 3px;
+}
+
+#stats{
+	background-color: #d59afc;
+	border-radius: 3px;
+}
 
 
 

@@ -1,56 +1,140 @@
-<h1 class = "stats-table-header">Standard Stats</h1>
-<h3 class = "player-stats">Player Stats</h3>
-<table class = "stats-table" id = "player-stats-table">
-				
-</table>
-<h3 class = "player-stats">Team Stats</h3>
-<table class = "stats-table" id = "team-stats-table">		
-</table>
 
-<h1 class = "stats-table-header">Advanced Stats</h1>
-<h3 class = "player-stats">Player Stats</h3>
-<table class = "stats-table" id = "adv-player-stats-table">
-				
-</table>
-<h3 class = "player-stats">Team Stats</h3>
-<table class = "stats-table" id = "adv-team-stats-table">
-				
-</table>
-
-
-<div id = "gr-shot-chart-grid">
-	<canvas id ="gr-canvas"></canvas>
-	<div id = "gr-shot-chart-buttons">
-			<div id = "shot-chart-header">Individual Shot Charts</div>
-			<div id = "player-shot-chart-buttons">
-				
-			</div> 
-			<div id = "team-shot-charts">
-				<button class = "team-shot-chart" type = "button" onclick="to_team_shot_chart()">Team Shot Chart</button>
+	<div id = "gr-header">Game Review</div>
+	<div id = "game-review-stats">
+		<div id = "gr-team-stats">
+			<div class = "white-overlay" id = "team-stats-white-overlay"></div>
+			<div id = "team-stats-color-overlay" class = "colored-overlay">
+				<div id = "team-stats-text-overlay" class = "text-overlay">
+					<div class = "overlay-header" id = "team-overlay-header">Team Stats</div>
+					<div class = "overlay-message" id = "team-overlay-message">(click to view more)</div>
+				</div>
+			</div>
+			<div id = "gr-team-stats-content">
+				<div class = "team-stat-header">Basic Stats</div>
+				<div id = "basic-stats-table">
+					<table class = "gr-stats-table" id = "team-stats-table"></table>
+				</div>
+				<div class = "team-stat-header">Advanced Stats</div>
+				<div id = "advanced-stats-table">
+					<table class = "gr-stats-table" id = "adv-team-stats-table"></table>
+				</div>
+				<div class = "team-stat-header">Shot Charts</div>
+				<div id = "gr-team-shot-charts">
+					<div class = "shot-distribution">
+						<canvas id ="gr-canvas" class = "gm-canvas"></canvas>
+					</div>
+				</div>
 			</div>
 		</div>
-</div>
+		<div id = "gr-player-stats">
+			<div class = "white-overlay" id = "player-stats-white-overlay"></div>
+			<div id = "player-stats-color-overlay" class = "colored-overlay">
+				<div id = "player-stats-text-overlay" class = "text-overlay">
+				<div class = "overlay-header" id = "player-overlay-header">Player Stats</div>
+				<div class = "overlay-message" id = "player-overlay-message">(click to view more)</div>
+			</div>
+			</div>
+			<div id = "gr-player-stats-content">
+				<div id = "gr-player-modules">
+					<% counter = 0%>
+					<%@players.each do|player| %>
+						<div id = "player-module-<%=counter%>" class = "player-module">
+							<h2 class = "player-name"><%=player.nickname%></h2>
+							<div id = "player-id" style = "display: none"><%=player.id%></div>
 
+							<table class = "table player-basic-stats player-table">
+								<caption class = "table-header"> Basic Stats</caption>
+							</table>
+							<table class = "table player-per-minute-stats player-table">
+								<caption class = "table-header"> Per <%=@minutes_p_q * 3%> Minutes Stats</caption>
+							</table>
+							<table class = "table player-advanced-stats player-table">
+								<caption class = "table-header"> Advanced Stats</caption>
+							</table>
+							<canvas id ="player-canvas-<%=counter%>" class = "player-canvas"></canvas>
+							<div class = "full-profile"> <%= link_to "See Full Profile", team_member_path(@team.id, player.id) %></div>
+							<button class = "arrow down expand" onclick = "expand(<%=counter%>, this)"></button>
+							
+						</div>
+						<% counter+=1%>
+					<%end%>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+
+<%= render 'canvas_js' %>
 <%= render 'game_mode_js_objects' %>
 <%= render 'game_review_js' %>
+<%= render 'game_review_slide_js' %>
+
+
 <script>
-	var show_player_stats_table = document.getElementById("player-stats-table");
-	var show_team_stats_table = document.getElementById("team-stats-table");
-	var show_adv_stats_player_table = document.getElementById("adv-player-stats-table");
-	var show_adv_stats_team_table = document.getElementById("adv-team-stats-table");
 
-	initialize_tables(show_player_stats_table, show_team_stats_table, show_adv_stats_player_table, show_adv_stats_team_table)
-	populate_display_stats_basic();
-	populate_display_stats_adv();
-	populate_team_display_stats_adv()
-	populate_team_advanced_stats();
-	populate_stat_array();
-	populate_team_stats();
-	populate_opponent_stats();
-	sort_basic_table(17);
-	populate_stat_tables(true);
+    	var show_team_stats_table = document.getElementById("team-stats-table");
+		var show_adv_stats_team_table = document.getElementById("adv-team-stats-table");
+		initialize_tables(show_team_stats_table, show_adv_stats_team_table);
+		populate_display_stats_basic();
+		populate_display_stats_adv();
+		populate_team_display_stats_adv()
+		populate_team_advanced_stats();
+		populate_stat_array();
+		populate_team_stats();
+		populate_opponent_stats();
+		sort_player_arr(17);
+		
 
-	populate_shot_chart();
-	populate_player_shot_charts();
+		// TODO return vars
+		var canvas_vars = initialize_canvas(0.5, 0.7, "gr-canvas", 3);
+		plotBasket(canvas_vars.canvas_width/1.978, canvas_vars.canvas_height/11.5, 14, canvas_vars.canvas_width, canvas_vars.canvas)
+		populate_shot_chart(canvas_vars.canvas, canvas_vars.canvas_width);
+
+		$(window).resize(function(){
+	        canvas_vars.canvas.getObjects().forEach(function(o){
+	        	switch(o.type){
+	        		case "MakeSymbol" :
+		        		var old_canvas_width = o.canvas_width;
+		        		var change_ratio = old_canvas_width/canvas_vars.canvas.width;
+
+		        		o.set({left: o.left/ change_ratio, top: o.top / change_ratio, canvas_width: canvas_vars.canvas.width});
+		        		o.setCoords();
+		        		canvas_vars.canvas.calcOffset();
+		  				canvas_vars.canvas.renderAll();
+	        		break;
+	        		case "Basket" :
+	        			var old_canvas_width = o.canvas_width;
+		        		var change_ratio = old_canvas_width/canvas_vars.canvas.width;
+		        		var basket_radius = o.radius /change_ratio
+
+		        		o.set({left: o.left/ change_ratio, top: o.top / change_ratio, canvas_width: canvas_vars.canvas.width, radius: basket_radius});
+		        		o.setCoords();
+		        		canvas_vars.canvas.calcOffset();
+		  				canvas_vars.canvas.renderAll();
+		  			break;
+	        		case "MissSymbol" :
+	        			var old_canvas_width = o.canvas_width;
+		        		var change_ratio = old_canvas_width/canvas_vars.canvas.width;
+		        		o.set({x1: o.x1 / change_ratio, y1: o.y1 / change_ratio, x2: o.x2 / change_ratio, y2: o.y2 / change_ratio, canvas_width: canvas_vars.canvas.width});
+		        		o.setCoords();
+		        		canvas_vars.canvas.calcOffset();
+		        		canvas_vars.canvas.renderAll();
+	        		break
+	        	}
+	    	})
+	    })
+
+		insert_player_modules();
+		
+		populate_team_stat_tables(true);
+
+		//populate_player_stat_tables()
+
+		//populate_player_shot_charts();
+
+	
+
+	
 
 </script>
+

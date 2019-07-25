@@ -17,7 +17,7 @@ class Advanced::TotalReboundPctService
 		if (@minutes_played * (@team_total_reb + @opp_total_reb)) == 0
 			return 0.0
 		else 
-			raw_trb = 100 * (@total_reb * (@team_minutes_played / 5)) / (@minutes_played * (@team_total_reb + @opp_total_reb))
+			raw_trb = 100 * 100 * (@total_reb * (@team_minutes_played / 5)) / (@minutes_played * (@team_total_reb + @opp_total_reb))
 			trb = raw_trb.round / 100.0
 			return trb
 		end

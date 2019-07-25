@@ -1,0 +1,33 @@
+<div class = "content-page-landing">
+	<%= image_tag("scorebook.png", :alt => "plays", :class => "content-page-landing-img") %>
+	<div class = "content-page-landing-title">Lineup Explorer</div>
+</div>
+
+<div id = "lineup-explorer">
+	<div id = "new-lineup">
+		<div id = "new-lineup-grid">
+			<div id = "select-players-lineup">
+				<% counter = 0 %>
+				<%@members.each do |member|%>
+					<button class = "btn lineup-member-button" id = "lineup-member-button-<%=counter%>" onclick="select_player(this, <%=member.id%>)"><%=member.nickname%></button>
+					<% counter +=1 %>
+				<%end%>
+			</div>
+			<div id = "lineup-radar-charts">
+				<div id = "overlaid-chart">
+					<div id = toggle-buttons>
+						<button class = "basic-chart-toggle" id = "to-per-game-button" onclick = "toggle_radar_chart(1, this)">Per Game</button>
+						<button class = "basic-chart-toggle" id = "to-per-minute-button" onclick = "toggle_radar_chart(2, this)">Per Minute</button>
+						<button class = "basic-chart-toggle" id = "advanced-button" onclick = "toggle_radar_chart(3, this)">Advanced</button>
+					</div>
+					<div class = "lineup-chart"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id = "saved-lineups"></div>
+</div>
+
+<%= render 'stats/radar/radar_js' %>
+<%= render 'stats/radar/lineup_radar_controller_js' %>
+

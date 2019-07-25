@@ -5,7 +5,11 @@ class Advanced::TeamOffensiveRebPctService
 	end
 
 	def call()
-		raw_oreb_pct = 100 * 100 *  @team_off_reb / (@team_off_reb + @opp_def_reb)
+		if @team_off_reb + @opp_def_reb == 0 
+			raw_oreb_pct = 0.0
+		else
+			raw_oreb_pct = 100 * 100 *  @team_off_reb / (@team_off_reb + @opp_def_reb)
+		end
 		oreb_pct = raw_oreb_pct.round / 100.0
 		return oreb_pct
 	end

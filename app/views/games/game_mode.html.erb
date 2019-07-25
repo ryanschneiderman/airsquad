@@ -3,7 +3,7 @@
 		<div id = "gm-tool-bar">
 			<div id = "stat-buttons">
 				<% @collection_stats.each do |stat|%>
-						<button class = "stat-button" type = "button" onclick = "stat_button('<%= stat.stat %>', this)"> <%= stat.stat %> </button>
+						<button class = "stat-button" type = "button" onclick = "stat_button('<%= stat[:id] %>', this)"> <%= stat[:display_name] %> </button>
 				<% end %>
 			</div>
 			<div id = "player-buttons">
@@ -43,7 +43,7 @@
 					<div id = "timer"></div>
 				</div>
 			</div>
-			<canvas id ="c" class = "show-canvas"></canvas>
+			<canvas id ="c" class = "show-canvas gm-canvas"></canvas>
 		</div>
 		<div id = "shot-chart-buttons">
 			<div id = "shot-chart-header">Individual Shot Charts</div>
@@ -89,10 +89,67 @@
 <%= render 'game_mode_js' %>
 <%= render 'game_mode_js_objects' %>
 <script>
-
+	canvas_vars = initialize_canvas(0.62, 0.7, 'c', 3)
+	initialize_globals(canvas_vars.canvas, canvas_vars.canvas_width, canvas_vars.canvas_height)
 	populate_players();
 	populate_inactive_selection(false);
-	plotBasket(gm_canvas_width/2, gm_canvas_height - gm_canvas_height/6.13, 13, gm_canvas_width, canvas);
+	plotBasket(canvas_vars.canvas_width/1.978, canvas_vars.canvas_height/11.5, 14, canvas_vars.canvas_width, canvas_vars.canvas);
+
+
+	canvas_vars.canvas.on('object:moving', function (e) {
+		var obj = e.target
+        var type = obj.get('type');
+        var point = canvas_vars.canvas.getPointer(e);
+        if(type == "MakeSymbol"){
+        	move_make(obj, point)
+        }
+        else if (type == "MissSymbol"){
+         move_miss(obj, point);
+        }
+    });
+
+    $(".show-canvas").on("click", function(e) {
+		if(make_selected && curr_player != null){
+			make(e);
+		}
+		else if (miss_selected && curr_player != null){
+			miss(e);
+		}
+	}); 	
+
+    $(window).resize(function(){
+        canvas_vars.canvas.getObjects().forEach(function(o){
+        	switch(o.type){
+        		case "MakeSymbol" :
+	        		old_canvas_width = o.canvas_width;
+	        		change_ratio = old_canvas_width/canvas_vars.canvas.width;
+
+	        		o.set({left: o.left/ change_ratio, top: o.top / change_ratio, canvas_width: canvas_vars.canvas.width});
+	        		o.setCoords();
+	        		canvas.calcOffset();
+	  				canvas.renderAll();
+        		break;
+        		case "Basket" :
+        			old_canvas_width = o.canvas_width;
+	        		change_ratio = old_canvas_width/canvas_vars.canvas.width;
+	        		basket_radius = o.radius /change_ratio
+
+	        		o.set({left: o.left/ change_ratio, top: o.top / change_ratio, canvas_width: canvas_vars.canvas.width, radius: basket_radius});
+	        		o.setCoords();
+	        		canvas.calcOffset();
+	  				canvas.renderAll();
+	  			break;
+        		case "MissSymbol" :
+        			old_canvas_width = o.canvas_width;
+	        		change_ratio = old_canvas_width/canvas_vars.canvas.width;
+	        		o.set({x1: o.x1 / change_ratio, y1: o.y1 / change_ratio, x2: o.x2 / change_ratio, y2: o.y2 / change_ratio, canvas_width: canvas_vars.canvas.width});
+	        		o.setCoords();
+	        		canvas.calcOffset();
+	        		canvas.renderAll();
+        		break
+        	}
+    	})
+    })
 
 	
 </script>

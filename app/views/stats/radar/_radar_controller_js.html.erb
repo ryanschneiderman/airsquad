@@ -1,0 +1,124 @@
+<script>
+	var curr_radar_button = document.getElementById("to-per-game-button");
+	curr_radar_button.style.color = "black";
+	var season_stat_arr = [];
+	var advanced_stat_arr = [];
+	var curr_radar_stat = "per game"
+
+	// Eventually make function of user settings
+	var desired_stats = [15, 27, 4, 6, 7, 3, 8, 29, 28, 5]
+	var desired_advanced_stats = [42, 24, 25, 23, 19, 18, 22, 33, 34, 36, 37, 38, 39]
+
+
+	<% @season_stats.each do |stat| %>
+		if(is_desired_stat(parseInt("<%=stat.stat_list_id%>"))) {
+			season_stat_arr.push({"stat":"<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "per_game_rank" : "<%=stat.per_game_rank%>", "per_minute_rank" : "<%=stat.per_minute_rank%>"})
+		}
+	<%end%>
+	<% @advanced_season_stats.each do |stat| %>
+		if(is_desired_advanced_stat(parseInt("<%=stat.stat_list_id%>"))){
+			advanced_stat_arr.push({"stat": "<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "team_rank" : "<%=stat.team_rank%>"})
+		}
+	<%end%>
+
+	var counter = 0;
+
+	<% @adv_stat_table_columns.each do |stat| %>
+		if(advanced_stat_arr[counter] && advanced_stat_arr[counter].id == "<%=stat[:stat_list_id]%>"){
+			advanced_stat_arr[counter].stat = "<%=stat[:display_name]%>"
+			counter++;
+		}
+	<%end%>
+
+	////////////////////////////////////////////////////////////// 
+	//////////////////////// Set-Up ////////////////////////////// 
+	////////////////////////////////////////////////////////////// 
+
+	var margin = {top: 100, right: 100, bottom: 100, left: 100},
+		width = Math.min(550, window.innerWidth - 10) - margin.left - margin.right,
+		height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
+					
+	////////////////////////////////////////////////////////////// 
+	////////////////////////// Data ////////////////////////////// 
+	////////////////////////////////////////////////////////////// 
+	var len = season_stat_arr.length
+	var per_game_data = [[]]
+	var per_minute_data = [[]]
+	for(var i = 0; i < len; i++){
+		var per_game_rank = parseInt(season_stat_arr[i].per_game_rank);
+		per_game_data[0].push({axis: season_stat_arr[i].stat, value: ((13-per_game_rank)/13).toFixed(2)})
+
+		var per_minute_rank = parseInt(season_stat_arr[i].per_minute_rank);
+		per_minute_data[0].push({axis: season_stat_arr[i].stat, value: ((13-per_minute_rank)/13).toFixed(2)})
+	}
+
+	var advanced_data = [[]]
+	var adv_len = advanced_stat_arr.length
+	for(var i = 0; i < adv_len; i++){
+		var adv_rank = parseInt(advanced_stat_arr[i].team_rank);
+		advanced_data[0].push({axis: advanced_stat_arr[i].stat, value: ((13-adv_rank)/13).toFixed(2)});
+	}
+	console.log(per_minute_data)
+
+
+
+	////////////////////////////////////////////////////////////// 
+	//////////////////// Draw the Chart ////////////////////////// 
+	////////////////////////////////////////////////////////////// 
+
+	var color1 = d3.scaleOrdinal()
+		.range(["#00A0B0"]);
+	var color2 = d3.scaleOrdinal()
+		.range(["#CC333F"]);
+
+	//,"#EDC951", "#CC333F",
+		
+	var basicOptions = {
+	  w: width,
+	  h: height,
+	  margin: margin,
+	  maxValue: 1.0,
+	  levels: 5,
+	  roundStrokes: true,
+	  color: color1
+	};
+
+	var advancedOptions = {
+	  w: width,
+	  h: height,
+	  margin: margin,
+	  maxValue: 1.0,
+	  levels: 5,
+	  roundStrokes: true,
+	  color: color2
+	};
+
+	//Call function to draw the Radar chart
+	RadarChart(".basic-chart", per_game_data, basicOptions);
+	RadarChart(".advanced-chart", advanced_data, advancedOptions);
+
+	function is_desired_stat(stat){
+		return desired_stats.includes(stat)
+	}
+
+	function is_desired_advanced_stat(stat){
+		return desired_advanced_stats.includes(stat)
+	}
+
+	function toggle_radar_chart(stat_type, button){
+		button.style.color = "black";
+		curr_radar_button.style.color = "grey";
+		curr_radar_button = button;
+		switch(stat_type){
+		// PER GAME DATA
+		case 1 : 
+			RadarChart(".basic-chart", per_game_data, basicOptions);
+			break;
+		// PER MINUTE DATA
+		case 2 :
+			RadarChart(".basic-chart", per_minute_data, basicOptions);
+			break;
+		}
+	}
+
+</script>

@@ -50,6 +50,37 @@
             } 
     }
 
+    function setBallPos(obj){
+      obj.ball.left = obj.left + playerRadius * 1.7
+      obj.ball.top = obj.top + playerRadius * 1.7
+      canvas.renderAll()
+    }
+
+
+    function hasBall(event){
+      var anchor = canvas.getActiveObject()
+      var ball_found = false;
+      if(anchor){
+        var type = anchor.get("type")
+        if(type == "PlayerCircle"){
+          canvas.getObjects().forEach(function(o) {
+            if(o.has_ball){
+              o.has_ball = false;
+              anchor.ball = o.ball;
+              setBallPos(anchor)
+              o.ball = null;
+              ball_found = true;
+            }
+          });
+          if (!ball_found){
+            var ball = makeBasketball(anchor.top, anchor.left, anchor.radius)
+            anchor.ball = ball;
+          }
+          anchor.has_ball = true;
+        }
+      }
+    }
+
 
     /* 
 
@@ -169,28 +200,17 @@
 
     function add_players(){
 
-        var off1 = makeCircle(bench, 25, 'blue', 'off1');
-        var off2 = makeCircle(bench, 75, 'blue', 'off2');
-        var off3 = makeCircle(bench, 125, 'blue', 'off3');
-        var off4 = makeCircle(bench, 175, 'blue', 'off4');
-        var off5 = makeCircle(bench, 225, 'blue', 'off5');
+        var off1 = makeCircle(bench, canvas.height * .07, 'blue', 'off1', '1', false);
+        var off2 = makeCircle(bench, canvas.height * .14, 'blue', 'off2', '2', false);
+        var off3 = makeCircle(bench, canvas.height * .21, 'blue', 'off3', '3', false);
+        var off4 = makeCircle(bench, canvas.height * .28, 'blue', 'off4', '4', false);
+        var off5 = makeCircle(bench, canvas.height * .35, 'blue', 'off5', '5', false);
 
-        var def1 = makeCircle(bench, 350, 'red', 'def1');
-        var def2 = makeCircle(bench, 400, 'red', 'def2');
-        var def3 = makeCircle(bench, 450, 'red', 'def3');
-        var def4 = makeCircle(bench, 500, 'red', 'def4');
-        var def5 = makeCircle(bench, 550, 'red', 'def5');
-
-        canvas.add(off1);
-        canvas.add(off2);
-        canvas.add(off3);
-        canvas.add(off4);
-        canvas.add(off5);
-        canvas.add(def1);
-        canvas.add(def2);
-        canvas.add(def3);
-        canvas.add(def4);
-        canvas.add(def5);
+        var def1 = makeCircle(bench, canvas.height * .49, 'red', 'def1', '1', false);
+        var def2 = makeCircle(bench, canvas.height * .56, 'red', 'def2', '2', false);
+        var def3 = makeCircle(bench, canvas.height * .63, 'red', 'def3', '3', false);
+        var def4 = makeCircle(bench, canvas.height * .7, 'red', 'def4', '4', false);
+        var def5 = makeCircle(bench, canvas.height * .77, 'red', 'def5', '5', false);
     }
 
     function anchorPositioning(e){
@@ -206,6 +226,13 @@
       else if (type == "PlayerCircle"){
           obj.toAnchorPoint.x = obj.left + playerRadius;
           obj.toAnchorPoint.y = obj.top + playerRadius;
+          obj.text.left = obj.left + playerRadius + 2;
+          obj.text.top = obj.top + playerRadius + 2;
+
+          if(obj.has_ball){
+            obj.ball.left = obj.left + playerRadius * 1.7
+            obj.ball.top = obj.top + playerRadius * 1.7
+          }
       } 
       
       if(obj.lines){ 
@@ -248,7 +275,7 @@
 
     function removeLineRef(line){
       canvas.getObjects().forEach(function(o){
-        if(o.id == line.anchorId){
+        if(o.id == line.anchorId && validateAnchor(o)){
           var array_length = o.lineIds.length
           for(var i = 0; i < array_length; i++){ 
              if (o.lineIds[i] == line.id) {
@@ -268,63 +295,24 @@
 
 
 
-
-
-
-    /*********************************************************************************************************************************/
-    /**************************************************** <DOCUMENT ON READY> ********************************************************/
-    /*********************************************************************************************************************************/
-
- 
-
-    canvas.on('selection:created', function() {
-        canvas.getActiveObjects().forEach(function(o) {
-            var type = o.get('type');
-            if(type == "PlayerCircle"){
-                o.lockMovementY = false;
-                o.lockMovementX = false;
-                o.set({stroke: "black"});
-            }
-            if(validateLine(o)){
-              if(!o.toAnchor){
-                getToAnchor(o.toAnchorId, o);
-              }
-              o.toAnchor.animate('opacity', '1', {
-                duration: 50,
-                onChange: canvas.requestRenderAll.bind(canvas),
-              });
-            } 
-        });
-    });
-
-    canvas.on('before:selection:cleared', function() {
-         canvas.getActiveObjects().forEach(function(o) {
-            var type = o.get('type');
+    function deselect_all_active(){
+      canvas.getActiveObjects().forEach(function(o) {
+        var type = o.get('type');
             if(type == "PlayerCircle"){
                 o.set({stroke: o.color});
             } 
             if(validateLine(o)){
+              console.log("ITS A LINE")
               if(!o.toAnchor){
                 getToAnchor(o.toAnchorId, o);
               }
-              o.toAnchor.animate('opacity', '0', {
-                duration: 50,
-                onChange: canvas.requestRenderAll.bind(canvas),
-              });
-            }       
-        });
-    });
+              o.toAnchor.set('opacity', '0')
+            }
+      });
+    }
 
-    canvas.on('selection:updated', function() {
-        canvas.getActiveObjects().forEach(function(o) {
-            var type = o.get('type');
-            if(type == "PlayerCircle"){
-                o.lockMovementY = false;
-                o.lockMovementX = false;
-            }   
-        });
-    });
 
+    
     $(document).keyup(function(e){
         if(e.keyCode == 46 || e.keyCode == 8) {
             canvas.getActiveObjects().forEach(function(o) {
@@ -351,35 +339,6 @@
     }
 );*/
 
-function save_progression(){
-  /* get values from elements on the page: */
-    var json_data = JSON.stringify(canvas.toJSON(['id']));
-    var create_url = "/plays/" + <%= @play.id %> + "/progressions/"
-
-  /* Send the data using post and put the results in a div */
-    $.ajax({
-      url: create_url,
-      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-      type: "post",
-      data_type: 'json',
-      data: {progression: {json_diagram: json_data , index: <%= @progression_index %>, play_id: <%= @play.id %> }}
-    });
-}
-
-function save_and_next_progression(){
-  /* get values from elements on the page: */
-    var json_data = JSON.stringify(canvas.toJSON(['id']));
-    var create_url = "/plays/" + <%= @play.id %> + "/progressions/next"
-
-  /* Send the data using post and put the results in a div */
-    $.ajax({
-      url: create_url,
-      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-      type: "post",
-      data_type: 'json',
-      data: {progression: {json_diagram: json_data , index: <%= @progression_index %>, play_id: <%= @play.id %> }}
-    });
-}
 
 
     

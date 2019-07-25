@@ -1,0 +1,216 @@
+#radar-elem{
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
+#radar-grid{
+	display: grid;
+	grid-template-rows: 75px 650px;
+}
+
+#radar-headers{
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
+#toggle-radar{
+	display: grid;
+	grid-template-rows: 50px 50px 50px;
+}
+
+.radar-header{
+	text-align: center;
+}
+
+.radar-chart{
+	text-align: center;
+}
+
+.basic-chart-toggle{
+	color: grey;
+	padding-right: 15px;
+	padding-left: 15px;
+}
+
+#player-name{
+	font-size: 40px;
+	text-align: center;
+}
+
+#trends-grid{
+	display: flex;
+	flex-direction: column;
+	margin: 20px;
+}
+
+#trends-selector{
+	display: flex;
+	flex-direction: column;
+	margin-left: 10%;
+	margin-right: 5%;
+}
+
+#advanced-trend-buttons{
+	display: none;
+}
+
+#per-minute-trend-buttons{
+	display: none;
+}
+
+.line {
+    fill: none;
+    stroke-width: 3;
+}
+  
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+/* Style the dots by assigning a fill and stroke */
+.dot {
+    fill: #ffab00;
+    stroke: #fff;
+}
+  
+.focus circle {
+  fill: none;
+  stroke: steelblue;
+}
+
+.trend-button-0{
+	border: 1px solid #ff9933;
+	/*background-color: #ff9933;*/
+}
+
+.trend-button-1{
+	border: 1px solid #ff5050;
+	/*background-color: #ff5050;*/
+}
+.trend-button-2{
+	border: 1px solid #336699;
+	/*background-color: #336699;*/
+}
+.trend-button-3{
+	border: 1px solid #33cccc;
+	/*background-color: #33cccc;*/
+}
+.trend-button-4{
+	border: 1px solid #00cc99;
+	/*background-color: #00cc99;*/
+}
+.trend-button-5{
+	border: 1px solid #8080ff;
+	/*background-color: #8080ff;*/
+}
+.trend-button-6{
+	border: 1px solid #cc99ff;
+	/*background-color: #cc99ff;*/
+}
+.trend-button-7{
+	border: 1px solid #ff99ff;
+	/*background-color: #ff99ff;*/
+}
+.trend-button-8{
+	border: 1px solid #cc6699;
+	/*background-color: #cc6699;*/
+}
+.trend-button-9{
+	border: 1px solid #993333;
+	/*background-color: #993333;*/
+}
+.trend-button-10{
+	border: 1px solid #ff9933;
+	/*background-color: #ffff00;*/
+}
+.trend-button-11{
+	border: 1px solid #86b300;
+	/*background-color: #86b300;*/
+}
+
+.trend-button-1{
+	border: 1px solid #ff5050;
+	/*background-color: #ff5050;*/
+}
+.trend-button-12{
+	border: 1px solid #336699;
+	/*background-color: #336699;*/
+}
+.trend-button-13{
+	border: 1px solid #33cccc;
+	/*background-color: #33cccc;*/
+}
+.trend-button-14{
+	border: 1px solid #00cc99;
+	/*background-color: #00cc99;*/
+}
+.trend-button-15{
+	border: 1px solid #8080ff;
+	/*background-color: #8080ff;*/
+}
+.trend-button-16{
+	border: 1px solid #cc99ff;
+	/*background-color: #cc99ff;*/
+}
+.trend-button-17{
+	border: 1px solid #ff99ff;
+	/*background-color: #ff99ff;*/
+}
+.trend-button-18{
+	border: 1px solid #cc6699;
+	/*background-color: #cc6699;*/
+}
+.trend-button-19{
+	border: 1px solid #993333;
+	/*background-color: #993333;*/
+}
+.trend-button-20{
+	border: 1px solid #ff5050;
+	/*background-color: #ffff00;*/
+}
+.trend-button-21{
+	border: 1px solid #ff5050;
+	/*background-color: #86b300;*/
+}
+
+.trend-button{
+	margin-top: 5px;
+}
+
+.trend-type{
+	font-size: 25px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+#basic-trends{
+	text-decoration: underline;
+}
+
+#trend-types{
+	text-align: center
+}
+
+#trends-header{
+	font-size: 45px;
+	text-align: center;
+}
+
+#shot-trends-header{
+	font-size:45px;
+	text-align:center;
+	margin-bottom: 40px;
+}
+
+#shot-trends{
+	text-align: center;
+}
+
+.btn:active,
+.btn:focus,
+.btn:focus:active {
+  background-image: none;
+  outline: 0;
+  box-shadow: none;
+}

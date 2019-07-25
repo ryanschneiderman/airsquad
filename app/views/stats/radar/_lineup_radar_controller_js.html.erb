@@ -1,0 +1,319 @@
+<script>
+	
+
+	/*
+	If nothing else, I want to at least fully think through everything that needs to happen here. Don't worry about implementing anything, just what needs to be done.
+
+	Collect all of the stats for all of the players in an array. Assume we have offensive and defensive stats.
+
+
+
+	*/
+	// TODO: change to reflect lineup explorer page
+	var curr_radar_button = document.getElementById("to-per-game-button");
+	curr_radar_button.style.color = "black";
+
+
+	var player_arr = []
+	var lineup_data = {"member_ids": [], "per_game_data" : [], "per_minute_data" : [], "advanced_data" : [], "color_arr" : []}
+	var lineup_per_game_data = []
+	var curr_radar_stat = "per_game";
+	var curr_shift_bool = true;
+	var num_members = parseInt("<%=@members.length%>")
+
+	// Eventually make function of user settings
+	// TODO: This is where we will decide which offensive and defensive stats we want for both basic and advanced. 
+	var desired_off_stats = [7,3,15,29,27]
+	var desired_def_stats = [5,6,8,17,4]
+	var desired_neutral_stats = []
+	var desired_off_adv_stats = [19, 22, 23, 24, 38]
+	var desired_def_adv_stats = [25, 34, 36, 37, 33]
+	var desired_neutral_adv_stats = [42, 26]
+
+	//var desired_stats = [15, 27, 4, 6, 7, 3, 8, 29, 28, 5]
+	//var desired_advanced_stats = [42, 24, 25, 23, 19, 18, 22, 33, 34, 36, 37, 38, 39]
+
+
+	var curr_player_id = <%=@off_season_stats[0].member_id%>
+	player_arr.push({"member_id" : curr_player_id, "stat_arr" : [], "advanced_stat_arr" : [], "nickname" : "<%=@off_season_stats[0].nickname%>" , "games_played" : "<%=@off_season_stats[0].games_played%>", "season_minutes" : "<%=@off_season_stats[0].season_minutes%>", "per_game_data" : [], "per_minute_data": [[]], "advanced_data" : []})
+	var player_arr_index = 0;
+
+	<% @off_season_stats.each do |stat| %>
+		if(is_desired_off_stat(parseInt("<%=stat.stat_list_id%>"))) {
+			if(<%=stat.member_id%> != curr_player_id){
+				curr_player_id = <%=stat.member_id%>
+				player_arr.push({"member_id" : curr_player_id, "stat_arr" : [], "advanced_stat_arr" : [], "nickname" : "<%=stat.nickname%>" , "games_played" : "<%=stat.games_played%>", "season_minutes" : "<%=stat.season_minutes%>", "per_game_data" : [], "per_minute_data": [], "advanced_data" : []});
+				player_arr_index++;
+			}
+			player_arr[player_arr_index].stat_arr.push({"stat":"<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "per_game_rank" : "<%=stat.per_game_rank%>", "per_minute_rank" : "<%=stat.per_minute_rank%>", "value" : "<%=stat.value%>"})
+			player_arr[player_arr_index].per_game_data.push({axis: "<%=stat.stat%>", value: parseFloat(((num_members- parseInt("<%=stat.per_game_rank%>"))/num_members).toFixed(2))})
+			player_arr[player_arr_index].per_minute_data.push({axis: "<%=stat.stat%>", value: ((num_members- parseInt("<%=stat.per_minute_rank%>"))/num_members).toFixed(2)})
+		}
+	<%end%>
+
+	player_arr_index = 0;
+	curr_player_id = <%=@def_season_stats[0].member_id%>;
+	<% @def_season_stats.each do |stat| %>
+		if(is_desired_def_stat(parseInt("<%=stat.stat_list_id%>"))){
+			if(<%=stat.member_id%> != curr_player_id){
+				curr_player_id = <%=stat.member_id%>
+				player_arr_index++;
+			}
+			player_arr[player_arr_index].stat_arr.push({"stat":"<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "per_game_rank" : "<%=stat.per_game_rank%>", "per_minute_rank" : "<%=stat.per_minute_rank%>", "value" : "<%=stat.value%>"})
+			player_arr[player_arr_index].per_game_data.push({axis: "<%=stat.stat%>", value: parseFloat(((num_members- parseInt("<%=stat.per_game_rank%>"))/num_members).toFixed(2))})
+			player_arr[player_arr_index].per_minute_data.push({axis: "<%=stat.stat%>", value: ((num_members- parseInt("<%=stat.per_minute_rank%>"))/num_members).toFixed(2)})
+		}
+	<%end%>
+
+	player_arr_index = 0;
+	curr_player_id = <%=@off_advanced_stats[0].member_id%>;
+	<% @off_advanced_stats.each do |stat| %>
+		if(is_desired_off_adv_stat(parseInt("<%=stat.stat_list_id%>"))){
+			if(<%=stat.member_id%> != curr_player_id){
+				curr_player_id = <%=stat.member_id%>
+				player_arr_index++;
+			}
+			player_arr[player_arr_index].advanced_stat_arr.push({"stat": "<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "team_rank" : "<%=stat.team_rank%>"})
+			player_arr[player_arr_index].advanced_data.push({axis: "<%=stat.stat%>", value: ((num_members- parseInt("<%=stat.team_rank%>"))/num_members).toFixed(2)})
+		}
+	<%end%>
+
+	player_arr_index = 0;
+	curr_player_id = <%=@neut_advanced_stats[0].member_id%>;
+	var found = false;
+	<% @neut_advanced_stats.each do |stat| %>
+		if(is_desired_neutral_adv_stat(parseInt("<%=stat.stat_list_id%>"))){
+			if(<%=stat.member_id%> != curr_player_id){
+				curr_player_id = <%=stat.member_id%>
+				player_arr_index++;
+				found = false;
+			}
+			if(found){
+				player_arr[player_arr_index].advanced_stat_arr.push({"stat": "<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "team_rank" : "<%=stat.team_rank%>"})
+				player_arr[player_arr_index].advanced_data.push({axis: "<%=stat.stat%>", value: ((num_members- parseInt("<%=stat.team_rank%>"))/num_members).toFixed(2)})
+			}
+			else{
+				found = true;
+				player_arr[player_arr_index].advanced_stat_arr.unshift({"stat": "<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "team_rank" : "<%=stat.team_rank%>"})
+				player_arr[player_arr_index].advanced_data.unshift({axis: "<%=stat.stat%>", value: ((num_members- parseInt("<%=stat.team_rank%>"))/num_members).toFixed(2)})
+			}
+		}
+	<%end%>
+
+
+	player_arr_index = 0;
+	curr_player_id = <%=@def_advanced_stats[0].member_id%>;
+	<% @def_advanced_stats.each do |stat| %>
+		if(is_desired_def_adv_stat(parseInt("<%=stat.stat_list_id%>"))){
+			if(<%=stat.member_id%> != curr_player_id){
+				curr_player_id = <%=stat.member_id%>
+				player_arr_index++;
+			}
+			player_arr[player_arr_index].advanced_stat_arr.push({"stat": "<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "team_rank" : "<%=stat.team_rank%>"})
+			player_arr[player_arr_index].advanced_data.push({axis: "<%=stat.stat%>", value: ((num_members- parseInt("<%=stat.team_rank%>"))/num_members).toFixed(2)})
+		}
+	<%end%>
+
+
+
+
+	//console.log(player_arr)
+	var counter = 0;
+	/*
+		<% @adv_stat_table_columns.each do |stat| %>
+			if(advanced_stat_arr[counter] && advanced_stat_arr[counter].id == "<%=stat[:stat_list_id]%>"){
+				advanced_stat_arr[counter].stat = "<%=stat[:display_name]%>"
+				counter++;
+			}
+		<%end%>
+	*/
+
+	////////////////////////////////////////////////////////////// 
+	//////////////////////// Set-Up ////////////////////////////// 
+	////////////////////////////////////////////////////////////// 
+
+	var margin = {top: 100, right: 100, bottom: 100, left: 100},
+		width = Math.min(550, window.innerWidth - 10) - margin.left - margin.right,
+		height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
+					
+	////////////////////////////////////////////////////////////// 
+	////////////////////////// Data ////////////////////////////// 
+	////////////////////////////////////////////////////////////// 
+
+
+
+	////////////////////////////////////////////////////////////// 
+	//////////////////// Draw the Chart ////////////////////////// 
+	////////////////////////////////////////////////////////////// 
+
+	// TODO: add more colors
+	var color_arr = [];
+	var color1 = d3.scaleOrdinal()
+		.range(color_arr);
+	var color2 = d3.scaleOrdinal()
+		.range(["#CC333F", , , ,]);
+
+	//,"#EDC951", "#CC333F",
+
+	console.log(color1)
+		
+	var basicOptions = {
+	  w: width,
+	  h: height,
+	  margin: margin,
+	  maxValue: 1.0,
+	  levels: 5,
+	  roundStrokes: true,
+	  color: color1
+	};
+
+	var advancedOptions = {
+	  w: width,
+	  h: height,
+	  margin: margin,
+	  maxValue: 1.0,
+	  levels: 5,
+	  roundStrokes: true,
+	  color: color2
+	};
+	//lineup_data.per_game_data.push(player_arr[0].per_game_data, player_arr[1].per_game_data)
+
+	// TODO: change chart names and also don't call until player button pressed. 
+	EmptyRadarChart(".lineup-chart", basicOptions, true);
+
+	//RadarChart(".basic-chart", player_arr[1].per_game_data, basicOptions, 0);
+	//RadarChart(".advanced-chart", advanced_data, advancedOptions);
+
+	function is_desired_off_stat(stat){
+		return desired_off_stats.includes(stat)
+	}
+	function is_desired_def_stat(stat){
+		return desired_def_stats.includes(stat)
+	}
+	function is_desired_off_adv_stat(stat){
+		return desired_off_adv_stats.includes(stat)
+	}
+	function is_desired_def_adv_stat(stat){
+		return desired_def_adv_stats.includes(stat)
+	}
+	function is_desired_neutral_adv_stat(stat){
+		return desired_neutral_adv_stats.includes(stat)
+	}
+
+
+
+
+	function find_player(member_id){
+		var arr_len = player_arr.length
+		for(var i = 0; i < arr_len; i++){
+			if(member_id == player_arr[i].member_id){
+				return i;
+			}
+		}
+	}
+
+	function getOptions(color){
+		var margin = {top: 100, right: 100, bottom: 100, left: 100},
+			width = Math.min(550, window.innerWidth - 10) - margin.left - margin.right,
+			height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
+		var d3_color = d3.scaleOrdinal()
+			.range(color);
+
+		var basicOptions = {
+		  w: width,
+		  h: height,
+		  margin: margin,
+		  maxValue: 1.0,
+		  levels: 5,
+		  roundStrokes: true,
+		  color: d3_color 
+		};
+		return basicOptions;
+	}
+
+	function getData(){
+		switch(curr_radar_stat){
+			case "per_game" :
+				return lineup_data.per_game_data;
+			case "per_minute" : 
+				return lineup_data.per_minute_data;
+			case "advanced" :
+				return lineup_data.advanced_data;
+		}
+	}
+
+
+	function select_player(button, member_id){
+		if(button.style.backgroundColor != ""){
+			deselect_player(button, member_id);
+		}
+		else if (lineup_data.member_ids.length < 5){
+			var style = window.getComputedStyle(button)
+			var color = style.getPropertyValue('border-color')
+			button.style.backgroundColor = color
+
+			var player_index = find_player(member_id);
+			var player = player_arr[player_index];
+			lineup_data.per_game_data.push(player.per_game_data);
+			lineup_data.per_minute_data.push(player.per_minute_data);
+			lineup_data.advanced_data.push(player.advanced_data);
+			lineup_data.member_ids.push(player.member_id);
+			lineup_data.color_arr.push(color);
+			var options = getOptions(lineup_data.color_arr)
+			var data = getData();
+			RadarChart(".lineup-chart", data, options, curr_shift_bool)
+		}
+		else{
+			alert("you have more than 5 players selected");
+		}
+	}
+
+	function deselect_player(button, member_id){
+		button.style.backgroundColor = "";
+		remove_from_lineup(member_id);
+	}
+
+	function remove_from_lineup(member_id){
+		var lineup_arr_len = lineup_data.member_ids.length
+		for(var i = 0; i < lineup_arr_len; i++){
+			if(lineup_data.member_ids[i] == member_id){
+				lineup_data.per_game_data.splice(i, 1);
+				lineup_data.per_minute_data.splice(i, 1);
+				lineup_data.advanced_data.splice(i, 1);
+				lineup_data.member_ids.splice(i, 1);
+				lineup_data.color_arr.splice(i, 1)
+				var options = getOptions(lineup_data.color_arr)
+				var data = getData();
+				RadarChart(".lineup-chart", data, options, curr_shift_bool)
+			}
+		}
+	}
+
+	function toggle_radar_chart(stat_type, button){
+		button.style.color = "black";
+		curr_radar_button.style.color = "grey";
+		curr_radar_button = button;
+		var options = getOptions(lineup_data.color_arr)
+		switch(stat_type){
+			// PER GAME DATA
+			case 1 : 
+				RadarChart(".lineup-chart", lineup_data.per_game_data, options, true);
+				curr_radar_stat = "per_game";
+				curr_shift_bool = true;
+				break;
+			// PER MINUTE DATA
+			case 2 :
+				RadarChart(".lineup-chart", lineup_data.per_minute_data, options, true);
+				curr_radar_stat = "per_minute";
+				curr_shift_bool = true;
+				break;
+			
+			case 3 :
+				RadarChart(".lineup-chart", lineup_data.advanced_data, options, false);
+				curr_radar_stat = "advanced";
+				curr_shift_bool = false;
+				break;
+		}
+	}
+
+</script>

@@ -1,0 +1,32 @@
+current directory: /Users/Home/Desktop/dev/rails-dev/bball-site/vendor/bundle/ruby/2.3.0/gems/mini_racer-0.2.6/ext/mini_racer_extension
+/System/Library/Frameworks/Ruby.framework/Versions/2.3/usr/bin/ruby -r ./siteconf20190604-60461-1bhpz7m.rb extconf.rb
+checking for main() in -lpthread... yes
+checking for main() in -lobjc... yes
+creating Makefile
+
+To see why this extension failed to compile, please check the mkmf.log which can be found here:
+
+  /Users/Home/Desktop/dev/rails-dev/bball-site/vendor/bundle/ruby/2.3.0/extensions/universal-darwin-18/2.3.0/mini_racer-0.2.6/mkmf.log
+
+current directory: /Users/Home/Desktop/dev/rails-dev/bball-site/vendor/bundle/ruby/2.3.0/gems/mini_racer-0.2.6/ext/mini_racer_extension
+make "DESTDIR=" clean
+
+current directory: /Users/Home/Desktop/dev/rails-dev/bball-site/vendor/bundle/ruby/2.3.0/gems/mini_racer-0.2.6/ext/mini_racer_extension
+make "DESTDIR="
+compiling mini_racer_extension.cc
+clang: warning: argument unused during compilation: '-rdynamic' [-Wunused-command-line-argument]
+In file included from mini_racer_extension.cc:2:
+In file included from /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.3/usr/include/ruby-2.3.0/ruby.h:33:
+In file included from /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.3/usr/include/ruby-2.3.0/ruby/ruby.h:1988:
+/Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.3/usr/include/ruby-2.3.0/ruby/intern.h:47:19: warning: 'register' storage class specifier is deprecated and incompatible with C++17 [-Wdeprecated-register]
+void rb_mem_clear(register VALUE*, register long);
+                  ^~~~~~~~~
+/Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Ruby.framework/Versions/2.3/usr/include/ruby-2.3.0/ruby/intern.h:47:36: warning: 'register' storage class specifier is deprecated and incompatible with C++17 [-Wdeprecated-register]
+void rb_mem_clear(register VALUE*, register long);
+                                   ^~~~~~~~~
+2 warnings generated.
+linking shared-object mini_racer_extension.bundle
+
+current directory: /Users/Home/Desktop/dev/rails-dev/bball-site/vendor/bundle/ruby/2.3.0/gems/mini_racer-0.2.6/ext/mini_racer_extension
+make "DESTDIR=" install
+/usr/bin/install -c -m 0755 mini_racer_extension.bundle ./.gem.20190604-60461-1we5e2d

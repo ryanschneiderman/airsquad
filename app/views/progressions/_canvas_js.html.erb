@@ -12,7 +12,7 @@
             // this is syncronous
             var background_img = new fabric.Image(img);
             background_img.objectCaching = false;
-            background_img.scaleToHeight(window.innerHeight * .9);
+            background_img.scaleToHeight(window.innerHeight * .7);
 
             canvas.setBackgroundImage(background_img, canvas.renderAll.bind(canvas), {
                 top: 0,
@@ -39,4 +39,5 @@
         };
         img.src = "<%= asset_path('full_court.png')%>";
     }
+
 </script>
