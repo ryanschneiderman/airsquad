@@ -477,8 +477,6 @@ function fill_regions(){
     else{
       var eff_fg_pct = efg_array[i]/att_array[i]
       var color = determine_color(eff_fg_pct)
-      console.log(color)
-      console.log(eff_fg_pct)
       court_regions[i].region.attr('fill', color)
       court_regions[i].text.text(make_array[i]+"/"+att_array[i])
     }

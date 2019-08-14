@@ -22,7 +22,7 @@ Rails.application.routes.draw do
 
   get '/teams/:team_id/members/:member_id(.:format)' => 'members#player_profile'
 
-  get "/teams/:team_id/lineup_explorer" => "teams#lineup_explorer", :as => "lineup_explorer"
+  post '/teams/:team_id/lineup_explorer' => "teams#create_lineup"
 
   get 'messenger', to: 'messengers#index'
   get 'get_private_conversation', to: 'messengers#get_private_conversation'
@@ -69,6 +69,8 @@ Rails.application.routes.draw do
     resources :posts do 
     end
     resources :members do 
+    end
+    resources :lineups do 
     end
   end
 

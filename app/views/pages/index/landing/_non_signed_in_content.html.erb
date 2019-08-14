@@ -1,14 +1,71 @@
+<style>
+	#sprite{
+		width: 100vw; height: 56vw;
+		background: url(/assets/Jordan/Sprite-Grid.png); 1px -3px;
+		transform: scale(.55);
+	}
+	#background{
+		width: 100vw;
+		height: 100%;
+		background-color: black;
+	}
+</style>
 
 <div id = "grey-canvas">
-	<div id = "space"></div>
-	<div id = "animation">
-		
-	</div>
-	<div id = "slogan">The Game, digitalized.</div>
+		<div id = "sprite"></div>
+		<div id = "space"></div>
+		<div id = "slogan">The Game Digitized</div>
 </div>
 
 
 <script>
+	var row = 0;
+	var col = 0;
+	var startingTop = 0;
+	var startingLeft = 0;
+	var ypos = -3;
+	var xpos = 1;
+    var move_count = 0;
+
+	function calc_ypos(){
+		return (row * -744) - 3
+	}
+
+	function calc_xpos(){
+		return (col * -1276) + 1
+	}
+		
+
+	$(document).mousemove(function(event) {
+		
+	if(move_count % 8 == 0){
+		row++;
+		if(row  > 7){
+			col++;
+			row = 0;
+		}
+		if(col > 5 && row > 4){
+			row = 0;
+			col = 0;
+		}
+		$('#sprite').css("backgroundPosition", calc_xpos().toString() + "px " + calc_ypos().toString() + "px"); 
+	
+		}
+		move_count++; 
+	});
+
+	$("#grey-canvas")
+	.mouseenter(function(e){
+		startingTop = e.clientY;
+		startingLeft = e.clientX;
+		isInCanvas = true;
+	})
+	.mouseleave(function(e){
+		isInCanvas = false;
+	});
+
+
+	/*
 	var startingTop = 0;
 	var startingLeft = 0;
 	var isInCanvas = false;
@@ -17,9 +74,6 @@
 	var oldMath = 0;
 	var move_count = 0;
 
-	<% @images.each do |image| %>
-		image_arr.push('<%= image_tag "Jordan/#{image.split('/').last}", :class => "jordan" %>');
-	<% end %>
 
 	var image_arr_len = image_arr.length;
 
@@ -47,6 +101,6 @@
 	})
 	.mouseleave(function(e){
 		isInCanvas = false;
-	});
+	});*/
 		
 </script>

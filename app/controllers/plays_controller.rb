@@ -1,14 +1,23 @@
 class PlaysController < ApplicationController
-
 	def index
 		if params[:team_id]
+			@curr_member =  Assignment.joins(:role).joins(:member).select("roles.name as role_name, members.*").where("members.user_id" => current_user.id, "members.team_id" => params[:team_id])
+			@is_admin = false
+			@curr_member.each do |member_obj|
+				if member_obj.role_name == "Admin"
+					@is_admin = true
+				end
+			end
+
 			cookies[:team_id] = params[:team_id] 
 			@team_id = params[:team_id]
-			@offensive_plays = Play.joins(:team_plays, :play_type).select("play_types.o_type as p_type, team_plays.team_id as team_id, plays.*").where("plays.offense_defense" => true, "team_plays.team_id"=>params[:team_id]).sort_by { |e| e.p_type  }
-			@defensive_plays = Play.joins(:team_plays, :play_type).select("play_types.d_type as p_type, team_plays.team_id as team_id, plays.*").where("plays.offense_defense" => false, "team_plays.team_id"=>params[:team_id]).sort_by { |e| e.p_type  }
+			@offensive_plays = Play.joins(:team_plays, :play_type).select("play_types.play_type as p_type, team_plays.team_id as team_id, plays.*").where("plays.offense_defense" => true, "team_plays.team_id"=>params[:team_id]).sort_by { |e| e.p_type  }
+			@defensive_plays = Play.joins(:team_plays, :play_type).select("play_types.play_type as p_type, team_plays.team_id as team_id, plays.*").where("plays.offense_defense" => false, "team_plays.team_id"=>params[:team_id]).sort_by { |e| e.p_type  }
 			@play_types = PlayType.all()
 			@curr_off_play = @offensive_plays[0]
+			puts @curr_off_play.name
 			@curr_def_play = @defensive_plays[0]
+			puts @curr_def_play.name
 			@play = Play.new
 		else
 			@team_id = nil
@@ -97,18 +106,14 @@ class PlaysController < ApplicationController
 
 	def destroy
 		play = Play.find_by_id(params[:id])
-		if cookies[:team_id] != "" 
-			team_play = TeamPlay.where(play_id: params[:id], team_id: cookies[:team_id]).first
-			team_play.destroy
-			redirect_path = team_plays_path(cookies[:team_id])
-		else
-			progressions = Progression.where(play_id: play.id).each do |progression|
-				progression.destroy
-			end
-			play.destroy
-			redirect_path = plays_path
+		team_id = params[:team_id]
+
+		progressions = Progression.where(play_id: play.id).each do |progression|
+			progression.destroy
 		end
-		redirect_to redirect_path
+		play.destroy
+
+		redirect_to team_plays_path(team_id)
 	end
 
 end

@@ -1,6 +1,15 @@
 <div id = "play-header">
-    <div id = "play-name"> <%= @play.name %> - </div>
-    <div id = "progression_index">1</div>
+    <div id = "play-progression">
+        <div id = "play-name"> <%= @play.name %> - </div>
+        <div id = "progression_index">1</div>
+    </div>
+    <div class = "settings-dropdown">
+        <button onclick = "show_actions()"><%= image_tag("settings-icon.png", :alt => "settings", :class => "settings-icon") %></button>
+        <div id="play-dropdown" class="dropdown-content">
+            <%= link_to 'Delete Play',  team_play_path(@team_id, @play.id),
+                        data: { confirm: 'Are you sure you want to delete this play' }, method: :delete %>
+        </div>
+    </div>
 </div>
 <div id = "edit-grid">
 	<div style= "text-align: center;"><button class = "left change-progression" type = "button" onclick="indexJsonArray(-1)"></button></div>
@@ -105,6 +114,21 @@
         function indexJsonArray(change){
         	index = index + change;
         	loadCanvasFromJson(index);
+        }
+
+        function show_actions(){
+            console.log("test")
+            $(".dropdown-content").show()
+        }
+        function hide_actions(){
+            $(".dropdown-content").hide()
+        }
+
+        window.onclick = function(event) {
+          if (!event.target.matches('.settings-icon')) {
+            var dropdowns = $(".dropdown-content");
+            dropdowns.hide()
+          }
         }
 
   		loadCanvasFromJson(index);

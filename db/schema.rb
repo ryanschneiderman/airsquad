@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_24_161044) do
+ActiveRecord::Schema.define(version: 2019_08_13_232954) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,13 +28,23 @@ ActiveRecord::Schema.define(version: 2019_07_24_161044) do
     t.index ["stat_list_id"], name: "index_advanced_stats_on_stat_list_id"
   end
 
+  create_table "assignments", force: :cascade do |t|
+    t.bigint "member_id"
+    t.bigint "role_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["member_id"], name: "index_assignments_on_member_id"
+    t.index ["role_id"], name: "index_assignments_on_role_id"
+  end
+
   create_table "games", force: :cascade do |t|
-    t.date "date"
     t.bigint "team_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "opponent_id"
     t.boolean "played"
+    t.bigint "schedule_event_id"
+    t.index ["schedule_event_id"], name: "index_games_on_schedule_event_id"
     t.index ["team_id"], name: "index_games_on_team_id"
   end
 
@@ -63,10 +73,22 @@ ActiveRecord::Schema.define(version: 2019_07_24_161044) do
     t.index ["user_id"], name: "index_group_messages_on_user_id"
   end
 
+  create_table "lineups", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "team_id"
+    t.index ["team_id"], name: "index_lineups_on_team_id"
+  end
+
+  create_table "lineups_members", id: false, force: :cascade do |t|
+    t.bigint "lineup_id", null: false
+    t.bigint "member_id", null: false
+    t.index ["lineup_id", "member_id"], name: "index_lineups_members_on_lineup_id_and_member_id"
+    t.index ["member_id", "lineup_id"], name: "index_lineups_members_on_member_id_and_lineup_id"
+  end
+
   create_table "members", force: :cascade do |t|
-    t.boolean "isPlayer", default: false
-    t.boolean "isAdmin", default: false
-    t.boolean "isCreator", default: false
     t.string "nickname"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -89,10 +111,9 @@ ActiveRecord::Schema.define(version: 2019_07_24_161044) do
   end
 
   create_table "play_types", force: :cascade do |t|
-    t.string "o_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "d_type"
+    t.string "play_type"
   end
 
   create_table "plays", force: :cascade do |t|
@@ -148,6 +169,23 @@ ActiveRecord::Schema.define(version: 2019_07_24_161044) do
     t.float "canvas_width"
     t.text "notes"
     t.index ["play_id"], name: "index_progressions_on_play_id"
+  end
+
+  create_table "roles", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "schedule_events", force: :cascade do |t|
+    t.date "date"
+    t.time "time"
+    t.string "place"
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "team_id"
+    t.index ["team_id"], name: "index_schedule_events_on_team_id"
   end
 
   create_table "season_advanced_stats", force: :cascade do |t|
@@ -309,5 +347,7 @@ ActiveRecord::Schema.define(version: 2019_07_24_161044) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "assignments", "members"
+  add_foreign_key "assignments", "roles"
   add_foreign_key "private_messages", "users"
 end

@@ -10,15 +10,26 @@
 
 	*/
 	// TODO: change to reflect lineup explorer page
+
 	var curr_radar_button = document.getElementById("to-per-game-button");
 	curr_radar_button.style.color = "black";
 
+	var curr_lineup_id;
 
 	var player_arr = []
-	var lineup_data = {"member_ids": [], "per_game_data" : [], "per_minute_data" : [], "advanced_data" : [], "color_arr" : []}
-	var lineup_per_game_data = []
-	var curr_radar_stat = "per_game";
-	var curr_shift_bool = true;
+	var new_lineup_data = {"member_ids": [], "per_game_data" : [], "per_minute_data" : [], "advanced_data" : [], "shooting_stats_arr" : [], "player_stat_arr" : [], "adv_player_stat_arr" : [], "color_arr" : []}
+	var curr_lineup_data = new_lineup_data;
+	var ranking_data = [];
+	var adv_ranking_data = [];
+	var saved_lineups = [];
+	var basic_stat_headers = [];
+	var advanced_stat_headers = [];
+	var player_colors = [];
+
+	//var ranked_aggregate_data
+	var curr_radar_stat = "advanced";
+	var curr_shift_bool = false;
+	var new_lineup_bool = true;
 	var num_members = parseInt("<%=@members.length%>")
 
 	// Eventually make function of user settings
@@ -26,7 +37,7 @@
 	var desired_off_stats = [7,3,15,29,27]
 	var desired_def_stats = [5,6,8,17,4]
 	var desired_neutral_stats = []
-	var desired_off_adv_stats = [19, 22, 23, 24, 38]
+	var desired_off_adv_stats = [19, 22, 39, 24, 38]
 	var desired_def_adv_stats = [25, 34, 36, 37, 33]
 	var desired_neutral_adv_stats = [42, 26]
 
@@ -35,21 +46,48 @@
 
 
 	var curr_player_id = <%=@off_season_stats[0].member_id%>
-	player_arr.push({"member_id" : curr_player_id, "stat_arr" : [], "advanced_stat_arr" : [], "nickname" : "<%=@off_season_stats[0].nickname%>" , "games_played" : "<%=@off_season_stats[0].games_played%>", "season_minutes" : "<%=@off_season_stats[0].season_minutes%>", "per_game_data" : [], "per_minute_data": [[]], "advanced_data" : []})
+	player_arr.push({"member_id" : curr_player_id, "stat_arr" : [], "advanced_stat_arr" : [], "nickname" : "<%=@off_season_stats[0].nickname%>" , "games_played" : "<%=@off_season_stats[0].games_played%>", "season_minutes" : "<%=@off_season_stats[0].season_minutes%>", "per_game_data" : [], "per_minute_data": [[]], "advanced_data" : [], "shooting_stats" : []});
 	var player_arr_index = 0;
+	var stat_index = 0;
 
+	// TODO: make percentages a separate case
 	<% @off_season_stats.each do |stat| %>
 		if(is_desired_off_stat(parseInt("<%=stat.stat_list_id%>"))) {
 			if(<%=stat.member_id%> != curr_player_id){
 				curr_player_id = <%=stat.member_id%>
-				player_arr.push({"member_id" : curr_player_id, "stat_arr" : [], "advanced_stat_arr" : [], "nickname" : "<%=stat.nickname%>" , "games_played" : "<%=stat.games_played%>", "season_minutes" : "<%=stat.season_minutes%>", "per_game_data" : [], "per_minute_data": [], "advanced_data" : []});
+				player_arr.push({"member_id" : curr_player_id, "stat_arr" : [], "advanced_stat_arr" : [], "nickname" : "<%=stat.nickname%>" , "games_played" : "<%=stat.games_played%>", "season_minutes" : "<%=stat.season_minutes%>", "per_game_data" : [], "per_minute_data": [], "advanced_data" : [], "shooting_stats" : []});
 				player_arr_index++;
+				stat_index = 0;
+
 			}
-			player_arr[player_arr_index].stat_arr.push({"stat":"<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "per_game_rank" : "<%=stat.per_game_rank%>", "per_minute_rank" : "<%=stat.per_minute_rank%>", "value" : "<%=stat.value%>"})
+			var curr_stat = "<%=stat.stat%>"
+			var per_game_val;
+			var per_minute_val;
+
+
+			if("<%=stat.is_percent%>" == "true"){
+				per_game_val = parseInt("<%=stat.value%>")
+				per_minute_val = parseInt("<%=stat.value%>")
+			}
+			else {
+				per_game_val = parseInt("<%=stat.value%>")/parseInt("<%=stat.games_played%>")
+				per_minute_val = parseInt("<%=stat.value%>")/parseInt("<%=stat.season_minutes%>")
+			}
+			if(ranking_data[stat_index]){
+				ranking_data[stat_index].per_game_ranks.push(per_game_val)
+				ranking_data[stat_index].per_minute_ranks.push(per_minute_val);
+			}
+			else {
+				ranking_data.push({"stat" : curr_stat, "stat_id" : parseInt("<%=stat.stat_list_id%>"),  "per_game_ranks" : [per_game_val], "per_minute_ranks": [per_minute_val]})
+			}
+
+			player_arr[player_arr_index].stat_arr.push({"stat":"<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "is_percent" : "<%=stat.is_percent%>", "value" : "<%=stat.value%>", "season_minutes" : player_arr[player_arr_index].season_minutes, "games_played" : player_arr[player_arr_index].games_played})
 			player_arr[player_arr_index].per_game_data.push({axis: "<%=stat.stat%>", value: parseFloat(((num_members- parseInt("<%=stat.per_game_rank%>"))/num_members).toFixed(2))})
 			player_arr[player_arr_index].per_minute_data.push({axis: "<%=stat.stat%>", value: ((num_members- parseInt("<%=stat.per_minute_rank%>"))/num_members).toFixed(2)})
+			stat_index++;
 		}
 	<%end%>
+	var def_stat_index = stat_index;
 
 	player_arr_index = 0;
 	curr_player_id = <%=@def_season_stats[0].member_id%>;
@@ -58,13 +96,36 @@
 			if(<%=stat.member_id%> != curr_player_id){
 				curr_player_id = <%=stat.member_id%>
 				player_arr_index++;
+				stat_index = def_stat_index
 			}
-			player_arr[player_arr_index].stat_arr.push({"stat":"<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "per_game_rank" : "<%=stat.per_game_rank%>", "per_minute_rank" : "<%=stat.per_minute_rank%>", "value" : "<%=stat.value%>"})
+			var curr_stat = "<%=stat.stat%>"
+			var per_game_val;
+			var per_minute_val;
+			if("<%=stat.is_percent%>" == "true"){
+				per_game_val = parseInt("<%=stat.value%>")
+				per_minute_val = parseInt("<%=stat.value%>")
+			}
+			else {
+				per_game_val = parseInt("<%=stat.value%>")/parseInt("<%=stat.games_played%>")
+				per_minute_val = parseInt("<%=stat.value%>")/parseInt("<%=stat.season_minutes%>")
+			}
+			if(ranking_data[stat_index]){
+				ranking_data[stat_index].per_game_ranks.push(per_game_val)
+				ranking_data[stat_index].per_minute_ranks.push(per_minute_val);
+			}
+			else {
+				ranking_data.push({"stat" : curr_stat, "stat_id" : parseInt("<%=stat.stat_list_id%>"),  "per_game_ranks" : [per_game_val], "per_minute_ranks": [per_minute_val]})
+			}
+			player_arr[player_arr_index].stat_arr.push({"stat":"<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "is_percent" : "<%=stat.is_percent%>", "value" : "<%=stat.value%>", "season_minutes" : player_arr[player_arr_index].season_minutes, "games_played" : player_arr[player_arr_index].games_played})
 			player_arr[player_arr_index].per_game_data.push({axis: "<%=stat.stat%>", value: parseFloat(((num_members- parseInt("<%=stat.per_game_rank%>"))/num_members).toFixed(2))})
 			player_arr[player_arr_index].per_minute_data.push({axis: "<%=stat.stat%>", value: ((num_members- parseInt("<%=stat.per_minute_rank%>"))/num_members).toFixed(2)})
+			stat_index++;
 		}
 	<%end%>
 
+	sort_ranking_data();
+
+	var adv_stat_index = 0
 	player_arr_index = 0;
 	curr_player_id = <%=@off_advanced_stats[0].member_id%>;
 	<% @off_advanced_stats.each do |stat| %>
@@ -72,34 +133,62 @@
 			if(<%=stat.member_id%> != curr_player_id){
 				curr_player_id = <%=stat.member_id%>
 				player_arr_index++;
+				adv_stat_index = 0;
 			}
-			player_arr[player_arr_index].advanced_stat_arr.push({"stat": "<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "team_rank" : "<%=stat.team_rank%>"})
+			if(adv_ranking_data[adv_stat_index]){
+				adv_ranking_data[adv_stat_index].advanced_ranks.push(parseInt("<%=stat.value%>"))
+			}
+			else {
+				adv_ranking_data.push({"stat_id" : parseInt("<%=stat.stat_list_id%>"), "stat" : "<%=stat.stat%>", "advanced_ranks": [parseInt("<%=stat.value%>")]})
+			}
+			player_arr[player_arr_index].advanced_stat_arr.push({"stat": "<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "value" : "<%=stat.value%>",})
 			player_arr[player_arr_index].advanced_data.push({axis: "<%=stat.stat%>", value: ((num_members- parseInt("<%=stat.team_rank%>"))/num_members).toFixed(2)})
+			adv_stat_index++;
 		}
 	<%end%>
 
+	var neut_adv_stat_index = adv_stat_index;
 	player_arr_index = 0;
 	curr_player_id = <%=@neut_advanced_stats[0].member_id%>;
 	var found = false;
+	var first_player = true;
 	<% @neut_advanced_stats.each do |stat| %>
 		if(is_desired_neutral_adv_stat(parseInt("<%=stat.stat_list_id%>"))){
 			if(<%=stat.member_id%> != curr_player_id){
 				curr_player_id = <%=stat.member_id%>
 				player_arr_index++;
 				found = false;
+				first_player = false;
 			}
 			if(found){
-				player_arr[player_arr_index].advanced_stat_arr.push({"stat": "<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "team_rank" : "<%=stat.team_rank%>"})
+				adv_stat_index = neut_adv_stat_index + 1;
+				player_arr[player_arr_index].advanced_stat_arr.push({"stat": "<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "value" : "<%=stat.value%>",})
 				player_arr[player_arr_index].advanced_data.push({axis: "<%=stat.stat%>", value: ((num_members- parseInt("<%=stat.team_rank%>"))/num_members).toFixed(2)})
+				if(!first_player){
+					adv_ranking_data[adv_stat_index].advanced_ranks.push(parseInt("<%=stat.value%>"))
+				}
+				else {
+					adv_ranking_data.push({"stat_id" : parseInt("<%=stat.stat_list_id%>"), "stat" : "<%=stat.stat%>", "advanced_ranks": [parseInt("<%=stat.value%>")]})
+				}
 			}
 			else{
 				found = true;
-				player_arr[player_arr_index].advanced_stat_arr.unshift({"stat": "<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "team_rank" : "<%=stat.team_rank%>"})
+				adv_stat_index = 0;
+				player_arr[player_arr_index].advanced_stat_arr.unshift({"stat": "<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "value" : "<%=stat.value%>",})
 				player_arr[player_arr_index].advanced_data.unshift({axis: "<%=stat.stat%>", value: ((num_members- parseInt("<%=stat.team_rank%>"))/num_members).toFixed(2)})
+				if(!first_player){
+					adv_ranking_data[adv_stat_index].advanced_ranks.push(parseInt("<%=stat.value%>"))
+				}
+				else {
+					adv_ranking_data.unshift({"stat_id" : parseInt("<%=stat.stat_list_id%>"), "stat" : "<%=stat.stat%>", "advanced_ranks": [parseInt("<%=stat.value%>")]})
+				}
+
 			}
 		}
 	<%end%>
 
+	var def_adv_stat_index = neut_adv_stat_index + 2;
+	adv_stat_index = neut_adv_stat_index + 2;
 
 	player_arr_index = 0;
 	curr_player_id = <%=@def_advanced_stats[0].member_id%>;
@@ -108,17 +197,55 @@
 			if(<%=stat.member_id%> != curr_player_id){
 				curr_player_id = <%=stat.member_id%>
 				player_arr_index++;
+				adv_stat_index = def_adv_stat_index;
 			}
-			player_arr[player_arr_index].advanced_stat_arr.push({"stat": "<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "team_rank" : "<%=stat.team_rank%>"})
+			player_arr[player_arr_index].advanced_stat_arr.push({"stat": "<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "value" : "<%=stat.value%>",})
 			player_arr[player_arr_index].advanced_data.push({axis: "<%=stat.stat%>", value: ((num_members- parseInt("<%=stat.team_rank%>"))/num_members).toFixed(2)})
+
+			if(adv_ranking_data[adv_stat_index]){
+				adv_ranking_data[adv_stat_index].advanced_ranks.push(parseInt("<%=stat.value%>"))
+			}
+			else {
+				adv_ranking_data.push({"stat_id" : parseInt("<%=stat.stat_list_id%>"), "stat" : "<%=stat.stat%>", "advanced_ranks": [parseInt("<%=stat.value%>")]})
+			}
+			adv_stat_index++;
 		}
+	<%end%>
+	sort_advanced_ranking_data()
+
+	player_arr_index = 0;
+	var shooting_stat_index = 0;
+	curr_player_id = <%= @shooting_stats[0].member_id%>;
+
+	<% @shooting_stats.each do |stat|%>
+		if(<%=stat.member_id%> != curr_player_id){
+				curr_player_id = <%=stat.member_id%>
+				player_arr_index++;
+				shooting_stat_index = 0;
+		}
+		player_arr[player_arr_index].shooting_stats.push({"stat" : "<%=stat.stat%>", "id" : "<%=stat.stat_list_id%>", "value" : "<%=stat.value%>"});
+		shooting_stat_index++;
+	<%end%>
+
+	var counter = 0;
+
+	<% @stat_table_columns.each do |stat| %>
+			if(player_arr[0].stat_arr[counter] && player_arr[0].stat_arr[counter].id == "<%=stat[:stat_list_id]%>"){
+				basic_stat_headers.push("<%=stat[:stat_name]%>")
+				counter++;
+			}
+	<%end%>
+
+	var counter = 0;
+	<% @adv_stat_table_columns.each do |stat| %>
+			if(player_arr[0].advanced_stat_arr[counter] && player_arr[0].advanced_stat_arr[counter].id == "<%=stat[:stat_list_id]%>"){
+				advanced_stat_headers.push("<%=stat[:display_name]%>")
+				counter++;
+			}
 	<%end%>
 
 
-
-
-	//console.log(player_arr)
-	var counter = 0;
+	
 	/*
 		<% @adv_stat_table_columns.each do |stat| %>
 			if(advanced_stat_arr[counter] && advanced_stat_arr[counter].id == "<%=stat[:stat_list_id]%>"){
@@ -132,9 +259,9 @@
 	//////////////////////// Set-Up ////////////////////////////// 
 	////////////////////////////////////////////////////////////// 
 
-	var margin = {top: 100, right: 100, bottom: 100, left: 100},
-		width = Math.min(550, window.innerWidth - 10) - margin.left - margin.right,
-		height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
+	var init_margin = {top: 100, right: 100, bottom: 100, left: 100},
+		init_width = window.innerWidth*.2;
+		init_height = init_width;
 					
 	////////////////////////////////////////////////////////////// 
 	////////////////////////// Data ////////////////////////////// 
@@ -155,12 +282,11 @@
 
 	//,"#EDC951", "#CC333F",
 
-	console.log(color1)
 		
 	var basicOptions = {
-	  w: width,
-	  h: height,
-	  margin: margin,
+	  w: init_width,
+	  h: init_height,
+	  margin: init_margin,
 	  maxValue: 1.0,
 	  levels: 5,
 	  roundStrokes: true,
@@ -168,18 +294,19 @@
 	};
 
 	var advancedOptions = {
-	  w: width,
-	  h: height,
-	  margin: margin,
+	  w: init_width,
+	  h: init_height,
+	  margin: init_margin,
 	  maxValue: 1.0,
 	  levels: 5,
 	  roundStrokes: true,
 	  color: color2
 	};
-	//lineup_data.per_game_data.push(player_arr[0].per_game_data, player_arr[1].per_game_data)
+	//new_lineup_data.per_game_data.push(player_arr[0].per_game_data, player_arr[1].per_game_data)
 
 	// TODO: change chart names and also don't call until player button pressed. 
-	EmptyRadarChart(".lineup-chart", basicOptions, true);
+	InitialRadarChart(".overlaid-chart", basicOptions, true);
+	InitialRadarChart(".aggregate-chart", basicOptions, true);
 
 	//RadarChart(".basic-chart", player_arr[1].per_game_data, basicOptions, 0);
 	//RadarChart(".advanced-chart", advanced_data, advancedOptions);
@@ -200,8 +327,31 @@
 		return desired_neutral_adv_stats.includes(stat)
 	}
 
+	function sort_ranking_data(){
+		var ranking_data_len = ranking_data.length;
+		for(var i = 0; i < ranking_data_len; i++){
+			if(ranking_data[i].stat_id == 7 || ranking_data[i].stat_id == 17){
+				ranking_data[i].per_game_ranks.sort(function(a, b){return b - a});
+				ranking_data[i].per_minute_ranks.sort(function(a, b){return b - a});
+			}
+			else{
+				ranking_data[i].per_game_ranks.sort(function(a, b){return a - b});
+				ranking_data[i].per_minute_ranks.sort(function(a, b){return a - b});
+			}
+		}
+	}
 
-
+	function sort_advanced_ranking_data(){
+		var adv_ranking_data_len = adv_ranking_data.length;
+		for(var i = 0; i < adv_ranking_data_len; i++){
+			if(adv_ranking_data[i].stat_id == 25 || adv_ranking_data[i].stat_id == 38){
+				adv_ranking_data[i].advanced_ranks.sort(function(a, b){return b - a});
+			}
+			else{
+				adv_ranking_data[i].advanced_ranks.sort(function(a, b){return a - b});
+			}
+		}
+	}
 
 	function find_player(member_id){
 		var arr_len = player_arr.length
@@ -212,10 +362,9 @@
 		}
 	}
 
-	function getOptions(color){
-		var margin = {top: 100, right: 100, bottom: 100, left: 100},
-			width = Math.min(550, window.innerWidth - 10) - margin.left - margin.right,
-			height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
+	function getOptions(color, width, margin_val){
+		var margin = {top: margin_val, right: margin_val, bottom: margin_val, left: margin_val},
+			height = width;
 		var d3_color = d3.scaleOrdinal()
 			.range(color);
 
@@ -231,15 +380,279 @@
 		return basicOptions;
 	}
 
-	function getData(){
+	function getData(lineup){
 		switch(curr_radar_stat){
 			case "per_game" :
-				return lineup_data.per_game_data;
+				return lineup.per_game_data;
 			case "per_minute" : 
-				return lineup_data.per_minute_data;
+				return lineup.per_minute_data;
 			case "advanced" :
-				return lineup_data.advanced_data;
+				return lineup.advanced_data;
 		}
+	}
+
+	function getAggregateData(lineup, radar_stat){
+		switch(radar_stat){
+			case "per_game" :
+				return calcAggregateData(true, lineup);
+			case "per_minute" : 
+				return calcAggregateData(false, lineup);
+			case "advanced" :
+				return calcAdvAggregateData(lineup)
+		}
+	}
+
+	function calcAggregateFgPct(shooting_stats){
+		var len = shooting_stats.length
+		var makes;
+		var misses;
+		for(var i = 0; i < len; i++){
+			if(shooting_stats[i].id == "1"){
+				makes = parseInt(shooting_stats[i].value);
+			}
+			else if (shooting_stats[i].id == "2"){
+				misses = parseInt(shooting_stats[i].value);
+			}
+		}
+		return {"makes" : makes, "attempts" : makes + misses}
+	}
+
+	function calcAggregateFtPct(shooting_stats){
+		var len = shooting_stats.length
+		var makes;
+		var misses;
+		for(var i = 0; i < len; i++){
+			if(shooting_stats[i].id == "13"){
+				makes = parseInt(shooting_stats[i].value);
+			}
+			else if (shooting_stats[i].id == "14"){
+				misses = parseInt(shooting_stats[i].value);
+			}
+		}
+		return {"makes" : makes, "attempts" : misses + makes}
+	}
+
+	function calcAggregateTSPct(shooting_stats){
+		var len = shooting_stats.length
+		var points;
+		var ft_makes;
+		var ft_misses;
+		var fg_makes;
+		var fg_misses
+		for(var i = 0; i < len; i++){
+			if(shooting_stats[i].id == "13"){
+				ft_makes = parseInt(shooting_stats[i].value);
+			}
+			else if (shooting_stats[i].id == "14"){
+				ft_misses = parseInt(shooting_stats[i].value);
+			}
+			else if (shooting_stats[i].id == "1"){
+				fg_makes = parseInt(shooting_stats[i].value);
+			}
+			else if (shooting_stats[i].id == "2"){
+				fg_misses = parseInt(shooting_stats[i].value);
+			}
+			else if (shooting_stats[i].id == "15"){
+				points = parseInt(shooting_stats[i].value);
+			}
+		}
+		return {"points" : points, "fg_attempts" : fg_misses + fg_makes, "ft_attempts" : ft_makes + ft_misses}
+	}
+
+	function calcAggregateFTARate(shooting_stats){
+		var len = shooting_stats.length
+		var ft_makes;
+		var ft_misses;
+		var fg_makes;
+		var fg_misses
+		for(var i = 0; i < len; i++){
+			if(shooting_stats[i].id == "13"){
+				ft_makes = parseInt(shooting_stats[i].value);
+			}
+			else if (shooting_stats[i].id == "14"){
+				ft_misses = parseInt(shooting_stats[i].value);
+			}
+			else if (shooting_stats[i].id == "1"){
+				fg_makes = parseInt(shooting_stats[i].value);
+			}
+			else if (shooting_stats[i].id == "2"){
+				fg_misses = parseInt(shooting_stats[i].value);
+			}
+		}
+		return {"fg_attempts" : fg_misses + fg_makes, "ft_attempts" : ft_makes + ft_misses}
+	}
+
+	function determine_pct_aggregates(lineup, aggregate_arr, is_per_game, j, i){
+		var stat_id = lineup.player_stat_arr[i][j].id
+		var games_played = parseInt(lineup.player_stat_arr[i][j].games_played);
+		var season_minutes = parseInt(lineup.player_stat_arr[i][j].season_minutes);
+		var data;
+		var make_val;
+		var attempts_val;
+		if(stat_id == "27"){
+			data = calcAggregateFgPct(lineup.shooting_stats_arr[i])
+		}
+		else if(stat_id == "29"){
+			data = calcAggregateFtPct(lineup.shooting_stats_arr[i])
+		}
+		if (is_per_game){
+			make_val = data.makes / games_played
+			attempts_val = data.attempts / games_played
+		}
+		else{
+			make_val = data.makes / season_minutes
+			attempts_val = data.attempts / season_minutes
+		}
+		if(aggregate_arr.arr[j]!=null){
+			aggregate_arr.arr[j].makes += make_val
+			aggregate_arr.arr[j].attempts += attempts_val
+		}
+		else{
+			aggregate_arr.arr.push({"makes" : make_val, "attempts" : attempts_val})
+		}
+		return aggregate_arr;
+	}
+
+	function calcAdvAggregateData(lineup){
+		var len = lineup.adv_player_stat_arr.length;
+		var num_stats = lineup.adv_player_stat_arr[0].length;
+		var aggregate_arr = {"headers" : [], "arr" : []};
+		for(var i = 0; i < len; i++){
+			for(var j = 0; j < num_stats; j++){
+				if (lineup.adv_player_stat_arr[i][j].id == "19"){
+					var ts_data = calcAggregateTSPct(lineup.shooting_stats_arr[i]);
+					if(aggregate_arr.arr[j]!= null){
+						aggregate_arr.arr[j].value.points += ts_data.points;
+						aggregate_arr.arr[j].value.fg_attempts += ts_data.fg_attempts;
+						aggregate_arr.arr[j].value.ft_attempts += ts_data.ft_attempts;
+					}
+					else{
+						aggregate_arr.arr.push({"value" : ts_data, "stat" : lineup.adv_player_stat_arr[i][j].stat});
+					}
+				}
+				else if (lineup.adv_player_stat_arr[i][j].id == "22"){
+					var ftar_data = calcAggregateFTARate(lineup.shooting_stats_arr[i]);
+					if(aggregate_arr.arr[j]!= null){
+						aggregate_arr.arr[j].value.fg_attempts += ftar_data.fg_attempts;
+						aggregate_arr.arr[j].value.ft_attempts += ftar_data.ft_attempts;
+					}
+					else{
+						aggregate_arr.arr.push({"value" : ftar_data, "stat" : lineup.adv_player_stat_arr[i][j].stat});
+					}
+				}
+				else {
+					var val = parseFloat(lineup.adv_player_stat_arr[i][j].value)
+					if(aggregate_arr.arr[j]!= null){
+						aggregate_arr.arr[j].value += val;
+					}
+					else{
+						aggregate_arr.arr.push({"value" : val, "stat" : lineup.adv_player_stat_arr[i][j].stat});
+					}
+				}
+			}
+		}
+		var aggr_len = aggregate_arr.arr.length
+		for (var l = 0; l < aggr_len; l++){
+			if(aggregate_arr.arr[l].value.points){
+				var ts_val = 100 * aggregate_arr.arr[l].value.points / (2 * (aggregate_arr.arr[l].value.fg_attempts + 0.44* aggregate_arr.arr[l].value.ft_attempts))
+				aggregate_arr.arr[l].value = ts_val
+			}
+			else if (aggregate_arr.arr[l].value.ft_attempts){
+				var ftar_val = 100 * aggregate_arr.arr[l].value.ft_attempts / aggregate_arr.arr[l].value.fg_attempts
+				aggregate_arr.arr[l].value = ftar_val;
+			}
+			else{
+				aggregate_arr.arr[l].value /= len;
+			}
+		}
+		return aggregate_arr;
+	}
+
+	function calcAggregateData(is_per_game, lineup){
+		var len = lineup.player_stat_arr.length;
+		var num_stats = lineup.player_stat_arr[0].length;
+		var aggregate_arr = {"headers" : [], "arr" : []};
+		for(var i = 0; i < len; i++){
+			for(var j = 0; j < num_stats; j++){
+				var val;
+				if(lineup.player_stat_arr[i][j].is_percent =="true"){
+					aggregate_arr = determine_pct_aggregates(lineup, aggregate_arr, is_per_game, j, i)
+				}
+				else{
+					if (is_per_game) {
+						val = parseInt(lineup.player_stat_arr[i][j].value) / parseInt(lineup.player_stat_arr[i][j].games_played)
+					}
+					else {
+						val =  parseInt(lineup.player_stat_arr[i][j].value) /parseInt(lineup.player_stat_arr[i][j].season_minutes)
+					}
+					if(aggregate_arr.arr[j]!= null){
+						aggregate_arr.arr[j]+= val;
+					}
+					else{
+						aggregate_arr.arr.push(val);
+					}
+				}
+			}
+		}
+		var aggr_len = aggregate_arr.arr.length
+		for (var l = 0; l < aggr_len; l++){
+			if(aggregate_arr.arr[l].makes){
+				aggregate_arr.arr[l] = 100 * aggregate_arr.arr[l].makes / aggregate_arr.arr[l].attempts 
+			}
+			else{
+				aggregate_arr.arr[l] /= len;
+			}
+		}
+		return aggregate_arr;
+	}
+
+	function determineRank(arr, val, stat_id){
+		var len = arr.length;
+		var i;
+		for(i = len; i > 0; i--){
+			if(stat_id == 7 || stat_id == 17 || stat_id == 17 || stat_id == 17){
+				if(val <= arr[i]){
+					return parseFloat((i/num_members).toFixed(2));
+				}
+			}
+			else {
+				if(val >= arr[i]){
+					return parseFloat((i/num_members).toFixed(2));
+				}
+			}
+			
+		}
+		return i;
+	}
+
+
+	function rankAggregateData(aggregate_arr, radar_stat){
+		var len = aggregate_arr.length;
+		var aggregate_ranks = [];
+		switch(radar_stat){
+			case "per_game" :
+				for(var i = 0; i < len; i++){
+					var ranking_obj = ranking_data[i];
+					var rank = determineRank(ranking_obj.per_game_ranks, aggregate_arr[i], ranking_obj.stat_id)
+					aggregate_ranks.push({axis: ranking_obj.stat , value: rank});
+				}
+				return aggregate_ranks;
+			case "per_minute" : 
+				for(var i = 0; i < len; i++){
+					var ranking_obj = ranking_data[i];
+					var rank = determineRank(ranking_obj.per_minute_ranks, aggregate_arr[i], ranking_obj.stat_id)
+					aggregate_ranks.push({axis: ranking_obj.stat , value: rank});
+				}
+				return aggregate_ranks;
+			case "advanced" :
+				for(var i = 0; i < len; i++){
+					var ranking_obj = adv_ranking_data[i];
+					var rank = determineRank(ranking_obj.advanced_ranks, aggregate_arr[i].value, ranking_obj.stat_id)
+					aggregate_ranks.push({axis: ranking_obj.stat , value: rank});
+				}
+				return aggregate_ranks;
+		}
+		return aggregate_ranks;
 	}
 
 
@@ -247,21 +660,32 @@
 		if(button.style.backgroundColor != ""){
 			deselect_player(button, member_id);
 		}
-		else if (lineup_data.member_ids.length < 5){
+		else if (curr_lineup_data.member_ids.length < 5){
 			var style = window.getComputedStyle(button)
 			var color = style.getPropertyValue('border-color')
 			button.style.backgroundColor = color
 
 			var player_index = find_player(member_id);
 			var player = player_arr[player_index];
-			lineup_data.per_game_data.push(player.per_game_data);
-			lineup_data.per_minute_data.push(player.per_minute_data);
-			lineup_data.advanced_data.push(player.advanced_data);
-			lineup_data.member_ids.push(player.member_id);
-			lineup_data.color_arr.push(color);
-			var options = getOptions(lineup_data.color_arr)
-			var data = getData();
-			RadarChart(".lineup-chart", data, options, curr_shift_bool)
+			curr_lineup_data.per_game_data.push(player.per_game_data);
+			curr_lineup_data.per_minute_data.push(player.per_minute_data);
+			curr_lineup_data.advanced_data.push(player.advanced_data);
+			curr_lineup_data.member_ids.push(player.member_id);
+			curr_lineup_data.player_stat_arr.push(player.stat_arr);
+			curr_lineup_data.adv_player_stat_arr.push(player.advanced_stat_arr);
+			curr_lineup_data.color_arr.push(color);
+			curr_lineup_data.shooting_stats_arr.push(player.shooting_stats)
+			console.log(curr_lineup_data)
+			var options = getOptions(curr_lineup_data.color_arr, window.innerWidth * .2, 100)
+			var data = getData(curr_lineup_data);
+
+			var aggregate_data = getAggregateData(curr_lineup_data, curr_radar_stat);
+
+			var ranked_aggregate_data = rankAggregateData(aggregate_data.arr, curr_radar_stat);
+			var aggr_options = getOptions(["#8c0a0a"], window.innerWidth * .2, 100);
+
+			RadarChart(".aggregate-chart", [ranked_aggregate_data], aggr_options, curr_shift_bool)
+			RadarChart(".overlaid-chart", data, options, curr_shift_bool)
 		}
 		else{
 			alert("you have more than 5 players selected");
@@ -269,51 +693,223 @@
 	}
 
 	function deselect_player(button, member_id){
-		button.style.backgroundColor = "";
-		remove_from_lineup(member_id);
+		remove_from_lineup(member_id, button);
 	}
 
-	function remove_from_lineup(member_id){
-		var lineup_arr_len = lineup_data.member_ids.length
-		for(var i = 0; i < lineup_arr_len; i++){
-			if(lineup_data.member_ids[i] == member_id){
-				lineup_data.per_game_data.splice(i, 1);
-				lineup_data.per_minute_data.splice(i, 1);
-				lineup_data.advanced_data.splice(i, 1);
-				lineup_data.member_ids.splice(i, 1);
-				lineup_data.color_arr.splice(i, 1)
-				var options = getOptions(lineup_data.color_arr)
-				var data = getData();
-				RadarChart(".lineup-chart", data, options, curr_shift_bool)
+	function splice_lineup(lineup, i){
+		lineup.per_game_data.splice(i, 1);
+		lineup.per_minute_data.splice(i, 1);
+		lineup.advanced_data.splice(i, 1);
+		lineup.member_ids.splice(i, 1);
+		lineup.player_stat_arr.splice(i, 1);
+		lineup.color_arr.splice(i, 1);
+		lineup.adv_player_stat_arr.splice(i, 1);
+	}
+
+	function remove_from_lineup(member_id, button){
+		var lineup_arr_len = curr_lineup_data.member_ids.length
+		if(lineup_arr_len > 1){
+			button.style.backgroundColor = "";
+			for(var i = 0; i < lineup_arr_len; i++){
+				if(curr_lineup_data.member_ids[i] == member_id){
+					splice_lineup(curr_lineup_data, i)
+					
+					var options = getOptions(curr_lineup_data.color_arr, window.innerWidth * .2, 100)
+					var data = getData(curr_lineup_data);
+
+					var aggregate_data = getAggregateData(curr_lineup_data, curr_radar_stat);
+					var ranked_aggregate_data = rankAggregateData(aggregate_data.arr, curr_radar_stat) 
+					var aggr_options = getOptions(["#8c0a0a"], window.innerWidth * .2, 100)
+					
+					RadarChart(".aggregate-chart", [ranked_aggregate_data], aggr_options, curr_shift_bool)
+					RadarChart(".overlaid-chart", data, options, curr_shift_bool)
+				}
 			}
 		}
 	}
 
-	function toggle_radar_chart(stat_type, button){
+	function toggle_new_chart(stat_type, button){
 		button.style.color = "black";
 		curr_radar_button.style.color = "grey";
 		curr_radar_button = button;
-		var options = getOptions(lineup_data.color_arr)
+		var options = getOptions(curr_lineup_data.color_arr, window.innerWidth * .2, 100)
+		var aggr_options = getOptions(["#8c0a0a"], window.innerWidth * .2, 100)
 		switch(stat_type){
 			// PER GAME DATA
 			case 1 : 
-				RadarChart(".lineup-chart", lineup_data.per_game_data, options, true);
 				curr_radar_stat = "per_game";
+				var aggregate_data = getAggregateData(curr_lineup_data, curr_radar_stat);
+				var ranked_aggregate_data = rankAggregateData(aggregate_data.arr, curr_radar_stat) 
+				RadarChart(".aggregate-chart", [ranked_aggregate_data], aggr_options, true)
+				RadarChart(".overlaid-chart", curr_lineup_data.per_game_data, options, true);
+				
 				curr_shift_bool = true;
 				break;
 			// PER MINUTE DATA
 			case 2 :
-				RadarChart(".lineup-chart", lineup_data.per_minute_data, options, true);
 				curr_radar_stat = "per_minute";
+				var aggregate_data = getAggregateData(curr_lineup_data, curr_radar_stat);
+				var ranked_aggregate_data = rankAggregateData(aggregate_data.arr, curr_radar_stat) 
+				RadarChart(".aggregate-chart", [ranked_aggregate_data], aggr_options, true)
+				RadarChart(".overlaid-chart", curr_lineup_data.per_minute_data, options, true);
 				curr_shift_bool = true;
 				break;
 			
 			case 3 :
-				RadarChart(".lineup-chart", lineup_data.advanced_data, options, false);
 				curr_radar_stat = "advanced";
+				var aggregate_data = getAggregateData(curr_lineup_data, curr_radar_stat);
+				var ranked_aggregate_data = rankAggregateData(aggregate_data.arr, curr_radar_stat)
+				RadarChart(".aggregate-chart", [ranked_aggregate_data], aggr_options, false)
+				RadarChart(".overlaid-chart", curr_lineup_data.advanced_data, options, false);
 				curr_shift_bool = false;
 				break;
 		}
 	}
+
+	function toggle_radar_chart(stat_type, button, lineup_id){
+
+	}
+
+	function find_lineup(lineup_id){
+		var len = saved_lineups.length;
+		for(var i = 0; i < len; i++){
+			if (saved_lineups[i].lineup_id == lineup_id){
+				return saved_lineups[i]
+			}
+		}
+	}
+
+	function unhighlight_player_buttons(){
+		$(".lineup-member-button").each(function(){
+			$(this).css("background-color", "");
+		});
+	}
+	function highlight_player_button(member_id){
+		var color;
+		$(".lineup-member-button").each(function(){
+			if(parseInt(member_id) ==  ($(this).data("memberId"))){
+				color = $(this).css("border-color");
+				$(this).css("background-color", color);
+			}
+		});
+		return color;
+	}
+
+	function new_lineup(){
+		$("#delete-lineup").hide()
+		$("#lineup-name").text("New Lineup (click to edit)")
+		unhighlight_player_buttons();
+		new_lineup_bool = true;
+		curr_lineup_id = null;
+		curr_lineup_data = new_lineup_data;
+		InitialRadarChart(".overlaid-chart", basicOptions, true);
+		InitialRadarChart(".aggregate-chart", basicOptions, true);
+	}
+
+	function expand_lineup(lineup_id, lineup_counter){
+
+		$("#delete-lineup").show()
+
+
+
+		unhighlight_player_buttons();
+		new_lineup_bool = false;
+		var lineup = find_lineup(lineup_id);
+		$("#lineup-name").text(lineup.lineup_name)
+		curr_lineup_id = lineup_id;
+		var num_members = lineup.lineup_data.member_ids.length;
+		if(lineup.lineup_data.color_arr.length == 0){
+			for(var i = 0; i < num_members; i++){
+				lineup.lineup_data.color_arr.push(highlight_player_button(lineup.lineup_data.member_ids[i]));
+			}
+		}
+		else {
+			for(var i = 0; i < num_members; i++){
+				highlight_player_button(lineup.lineup_data.member_ids[i]);
+			}
+		}
+		
+		curr_lineup_data = lineup.lineup_data;
+		var options = getOptions(lineup.lineup_data.color_arr, window.innerWidth * .2, 100);
+		var ranked_aggregate_data = rankAggregateData(lineup.advanced_data.arr, "advanced") 
+		var aggr_options = getOptions(["#8c0a0a"], window.innerWidth * .2, 100);
+
+		RadarChart(".aggregate-chart", [ranked_aggregate_data], aggr_options, false)
+		RadarChart(".overlaid-chart", lineup.lineup_data.advanced_data, options, false);
+	}
+
+	function instantiate_lineups(){
+		var lineup_counter = 0
+		<% @lineups.each do |lineup| %>
+			var lineup = {"member_ids": [], "per_game_data" : [], "per_minute_data" : [], "advanced_data" : [], "shooting_stats_arr" : [], "player_stat_arr" : [], "adv_player_stat_arr" : [], "color_arr" : []}
+			<%lineup.members.each do |member|%>
+				var player_index = find_player("<%=member.id%>");
+				var player = player_arr[player_index];
+				lineup.per_game_data.push(player.per_game_data);
+				lineup.per_minute_data.push(player.per_minute_data);
+				lineup.advanced_data.push(player.advanced_data);
+				lineup.member_ids.push(player.member_id);
+				lineup.player_stat_arr.push(player.stat_arr);
+				lineup.adv_player_stat_arr.push(player.advanced_stat_arr);
+				lineup.shooting_stats_arr.push(player.shooting_stats)
+			<%end%>
+			var advanced_data = getAggregateData(lineup, "advanced");
+			var per_game_data = getAggregateData(lineup, "per_game");
+			var per_minute_data = getAggregateData(lineup, "per_minute");
+
+			per_game_data.headers = basic_stat_headers; 
+			per_minute_data.headers = basic_stat_headers; 
+			advanced_data.headers = advanced_stat_headers; 
+
+			//console.log(advanced_data)
+			var ranked_aggregate_data = rankAggregateData(advanced_data.arr, "advanced")
+			var aggr_options = getOptions(["#8c0a0a"], window.innerWidth * .15, 10)
+			PartialRadarChart("#lineup-button-" + lineup_counter, [ranked_aggregate_data], aggr_options, false)
+			saved_lineups.push({"lineup_id" : "<%=lineup.id%>", "lineup_name" : "<%=lineup.name%>", "lineup_data" : lineup, "advanced_data" : advanced_data, "per_game_data" : per_game_data, "per_minute_data" : per_minute_data})
+			lineup_counter++;
+		<%end%>
+	}
+
+	function saveLineup(){
+		var url;
+		var lineup_name = $("#lineup-name").text()
+		var json_data = {"members": curr_lineup_data.member_ids, "name" : lineup_name};
+		var http_type;
+		if(new_lineup_bool){
+			url = "/teams/" + <%= @team_id%> +  "/lineups/"; 
+			http_type = "post";
+		}
+		else{
+			url = "/teams/" + <%= @team_id%> +  "/lineups/" + curr_lineup_id;
+			http_type = "PATCH"
+		}
+		console.log(json_data)
+		 $.ajax({
+			url: url,
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			type: http_type,
+			data_type: 'json',
+			data: json_data,
+		});
+	}
+
+	function deleteLineup(){
+		var url = "/teams/" + <%= @team_id%> +  "/lineups/" + curr_lineup_id;
+		$.ajax({
+			url: url,
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			type: 'DELETE',
+			data_type: 'json',
+		});
+	}
+
+
+	/**********************************************************************************************************************************************/
+	/**********************************************************************************************************************************************/
+	/*************************************************************** <STAT TABLE> *****************************************************************/
+	/**********************************************************************************************************************************************/
+	/**********************************************************************************************************************************************/
+
+
 
 </script>

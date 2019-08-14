@@ -1,3 +1,32 @@
+.settings-icon{
+	width: 25px;
+	margin: 10px;
+}
+
+.settings-dropdown{
+	display: inline-block;
+	position:absolute;
+	right: 0px;
+	min-width: 100px;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 10px 10px;
+  text-decoration: none;
+  display: block;
+  font-size: 15px;
+}
+.dropdown-content a:hover {background-color: #ddd}
+
 .plays-img{
 	width: 100vw;
 	opacity: .7;
@@ -5,6 +34,10 @@
 #plays-landing{
 	background-color: black; 
 	position: relative;
+}
+
+#play-links{
+	display: flex;
 }
 
 #plays-landing-title{
@@ -178,9 +211,13 @@
 	text-align: center;
 }
 
-#play-header div {
-	display: inline-block;
+#play-progression div {
 	font-size: 35px;
+	display: inline-block;
+}
+
+#play-progression{
+	display: inline-block;
 }
 
 #play-scrollbar{

@@ -21,18 +21,21 @@
 						<%= image_tag("example-progression.png", :alt => "play", :class => "play-img") %>
 						<div class = "play-link-text"><%=play.name%></div>
 					<%end%>
-					<%= link_to team_play_path(@team_id, play.id), :class => "progression-link" do %>
-						<div class = "show-link-block">
-							<div class = "progression-link-text">Show</div>
+					<% if @is_admin %>
+						<div id = "play-links">
+							<%= link_to team_play_path(@team_id, play.id), :class => "progression-link" do %>
+								<div class = "show-link-block">
+									<div class = "progression-link-text">Show</div>
+								</div>
+							<%end%>
+							
+								<%= link_to edit_team_play_path(@team_id, play.id), :class => "progression-link" do %>
+									<div class = "edit-link-block">
+										<div class = "progression-link-text">Edit</div>
+									</div>	
+								<% end %>
 						</div>
 					<%end%>
-					
-					
-					<%= link_to edit_team_play_path(@team_id, play.id), :class => "progression-link" do %>
-						<div class = "edit-link-block">
-							<div class = "progression-link-text">Edit</div>
-						</div>	
-					<% end %>
 				</div>
 			</div>
 			<%end%>
@@ -101,7 +104,7 @@
 			                    maxlength: 100 %>
 			  <div>What kind of play is it?</div>
 			  <% @play_types.each do|type|%>
-			    <%= f.radio_button :play_type_id, type.id, label: type.o_type, value: type.id %>
+			    <%= f.radio_button :play_type_id, type.id, label: type.play_type, value: type.id %>
 			  <%end%>
 			  <%= f.hidden_field :team_id,  value: @team_id  %>
 			  <%= f.hidden_field :offense_defense,  value: true  %>
@@ -126,7 +129,7 @@
 			                    maxlength: 100 %>
 			  <div>What kind of play is it?</div>
 			  <% @play_types.each do|type|%>
-			    <%= f.radio_button :play_type_id, type.id, label: type.d_type, :class => "new-play-label", value: type.id %>
+			    <%= f.radio_button :play_type_id, type.id, label: type.play_type, :class => "new-play-label", value: type.id %>
 			  <%end%>
 			  <%= f.hidden_field :team_id,  value: @team_id  %>
 			  <%= f.hidden_field :offense_defense,  value: false  %>

@@ -68,7 +68,6 @@
 			}
 			player_stats[i-1].stat_arr.push({"value": parseInt("<%= stat.value%>"), "stat_list_id" : "<%= stat.stat_list_id%>", "stat" : "<%= stat.stat%>","display_priority" : "<%= stat.display_priority%>"})
 		<%end%>
-		console.log(player_stats)
 		var j = 0;
 
 		<% @advanced_stats.each do |stat|%>
@@ -86,11 +85,9 @@
 	}
 
 	function populate_opponent_stats(){
-		console.log("gets here")
 		<% @opponent_stats.each do |stat| %>
 			opponent_stat_array.push({"value": parseInt("<%= stat.value%>"), "stat_list_id" : "<%= stat.stat_list_id%>", "display_priority" : "<%= stat.display_priority%>", "name" : "<%= @opponent_name %>"})
 		<%end %>
-		console.log(opponent_stat_array);
 	}
 
 	function populate_team_advanced_stats(){

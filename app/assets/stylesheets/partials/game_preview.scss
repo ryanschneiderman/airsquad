@@ -1,0 +1,27 @@
+.game-mode-preview{
+	width: 100%;
+	opacity: .5;
+}
+
+#game-preview-banner{
+	height: 100vh;
+	overflow: hidden;
+	background-color: black;
+}
+
+#test{
+	color: red;
+}
+
+.game-preview-text{
+	font-family: 'Open Sans', serif;
+	font-size: 75px;
+	z-index: 4;
+	position: absolute;
+    text-align: center;
+    top: 40%;
+    margin: 0 auto;
+    width: 100%;
+    color: white;
+    font-weight: 700;
+}

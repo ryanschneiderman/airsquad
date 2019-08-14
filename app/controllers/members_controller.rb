@@ -14,14 +14,13 @@ class MembersController < ApplicationController
 			team_id: params[:team_id]
 		}).call
 
-		@minutes = Stat.joins(:game,  :stat_list).select("games.date as date, stat_lists.stat as stat, stats.*").where("stat_lists.id" => 16, "stats.member_id" => member_id).sort_by{|e| e.date}
+		@minutes = Stat.joins(:stat_list).joins(:game => :schedule_event).select("schedule_events.date as date, stat_lists.stat as stat, stats.*").where("stat_lists.id" => 16, "stats.member_id" => member_id).sort_by{|e| e.date}
 
-		@trend_stats = Stat.joins(:game, :stat_list).select("games.date as date, stat_lists.stat as stat, stats.*").where("stat_lists.team_stat" => false, "stats.member_id" => member_id, "stat_lists.rankable" => true).sort_by{|e| [e.stat_list_id, e.date]}
+		@trend_stats =  Stat.joins(:stat_list).joins(:game => :schedule_event).select("schedule_events.date as date, stat_lists.stat as stat, stats.*").where("stat_lists.team_stat" => false, "stats.member_id" => member_id, "stat_lists.rankable" => true).sort_by{|e| [e.stat_list_id, e.date]}
 		@trend_stat_lists = TeamStat.joins(:stat_list).select("stat_lists.stat as stat, team_stats.*").where("team_stats.team_id" => team_id, "stat_lists.team_stat" => false, "stat_lists.rankable" => true, "stat_lists.advanced" => false).sort_by{|e| e.stat_list_id}
 		@adv_trend_stat_lists = TeamStat.joins(:stat_list).select("stat_lists.stat as stat, team_stats.*").where("team_stats.team_id" => team_id, "stat_lists.team_stat" => false, "stat_lists.rankable" => true, "stat_lists.advanced" => true).sort_by{|e| e.stat_list_id}
 
 		@shot_chart_data = StatGranule.where(member_id: member_id).where("stat_list_id IN (?)", [1,2])
-		@adv_trend_stats = AdvancedStat.joins(:game, :stat_list).select("games.date as date, stat_lists.stat as stat, advanced_stats.*").where("stat_lists.team_stat" => false, "advanced_stats.member_id" => member_id , "stat_lists.rankable" => true).sort_by{|e| [e.stat_list_id, e.date]}
-
+		@adv_trend_stats = AdvancedStat.joins(:stat_list).joins(:game => :schedule_event).select("schedule_events.date as date, stat_lists.stat as stat, advanced_stats.*").where("stat_lists.team_stat" => false, "advanced_stats.member_id" => member_id , "stat_lists.rankable" => true).sort_by{|e| [e.stat_list_id, e.date]}
 	end
 end

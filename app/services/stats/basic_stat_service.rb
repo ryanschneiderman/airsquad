@@ -10,10 +10,6 @@ class Stats::BasicStatService
 			basic_stats.push(StatList.find_by_id(stat.stat_list_id))
 		end
 
-		basic_stats.each do |stat|
-			puts stat.id
-		end
-
 		stat_table_columns = Stats::StatTableColumnsService.new({
 			stats: basic_stats,
 			is_advanced: false,

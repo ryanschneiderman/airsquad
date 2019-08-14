@@ -18,7 +18,7 @@ class Advanced::BlockPctService
 		if @minutes_played * (@opp_field_goal_att - @opp_three_point_att) == 0
 			return 0.0
 		else 
-			raw_blk = 100 * (@blocks * (@team_minutes_played / 5)) / (@minutes_played * (@opp_field_goal_att - @opp_three_point_att))
+			raw_blk = 100 * 100 * (@blocks * (@team_minutes_played / 5)) / (@minutes_played * (@opp_field_goal_att - @opp_three_point_att))
 			raw_blk = raw_blk.round / 100.0
 			return raw_blk
 		end

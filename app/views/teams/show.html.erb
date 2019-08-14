@@ -3,23 +3,34 @@
 	<div id = "content-grid">
 		<div id = "col1">
 			<div id = "feed" class = "full-column">FEED
-				<div><%= link_to "new_post", new_team_post_path(@team.id) %></div>
+				<div class = "team-page-link"><%= link_to "new_post", new_team_post_path(@team.id) %></div>
 				<%= render @posts %>
 			</div>
 		</div>
 		<div id = "col2">
-			<div id = "schedule" class = "big-box"><%= link_to "SCHEDULE", team_games_path(@team.id) %></div>	
-			<div id = "stats" class = "big-box"><%= link_to "STATS", team_stats_path(@team.id) %></div>
+			<div id = "schedule" class = "big-box team-page-link"><%= link_to "Schedule", team_games_path(@team.id) %></div>	
+			<div id = "stats" class = "big-box team-page-link"><%= link_to "Stats", team_stats_path(@team.id) %></div>
 		</div>
 		<div id = "col3">
-			<div id = "plays" class = "big-box"><%= link_to "PLAYS", team_plays_path(@team.id) %></div>
-			<div id = "roster" class = "big-box"><%= link_to "LINEUP EXPLORER", lineup_explorer_path(@team.id) %></div>	
+			<div id = "plays" class = "big-box team-page-link"><%= link_to "Plays", team_plays_path(@team.id) %></div>
+			<div id = "roster" class = "big-box team-page-link"><%= link_to "Lineup Explorer", team_lineups_path(@team.id) %></div>	
 		</div>
 	</div>
 </div>
 
 
 <script>
+	$("#main").css("margin-top", "50px");
+	$(".navbar").addClass("navbar-active");
+    $(".navbar-default a").addClass("navbar-text-active");
+    $(".home-link").css("border-color", "black");
+
+    $(window).on("scroll", function() {
+        $(".navbar").addClass("navbar-active");
+        $(".navbar-default a").addClass("navbar-text-active");
+        $(".home-link").css("border-color", "black")
+
+	});
 	var window_height = $(window).height() - 75;
 
 	$(".big-box").height(window_height/2);

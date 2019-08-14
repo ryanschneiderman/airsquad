@@ -89,6 +89,7 @@
 <%= render 'game_mode_js' %>
 <%= render 'game_mode_js_objects' %>
 <script>
+	$(".navbar").hide()
 	canvas_vars = initialize_canvas(0.62, 0.7, 'c', 3)
 	initialize_globals(canvas_vars.canvas, canvas_vars.canvas_width, canvas_vars.canvas_height)
 	populate_players();

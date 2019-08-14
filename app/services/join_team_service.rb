@@ -1,6 +1,7 @@
+
 class JoinTeamService
 	def initialize(params)
-		@member_type = params[:member_type]
+		@roles = params[:roles]
 		@team_username = params[:team_username]
 		@team_password = params[:team_password]
 		@current_user = params[:current_user]
@@ -17,27 +18,17 @@ class JoinTeamService
 		## admin-coach status?
 		## case other .... e.g. manager (non player, non admin, non creator, but still part of team)
 		if password_to_check == @team_password
-			case @member_type
-			when "player"
-				new_member = Member.new(
-					nickname: @current_user.name,
-					user_id: @current_user.id,
-					team_id: team_to_join.id,
-					isPlayer: true
-					)
-				new_member.save
-				##eventually redirect to team page
-			when "coach"
-				new_member = Member.new(
-					nickname: @current_user.name,
-					team_id: team_to_join.id,
-					user_id: @current_user.id,
-					isAdmin: true
-					)
-				new_member.save
-
-				##eventually redirect to team page
-			end	
+			new_member = Member.create(
+				nickname: @current_user.name,
+				user_id: @current_user.id,
+				team_id: team_to_join.id,
+			)
+			@roles.each do |role|
+				assignment = Assignment.create(
+					member_id: new_member.id,
+					role_id: role
+				)
+			end
 		end		
 	end
 end

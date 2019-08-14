@@ -4,6 +4,7 @@ class GamesController < ApplicationController
 	def index
 		@team_id = params[:team_id]
 		@games = Game.where(team_id: @team_id)
+		@schedule_events = ScheduleEvent.joins(:game).select("games.id as game_id, games.played as played, schedule_events.*").where("schedule_events.team_id" => @team_id)
 	end 
 	
 	def new
@@ -13,32 +14,47 @@ class GamesController < ApplicationController
 	end
 
 	def create
-		opponent = params[:game][:opponent]
-		team_id = params[:game][:team_id]
-		date = params[:game][:date]
+		opponent = params[:opponent]
 
-		game = Game.new(team_id: team_id, date: date)
+		team_id = params[:team_id]
+		date = params[:date]
+		time = params[:time]
+		place = params[:location]
+
+		schedule_event = ScheduleEvent.create(
+			date: date,
+			time: time,
+			place: place,
+			name: opponent,
+			team_id: team_id,
+		)
+
+		game = Game.new(team_id: team_id, played: false, schedule_event_id: schedule_event.id)
 		game.save
 
 		opponent = Opponent.new(name: opponent, game_id: game.id, team_id: team_id)
 		opponent.save
 		game.opponent_id = opponent.id
 		game.save
-		redirect_to team_path(params[:game][:team_id])
+		redirect_to team_games_path(team_id)
 	end
 
 	def show
 		
 		@team = Team.find_by_id(params[:team_id])
 		@game = Game.find_by_id(params[:id])
-		played = @game.played
+		@played = @game.played
 
-		if played 
-		else
-			render :partial => "game_preview" and return
+		@curr_member =  Assignment.joins(:role).joins(:member).select("roles.name as role_name, members.*").where("members.user_id" => current_user.id, "members.team_id" => params[:team_id])
+		@gm_permission = false
+		@curr_member.each do |member_obj|
+			if member_obj.role_name == "Admin" || member_obj.role_name == "Manager"
+				@gm_permission = true
+			end
 		end
 
-		@players = Member.where(team_id: params[:team_id], isPlayer: true)
+		@players = Role.joins(:assignment => :member).select("role.name as name, member.*").where("member.team_id" => @team.id, "role.id" => 1)
+
 		@opponent = Opponent.where(team_id: @team.id, game_id: @game.id).take
 
 		@stat_table_columns = Stats::BasicStatService.new({
@@ -85,7 +101,7 @@ class GamesController < ApplicationController
 		@game_id = params[:id]
 		@team_id = params[:team_id]
 		@team = Team.find_by_id(@team_id)
-		@players = Member.where(team_id: params[:team_id], isPlayer: true)
+		@players = Assignment.joins(:role).joins(:member).select("roles.name as name, members.*").where("members.team_id" => @team_id, "roles.id" => 1)
 		@opponent = Opponent.where(game_id: @game_id).take
 		team_stats = TeamStat.where(team_id: params[:team_id])
 

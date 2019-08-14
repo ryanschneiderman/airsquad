@@ -1,0 +1,35 @@
+<script>
+	class Table {
+		constructor(headers, data, id){
+			this.headers = headers;
+			this.data = data;
+			this.table = document.getElementById(id);
+
+		}
+
+		initializeHeaders(){
+			var insert_index = 0;
+			var row = this.table.insertRow(0);
+			var num_stats = this.headers.length
+			for(i = 0; i < num_stats; i++){
+				var col = row.insertCell(insert_index)
+				col.innerHTML += "<button class = 'stat-table-button'>" + this.headers[i] + "</button>";
+				insert_index++;
+			}
+		}
+
+		initializeData(){
+			var num_rows = this.data.length;
+			var num_cols = this.headers.length;
+			var row;
+			for(var i = 0; i < num_rows; i++){
+				row = this.table.insertRow(i+1);
+				for(var j = 0; j < num_cols; j++){
+					var col = row.insertCell(j);
+					col.innerHTML = this.data[i][j].toFixed(2)
+				}
+			}
+		}
+	}
+
+</script>

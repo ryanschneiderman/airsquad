@@ -5,6 +5,30 @@
 	padding-bottom: 20px;
 }
 
+
+.stats-img{
+	width: 100vw;
+	opacity: .7;
+}
+
+#stats-landing{
+	background-color: black; 
+	position: relative;
+}
+
+#stats-landing-title{
+	font-family: 'Open Sans', serif;
+	font-size: 85px;
+	z-index: 4;
+	position: absolute;
+    text-align: center;
+    top: 35%;
+    margin: 0 auto;
+    width: 100%;
+    color: white;
+    font-weight: 700;
+}
+
 #table-toggle-buttons{
 	text-align: center;
 	margin-bottom: 20px;

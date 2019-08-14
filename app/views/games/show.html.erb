@@ -1,4 +1,4 @@
-
+	<% if @played %>
 	<div id = "gr-header">Game Review</div>
 	<div id = "game-review-stats">
 		<div id = "gr-team-stats">
@@ -68,6 +68,11 @@
 <%= render 'game_mode_js_objects' %>
 <%= render 'game_review_js' %>
 <%= render 'game_review_slide_js' %>
+
+<%else%>
+
+<%= render 'game_preview' %>
+<% end %>
 
 
 <script>
