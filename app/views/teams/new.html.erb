@@ -1,8 +1,171 @@
-<div class="container new-post">
-  <div class="row">
-    <div class="col-sm-6 col-sm-offset-3">
-      <h1>Create a new team</h1>
-        <%= render 'teams/new/team_form' %>
-    </div>
-  </div>
+<div id = "new-team-block">
+	<div class = "page-subheader">Create Team!</div>
+	<div id = "team-info-block">
+		<div class = "new-form">
+			<div class = "team-info-input">
+				<label for="enter-team-name">Enter team name. This will be what is displayed throughout the app.</label><br>
+				<input type = "text" id = "enter-team-name" placeholder="Enter team name...">
+			</div>
+			<div class = "team-info-input">
+				<label for="enter-unique-username">Enter a unique username. This is what players and other team members will use to join the team.</label><br>
+					<input type = "text" id = "enter-unique-username" placeholder="Select username...">
+			</div>
+			<div class = "team-info-input">
+				<label for="choose-password">Choose a password for others to join the team.</label><br>
+				<input  id = "choose-password" placeholder="Select password..." type = "password">
+			</div>
+			<div class = "team-info-input">
+				<label for="minutes-per-quarter">How long are the quarters in your league (in minutes)?</label><br>
+				<input type = "number" id = "minutes-per-quarter" >
+			</div>
+		</div>
+		<div id = "add-players-block">
+			<div class = "new-form">
+				<label for="add_player">Enter the names of your players. These are the names that will be used throughout the app. </label><br>
+				<input type = "text" id = "add_player">
+				<button class="btn btn-primary" onclick = "add_player()">Add Player</button>	
+			</div>
+			<div id = "current-members">
+							
+			</div>
+		</div>
+		<div id = "button-bar">
+			 <button class = "bar-button" id = "next-button" onclick = "show_team_stat_block()">Next</button>
+		</div>
+	</div>
+
+	<div id = "team-stat-grid" style = "display: none">
+		<div id = "team-stat-header">
+			<div id = "ts-header-body">
+				Here you will select the stats you would like to keep for you team. Some stats are default and essential to the function of the application. Others you can choose to keep if you want. The more you keep, the more advanced stats the application can derive for you. 
+			</div>
+		</div>
+		<div id = "stat-choices-grid">
+			<div id = "choose-stats"> 
+				<div class = "stat-choice-header">Choose Additional Stats</div>
+				<div class = "stat-choice-grid">
+					<div class = "stats-choice-box">
+						<div id = "choose-basic-collectors">
+							<% @non_default_collectable.each do |stat| %>
+								<button class = "stat-choice stat-choice-active" type = "button" onclick="to_your_stats(this, 'basic', '<%= stat.stat %>', <%= stat.id %>)"> <%= stat.stat %> </button>
+							<% end %>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id = "your-basic-stats"> 
+				<div class = "stat-choice-header">Your basic stats</div>
+				<div class = "your-stats-grid">
+					<div class = "stats-choice-box">
+						<div id = "basic-collectors">
+							<% @default_basic.each do |stat| %>
+								<div class = "stat-choice stat-choice-active"> <%= stat.stat %> </div>
+							<% end %>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div id = "your-advanced-stats"> 
+				<div class = "stat-choice-header">Your Advanced stats</div>
+				<div class = "adv-stats-grid">
+					<div class = "stats-choice-box">
+						<div class = "stat-choice-subheader">Advanced individual stats</div>
+						<div id = "adv-individual">
+							<%@default_indiv_advanced.each do |stat|%>
+								<button class = "stat-choice stat-choice-active" type = "button" id = "stat-<%=stat.id%>" onclick="to_choose_stats(this, 'advanced', '<%= stat.stat %>', <%= stat.id %>)"> <%= stat.stat %> </button>
+							<%end%>
+
+							<%@non_default_indiv_advanced.each do |stat|%>
+								<button class = "stat-choice stat-choice-inactive" id = "stat-<%=stat.id%>"> <%= stat.stat %> </button>
+							<%end%>
+						</div>
+					</div>
+					<div class = "stats-choice-box">
+						<div class = "stat-choice-subheader">Advanced team stats</div>
+						<div id = "adv-team">
+							<%@default_team_advanced.each do |stat|%>
+								<button class = "stat-choice stat-choice-active" type = "button" id = "stat-<%=stat.id%>" onclick="to_choose_stats(this, 'advanced', '<%= stat.stat %>', <%= stat.id %>)"> <%= stat.stat %> </button>
+							<%end%>
+							<%@non_default_team_advanced.each do |stat|%>
+								<button class = "stat-choice stat-choice-inactive" id = "stat-<%=stat.id%>"> <%= stat.stat %> </button>
+							<%end%>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id = "button-bar">
+			<button class = "bar-button" id = "previous-button" onclick = "show_team_info_block()">Previous</button>
+			<button class = "bar-button" id = "next-button" onclick = "submit_new_team()">Submit</button>
+		</div>
+	</div>
 </div>
+<div id = "background-color"></div>
+
+<%= render "/team_stats/team_stats_js"%>
+
+
+<script>
+
+	$(".navbar").addClass("navbar-active");
+    $(".navbar-default a").addClass("navbar-text-active");
+    $(".home-link").css("border-color", "black");
+
+    $(window).on("scroll", function() {
+        $(".navbar").addClass("navbar-active");
+        $(".navbar-default a").addClass("navbar-text-active");
+        $(".home-link").css("border-color", "black")
+
+	});
+
+	var players = []
+	function add_player(){
+		var player = $("#add_player").val()
+		$("#add_player").val("")
+		if(player != ""){
+			players.push(player);
+			$("#current-members").append("<button class = 'new-player' onclick = 'remove_player(this)'><div class = 'new-player-name'>" + player + "</div><div class = 'remove-player-x'> x </div></button>")
+		}
+		else {
+			alert("Enter player name")
+		}
+		
+	}
+
+	function remove_player(button){
+		var player = button.childNodes[0].innerText
+		console.log(button.childNodes[0].innerText)
+		players.splice(players.indexOf(player),1)
+		$(button).remove();
+		console.log(players)
+	}
+
+	function show_team_stat_block(){
+		$("#team-info-block").hide()
+		$("#team-stat-grid").show()
+	}
+
+	function show_team_info_block(){
+		$("#team-info-block").show()
+		$("#team-stat-grid").hide()
+	}
+
+	function submit_new_team(){
+		var team_name = $("#enter-team-name").val()
+		var username = $("#enter-unique-username").val()
+		var password = $("#choose-password").val()
+		var minutes_p_q = $("#minutes-per-quarter").val()
+		var stat_arr = collection_stats.concat(basic_stats).concat(advanced_stats).concat(team_advanced_stats);
+		var url = "/teams/"
+		$.ajax({
+	      url: url,
+	      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+	      type: "post",
+	      data_type: 'json',
+	      data: {players: players, team_name: team_name, username: username, password: password, team_stats: stat_arr, minutes_p_q: minutes_p_q}
+	    });
+	}
+
+
+
+</script>

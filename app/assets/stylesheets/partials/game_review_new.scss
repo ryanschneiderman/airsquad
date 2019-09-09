@@ -48,7 +48,7 @@ body{
 
 #gr-team-stats{
 	position:absolute;
-    top:100px;
+    top: 55px;
     bottom:0;
     left:0;
     right:50%;
@@ -98,25 +98,28 @@ body{
 
 .player-module{
 	display: block;
-    width: 95%;
+    width: 97%;
     margin: auto;
-    border: 2px solid grey;
-    border-radius: 10px;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    border: 1px solid #12676fed;
+    padding-bottom: 15px;
+    border-radius: 5px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    box-shadow: 0px 0px 10px 1px rgba(0, 233, 255, 0.2);
+    background: white;
 }
 
 #gr-player-stats{
 	position:absolute;
-    top:100px;
+    top:55px;
     bottom:0;
     left:50%;
     right: 0;
     overflow-y:scroll;
-
 	display: inline-block;
 	width: 50%;
 	vertical-align: top;
+	background: #edf1f5;
 }
 
 #gr-team-stats-content{
@@ -128,9 +131,12 @@ body{
 	display: none;
 }
 
-#gr-header{
-	font-size: 40px;
-	text-align: center;
+.gr-header{
+	font-size: 46px;
+    text-align: center;
+    font-weight: 300;
+    margin-bottom: 30px;
+    margin-top: 20px;
 }
 
 .gr-stat-header{

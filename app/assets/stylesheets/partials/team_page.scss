@@ -1,17 +1,22 @@
 
-.team-page-link a{
-	font-family: 'Open Sans', serif;
+.team-page-link {
 	color: white;
-	font-size: 20px;
+	font-size: 40px;
+	position: relative;
+	font-weight: 300;
+    top: 40%;
 }
 
 #main{
 	text-align: center;
+
 }
 
 #content-grid{
+	background: #040b27;
 	display: grid;
 	grid-template-columns: 1.5fr 1fr 1fr;
+	padding-bottom: 5px;
 }
 
 #col2{
@@ -26,7 +31,6 @@
 
 #col1{
 	border-radius: 3px;
-	background-color: #a8d2ff;
 	margin-top: 5px;
 	margin-left: 5px;
 }
@@ -37,23 +41,35 @@
 }
 
 #schedule{
-	background-color: #ff2b4f;
-	border-radius: 3px;
+	background-color: #de457d;
+}
+
+#schedule:hover{
+	background-color:#f385ad;
 }
 
 #plays{
-	background-color: #6be8e2;
-	border-radius: 3px;
+	background-color: #fa815c;
+}
+
+#plays:hover{
+	background-color: #fbb099;
 }
 
 #roster{
-	background-color: #ff5921;
-	border-radius: 3px;
+	background-color: #57d6bd;
+}
+
+#roster:hover{
+	background-color: #8ae0cf;
 }
 
 #stats{
-	background-color: #d59afc;
-	border-radius: 3px;
+	background-color: #7a83e6;
+}
+
+#stats:hover{
+	background-color: #b7bdfd;
 }
 
 

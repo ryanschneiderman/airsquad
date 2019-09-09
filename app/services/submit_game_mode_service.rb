@@ -1,4 +1,4 @@
-#create granule objects for each granule in granules (its an array)
+## create granule objects for each granule in granules (its an array)
 ## create player_stat objects for each player_stat in player_stats (its an array)
 ## save them both 
 ## redirect to game path
@@ -17,7 +17,6 @@ class SubmitGameModeService
 		@opponent_stats =  @opponent_obj["cumulative_arr"]
 		@team_id = params[:team_id]
 		@minutes_p_q = params[:minutes_p_q]
-		## @bpm_sums[0] == off_bpm sum, @bpm_sum[1] == regular bpm sum
 		@bpm_sums = [0, 0]
 		@season_bpm_sums = [0, 0]
 		@all_bpms = []
@@ -26,6 +25,8 @@ class SubmitGameModeService
 
 	def call
 		create_team_stats()
+		create_opponent_stats()
+		create_advanced_team_stats()
 		create_player_stats()
 		adjust_bpm()
 	end
@@ -33,8 +34,8 @@ class SubmitGameModeService
 	private
 
 	def create_team_stats()
+		## create team cumulative totals for each stat
 		@team_stats.each do |stat|
-			puts stat[1]["stat"]
 			stat_total = StatTotal.create(
 				value: stat[1]["total"],
 				stat_list_id: stat[1]["id"],
@@ -42,6 +43,7 @@ class SubmitGameModeService
 				team_id: @team_id,
 				is_opponent: false
 			)
+
 			season_total = TeamSeasonStat.where(team_id: @team_id, stat_list_id: stat[1]["id"], is_opponent: false).take
 
 			if season_total 
@@ -56,12 +58,13 @@ class SubmitGameModeService
 				})
 			end		
 			if stat[1]["id"] == "16"
-				puts season_total.value
 				@team_season_minutes = season_total.value
 			end
 			instantiate_stat_variable(stat_total, true, false)
 		end
+	end
 
+	def create_opponent_stats()
 		@opponent_stats.each do |stat|
 			stat_total = StatTotal.create(
 				value: stat[1]["total"],
@@ -85,8 +88,11 @@ class SubmitGameModeService
 			end			
 			instantiate_stat_variable(stat_total, true, true)
 		end
+	end
 
-		team_stats = Advanced::TeamAdvancedStatsService.new({
+	def create_advanced_team_stats()
+		## create team advanced stats 
+		team_adv_stats = Advanced::TeamAdvancedStatsService.new({
 			team_field_goals: @team_field_goals,
 			opp_field_goals: @opp_field_goals,
 			team_field_goal_misses: @team_field_goal_misses,
@@ -113,23 +119,24 @@ class SubmitGameModeService
 			opp_three_point_makes: @opp_three_point_fg
 		}).call
 
+		## TODO: Rethink this -- using this return variable seems weird. I think its okay for now. 
+		## Consider changing at a later point. 
+		@possessions = team_adv_stats["possessions"]
+		@opp_possessions = team_adv_stats["opp_possessions"]
 
-		## ENSURE NOT NIL BEFORE USE AT A LATER POINT
-		@possessions = team_stats["possessions"]
-		@opp_possessions = team_stats["opp_possessions"]
+		@defensive_efficiency = team_adv_stats["defensive_efficiency"]
+		@offensive_efficiency = team_adv_stats["offensive_efficiency"]
 
-		@defensive_efficiency = team_stats["defensive_efficiency"]
-		@offensive_efficiency = team_stats["offensive_efficiency"]
+		@season_offensive_efficiency = team_adv_stats["season_offensive_efficiency"]
+		@season_defensive_efficiency = team_adv_stats["season_defensive_efficiency"]
 
-		@season_offensive_efficiency = team_stats["season_offensive_efficiency"]
-		@season_defensive_efficiency = team_stats["season_defensive_efficiency"]
-
-		if(offensive_efficiency != nil && defensive_efficiency != nil)
+		if(@offensive_efficiency != nil && @defensive_efficiency != nil)
 			@season_team_rating = @season_offensive_efficiency - @season_defensive_efficiency
 			@team_rating = @offensive_efficiency - @defensive_efficiency
 		end
-
 	end
+
+
 
 	def create_player_stats()
 		@player_stats.each do |stat|
@@ -166,17 +173,30 @@ class SubmitGameModeService
 						stat_list_id: stat_id,
 						member_id: player_id,
 					)
-					season_total = SeasonStat.where(member_id: player_id, stat_list_id: stat_id).take
-					if season_total 
 
+					season_total = SeasonStat.where(member_id: player_id, stat_list_id: stat_id).take
+
+					if season_total 
 						season_total.value += stat_total
 						season_total.save
 					else 
-						season_total = SeasonStat.create({
-							value: stat_total,
-							stat_list_id: stat_id,
-							member_id: player_id,
-						})
+						if stat_id == 16
+							## solves divide by 0 bug in ranking service for when minutes played is 0.
+							## doesnt affect ranking because if player has no minutes played his stats will be 0,
+							## thus ranking below all those with minutes. Later minutes won't be affected in a meaningful way
+							## because the minutes tally is actually seconds.
+							season_total = SeasonStat.create({
+								value: stat_total + 1,
+								stat_list_id: stat_id,
+								member_id: player_id,
+							})
+						else 
+							season_total = SeasonStat.create({
+								value: stat_total,
+								stat_list_id: stat_id,
+								member_id: player_id,
+							})
+						end
 					end
 
 					if stat_id == 16
@@ -196,154 +216,26 @@ class SubmitGameModeService
 					end
 					instantiate_stat_variable(cumulative_stat, false, false)
 				end
+
 				player.season_minutes = @season_minutes
 				player.save
 
-
-				## create stats for field goal %
-				if (@field_goals + @field_goal_misses) == 0 
-					field_goal_pct = 0 
-				else 
-					field_goal_pct = 100 * @field_goals/(@field_goals + @field_goal_misses)
-				end
-
-				Stat.create({
-					value: field_goal_pct,
+				Stats::ShootingStatsService.new({
+					field_goals: @field_goals,
+					field_goal_att: @field_goals + @field_goal_misses,
+					season_field_goals: @season_makes,
+					season_field_goal_att: @season_makes + @season_misses,
+					free_throw_makes: @free_throw_makes,
+					free_throw_att: @free_throw_makes + @free_throw_misses,
+					season_free_throw_makes: @season_free_throw_makes,
+					season_free_throw_att: @season_free_throw_makes + @season_free_throw_misses,
+					three_point_fg: @three_point_fg,
+					three_point_att: @three_point_fg + @three_point_miss,
+					season_three_point_fg: @season_three_point_makes,
+					season_three_point_att: @season_three_point_makes + @season_three_point_misses,
 					game_id: @game_id,
-					stat_list_id: 27,
-					member_id: player_id
-				})
-
-				if (@season_makes + @season_misses) == 0 
-					season_field_goal_pct = 0 
-				else 
-					season_field_goal_pct = 100 * @season_makes/(@season_makes + @season_misses)
-				end
-
-				season_total = SeasonStat.where(member_id: player_id, stat_list_id: 27).take
-				if season_total 
-					season_total.value = season_field_goal_pct
-					season_total.save
-				else 
-					SeasonStat.create({
-						value: season_field_goal_pct,
-						stat_list_id: 27,
-						member_id: player_id
-					})
-				end
-
-				if (@free_throw_makes + @free_throw_misses) == 0 
-					free_throw_pct = 0 
-				else 
-					free_throw_pct = 100* @free_throw_makes/(@free_throw_makes + @free_throw_misses)
-				end
-
-				## create stats for free throw %
-				Stat.create({
-					value: free_throw_pct,
-					stat_list_id: 29,
-					member_id: player_id
-				})
-
-				if (@season_free_throw_makes + @season_free_throw_misses) == 0 
-					season_free_throw_pct = 0 
-				else 
-					season_free_throw_pct = 100 * @season_free_throw_makes/(@season_free_throw_makes + @season_free_throw_misses)
-				end
-				season_total = SeasonStat.where(member_id: player_id, stat_list_id: 29).take
-				if season_total 
-					season_total.value = season_free_throw_pct
-					season_total.save
-				else 
-					SeasonStat.create({
-						value: season_free_throw_pct,
-						stat_list_id: 29,
-						member_id: player_id
-					})
-				end
-
-				if (@three_point_fg + @three_point_miss) == 0 
-					three_point_pct = 0 
-				else 
-					three_point_pct = 100 * @three_point_fg/(@three_point_fg + @three_point_miss)
-				end
-				## create stats for 3 point %
-				Stat.create({
-					value: three_point_pct,
-					stat_list_id: 28,
-					member_id: player_id
-				})
-
-				if (@season_three_point_makes + @season_three_point_misses) == 0 
-					season_three_point_pct = 0 
-				else 
-					season_three_point_pct = 100 * @season_three_point_makes/(@season_three_point_makes + @season_three_point_misses)
-				end
-				season_total = SeasonStat.where(member_id: player_id, stat_list_id: 28).take
-				if season_total 
-					season_total.value = season_three_point_pct
-					season_total.save
-				else 
-					SeasonStat.create({
-						value: season_three_point_pct,
-						stat_list_id: 28,
-						member_id: player_id
-					})
-				end
-
-				Stat.create({
-					value: @three_point_fg + @three_point_miss,
-					stat_list_id: 53,
-					member_id: player_id
-				})
-				season_total = SeasonStat.where(member_id: player_id, stat_list_id: 53).take
-				if season_total 
-					season_total.value = @season_three_point_makes + @season_three_point_misses
-					season_total.save
-				else 
-					SeasonStat.create({
-						value: @season_three_point_makes + @season_three_point_misses,
-						stat_list_id: 53,
-						member_id: player_id
-					})
-				end
-
-				Stat.create({
-					value: @field_goals + @field_goal_misses,
-					stat_list_id: 52,
-					member_id: player_id
-				})
-				season_total = SeasonStat.where(member_id: player_id, stat_list_id: 52).take
-				if season_total 
-					season_total.value = @season_makes + @season_misses
-					season_total.save
-				else 
-					SeasonStat.create({
-						value: @season_makes + @season_misses,
-						stat_list_id: 52,
-						member_id: player_id
-					})
-				end
-
-				## create stats for 3 point %
-				Stat.create({
-					value: @free_throw_makes + @free_throw_misses,
-					stat_list_id: 54,
-					member_id: player_id
-				})
-				season_total = SeasonStat.where(member_id: player_id, stat_list_id: 54).take
-				if season_total 
-					season_total.value = @season_free_throw_makes + @season_free_throw_misses
-					season_total.save
-				else 
-				SeasonStat.create({
-					value: @season_free_throw_makes + @season_free_throw_misses,
-					stat_list_id: 54,
-					member_id: player_id
-				})
-				end
-
-
+					member_id: player_id,
+				}).call
 
 				bpms = Advanced::AdvancedStatsService.new({
 					field_goals: @field_goals,
@@ -395,10 +287,11 @@ class SubmitGameModeService
 					opp_possessions: @opp_possessions,
 					member_id: player_id.to_i,
 					game_id: @game_id.to_i,
+					team_id: @team_id.to_i,
 				}).call
 
-				## TODO: CHECK TO MAKE SURE WORKS CORRECTLY
-				if(bpms["obpm"].value != nil)
+				## TODO: RETHINK HOW THIS WORKS -- come back to later
+				if(bpms["obpm"] && bpms["obpm"].value != nil)
 					@bpm_sums[0] += bpms["obpm"].value * (@minutes / (@team_minutes / 5))
 					@bpm_sums[1] += bpms["bpm"].value * (@minutes / (@team_minutes / 5))
 
@@ -410,6 +303,7 @@ class SubmitGameModeService
 		end
 	end
 
+	## TODO: MOVE TO DIFFERENT SERVICE -- come back to later
 	def adjust_bpm()
 		@all_bpms.each do |bpm|
 			bpm_team_adjustment = (@team_rating * 1.2 - @bpm_sums[1])/5

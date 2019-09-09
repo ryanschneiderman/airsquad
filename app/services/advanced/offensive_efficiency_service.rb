@@ -8,10 +8,6 @@ class Advanced::OffensiveEfficiencyService
 	def initialize(params)
 		@possessions = params[:possessions]
 		@team_points = params[:team_points]
-		puts "POSSSESSIONS"
-		puts @possessions
-		puts "TEAM POINTS"
-		puts @team_points
 	end
 
 	def call()
@@ -20,10 +16,6 @@ class Advanced::OffensiveEfficiencyService
 		else
 			raw_oeff = 100*(@team_points/@possessions) * 100
 			oeff = raw_oeff.round / 100.0
-			puts "oeff"
-			puts oeff
-			puts "@possessions"
-			puts @possessions
 			return oeff
 		end
 	end

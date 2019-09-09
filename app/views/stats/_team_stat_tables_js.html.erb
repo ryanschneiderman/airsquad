@@ -10,7 +10,6 @@
 	var minutes_factor = <%=@per_minutes%>;
 	var total_games = <%=@num_games%>;
 
-
 	var player_stats = [];
 	var per_game_stats = [];
 	var per_minute_stats = [];
@@ -364,12 +363,19 @@
 	// DONE: CHANGE TO ACCOMODATE PER GAME/ PER MINUTE
 	function insert_minutes_data(col, display_priority, player, is_player, is_per_game){
 		var stat = find_player_stat(display_priority, player, is_player);
-		if(is_per_game) {
-			stat = stat/player.games
-		}
+		var player_minutes;
+		var player_seconds;
 		var seconds_str;
-		var player_minutes = Math.floor(stat / 60)
-		var player_seconds = (stat - player_minutes * 60).toFixed(1);
+		if(is_per_game) {
+			stat = stat/player.games;
+			player_minutes = Math.floor(stat / 60)
+			player_seconds = (stat - player_minutes * 60).toFixed(1);
+		}
+		else{
+			player_minutes = minutes_factor;
+			player_seconds = 0;
+		}
+
 		(player_seconds < 10) ? seconds_str = "0" + player_seconds.toString() : seconds_str = player_seconds.toString();
 		col.innerHTML = player_minutes.toString() + ":" + seconds_str
 	}

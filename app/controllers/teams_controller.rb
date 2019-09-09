@@ -4,6 +4,11 @@ class TeamsController < ApplicationController
 	end
 
 	def show
+		@non_user_members = nil
+		@joined_team = params[:joined_team]
+		if params[:joined_team]
+			@non_user_members = Member.where(team_id: params[:id], user_id: nil)
+		end
 		user_teams = []
 		user_members = Member.where(user_id: current_user.id) ## gets all members
 		user_members.each do |member|
@@ -26,29 +31,99 @@ class TeamsController < ApplicationController
 	def new
 		@team = Team.new
 		@new_member = Member.new
+
+		@team_stat = TeamStat.new()
+		## stats that user has to collect in order for the app to perform its basic functions
+		@default_collectable = StatList.where(default_stat: true, collectable: true)
+
+		## stats the user may collect but arent required
+		@non_default_collectable = StatList.where(default_stat: false, collectable: true)
+
+		@default_basic = StatList.where(default_stat: true, rankable: true, advanced: false).sort_by{|stat| stat.id}
+
+		## basic stats that the application automatically collects based on the default stats
+		@default_application_basic = StatList.where(default_stat: true, collectable: false, advanced: false)
+
+		##advanced stats the application automatically collects based on the default stats
+		@default_indiv_advanced = StatList.where(default_stat: true, advanced: true)
+
+		## should be nil
+		@default_team_advanced = StatList.where(default_stat: true, advanced: true, team_stat: true)
+
+		## advanced stats the application may collect depending on non default stats collected
+		@non_default_indiv_advanced = StatList.where(advanced: true, team_stat: false, default_stat: false)
+
+		## advanced stats the application may collect depending on non default stats collected
+		@non_default_team_advanced = StatList.where(advanced: true, team_stat: true, default_stat: false)
+
+		@advanced_stats = AdvStatDependenciesService.new({adv_stats: @non_default_indiv_advanced}).call
+
+		@team_advanced_stats = TeamAdvStatDependenciesService.new({adv_stats: @non_default_team_advanced}).call
+
+		## advanced team stats the application may collect depending on non default stats collected
+		@team_advanced = StatList.where(advanced: true, team_stat: true)
 	end
 
 	def create
-		@team = Team.new(team_params)
-		@team.save
+		@team = Team.create({
+			name: params[:team_name],
+			username: params[:username],
+			password: params[:password],
+			minutes_p_q: params[:minutes_p_q],
+		})
+		members = params[:players]
+
+		members.each do |new_member|
+			member = Member.create({
+				nickname: new_member,
+				team_id: @team.id,
+				season_minutes: 0,
+				games_played: 0,
+			})
+			Assignment.create({
+				member_id: member.id,
+				role_id: 1
+			})
+		end
 		## is_player = params[:isPlayer]
-		@new_member = Member.new(
-			roles: [2,4],
+		@coach = Member.create({
 			nickname: current_user.name,
 			team_id: @team.id,
 			user_id: current_user.id,
+		})
+
+		## Coach
+		Assignment.create({
+			member_id: @coach.id,
+			role_id: 2
+		})
+		## Team owner
+		Assignment.create({
+			member_id: @coach.id,
+			role_id: 4
+		})
+
+		@team_stats = params[:team_stats]
+		@team_stats.each do |stat_id|
+			@team_stat = TeamStat.new(
+				stat_list_id: stat_id,
+				team_id: @team.id,
+				show: true,
 			)
-		@new_member.save
-		redirect_to root_path
+			@team_stat.save
+		end
+
+		redirect_to team_path(@team.id)
 	end	
 
 	def join
+
 		roles = params[:member_type]
 		team_username = params[:username]
 		team_password = params[:password]
 		
 		## TODO: UPDATE ROLES
-		JoinTeamService.new({
+		team_id = JoinTeamService.new({
 			roles: roles,
 			team_username: team_username,
 			team_password: team_password,
@@ -56,12 +131,24 @@ class TeamsController < ApplicationController
 			root_path: root_path,
 		}).call
 
+		redirect_path = root_path
+
+
+		if team_id 
+			redirect_path = team_path(team_id, joined_team: true)
+		end
+
+
 		## eventually redirect to a place depending on if JoinTeamService returns a value
-		redirect_to root_path
+		redirect_to redirect_path
 	end
 
-	
-
+	def join_member
+		id_to_join = params[:member_id]
+		member = Member.find_by_id(id_to_join)
+		member.user_id = current_user.id 
+		member.save
+	end
 
 	private
 

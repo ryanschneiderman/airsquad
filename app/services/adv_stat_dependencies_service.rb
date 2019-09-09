@@ -7,8 +7,14 @@ class AdvStatDependenciesService
 	def call()
 		return_arr = []
 		@adv_stats.each do |adv_stat|
-			puts adv_stat.id
-			return_arr.push(determine_dependencies(adv_stat.id, adv_stat.stat))
+			stat = determine_dependencies(adv_stat.id, adv_stat.stat)
+			if stat 
+				return_arr.push(stat)
+			end
+		end
+		##puts return_arr
+		return_arr.each do |this|
+			##puts this
 		end
 		return return_arr
 	end
@@ -20,8 +26,7 @@ class AdvStatDependenciesService
 
 		##linear PER
 		when 20
-			return [ stat_id, [3,4,5,6,7,8,17], [1, 2, 11, 12, 13, 14, 16, ], stat_name]
-
+			return [ stat_id, [3,4,5,6,7,8,], [1, 2, 11, 12, 13, 14, 16, 17], stat_name]
 		##usage rate
 		when 23
 			return [ stat_id, [ 7, ], [1, 2, 13, 14, 16], stat_name]
@@ -49,10 +54,10 @@ class AdvStatDependenciesService
 			return [ stat_id, [ 4,5 ], [16], stat_name]
 		## steal%
 		when 36
-			return [ stat_id, [ 8 ], [1, 2, 11, 12, 16], stat_name]
+			return [ stat_id, [ 6, 4, 7 ], [1, 2, 11, 12, 16], stat_name]
 		## block %
 		when 37
-			return [ stat_id, [ 8 ], [1, 2, 11, 12,16], stat_name]
+			return [ stat_id, [ 8, 4, 7 ], [1, 2, 11, 12,16], stat_name]
 		## turnover%
 		when 38
 			return [ stat_id, [ 7 ], [1, 2, 13, 14], stat_name]
@@ -68,33 +73,12 @@ class AdvStatDependenciesService
 		## box plus minus
 		when 42
 			return [ stat_id, [ 3, 4, 5, 6, 7, 8, ], [1, 2, 9, 10 , 11, 12,13, 14, 15, 16], stat_name]
+		when 46
+			return [ stat_id, [ 3, 4, 5, 6, 7, 8, ], [1, 2, 9, 10 , 11, 12,13, 14, 15, 16], stat_name]
+		when 47
+			return [ stat_id, [ 3, 4, 5, 6, 7, 8, ], [1, 2, 9, 10 , 11, 12,13, 14, 15, 16], stat_name]
 		end
+
 
 	end
 end
-
-=begin
-effective fg = 18
-true shooting = 19
-linear PER = 20
-3pt attempt rate = 21
-free throw attempt rate = 22
-usage rate = 23
-Offensive rating = 24
-defensive rating = 25
-net rating = 26
-off_reb % = 33
-def_reb % = 34
-reb% = 35
-steal% = 36
-block% = 37
-turnover% = 38
-assist% = 39
-off_box plus minus = 40
-def_box plus minus = 41
-box plus minus = 42
-
-
-possessions = 43
-
-=end

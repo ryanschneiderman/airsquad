@@ -1,3 +1,63 @@
+#gm-toolbar{
+	display: flex;
+	flex-direction: column;
+	width: 40vw;
+	background: #373a44;
+    color: white;
+}
+
+#gm-toggle-buttons{
+	display: flex;
+}
+
+#GM-init-footer{
+	background: #969696;
+    color: #ffffff;
+}
+
+#GM-init-header{
+	font-size: 25px;
+    margin-bottom: 10px;
+}
+
+#GM-init-footer:hover{
+	background: #c1c1c1;
+}
+
+#GM-init-wrapper{
+	overflow: hidden;
+    border-radius: 10px;
+    background: white;
+    box-shadow: grey 0px 0px 5px;
+}
+
+.footer-button{
+	width: 100%;
+    height: 100%;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    font-size: 17px;
+}
+
+.gm-toggle-button{
+	width: 50%;
+	background-color: #dedede;
+	margin-right:1px;
+	padding-top: 15px;
+	padding-bottom: 15px;
+}
+
+.gm-toggle-button:hover{
+	background: #ededed;
+}
+
+#gm-middle{
+	width: 60vw;
+}
+
+.flex-horiz{
+	display: flex;
+}
 
 .time-dash{
 	margin-bottom: 8px;
@@ -8,14 +68,24 @@
 	display: flex;
 	font-size: 30px;
 	justify-content: center;
+	padding: 10px;
+	padding-left: 40px;
+    padding-right: 40px;
+    border-radius: 10px;
+    border: 2px solid red;
+	box-shadow: 0px 0px 5px 0px red;
 }
+
 .squad-score{
 	margin-left: 20px;
 }
 
 .squad-scoreboard{
 	display: flex;
-	justify-content: center;
+    justify-content: center;
+    flex-grow: 1;
+    flex-basis: 0;
+    align-items: center;
 }
 
 .team-name{
@@ -23,27 +93,37 @@
 }
 
 #score-status{
-	display: grid;
-	grid-template-columns: 300px 300px;
+	display: flex;
 	font-size: 35px;
 	justify-content: center;
 	align-items: center;
 }
 
 #scoreboard{
-	display: grid;
-	grid-template-rows: 50px 45px;
-	justify-content: center;
+	padding-top: 10px;
+	padding-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0px 0px 10px 0px rgba(27,43,103,0.5);
+}
+
+#home-score{
+
 }
 #game-mode-grid{
-	display: grid;
-	grid-template-rows: 800px 500px;
+	display: flex;
+	flex-direction: column;
+}
+
+.flex-vert{
+	display: flex;
+	flex-direction: column;
 }
 
 
 #top-grid{
-	display: grid;
-	grid-template-columns: 17vw 62vw 21vw;
+	display: flex;
 }
 
 #bottom-grid{
@@ -52,8 +132,12 @@
 	flex-direction: column;
 }
 
-.stats-table{
+.gm-stats-table{
 	margin-bottom: 20px;
+	font-size: 12px;
+	text-align: center;
+	margin: auto;
+	width: 60vw;
 }
 
 #player-stats-table{
@@ -73,13 +157,88 @@
 }
 
 .stat-button {
-	border: 1px solid black;
 	padding: 3px;
 	margin: 3px;
+	border-radius: 1px;
 }
 
-#player-buttons{
-	padding-top: 15px;
+
+
+.stat-button-highlight{
+	border:1px solid white;
+    box-shadow: 0px 0px 5px !important;
+}
+
+#tb-first-level{
+
+}
+
+.tb-container{
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.flex-margin-auto{
+	margin-left: auto;
+    margin-right: auto;
+}
+
+.player-selection-button{
+    border-radius: 2px;
+    font-size: 19px;
+    font-weight: 300;
+}
+
+.inactive-selection-button{
+	background: #fbe0e0;
+    color: #ff100c;
+}
+
+.inactive-selection-button:hover{
+	background: #ff100c;
+    color: white;
+}
+
+.inactive-selected{
+	background: #ff100c;
+    color: white;
+}
+
+.starter-selected {
+    background: #00dc85 !important;
+    color: white !important;
+}
+.starter-selection-button {
+    background: #d8efe6;
+    color: #029259;
+}
+
+.starter-selection-button:hover{
+	background: #00dc85;
+    color: white;
+}
+
+
+
+#personel-selection-wrapper{
+	display: inline-block;
+	margin: auto;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+#personel-selection-body{
+	display: grid;
+	grid-template-columns: repeat(5, 100px);
+	grid-template-rows: repeat(3, 60px);
+	grid-row-gap: 5px;
+	grid-column-gap: 5px;
+}
+
+#personel-selection-header{
+	text-align: left;
+    font-size: 20px;
+    margin-bottom: 10px;
 }
 
 #in-game-players{
@@ -89,7 +248,11 @@
 
 #bench-players {
 	display: grid;
-	grid-template-columns: repeat(2, 8vw);
+  	grid-template-columns: repeat(6, 1fr);
+}	
+
+#bench{
+	margin: auto;
 }
 
 #opponent{
@@ -102,9 +265,22 @@
 }
 
 .player-button {
-	border: 1px solid black;
 	padding: 3px;
-	margin: 3px;
+    margin: 3px;
+    padding-left: 10px;
+    padding-right: 10px;
+    height: 40px;
+    background: #454954;
+    border-radius: 1px;
+}
+
+.player-button:hover{
+	background: #60646e;
+}
+
+.player-button-highlight{
+	background-color: #60646e !important;
+	box-shadow: 0px 0px 3px;
 }
 
 .team-shot-chart{
@@ -123,9 +299,8 @@
 
 #stat-buttons{
 	display: grid;
-	grid-template-columns: repeat(2, 8vw);
-	grid-template-rows: repeat(5, 60px);
-	padding-bottom: 15px;
+    grid-template-columns: repeat(3, 90px);
+    grid-auto-rows: 1fr;
 }
 
 .modal-overlay{
@@ -148,27 +323,40 @@
 
 #GM-initializer{
 	z-index: 2001;
-	display: flex;
-	flex-direction: column;
-	width: 45vw;
-	height: 80vh;
-	padding-top: 100px;
-	justify-content: center;
-	text-align: center;
+    display: flex;
+    flex-direction: column;
+    width: 45vw;
+    height: 75vh;
+    margin-top: 50px;
+    justify-content: center;
+    text-align: center;
 }
 
-.GM-init{
-	background: white;
-}
-
-#personel-selection-body{
-	display: grid;
-	grid-template-columns: repeat(5, 100px);
-	grid-template-rows: repeat(3, 60px);
-}
 
 #stats-table{ 
 	border-collapse: collapse;
+}
+
+#gm-stat-tables{
+	overflow: scroll;
+}
+
+#canvas-label{
+	font-size: 30px;
+	text-align:center;
+	padding-bottom: 25px;
+}
+
+.gm-submit{
+	background: #4ce895;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    margin-left: 20px;
+    margin-right: 20px;
+    border-radius: 100px;
+    margin-top: 50px;
+    font-size: 17px;
+    font-weight: bold;
 }
 
 #shot-chart-header{
@@ -187,6 +375,72 @@
 }
 
 .gm-canvas{
-	border: 3px solid black;
 }
+
+.stat-added-alert{
+	position: absolute;
+    right: 10px;
+    margin-top: 10px;
+    background-color: #373a44;
+    color: white;
+    z-index: 20;
+    padding: 10px;
+    opacity: 0;
+    transition: .3s;
+    color: white;
+}
+
+.stat-added-alert-elem{
+	display: inline-block;
+	margin-bottom: 10px;
+}
+
+#player-shot-chart-toggle{
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+
+#stat-button-0{
+	background: #47e0be;
+}
+
+#stat-button-1{
+	background: #fc7859;
+}
+#stat-button-2{
+	background: #9653d1;
+}
+
+#stat-button-3{
+	background: #f5cca8;
+}
+
+#stat-button-4{
+	background: #12c7f8;
+}
+
+#stat-button-5{
+	background: #fc2a6c;
+}
+
+#stat-button-6{
+	background: #ff7db6;
+}
+
+#stat-button-7{
+	background: #6e7df5;
+}
+
+#stat-button-8{
+	background: #afd5e8;
+}
+
+#stat-button-9{
+	background: #ff5c4e;
+}
+
+#stat-button-10{
+	background: #1a849b;
+}
+
 

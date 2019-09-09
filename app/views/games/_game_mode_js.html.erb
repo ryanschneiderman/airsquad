@@ -23,8 +23,10 @@
 	var make_selected = false
 	var miss_selected = false;
 
-	var horiz_offset = $("#gm-tool-bar").width();
-	var vert_offset = $(".container").height() + $("#scoreboard").height();;
+	var horiz_offset = $("#gm-toolbar").width();
+	var vert_offset = $("#scoreboard-wrapper").height();
+
+	$("#bench").css("margin-left", $(".flex-margin-auto").css("margin-left"))
 
 	// TODO - set in initializer
 	var arc_vert_radius;
@@ -61,12 +63,14 @@
 
 	var team_stat_totals = [];
 
+	var player_charts_toggle = false;
+
 
 	// TODO make dynamic
 	var periods = 4;
 	var curr_period = 1;
 	// TODO make dynamic
-	var minutes_per_period = 6;
+	var minutes_per_period = <%=@minutes_p_q%>;
 	var minutes = minutes_per_period;
 	var seconds = 0;
 
@@ -77,25 +81,36 @@
 
 	var select_inactives_html = "";
 
-
 	Element.prototype.remove = function() {
     	this.parentElement.removeChild(this);
 	}	
 
+	$("#player-charts-button").click(function(){
+		player_charts_toggle = !player_charts_toggle;
+		if(!player_charts_toggle){
+			to_team_shot_chart();
+		}
+	})
+
 	$(document).click(function(event) {
 		var classname = $(event.target).attr('class')
-		if(curr_player != null ){
-			if (classname != "player-button" && classname != "stat-button"){
+		var is_button = false
+		if($(event.target).hasClass("player-button") || $(event.target).hasClass("stat-button") || $(event.target).hasClass("gm-canvas")){
+			is_button = true;
+		}
+		if (!is_button){
+			if(curr_player != null ){
 				player_buttons = document.getElementsByClassName('player-button');
 				stat_buttons = document.getElementsByClassName('stat-button');
 				for(var i = 0; i < player_buttons.length; i++){
 					deselect_button(player_buttons[i]);
 				}
-				for(var i = 0; i < stat_buttons.length; i++){
-					deselect_button(stat_buttons[i]);
-				}
 				curr_player = null;
 				curr_player_button = null;
+				
+			}
+			else{
+				deselect_stat();
 			}
 		}
 	});
@@ -126,22 +141,20 @@
 	/*********************** <INITIALIZERS> ***********************/
 	/**************************************************************/
 
+	function initialize_toolbar(){
+
+	}
+
 	function initialize_globals(c, canvas_width, canvas_height){
 		canvas = c;
 		gm_canvas_width = canvas_width;
 		gm_canvas_height = canvas_height;
-		arc_vert_radius = gm_canvas_width/2.343;
-		arc_horiz_radius = gm_canvas_width/2.365;
-		basket_radius = gm_canvas_width/59.855;
+		arc_vert_radius = gm_canvas_width/2.39;
+		arc_horiz_radius = gm_canvas_width/2.39;
 
-		$(window).on('load', function() {
-	  		canvas.getObjects().forEach(function(o){
-				if (o.type == "Basket"){
-					basket_x = o.left + basket_radius;
-					basket_y = o.top + basket_radius;
-				}
-			});
-		});
+		basket_radius = gm_canvas_width/59.855;
+		basket_x = basket_radius + gm_canvas_width/1.978;
+		basket_y = basket_radius + canvas_height/11.5;
 	}
 
 
@@ -227,29 +240,28 @@
 	/**************************************************************/
 
 	function populate_starter_selection(){
-		var header_html = "<button id = 'GM-init-back' type = 'button' onclick = 'toggle_GM_body(" + 1 + ")'>Back </button> <div>Select Starters</div> ";
-		$("#personel-selection-header").html(header_html);
+		$("#personel-selection-header").html("Select Starters");
 		var len = active_players.length;
 		var html_string = "";
 		for(var i = 0; i < len; i++){
-			html_string += "<button class = 'player-button' type = 'button' onclick = 'starter_button(" + active_players[i].id + " , this)' >" + active_players[i].name + "</button>";
+			html_string += "<button class = 'player-selection-button starter-selection-button' type = 'button' onclick = 'starter_button(" + active_players[i].id + " , this)' >" + active_players[i].name + "</button>";
 		}
 		$("#personel-selection-body").html(html_string);
-		$("#GM-init-footer").html("");
+		$("#GM-init-footer").html("<button id = 'back' class = 'footer-button' type = 'button' onclick = 'toggle_GM_body(" + 1 + ")'> Back </button>");
 	}
 
 
 	function populate_inactive_selection(repopulate_active_players){
-	 		$("#personel-selection-header").html("Select Inactives");
-			var len = all_players.length;
-			var html_string = "";
-			if(repopulate_active_players) active_players = [];
-			for(var i = 0; i < len; i++){
-				if (repopulate_active_players) active_players.push(all_players[i]);
-				html_string += "<button class = 'player-button' type = 'button' onclick= 'inactive_button(" + all_players[i].id + ", this)' >" + all_players[i].name + "</button>"
-			}
-			$("#personel-selection-body").html(html_string);
-			$("#GM-init-footer").html("<button class = 'next' type = 'button' onclick = 'toggle_GM_body(" + 2 + ")'> To Starter Selection </button>");
+ 		$("#personel-selection-header").html("Select Inactives");
+		var len = all_players.length;
+		var html_string = "";
+		if(repopulate_active_players) active_players = [];
+		for(var i = 0; i < len; i++){
+			if (repopulate_active_players) active_players.push(all_players[i]);
+			html_string += "<button class = 'player-selection-button inactive-selection-button' type = 'button' onclick= 'inactive_button(" + all_players[i].id + ", this)' >" + all_players[i].name + "</button>"
+		}
+		$("#personel-selection-body").html(html_string);
+		$("#GM-init-footer").html("<button id = 'next' class = 'footer-button' type = 'button' onclick = 'toggle_GM_body(" + 2 + ")'> Next </button>");
 	}
 
 	function set_all_players_to_bench(){
@@ -271,9 +283,8 @@
         ~removeIndex && active_players.splice(removeIndex, 1);
 	}
 
-
 	function deselect_starter(button, player_id){
-		deselect_button(button);
+		$(button).removeClass("starter-selected")
 		set_not_in_game(player_id);
         var addBackPlayer = all_players.find(function(element) {
   				return element.id == player_id;
@@ -281,7 +292,7 @@
 	}
 
 	function select_starter(button, player_id){
-		select_button(button);
+		$(button).addClass("starter-selected")
 		var player_obj = active_players.find(function(element) {
   			return element.id == player_id;
 		});
@@ -290,12 +301,10 @@
 
 	function starter_button(player_id, button){
 		player_id = player_id.toString()
-
-		// not crazy about using background color to decide if button is selected
-		if(button.style.backgroundColor != "black"){
+		if(!($(button).hasClass("starter-selected"))){
 			select_starter(button, player_id);
 		}
-		else if (button.style.backgroundColor == "black"){
+		else if ($(button).hasClass("starter-selected")){
 			deselect_starter(button, player_id)
 		}
 		if(players_in_game >= 5){
@@ -305,13 +314,13 @@
 
 	function inactive_button(player_id, button){
 		player_id = player_id.toString();
-		if(button.style.backgroundColor != "black"){
-			select_button(button);
+		if(!($(button).hasClass("inactive-selected"))){
+			$(button).addClass("inactive-selected")
 			splice_active(player_id);
 		}
 
-		else if (button.style.backgroundColor == "black"){
-			deselect_button(button);
+		else if ($(button).hasClass("inactive-selected")){
+			$(button).removeClass("inactive-selected")
             var addBackPlayer = all_players.find(function(element) {
   				return element.id == player_id;
 			});
@@ -364,7 +373,17 @@
 		return html;
 	}
 
-	// TODO -- CHANGE STAT_NAME TO STAT_ID
+	function stat_added_animation(button){
+		$(button).css("box-shadow", "0px 0px 20px 5px " + $(button).css("background-color"));
+		setTimeout( function() {
+			$(button).css("transition", "1s");
+			$(button).css('box-shadow','none');
+	    }, 100);
+	    setTimeout( function() {
+			$(button).css("transition", "none");
+	    }, 1000);
+	}
+
 	function stat_button(stat_id, button){
 		stat_id = parseInt(stat_id)
 		if(curr_player != null && (is_in_game(curr_player.player_obj) || curr_player_is_opponent )){
@@ -375,22 +394,29 @@
 			}
 			curr_stat_button = button;
 			if(stat_id == 1){
-				select_button(button);
+				to_shot_chart()
+				$(button).addClass("stat-button-highlight")
+				//select_button(button);
 				make_selected = true;
 
 			}
 			else if (stat_id == 2){
-				select_button(button);
+				to_shot_chart()
+				$(button).addClass("stat-button-highlight")
+				//select_button(button);
 				miss_selected = true;
 			} 
 			else {
+				stat_added_animation(button);
 				add_stat(stat_id, curr_player.player_obj);
 				deselect_player();
 			}
 		}
 		else if (curr_player == null){
-			deselect_button(curr_stat_button);
-			select_button(button);
+
+			deselect_stat();
+			$(button).addClass("stat-button-highlight")
+			//select_button(button);
 			curr_stat_button = button;
 			curr_stat = stat_id;
 		}
@@ -400,7 +426,9 @@
 
 	function deselect_stat(){
 		curr_stat = null;
-		deselect_button(curr_stat_button);
+		if(curr_stat_button){
+			$(curr_stat_button).removeClass("stat-button-highlight")
+		}
 		curr_stat_button = null;
 	}
 
@@ -442,18 +470,19 @@
 
 	function select_player(new_curr_player, button){
 		curr_player = new_curr_player;
-		button.style.backgroundColor = "black";
-		button.style.color = "white";
+		select_button(button);
 		curr_player_button = button;
 		curr_player_is_opponent = false;
+		shot_chart_button(curr_player.player_obj.id)
 	}
 
 	function select_opponent(button){
 		curr_player = opponent_obj;
-		button.style.backgroundColor = "black";
-		button.style.color = "white";
+		$(button).addClass("player-button-highlight")
 		curr_player_is_opponent = true;
 		curr_player_button = button;
+		to_opponent_shot_chart()
+		$("#canvas-label").html("<%= @opponent.name%>")
 	}
 
 	function deselect_player(){
@@ -463,7 +492,6 @@
 	}
 
 	function opponent_button(id, button){
-
 		if (curr_stat != null){
 			curr_player_button = button;
 			curr_player = opponent_obj;
@@ -498,6 +526,7 @@
 		});
 
 		if (curr_stat != null && is_in_game(new_curr_player.player_obj)){
+			stat_added_animation(curr_stat_button)
 			curr_player_button = button;
 			curr_player = new_curr_player;
 			add_stat_to_player();
@@ -528,15 +557,13 @@
 
 	function deselect_button(button){
 		if(button != null){
-			button.style.backgroundColor = "white";
-			button.style.color = "black";
+			$(button).removeClass("player-button-highlight")
 		}
 	}
 
 	function select_button(button){
 		if(button != null){
-			button.style.backgroundColor = "black";
-			button.style.color = "white";
+			$(button).addClass("player-button-highlight")
 		}
 	}
 	/**************************************************************/
@@ -551,8 +578,6 @@
 	/**************************************************************/
 
 	
-
-	// TO CHECK***************
 	function determine_3_or_2(x_loc, y_loc){
 
 		var rel_pos_x = basket_x - x_loc;
@@ -565,15 +590,14 @@
 		}
 		else {
 			var x_val = (rel_pos_x * rel_pos_x);
-			var x_denom = arc_horiz_radius * arc_horiz_radius;
+			var x_denom = arc_horiz_radius * arc_horiz_radius; 
 			var x_ratio = x_val/x_denom
 
 			var y_denom = arc_vert_radius * arc_vert_radius;
 			var y_val = rel_pos_y * rel_pos_y;
-			y_ratio = y_val/y_denom
+			var y_ratio = y_val/y_denom
 
 			var ellipse_val = x_ratio + y_ratio
-
 			if (ellipse_val > 1) return 3;
 			else return 2;
 		}
@@ -581,27 +605,30 @@
 
 
 	function make(e){
-		var x_loc = e.pageX - make_radius - horiz_offset - 3;
+		var x_loc = e.pageX - make_radius - horiz_offset;
 		var y_loc = e.pageY - make_radius - vert_offset;
+
+
 		var point_val = determine_3_or_2(x_loc, y_loc);
 		var fg_counter = stat_array_counter;
 
 		plot_make(y_loc, x_loc, make_radius, curr_player.player_obj.id, curr_player.player_obj.player, point_val, fg_counter + 1, curr_player.player_obj.stat_index, gm_canvas_width, canvas);
+
 		add_stat(1, curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width, "shot_value" : point_val}, fg_counter + 1);
 
 		if(point_val == 3)  add_stat(11,  curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width}, fg_counter + 1);
 		else{
 			add_stat(9,  curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width}, fg_counter + 1);
 		}
-
 		update_score(point_val, curr_player_is_opponent);
-		(curr_player_is_opponent) ? to_opponent_shot_chart() : to_team_shot_chart();
+		if (curr_player_is_opponent)  to_opponent_shot_chart();
 		deselect_player();
-		deselect_stat();
+		stat_added_animation($(".stat-button-1")[0]);
+		deselect_stat()
 		make_selected = false;	
 	}
 
-	// change to use function update_field_goals instead of add_stat
+	// change to use function update_field_goals instead of add_stat????
 	function miss(e){
 		x_loc = e.pageX - horiz_offset - 3;
 		y_loc = e.pageY - vert_offset;
@@ -615,9 +642,10 @@
 			add_stat(10,  curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width}, fg_counter + 1);
 		}
 
-		(curr_player_is_opponent) ? to_opponent_shot_chart() : to_team_shot_chart();
+		if (curr_player_is_opponent)  to_opponent_shot_chart();
 		deselect_player();
 		deselect_stat();
+		stat_added_animation($(".stat-button-2")[0]);
 		miss_selected = false;
 	}
 
@@ -723,7 +751,7 @@
     	var new_index = find_stat_index(stat_array[0].cumulative_arr[new_player_stat_index]) + 1;
 
     	//3 point make
-    	if(new_stat_id == 11){
+    	if(new_stat_id == 11 || new_stat_id == 12){
     		fg_in_table(new_index, shot_result, player_row);
     	}
     	else {
@@ -731,7 +759,7 @@
     	}
     	
     	if(obj.player){
-    		if(new_stat_id == 11){
+    		if(new_stat_id == 11 || new_stat_id == 12){
     			fg_in_table(new_index, shot_result, team_row);
 	    	}
 	    	else {
@@ -748,27 +776,34 @@
     }
 
 
-	function shot_chart_button(id, button){
-		canvas.getObjects().forEach(function(o){
-			if(o.type != "Basket"){	
-				o.set({opacity: 1,
-				selectable: true,
-				evented: true,})
-			}
-		});	
-
-		canvas.getObjects().forEach(function(o){
-			if(o.type != "Basket"){
-				if(o.id != id || o.player == false){
-					o.set({opacity: 0,
-						selectable: false,
-						evented: false,
-
-					})
+	function shot_chart_button(id){
+		if(player_charts_toggle){
+			$("#canvas-label").html(curr_player.player_obj.name)
+			canvas.getObjects().forEach(function(o){
+				if(o.player == true){	
+					o.set({opacity: 1,
+					selectable: true,
+					evented: true,})
 				}
-			}
-		});	
-		canvas.renderAll();
+			});	
+
+
+			canvas.getObjects().forEach(function(o){
+				if(o.type != "Basket"){
+					if(o.id != id && o.player == true){
+						o.set({opacity: 0,
+							selectable: false,
+							evented: false,
+
+						})
+					}
+				}
+			});	
+			canvas.renderAll();
+		}
+		else {
+			$("#canvas-label").html("<%=@team.name%>")
+		}
 	}
 
 	function populate_player_shot_charts(){
@@ -783,14 +818,14 @@
 
 	function to_team_shot_chart(){
 		canvas.getObjects().forEach(function(o){
-			if(o.type != "Basket"){	
+			if(o.type == "MakeSymbol" || o.type == "MissSymbol"){	
 				o.set({opacity: 1,
 					selectable: true,
 					evented: true,})
 			}
 		});
 		canvas.getObjects().forEach(function(o){
-			if(o.type != "Basket"){	
+			if(o.type == "MakeSymbol" || o.type == "MissSymbol"){	
 				if(o.player == false ){
 					o.set({opacity: 0,
 					selectable: false,
@@ -798,20 +833,21 @@
 				}
 			}
 		});	
+		$("#canvas-label").html("<%=@team.name%>")
 		canvas.renderAll();
 		
 	}
 
 	function to_opponent_shot_chart(){
 		canvas.getObjects().forEach(function(o){
-			if(o.type != "Basket"){	
+			if(o.type == "MakeSymbol" || o.type == "MissSymbol"){	
 				o.set({opacity: 1,
 					selectable: true,
 					evented: true})
 			}
 		});
 		canvas.getObjects().forEach(function(o){
-			if(o.type != "Basket"){	
+			if(o.type == "MakeSymbol" || o.type == "MissSymbol"){	
 				if(o.player == false ){
 					o.set({opacity: 1,
 						selectable: true,
@@ -935,9 +971,6 @@
 		var actual_index = 0;
 		for (var i = 0; i < display_stats_len; i++){
 			if (stat.display_priority == display_stats[i].display_priority){
-				/*console.log("FOUND INDEX")
-				console.log("actual_index: " + actual_index)
-				console.log("stat: " + stat)*/
 				return actual_index;
 			}
 			if(display_stats[i].display_type == "fraction"){
@@ -950,7 +983,6 @@
 	function find_stat_in_player_arr(stat){
 		var stat_found = false;
 		var stat_i = 0;
-		//console.log(stat)
 		while(!stat_found){
 			if(stat == stat_array[0].cumulative_arr[stat_i].id){
 				stat_found = true;
@@ -960,8 +992,34 @@
 		}
 	}
 
+	function getStatName(stat_id){
+		var len = stat_array[0].cumulative_arr.length;
+		for(var i = 0; i < len; i++){
+			if(stat_array[0].cumulative_arr[i].id == stat_id){
+				return stat_array[0].cumulative_arr[i].stat;
+			}
+		}
+	}
+
+	function statAdded(stat_name, player){
+		$("#stat-added-player-name").html(player.name + ": &nbsp;");
+		$("#stat-added-name").html(stat_name + " &nbsp; +1");
+		$(".stat-added-alert").css("opacity", "1")
+		
+		setTimeout( function() {
+			$(".stat-added-alert").css("transition", ".5s");
+	        $(".stat-added-alert").css("opacity", "0")
+	    }, 1300);
+	    setTimeout( function() {
+	        $(".stat-added-alert").css("transition", "none");
+	    }, 1800);
+	    $("#stat-added-username").html("Added by: " + " &nbsp; <%=current_user.name%>" );
+
+	}
+
 	// TODO -- CHANGE STAT_NAME TO STAT_ID
 	function add_stat_to_obj(stat, obj, metadata, player_i, index){
+		var stat_name = getStatName(stat)
 		var stat_i = find_stat_in_player_arr(stat)
 		obj.gran_stat_arr.push({"metadata" : metadata, "stat_list_id" : obj.cumulative_arr[stat_i].id, "index" : index});
 		switch(stat){
@@ -979,6 +1037,7 @@
 				break;
 			// 2 point make
 			case 9 :
+				statAdded(stat_name, obj.player_obj)
 				//update_field_goals_make(player_i, stat_i, two_pt_fg_index);
 				increment_points(player_i, 2, obj);
 				++obj.cumulative_arr[stat_i].total;
@@ -986,12 +1045,14 @@
 				break;
 			// 2 point miss
 			case 10 :
+				statAdded(stat_name, obj.player_obj)
 				//update_field_goals_miss(player_i, stat_i, two_pt_fg_index);
 				++obj.cumulative_arr[stat_i].total;
 				if (!curr_player_is_opponent) ++team_stat_totals[stat_i].total;
 				break;
 			// 3 point make
 			case 11 :
+				statAdded(stat_name, obj.player_obj)
 				update_field_goals_make(player_i, stat_i, three_pt_fg_index);
 				increment_points(player_i, 3, obj);
 				++obj.cumulative_arr[stat_i].total;
@@ -999,12 +1060,14 @@
 				break;
 			// 3 point miss
 			case 12 :
+				statAdded(stat_name, obj.player_obj)
 				update_field_goals_miss(player_i, stat_i, three_pt_fg_index);
 				++obj.cumulative_arr[stat_i].total;
 				if (!curr_player_is_opponent) ++team_stat_totals[stat_i].total;
 				break;
 			// Ft make
 			case 13 :
+				statAdded(stat_name, obj.player_obj)
 				insert_fg_in_table(player_i, ft_index, "Make", obj);
 				increment_points(player_i, 1, obj);
 				update_score(1, curr_player_is_opponent);
@@ -1013,11 +1076,13 @@
 				break;
 			// Ft miss
 			case 14 :
+				statAdded(stat_name, obj.player_obj)
 				insert_fg_in_table(player_i, ft_index, "Miss", obj);
 				++obj.cumulative_arr[stat_i].total;
 				if (!curr_player_is_opponent) ++team_stat_totals[stat_i].total
 				break;
 			default :
+				statAdded(stat_name, obj.player_obj)
 				var index = find_stat_index(obj.cumulative_arr[stat_i]);
 				update_stat_table(index, player_i, ++obj.cumulative_arr[stat_i].total);
 				if (!curr_player_is_opponent) team_stat_totals[stat_i].total++;
@@ -1033,6 +1098,7 @@
 			stat_object = {"player": player, "stat": stat, "metadata" : metadata, "is_opponent": true, "index": index};
 			add_stat_to_obj(stat, opponent_obj, metadata, -1, index);
 		}
+
 		else if (is_in_game(player)){
 			while(!player_found){
 				var curr_player_obj = stat_array[player_i];
@@ -1124,7 +1190,7 @@
 		numerator = parseInt(split_contents[0]);
 		denomenator = parseInt(split_contents[1]);
 		denomenator--;
-		if(shot_result == 1) numerator--;
+		if(shot_result == "Make") numerator--;
 		col.innerHTML = numerator + "/" + denomenator;
 		if(denomenator == 0){
 			pct_col.innerHTML = "0%"
@@ -1277,24 +1343,52 @@
 			$("#opponent-score").text(function() {
 	  				return (opponent_score);
 			});
+			$("#opponent-score").css("color", "#00af00")
+			setTimeout( function() {
+				$("#opponent-score").css("transition", "1s")
+	            $("#opponent-score").css('color','black');
+	       }, 300);
+			$("#opponent-score").css("transition", "none")
 		}
 		else{
 			home_score += value;
 			$("#home-score").text(function( index ) {
 	  				return ( home_score);
 			});
+			$("#home-score").css("color", "#00af00")
+			setTimeout( function() {
+				$("#home-score").css("transition", "1s")
+	            $("#home-score").css('color','black');
+	       }, 300);
+			$("#home-score").css("transition", "none")
 		}
 	}
 
+
+
+
 	var scoreboard_clock = new ScoreboardClock();
 	scoreboard_clock.set_timer();
+
+	function toggleClock(){
+		scoreboard_clock.toggle_timer();
+		if(scoreboard_clock.isRunning){
+			$("#time").css("border", "2px solid #00c500")
+			$("#time").css("box-shadow", "0px 0px 5px 0px #00c500")
+		}
+		else{
+			$("#time").css("border", "2px solid red")
+			$("#time").css("box-shadow", "0px 0px 5px 0px red")
+		}
+		
+	}
 
 	document.onkeydown = function(e){
 	    e = e || window.event;
 	    var key = e.which || e.keyCode;
 	    if(key===32){
 	    	e.preventDefault();
-	        scoreboard_clock.toggle_timer();
+	        toggleClock()
 	    }
 	    if(key===13){
 	    	e.preventDefault();
@@ -1358,7 +1452,6 @@
 		        	}
 		        	else seconds = 59;
 		        }
-		        //console.log(seconds)
 		        self.set_timer()
 		    }
 		    else{

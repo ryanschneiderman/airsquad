@@ -1,66 +1,75 @@
+<% content_for(:body_attributes) do %>
+    data-turbolinks="false"
+ <% end %>
+
 	<% if @played %>
-	<div id = "gr-header">Game Review</div>
-	<div id = "game-review-stats">
-		<div id = "gr-team-stats">
-			<div class = "white-overlay" id = "team-stats-white-overlay"></div>
-			<div id = "team-stats-color-overlay" class = "colored-overlay">
-				<div id = "team-stats-text-overlay" class = "text-overlay">
-					<div class = "overlay-header" id = "team-overlay-header">Team Stats</div>
-					<div class = "overlay-message" id = "team-overlay-message">(click to view more)</div>
+	<div id = "game-review" style = "margin-top: 55px;">
+		<div id = "game-review-stats">
+			<div id = "gr-team-stats">
+				<div class = "white-overlay" id = "team-stats-white-overlay"></div>
+				<div id = "team-stats-color-overlay" class = "colored-overlay">
+					<div id = "team-stats-text-overlay" class = "text-overlay">
+						<div class = "overlay-header" id = "team-overlay-header">Team Stats</div>
+						<div class = "overlay-message" id = "team-overlay-message">(click to view more)</div>
+					</div>
 				</div>
-			</div>
-			<div id = "gr-team-stats-content">
-				<div class = "team-stat-header">Basic Stats</div>
-				<div id = "basic-stats-table">
-					<table class = "gr-stats-table" id = "team-stats-table"></table>
-				</div>
-				<div class = "team-stat-header">Advanced Stats</div>
-				<div id = "advanced-stats-table">
-					<table class = "gr-stats-table" id = "adv-team-stats-table"></table>
-				</div>
-				<div class = "team-stat-header">Shot Charts</div>
-				<div id = "gr-team-shot-charts">
-					<div class = "shot-distribution">
-						<canvas id ="gr-canvas" class = "gm-canvas"></canvas>
+				<div id = "gr-team-stats-content">
+					<div class = "gr-header">Game Review - Team Stats</div>
+					<div class = "team-stat-header">Basic Stats</div>
+					<div id = "basic-stats-table">
+						<table class = "gr-stats-table" id = "team-stats-table"></table>
+					</div>
+					<div class = "team-stat-header">Advanced Stats</div>
+					<div id = "advanced-stats-table">
+						<table class = "gr-stats-table" id = "adv-team-stats-table"></table>
+					</div>
+					<div class = "team-stat-header">Shot Charts</div>
+					<div id = "gr-team-shot-charts">
+						<div class = "shot-distribution">
+							<canvas id ="gr-canvas" class = "gm-canvas"></canvas>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-		<div id = "gr-player-stats">
-			<div class = "white-overlay" id = "player-stats-white-overlay"></div>
-			<div id = "player-stats-color-overlay" class = "colored-overlay">
-				<div id = "player-stats-text-overlay" class = "text-overlay">
-				<div class = "overlay-header" id = "player-overlay-header">Player Stats</div>
-				<div class = "overlay-message" id = "player-overlay-message">(click to view more)</div>
-			</div>
-			</div>
-			<div id = "gr-player-stats-content">
-				<div id = "gr-player-modules">
-					<% counter = 0%>
-					<%@players.each do|player| %>
-						<div id = "player-module-<%=counter%>" class = "player-module">
-							<h2 class = "player-name"><%=player.nickname%></h2>
-							<div id = "player-id" style = "display: none"><%=player.id%></div>
-
-							<table class = "table player-basic-stats player-table">
-								<caption class = "table-header"> Basic Stats</caption>
-							</table>
-							<table class = "table player-per-minute-stats player-table">
-								<caption class = "table-header"> Per <%=@minutes_p_q * 3%> Minutes Stats</caption>
-							</table>
-							<table class = "table player-advanced-stats player-table">
-								<caption class = "table-header"> Advanced Stats</caption>
-							</table>
-							<canvas id ="player-canvas-<%=counter%>" class = "player-canvas"></canvas>
-							<div class = "full-profile"> <%= link_to "See Full Profile", team_member_path(@team.id, player.id) %></div>
-							<button class = "arrow down expand" onclick = "expand(<%=counter%>, this)"></button>
-							
-						</div>
-						<% counter+=1%>
-					<%end%>
+			<div id = "gr-player-stats">
+				<div class = "white-overlay" id = "player-stats-white-overlay"></div>
+				<div id = "player-stats-color-overlay" class = "colored-overlay">
+					<div id = "player-stats-text-overlay" class = "text-overlay">
+					<div class = "overlay-header" id = "player-overlay-header">Player Stats</div>
+					<div class = "overlay-message" id = "player-overlay-message">(click to view more)</div>
 				</div>
+				</div>
+				<div id = "gr-player-stats-content">
+					<div class = "gr-header">Game Review - Player Stats</div>
+
+					<div id = "gr-player-modules">
+						<% counter = 0%>
+						<%@players.each do|player| %>
+							<div id = "player-module-<%=counter%>" class = "player-module">
+								<h2 class = "player-name"><%=player.nickname%></h2>
+								<div id = "player-id" style = "display: none"><%=player.id%></div>
+
+								<table class = "table player-basic-stats player-table">
+									<caption class = "table-header"> Basic Stats</caption>
+								</table>
+								<table class = "table player-per-minute-stats player-table">
+									<caption class = "table-header"> Per <%=@minutes_p_q * 3%> Minutes Stats</caption>
+								</table>
+								<table class = "table player-advanced-stats player-table">
+									<caption class = "table-header"> Advanced Stats</caption>
+								</table>
+								<canvas id ="player-canvas-<%=counter%>" class = "player-canvas"></canvas>
+								<div class = "full-profile"> <%= link_to "See Full Profile", team_member_path(@team.id, player.id) %></div>
+								<button class = "arrow down expand" onclick = "expand(<%=counter%>, this)"></button>
+								
+							</div>
+							<% counter+=1%>
+							<% puts  counter %>
+						<%end%>
+					</div>
+				</div>
+				
 			</div>
-			
 		</div>
 	</div>
 
@@ -68,15 +77,17 @@
 <%= render 'game_mode_js_objects' %>
 <%= render 'game_review_js' %>
 <%= render 'game_review_slide_js' %>
-
-<%else%>
-
-<%= render 'game_preview' %>
-<% end %>
-
-
 <script>
+	$(".navbar").addClass("navbar-active");
+    $(".navbar-default a").addClass("navbar-text-active");
+    $(".home-link").css("border-color", "black");
 
+    $(window).on("scroll", function() {
+        $(".navbar").addClass("navbar-active");
+        $(".navbar-default a").addClass("navbar-text-active");
+        $(".home-link").css("border-color", "black")
+
+	});
     	var show_team_stats_table = document.getElementById("team-stats-table");
 		var show_adv_stats_team_table = document.getElementById("adv-team-stats-table");
 		initialize_tables(show_team_stats_table, show_adv_stats_team_table);
@@ -132,14 +143,15 @@
 		insert_player_modules();
 		
 		populate_team_stat_tables(true);
-
-		//populate_player_stat_tables()
-
-		//populate_player_shot_charts();
-
-	
-
 	
 
 </script>
+
+<%else%>
+
+<%= render 'game_preview' %>
+<% end %>
+
+
+
 

@@ -1,3 +1,7 @@
+ <% content_for(:body_attributes) do %>
+    data-turbolinks="false"
+  <% end %>
+
 <div class = "content-page-landing">
 	<%= image_tag("scorebook.png", :alt => "plays", :class => "content-page-landing-img") %>
 	<div class = "content-page-landing-title">Lineup Explorer</div>
@@ -9,7 +13,7 @@
 			<div id = "saved-lineup-scroll">
 				<% lineup_counter = 0 %>
 				<% @lineups.each do |lineup| %>
-					<button class = "lineup-chart-wrapper" onclick="expand_lineup(<%=lineup.id%>, <%=lineup_counter%>)">
+					<button class = "lineup-chart-wrapper" onclick="expand_lineup(<%=lineup.id%>, <%=lineup_counter%>, this)">
 						<div class = "lineup-button-name"><%=lineup.name%></div>
 						<div class = "lineup-icon" id = "lineup-button-<%=lineup_counter%>"></div>
 					</button>
@@ -45,7 +49,7 @@
 	<div id = "new-lineup">
 		<div id = "new-lineup-grid">
 			
-			<div id = "lineup-radar-charts">
+			<div id = "lineup-display-container">
 				<div id = "lineup-toolbar">
 					<div id = "lineup-name" contenteditable="true" >New Lineup (click to edit)</div>
 					<div id = "select-players-lineup">
@@ -56,21 +60,28 @@
 						<%end%>
 					</div>
 					<%if @is_admin%>
-						<button id = "save-lineup" onclick = "saveLineup()">Save Lineup</button>
-						<button id = "delete-lineup" style="display:none" onclick = "deleteLineup()">Delete Lineup</button>
+						<div id = "save-delete">
+							<button id = "save-lineup" class = "lineup-tool-button" style = "display: none;" onclick = "saveLineup()" >Save Lineup</button>
+							<button id = "delete-lineup" class = "lineup-tool-button" style="display:none" onclick = "deleteLineup()">Delete Lineup</button>
+						</div>
 					<% end %>
 				</div>
-				<div class = "lineup-chart">
+				<div id = "radar-charts-toggle">
 					<div id = "toggle-buttons">
 						<button class = "basic-chart-toggle" id = "to-per-game-button" onclick = "toggle_new_chart(1, this)">Per Game</button>
 						<button class = "basic-chart-toggle" id = "to-per-minute-button" onclick = "toggle_new_chart(2, this)">Per Minute</button>
-						<button class = "basic-chart-toggle" id = "advanced-button" onclick = "toggle_new_chart(3, this)">Advanced</button>
+						<button class = "basic-chart-toggle chart-toggle-active" id = "advanced-button" onclick = "toggle_new_chart(3, this)">Advanced</button>
 					</div>
-					<div class = "overlaid-chart"></div>
-				</div>
-				<div class = "lineup-chart">
-					<div id = "aggr-chart-header">Aggregate Chart</div>
-					<div class = "aggregate-chart"></div>
+					<div id = "radar-charts-container">
+						<div class = "lineup-chart">
+							<div class = "aggr-chart-header">Defense</div>
+							<div class = "overlaid-chart"></div>
+						</div>
+						<div class = "lineup-chart">
+							<div class = "aggr-chart-header">Offense</div>
+							<div class = "aggregate-chart"></div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

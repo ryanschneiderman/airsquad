@@ -5,7 +5,6 @@
 
 .settings-dropdown{
 	display: inline-block;
-	position:absolute;
 	right: 0px;
 	min-width: 100px;
 }
@@ -60,6 +59,8 @@
 }
 
 .plays-header{
+	display: flex;
+	justify-content: center;
 	text-align: center;
 	padding-top: 10px;
 	padding-bottom: 10px;
@@ -72,20 +73,19 @@
 
 .play-type-grid{
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(15em, 30%));
+	grid-template-columns: repeat(auto-fit, minmax(15em, 23%));
 	width: 100%;
-	grid-column-gap: 2px;
-	grid-row-gap: 2px;
+	grid-column-gap: 20px;
+	grid-row-gap: 50px;
 	padding-left: 2px;
+	margin: 20px;
 }
 
 #offense{
-	background-color: #e6f4ff;
 	
 }
 
 #defense{
-	background-color: #ffe6e6;
 }
 
 .plays-grid{
@@ -93,6 +93,7 @@
 	flex-direction: column;
 	width: 100%;
 	border-radius: 4px;
+	min-height: 600px;
 }
 
 .new-play-overlay{
@@ -139,7 +140,7 @@
 }
 
 #play-header{
-	text-align: center;
+	margin-bottom: 20px;
 }
 
 .play-link{
@@ -159,16 +160,33 @@
   	align-items: center;
 }
 
+.delete-play-link{
+	position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 30px;
+    font-weight: 300;
+    color: #999999;
+    display: none;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.delete-play-link:hover{
+	color: #191919;
+}
+
 .play-link-text{
 	color: black;
-	font-size: 20px;
-	transition: .2s ease;
-  	position: absolute;
-  	top: 15%;
-  	left:0;
-  	right: 0;
-  	bottom: 0;
-  	opacity: 1;
+	font-size: 30px;
+	text-align:center;
+	margin-top: 10px;
+    font-weight: 300;
+}
+
+.play-kind-header{
+	margin-right: 20px;
+	margin-left: 20px;
 }
 
 .play-type-header{
@@ -183,20 +201,21 @@
 	display: inline-block;
 	background-color: white;
 	border-radius: 2px;
+	box-shadow: 1px 1px 10px #888888;
 }
 .play-img{
-	opacity: .5;
+	opacity: 1;
 	width: 100%;
 	padding: .5px;
 	transition: .2s ease;
 }
 
 .play-image:hover .play-img {
-	opacity: 1;
+	opacity: .5;
 }
 
 .play-image:hover .play-link-text{
-	opacity: 0;
+	opacity: 1;
 }
 
 .play-image:hover .show-link-block{
@@ -207,12 +226,57 @@
 	opacity: 1;
 }
 
-#play-header{
-	text-align: center;
+.play-image:hover .delete-play-link{
+	display: block;
+}
+
+.edit-link-block:hover{
+	background-color: #333333;
+}
+
+.show-link-block:hover{
+	background-color: #333333;
+}
+
+.show-link-block{
+	background-color: #999999;
+	transition: .2s ease;
+	opacity: 0;
+	color: white;
+	position: absolute;
+	bottom: 0;
+	width: 50%;
+	height: 25%;
+	border-right: 1px solid white;
+}
+
+.edit-link-block{
+	background-color: #999999;
+	transition: .2s ease;
+	opacity: 0;
+	color: white;
+	position: absolute;
+	bottom: 0;
+	width: 50%;
+	height: 25%;
+	right: 0;
+}
+
+.new-play-link{
+	border: dashed 2px #afafaf;
+    border-radius: 15px;
+    font-size: 30px;
+    color: #afafaf;
+    font-weight: 300;
+}
+
+.new-play-link:hover{
+	border: dashed 2px #424242;
+    color: #424242;
 }
 
 #play-progression div {
-	font-size: 35px;
+	font-size: 25px;
 	display: inline-block;
 }
 
@@ -230,7 +294,7 @@
 
 #show-grid{
 	display: grid;
-	grid-template-columns: 7vw 71vw 15vw 7vw;
+	grid-template-columns: 7vw 20vw 51vw 15vw 7vw;
 	align-items: center;
 	justify-items: center;
 }
@@ -239,7 +303,7 @@
 	display: grid;
 	grid-template-columns: 7vw 20vw 51vw 15vw 7vw;
 	align-items: center;
-	justify-content: center;
+	justify-items: center;
 }
 
 .change-progression{
@@ -252,6 +316,13 @@
 
 .basketball-icon{
 	width: 20px;
+	display: block;
+    margin: auto;
+}
+
+
+[contentEditable=true]:empty:not(:focus):before{
+    content:attr(data-text)
 }
 
 

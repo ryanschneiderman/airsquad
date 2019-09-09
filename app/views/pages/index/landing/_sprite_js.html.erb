@@ -1,0 +1,47 @@
+<script>
+	var row = 0;
+	var col = 0;
+	var startingTop = 0;
+	var startingLeft = 0;
+	var ypos = -3;
+	var xpos = 1;
+    var move_count = 0;
+
+	function calc_ypos(){
+		return (row * -744) - 3
+	}
+
+	function calc_xpos(){
+		return (col * -1276) + 1
+	}
+		
+
+	$(document).mousemove(function(event) {
+		
+	if(move_count % 8 == 0){
+		row++;
+		if(row  > 7){
+			col++;
+			row = 0;
+		}
+		if(col > 5 && row > 4){
+			row = 0;
+			col = 0;
+		}
+		$('#sprite').css("backgroundPosition", calc_xpos().toString() + "px " + calc_ypos().toString() + "px"); 
+	
+		}
+		move_count++; 
+	});
+
+	$("#grey-canvas")
+	.mouseenter(function(e){
+		startingTop = e.clientY;
+		startingLeft = e.clientX;
+		isInCanvas = true;
+	})
+	.mouseleave(function(e){
+		isInCanvas = false;
+	});
+		
+</script>

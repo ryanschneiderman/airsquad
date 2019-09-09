@@ -1,3 +1,33 @@
+#toggle-buttons{
+	margin: auto;
+	text-align: center;
+}
+
+.stats-toggle{
+	padding: 15px;
+	font-size: 15px;
+}
+
+.toggle-inactive{
+	color: grey;
+}
+
+.stat-kind-header{
+	font-size: 25px;
+}
+
+.stats-toggle:hover {
+	color: black;
+}
+.player-profile-table{
+	margin: auto;
+    width: 70%;
+    font-size: 12px;
+}
+
+#stats-radar-container{
+	margin-top: 30px;
+}
 
 
 #radar-elem{
@@ -6,13 +36,15 @@
 }
 
 #radar-grid{
-	display: grid;
-	grid-template-rows: 75px 650px;
+	display: flex;
+    flex-direction: column;
+    margin-bottom: 40px;
 }
 
 #radar-headers{
 	display: grid;
 	grid-template-columns: 1fr 1fr;
+	margin-top: 40px;
 }
 
 #toggle-radar{

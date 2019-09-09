@@ -1,39 +1,12 @@
 <div id = "game-mode-grid">
-	<div id = "top-grid">
-		<div id = "gm-tool-bar">
-			<div id = "stat-buttons">
-				<% @collection_stats.each do |stat|%>
-						<button class = "stat-button" type = "button" onclick = "stat_button('<%= stat[:id] %>', this)"> <%= stat[:display_name] %> </button>
-				<% end %>
-			</div>
-			<div id = "player-buttons">
-				<div id = "in-game">
-					<div id = "in-game-label">In Game</div>
-					<div id = "in-game-players"></div>
+	<div id = "scoreboard-wrapper">
+		<div id = "scoreboard">
+			<div id = "score-status">
+				<div id = "home-scoreboard" class = "squad-scoreboard">
+					<div class = "team-name"><%= @team.name%></div>
+					<div id = "home-score" class = "squad-score"> 0 </div>
 				</div>
-				<div id = "bench">
-					<div id = "bench-label">Bench</div>
-					<div id = "bench-players"></div>
-				</div>
-				<div id = "oppenent-label">Opponent</div>
-				<div id = "opponent">
-				</div>
-				<button class = "submit" type = "button" onclick = "submit_game_mode()"> SUBMIT </button>
-			</div>
-		</div>
-		<div id = "middle-column">
-			<div id = "scoreboard">
-				<div id = "score-status">
-					<div id = "home-scoreboard" class = "squad-scoreboard">
-						<div class = "team-name"><%= @team.name%></div>
-						<div id = "home-score" class = "squad-score"> 0 </div>
-					</div>
-					<div id = "opponent-scoreboard" class = "squad-scoreboard">
-						<div class = "team-name"> <%= @opponent.name%></div>
-						<div id = "opponent-score" class = "squad-score"> 0 </div>
-					</div>
-				</div>
-				<div id = "time">
+				<button id = "time" onclick = "toggleClock()">
 					<div id = "period">1Q</div>
 					<div class = "dash">
 						<svg style = "height: 1px; width: 20px;" class = "time-dash">
@@ -41,47 +14,90 @@
 					    </svg>
 					</div>
 					<div id = "timer"></div>
+				</button>
+				<div id = "opponent-scoreboard" class = "squad-scoreboard">
+					<div class = "team-name"> <%= @opponent.name%></div>
+					<div id = "opponent-score" class = "squad-score"> 0 </div>
 				</div>
 			</div>
-			<canvas id ="c" class = "show-canvas gm-canvas"></canvas>
 		</div>
-		<div id = "shot-chart-buttons">
-			<div id = "shot-chart-header">Individual Shot Charts</div>
-			<div id = "player-shot-chart-buttons">
-				
-			</div> 
-			<div id = "team-shot-charts">
-				<button class = "team-shot-chart" type = "button" onclick="to_opponent_shot_chart()"> <%= @opponent.name %> Shot Chart</button>
-				<button class = "team-shot-chart" type = "button" onclick="to_team_shot_chart()">Team Shot Chart</button>
+	</div>
+	<div id = "top-grid">
+		<div id = "gm-toolbar">
+			<div id = "tb-first-level" class = "flex-horiz tb-container">
+				<div id = "player-buttons" class = "flex-margin-auto">
+					<div id = "in-game">
+						<div id = "in-game-label">In Game</div>
+						<div id = "in-game-players"></div>
+					</div>
+					<div id = "player-shot-chart-toggle">
+						<input id = "player-charts-button" type="checkbox" name="player-shot-charts" value="false"> Show Player Shot Charts
+					</div>
+					<div id = "oppenent-label">Opponent</div>
+					<div id = "opponent"></div>
+					
+				</div>
+				<div id = "stat-buttons" class = "flex-margin-auto">
+					<% counter = 0 %>
+					<% @collection_stats.each do |stat|%>
+							<button class = "stat-button stat-button-<%=stat[:id]%>" id = "stat-button-<%=counter%>" type = "button" onclick = "stat_button('<%= stat[:id] %>', this)"> <%= stat[:display_name] %> </button>
+					<%counter+=1%>
+					<% end %>
+				</div>
+			</div>
+			<div id = "tb-second-level" class = "flex-horiz tb-container">
+				<div id = "bench">
+					<div id = "bench-label">Bench</div>
+					<div id = "bench-players"></div>
+				</div>
+			</div>
+			<div id = "tb-third-level" class = "tb-container flex-vert">
+				<button class = "gm-submit" type = "button" onclick = "submit_game_mode()"> SUBMIT </button>
 			</div>
 		</div>
-	</div>	
-	<div id = "bottom-grid">
-		<!-- 
-		<div id = "game-mode-submit">
-			<button class = "game-mode-submit" type = "button" onclick = "submit_game_mode()">Submit</button>
+		<div id = "gm-middle">
+			<div class = "stat-added-alert">
+				<div id = "stat-added-player-name" class = "stat-added-alert-elem"></div>
+				<div id = "stat-added-name" class = "stat-added-alert-elem"></div>
+				<div id = "stat-added-username"></div>
+			</div>
+			<div id = "canvas-wrapper">
+				<canvas id ="c" class = "show-canvas gm-canvas"></canvas>
+				<div id = "canvas-label"><%= @team.name%></div>
+			</div>
+			<div id = "gm-stat-tables" style = "display: none;">
+				<table class = "gm-stats-table" id = "player-stats-table">
+				</table>
+				<table class = "gm-stats-table" id = "team-stats-table">	
+				</table>
+			</div>
+			<div id = "gm-toggle-buttons">
+				<button class ="gm-toggle-button" onclick = "to_stat_tables()">Show Stats</button>
+				<button class ="gm-toggle-button" onclick = "to_shot_chart()">Show Shot Chart</button>
+			</div>
 		</div>
-		-->
-		<table class = "stats-table" id = "player-stats-table">
-				
-		</table>
-		<table class = "stats-table" id = "team-stats-table">
-				
-		</table>
+		
 	</div>	
 </div>
+
+
 
 <div class = "modal-overlay"></div>
 <div class = "GM-modal modal-overlay">
 	<div id = "GM-initializer">
-		<div id = "GM-init-header" class = "GM-init">Welcome to Game Mode!</div>
-		<div id = "GM-init-body" class = "GM-init">
-			<div id = "personel-selection-header">Select Inactives</div>
-			<div id = "personel-selection-body">
+		<div id = "GM-init-wrapper">
+			<div id = "GM-init-header" class = "GM-init">Welcome to Game Mode!</div>
+			<div id = "GM-init-body" class = "GM-init">
+				
+				<div id = "personel-selection-wrapper">
+					<div id = "personel-selection-header">Select Inactives</div>
+					<div id = "personel-selection-body">
 
+					</div>
+				</div>
 			</div>
+			<div id = "GM-init-footer" class = "GM-init">Next</div>
 		</div>
-		<div id = "GM-init-footer" class = "GM-init">Next</div>
 	</div>
 </div>
 
@@ -90,12 +106,16 @@
 <%= render 'game_mode_js_objects' %>
 <script>
 	$(".navbar").hide()
-	canvas_vars = initialize_canvas(0.62, 0.7, 'c', 3)
+	canvas_vars = initialize_canvas(0.6, 0.635, 'c', 3)
 	initialize_globals(canvas_vars.canvas, canvas_vars.canvas_width, canvas_vars.canvas_height)
 	populate_players();
 	populate_inactive_selection(false);
-	plotBasket(canvas_vars.canvas_width/1.978, canvas_vars.canvas_height/11.5, 14, canvas_vars.canvas_width, canvas_vars.canvas);
+	plotBasket(canvas_vars.canvas_width/1.978, canvas_vars.canvas_width/16.43, 14, canvas_vars.canvas_width, canvas_vars.canvas);
 
+	$( window ).on("load", function() {
+         $("#gm-stat-tables").height($("#canvas-wrapper").height())
+	});
+	
 
 	canvas_vars.canvas.on('object:moving', function (e) {
 		var obj = e.target
@@ -150,7 +170,17 @@
         		break
         	}
     	})
-    })
+    });
+
+    function to_shot_chart(){
+    	$("#canvas-wrapper").show()
+    	$("#gm-stat-tables").hide()
+    }
+
+    function to_stat_tables(){
+    	$("#canvas-wrapper").hide()
+    	$("#gm-stat-tables").show()
+    }
 
 	
 </script>

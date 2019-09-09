@@ -15,6 +15,8 @@
     <script src = "https://unpkg.com/@fullcalendar/core@4.2.0/main.min.js"></script>
     <script src = "https://unpkg.com/@fullcalendar/daygrid@4.2.0/main.min.js"></script>
     <script src = "https://unpkg.com/@fullcalendar/interaction@4.2.0/main.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-color/2.1.2/jquery.color.min.js"></script>
+    <meta name="turbolinks-cache-control" content="no-cache">
 
     
 
@@ -33,12 +35,19 @@
 
   </head>
 
-  <body>
+  <body 
+    <% if content_for?(:body_attributes) %>
+      <%= yield(:body_attributes) %> 
+    <% end %>>
     <%= render 'layouts/navigation' %>
     <%= yield %>
     
     <%= render 'layouts/application/private_conversations_windows' %>
     <%= render 'layouts/application/group_conversations_windows' %>
   </body>
+
+  <script>
+
+  </script>
 </html>
 

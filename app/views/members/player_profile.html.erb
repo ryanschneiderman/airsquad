@@ -1,68 +1,88 @@
-<div id = "player-name"><%=@member.nickname%></div>
-<div id = "radar-grid">
-	<div id = "radar-headers">
-		<div class = "radar-header">
-			<h3>Basic Stats</h3>
-			<div id = toggle-buttons>
-				<button class = "basic-chart-toggle" id = "to-per-game-button" onclick = "toggle_radar_chart(1, this)">Per Game</button>
-				<button class = "basic-chart-toggle" id = "to-per-minute-button" onclick = "toggle_radar_chart(2, this)">Per Minute</button>
-			</div>
-		</div>
-		<div class = "radar-header">
-			<h3>Advanced Stats</h3>
-		</div>
-	</div>
-	<div id = "radar-elem">
-		<div id = "basic-charts" class = "radar-chart">
-			<div class="basic-chart"></div>
-		</div>
-		<div id = "advanced-charts" class = "radar-chart">
-			<div class="advanced-chart"></div>
-		</div>
-	</div>
-</div>
-<div id = "trends-header">Trends</div>
-<div id = "trends-grid">
-	<div id = "trends-selector">
-		<div id = "trend-types">
-			<button id = "basic-trends" class = "trend-type" onclick = "toggle_trend_buttons(1, this)">Basic</button>
-			<button id = "advanced-trends" class = "trend-type" onclick = "toggle_trend_buttons(2, this)">Advanced</button>
-			<button id = "per-minute" class = "trend-type" onclick = "toggle_trend_buttons(3, this)">Per Minute</button>
-		</div>
-		<div id = "trends-buttons">
-			<div id = "basic-trend-buttons">
-				<% counter = 0 %>
-				<% @trend_stat_lists.each do |stat| %>
-					<button type = "button" class="btn trend-button-<%=counter%> trend-button" onclick = "select_basic_trend_stat(<%=counter%>, this)"><%=stat.stat%></button>
-					<% counter += 1%>
-				<%end%>
-			</div>
-			<div id = "advanced-trend-buttons">
-				<% counter = 0 %>
-				<% @adv_trend_stat_lists.each do |stat| %>
-					<button  class="btn trend-button-<%=counter%> trend-button" onclick = "select_advanced_trend_stat(<%=counter%>, this)"><%=stat.stat%></button>
-					<% counter += 1%>
-				<%end%>
-			</div>
-			<div id = "per-minute-trend-buttons">
-				<% counter = 0 %>
-				<% @trend_stat_lists.each do |stat| %>
-					<button  class="btn trend-button-<%=counter%> trend-button" onclick = "select_per_minute_trend_stat(<%=counter%>, this)"><%=stat.stat%></button>
-					<% counter += 1%>
-				<%end%>
-			</div>
-		</div>
-	</div>
-	<div id = "trends-chart">	
-	</div>
-</div>
-<div id = "shot-trends-header">Shot Distribution</div>
-<div id = "shot-trends">
-		
-</div>
+ <% content_for(:body_attributes) do %>
+    data-turbolinks="false"
+  <% end %>
+<div id = "player-profile" style = "margin-top: 80px;">
+	<div id = "player-name"><%=@member.nickname%></div>
 
+	<div id = "stats-radar-container">
+		<div id = toggle-buttons>
+			<button class = "stats-toggle" id = "to-per-game-button" onclick = "toggle_radar_chart(1, this)">Per Game</button>
+			<button class = "stats-toggle toggle-inactive" id = "to-per-minute-button" onclick = "toggle_radar_chart(2, this)">Per <%=@minutes_factor%> Minutes</button>
+			<button class = "stats-toggle toggle-inactive" id = "to-advanced-button" onclick = "toggle_radar_chart(3, this)">Advanced</button>
+		</div>
+
+		<table id = "per-game-table" class = "player-profile-table">
+			
+		</table>
+		<table id = "per-minute-table" class = "player-profile-table" style = "display: none">
+			
+		</table>
+		<table id = "advanced-table" class = "player-profile-table" style = "display: none">
+			
+		</table>
+
+		<div id = "radar-grid">
+			<div id = "radar-headers">
+				<div class = "radar-header">
+					<div class = "stat-kind-header">Offensive Stats</div>
+				</div>
+				<div class = "radar-header">
+					<div class = "stat-kind-header">Defensive Stats</div>
+				</div>
+			</div>
+			<div id = "radar-elem">
+				<div id = "offensive-charts" class = "radar-chart">
+					<div class="offensive-chart"></div>
+				</div>
+				<div id = "defensive-charts" class = "radar-chart">
+					<div class="defensive-chart"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id = "trends-header">Trends</div>
+	<div id = "trends-grid">
+		<div id = "trends-selector">
+			<div id = "trend-types">
+				<button id = "basic-trends" class = "trend-type" onclick = "toggle_trend_buttons(1, this)">Basic</button>
+				<button id = "advanced-trends" class = "trend-type" onclick = "toggle_trend_buttons(2, this)">Advanced</button>
+				<button id = "per-minute" class = "trend-type" onclick = "toggle_trend_buttons(3, this)">Per Minute</button>
+			</div>
+			<div id = "trends-buttons">
+				<div id = "basic-trend-buttons">
+					<% counter = 0 %>
+					<% @trend_stat_lists.each do |stat| %>
+						<button type = "button" class="btn trend-button-<%=counter%> trend-button" onclick = "select_basic_trend_stat(<%=counter%>, this)"><%=stat.stat%></button>
+						<% counter += 1%>
+					<%end%>
+				</div>
+				<div id = "advanced-trend-buttons">
+					<% counter = 0 %>
+					<% @adv_trend_stat_lists.each do |stat| %>
+						<button  class="btn trend-button-<%=counter%> trend-button" onclick = "select_advanced_trend_stat(<%=counter%>, this)"><%=stat.stat%></button>
+						<% counter += 1%>
+					<%end%>
+				</div>
+				<div id = "per-minute-trend-buttons">
+					<% counter = 0 %>
+					<% @trend_stat_lists.each do |stat| %>
+						<button  class="btn trend-button-<%=counter%> trend-button" onclick = "select_per_minute_trend_stat(<%=counter%>, this)"><%=stat.stat%></button>
+						<% counter += 1%>
+					<%end%>
+				</div>
+			</div>
+		</div>
+		<div id = "trends-chart">	
+		</div>
+	</div>
+	<div id = "shot-trends-header">Shot Distribution</div>
+	<div id = "shot-trends">
+			
+	</div>
+</div>
 
 <%= render 'stats/radar/radar_js' %>
+<%= render 'stats/player_stat_tables_js' %>
 <%= render 'stats/radar/radar_controller_js' %>
 <%= render 'stats/trends/trends_js' %>
 <%= render 'stats/trends/trends_controller_js' %>
@@ -71,6 +91,20 @@
 
 
 <script>
+	populate_player_stats()
+	populate_display_stats()
+	insert_table_data()
+	$(".navbar").addClass("navbar-active");
+    $(".navbar-default a").addClass("navbar-text-active");
+    $(".home-link").css("border-color", "black");
+
+    $(window).on("scroll", function() {
+        $(".navbar").addClass("navbar-active");
+        $(".navbar-default a").addClass("navbar-text-active");
+        $(".home-link").css("border-color", "black")
+
+	});
+
 	var curr_basic_button = $("#basic-trend-buttons").children(".trend-button-0")[0]
 	var curr_basic_index = 0;
 	var curr_advanced_button = $("#advanced-trend-buttons").children(".trend-button-0")[0]
@@ -80,9 +114,9 @@
 	initialize_basic_trend_stat_arrays();
 	initialize_adv_trend_stat_arrays();
 	select_basic_trend_stat(0, $('.trend-button-0')[ 0 ])
+	console.log(basic_trend_array)
 
 
-	// TODO: MOVE
 function initialize_basic_trend_stat_arrays(){
 	<%@minutes.each do |minutes|%>
 		minutes_array.push(parseInt("<%=minutes.value%>")/60)
@@ -108,7 +142,6 @@ function initialize_basic_trend_stat_arrays(){
 	<%end%>
 }
 
-// TODO: MOVE
 function initialize_adv_trend_stat_arrays(){
 	var curr_stat_list_id = "<%= @adv_trend_stats[0].stat_list_id%>";
 	advanced_trend_array.push({"arr" : [], "stat_list_id" : "<%= @adv_trend_stats[0].stat_list_id%>"});

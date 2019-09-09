@@ -26,7 +26,6 @@ class Advanced::TeamAdvancedStatsService
 		@team_three_point_makes = params[:team_three_point_makes]
 		@team_three_point_misses = params[:team_three_point_misses]
 		@opp_three_point_makes = params[:opp_three_point_makes]
-
 		@team_three_point_att = @team_three_point_makes + @team_three_point_misses
 		@team_field_goal_att = @team_field_goals + @team_field_goal_misses
 		@opp_field_goal_att = @opp_field_goals + @opp_field_goal_misses
@@ -36,7 +35,11 @@ class Advanced::TeamAdvancedStatsService
 	end
 
 	def call
-		team_advanced_stats = TeamStat.joins(:stat_list).select("stat_lists.advanced as advanced, team_stats.*").where("stat_lists.advanced" => true, "team_stat.team_id" => @team_id).sort_by{|e| e.stat_list_id}
+		team_advanced_stats = TeamStat.joins(:stat_list).select("stat_lists.advanced as advanced, team_stats.*").where("stat_lists.advanced" => true, "team_stats.team_id" => @team_id).sort_by{|e| e.stat_list_id}
+		if team_advanced_stats.any?{|a| a.stat_list_id == 43}
+			possessions()
+			opp_possessions()
+		end
 		team_advanced_stats.each do |stat|
 			case stat.stat_list_id
 			when 18
@@ -57,9 +60,6 @@ class Advanced::TeamAdvancedStatsService
 			when 38
 				turnover_pct()
 				opp_turnover_pct()
-			when 43
-				possessions()
-				opp_possessions()
 			when 48
 				pace()
 			when 49
@@ -203,7 +203,6 @@ class Advanced::TeamAdvancedStatsService
 
 		season_stat = SeasonTeamAdvStat.where(stat_list_id: 30, team_id: @team_id, is_opponent: false).take
 		if season_stat
-			puts "SEASON STAT EXISTS"
 			@new_off_eff = Advanced::OffensiveEfficiencyService.new({
 				possessions: @possessions + season_stat.constituent_stats["possessions"],
 				team_points: @team_points + season_stat.constituent_stats["team_points"],
@@ -216,7 +215,6 @@ class Advanced::TeamAdvancedStatsService
 			}
 			season_stat.save
 		else
-			
 			season_stat = SeasonTeamAdvStat.create({
 				stat_list_id: 30,
 				team_id: @team_id,
@@ -229,7 +227,6 @@ class Advanced::TeamAdvancedStatsService
 			})
 			@new_off_eff = @offensive_efficiency
 		end
-		puts "season OFFENSIVE EFFICIENCY"
 		puts season_stat.value
 	end
 

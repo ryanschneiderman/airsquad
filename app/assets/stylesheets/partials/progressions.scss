@@ -24,14 +24,6 @@
 	opacity: 1;
 }
 
-.edit-link-block:hover{
-	background-color: #333333;
-}
-
-.show-link-block:hover{
-	background-color: #333333;
-}
-
 .progression-num{
 	display: none;
 	position:absolute;
@@ -43,29 +35,6 @@
 	display: block;
 }
 
-.show-link-block{
-	background-color: #999999;
-	transition: .2s ease;
-	opacity: 0;
-	color: white;
-	position: absolute;
-	bottom: 0;
-	width: 50%;
-	height: 25%;
-	border-right: 1px solid white;
-}
-
-.edit-link-block{
-	background-color: #999999;
-	transition: .2s ease;
-	opacity: 0;
-	color: white;
-	position: absolute;
-	bottom: 0;
-	width: 50%;
-	height: 25%;
-	right: 0;
-}
 
 .progression-link-text{
 	padding-top: 6%;
@@ -208,5 +177,9 @@ button.left{
 .progression-notes-header{
 	text-align: center;
 	font-size: 20px;
+}
+
+.progression-notes-text{
+	border: none;
 }
 

@@ -13,22 +13,15 @@ class JoinTeamService
 		password_relation = team_relation.pluck(:password)
 		password_to_check = password_relation[0]
 		team_to_join = team_relation.take
+		puts "team_to_join"
+		puts team_to_join.id
 
 		## define admin priveleges based on nature of invitation?? have admin dictate who can and cannot have admin priveleges 
 		## admin-coach status?
 		## case other .... e.g. manager (non player, non admin, non creator, but still part of team)
 		if password_to_check == @team_password
-			new_member = Member.create(
-				nickname: @current_user.name,
-				user_id: @current_user.id,
-				team_id: team_to_join.id,
-			)
-			@roles.each do |role|
-				assignment = Assignment.create(
-					member_id: new_member.id,
-					role_id: role
-				)
-			end
-		end		
+			return team_to_join.id
+		end	
+		else redirect_to root_path	
 	end
 end

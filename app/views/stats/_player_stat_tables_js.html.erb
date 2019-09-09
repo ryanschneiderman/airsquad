@@ -1,0 +1,184 @@
+<script>
+
+	var display_stats = [];
+	var display_stats_adv = [];
+	var basic_stats = [];
+	var advanced_stats = [];
+	var minutes = "<%=@member.season_minutes%>";
+	var per_minute_factor = parseInt("<%=@minutes_factor%>");
+	var games_played = parseInt("<%=@member.games_played%>")
+
+	function populate_player_stats(){
+		<%@basic_stats.each do |stat|%>
+			basic_stats.push({"value": "<%= stat.value%>", "stat_list_id" : "<%= stat.stat_list_id%>", "stat" : "<%= stat.stat%>", "display_priority" : "<%= stat.display_priority%>"})
+		<%end%>
+
+		<%@advanced_stats.each do |stat|%>
+			advanced_stats.push({"value": "<%= stat.value%>","stat_list_id" : "<%= stat.stat_list_id%>" , "stat" : "<%= stat.stat%>"})
+		<%end%>
+		console.log(basic_stats)
+	}
+
+	function populate_display_stats(){
+		<% @stat_table_columns.each do |display_stat| %>
+			display_stats.push({"stat": "<%= display_stat[:stat_name] %>", "display_priority": "<%= display_stat[:display_priority] %>", "display_type" : "<%= display_stat[:display_type] %>", "percentage_string":  "<%= display_stat[:percentage_string] %>", "stat_list_id" : "<%= display_stat[:stat_list_id] %>"})
+		<% end %>
+		console.log(display_stats)
+
+		<% @adv_stat_table_columns.each do |display_stat| %>
+			display_stats_adv.push({"stat": "<%= display_stat[:display_name] %>", "display_priority": "<%= display_stat[:display_priority] %>", "stat_name":  "<%= display_stat[:stat_name] %>", "stat_list_id" : "<%= display_stat[:stat_list_id] %>"})
+		<% end %>
+	}
+
+
+
+	function insert_table_data(){
+		var basic_table = $("#per-game-table")[0]
+		basic_table.appendChild(document.createElement('tbody'))
+		var row = basic_table.insertRow(0);
+		insert_basic_data(row, false);
+		insert_basic_player_stat_header(basic_table)
+
+		var advanced_table = $("#advanced-table")[0];
+		advanced_table.appendChild(document.createElement('tbody'))
+		var row = advanced_table.insertRow(0);
+		insert_adv_data(row, advanced_stats);
+		insert_adv_stat_header(advanced_table);
+
+		var per_minute_table = $("#per-minute-table")[0];
+		per_minute_table.appendChild(document.createElement('tbody'))
+		var row = per_minute_table.insertRow(0)
+		insert_basic_data(row, basic_stats, true)
+		insert_basic_player_stat_header(per_minute_table)
+	}
+
+	function toggle_player_table(){
+		
+	}
+
+	function insert_basic_player_stat_header(table){
+		var insert_index = 0;
+		var header = table.createTHead();
+		var row = header.insertRow(0);
+		var num_stats = display_stats.length
+		for(i = 0; i < num_stats; i++){
+			var col = row.insertCell(insert_index)
+			col.innerHTML += "<button class = 'stat-table-button' onclick='sort_basic_table(" + display_stats[i].display_priority + ")'>" + display_stats[i].stat + "</button>";
+			if(display_stats[i].display_type == "fraction"){
+				insert_index++;
+				var pct_col = row.insertCell(insert_index);
+				pct_col.innerHTML = "<div>" + display_stats[i].percentage_string + "</div>"; 
+			}
+			insert_index++;
+		}
+	}
+
+	function find_player_stat(stat_list_id, is_advanced, is_per_minute){
+		var stat_arr;
+		if(is_advanced) stat_arr = advanced_stats;
+		else stat_arr = basic_stats;
+
+		var len = stat_arr.length
+		
+		for(var i = 0; i < len; i++){
+			if(stat_arr[i].stat_list_id == stat_list_id){
+				if(is_per_minute) { 
+					var return_value = stat_arr[i].value * (per_minute_factor/(minutes/60));
+					return return_value.toFixed(2);
+				}
+				else return stat_arr[i].value;
+			}
+		}
+	}
+
+	function find_player_fraction_stat(display_priority){
+		var stat_arr = basic_stats
+		var len = stat_arr.length
+		var makes = 0;
+		var misses = 0;
+		var return_arr = [];
+		console.log(stat_arr)
+		for(var i = 0; i < len; i++){
+			if(stat_arr[i].display_priority == display_priority){
+				if (parseInt(stat_arr[i].stat_list_id) % 2 == 0){
+					misses = stat_arr[i].value
+				}
+				else 
+					makes = stat_arr[i].value
+			}
+		}
+		return_arr.push(makes);
+		return_arr.push(misses)
+		return return_arr;
+	}
+
+	function insert_basic_data(row, is_per_minute){
+		var insert_index = 0;
+		var num_stats = display_stats.length
+
+		for(j = 0 ;j < num_stats; j++){
+			if(row.cells.length <= insert_index) var col = row.insertCell(insert_index);
+			else var col = row.cells[insert_index];
+
+			if(display_stats[j].display_type == "fraction"){
+				insert_fraction_data(row, col, display_stats[j].display_priority, ++insert_index, is_per_minute);
+			}
+			else if (display_stats[j].display_type == "minutes"){
+				insert_minutes_data(col, display_stats[j].stat_list_id, is_per_minute);
+			}
+			else{
+				insert_standard_data(col, display_stats[j].stat_list_id, false, is_per_minute)
+			}
+			insert_index++;
+		}	
+	}
+
+	function insert_fraction_data(row, col, stat_list_id, index, is_per_minute){
+		if (row.cells.length <= index){
+			var pct_col = row.insertCell(index)
+		}
+		else var pct_col = row.cells[index];
+		make_miss = find_player_fraction_stat(stat_list_id);
+		makes = parseInt(make_miss[0]);
+		misses = parseInt(make_miss[1]);
+		numerator = (is_per_minute) ? (makes * (per_minute_factor/(minutes/60))).toFixed(1) : (makes/games_played).toFixed(1) ;
+		denomenator = (is_per_minute) ? ((makes + misses) * (per_minute_factor/(minutes/60))).toFixed(1) : ((makes + misses)/games_played).toFixed(1);
+		col.innerHTML = numerator + "/" + denomenator;
+		pct_col.innerHTML = (denomenator != 0) ? Math.round(numerator / denomenator * 100) + "%" : "0%"  
+	}
+
+	function insert_standard_data(col, stat_list_id, is_advanced, is_per_minute){
+		col.innerHTML = find_player_stat(stat_list_id, is_advanced, is_per_minute)
+	}
+
+	function insert_minutes_data(col, display_priority, is_per_minute){
+		if(is_per_minute){
+			var player_minutes = per_minute_factor
+			var player_seconds = 0;
+		}
+		else {
+			var player_minutes = Math.floor(minutes / 60)
+			var player_seconds = minutes - player_minutes * 60;
+		}
+		(player_seconds < 10) ? seconds_str = "0" + player_seconds.toString() : seconds_str = player_seconds.toString();
+		col.innerHTML = player_minutes.toString() + ":" + seconds_str
+	}
+
+
+	function insert_adv_data(row){
+		var num_stats = display_stats_adv.length
+		for(j = 0 ;j < num_stats; j++){
+			var col = row.insertCell(j);
+			col.innerHTML = find_player_stat(display_stats_adv[j].stat_list_id, true, false)
+		}
+	}
+	function insert_adv_stat_header(table){
+		var header = table.createTHead();
+		var row = header.insertRow(0);
+		var num_stats = display_stats_adv.length
+		for(i = 0; i < num_stats; i++){
+			var col = row.insertCell(i)
+			col.innerHTML += "<button class = 'stat-table-button' onclick='sort_advanced_table(" + display_stats_adv[i].display_priority +")'>" + display_stats_adv[i].stat + "</button>";
+		}
+	}
+</script>

@@ -53,7 +53,10 @@ class GamesController < ApplicationController
 			end
 		end
 
-		@players = Role.joins(:assignment => :member).select("role.name as name, member.*").where("member.team_id" => @team.id, "role.id" => 1)
+		@players = Assignment.joins(:role).joins(:member).select("roles.name as name, members.*").where("members.team_id" => @team.id, "roles.id" => 1)
+		@players.each do |player|
+			puts "player name :" + player.nickname
+		end
 
 		@opponent = Opponent.where(team_id: @team.id, game_id: @game.id).take
 
@@ -94,7 +97,6 @@ class GamesController < ApplicationController
 		}).call
 
 		@team_stat_table_columns.delete_if{|h| h[:stat_name] == "Minutes"}
-	
 	end
 
 	def game_mode
@@ -104,6 +106,7 @@ class GamesController < ApplicationController
 		@players = Assignment.joins(:role).joins(:member).select("roles.name as name, members.*").where("members.team_id" => @team_id, "roles.id" => 1)
 		@opponent = Opponent.where(game_id: @game_id).take
 		team_stats = TeamStat.where(team_id: params[:team_id])
+		@minutes_p_q = @team.minutes_p_q
 
 		collection_stat_list = []
 		@basic_stats = []

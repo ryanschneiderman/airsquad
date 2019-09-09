@@ -27,6 +27,14 @@
 	display: block;
 }
 
+.lineup-name-show{
+	display: block !important;
+}
+
+.lineup-icon-dim{
+	opacity: .5;
+}
+
 #lineup-toolbar{
 	margin-top: 30px;
 }
@@ -35,6 +43,15 @@
 	text-align: center;
 	font-size: 20px;
 	font-weight: bold;
+}
+
+.aggr-chart-header{
+	font-weight: bold;
+	font-size: 17px;
+}
+
+.chart-toggle-active{
+	color: black !important;
 }
 
 .lineup-button-name{
@@ -49,6 +66,25 @@
     display: none;
     color: black;
 }
+
+#save-delete{
+	margin-top: 20px;
+	display: flex;
+}
+
+.lineup-tool-button{
+	background: #dedede;
+    width: 50%;
+    border-radius: 0px;
+    padding: 5px;
+    margin-right: 1px;
+}
+
+.lineup-tool-button:hover{
+	background: #ededed;
+}
+
+
 
 .lineup-content{
 	display: none;
@@ -77,7 +113,7 @@
 	margin-top: 10px;
 }
 
-#lineup-radar-charts{
+#lineup-display-container{
 	display: flex;
 	justify-content: center;
 }
@@ -90,6 +126,16 @@
 	margin-top: 30px;
 	text-align: center;
 	height: min-content;
+}
+
+#radar-charts-toggle{
+	margin-top: 30px;
+	display: flex;
+	flex-direction: column;
+}
+
+#radar-charts-container{
+	display: flex;
 }
 
 .lineup-member-button{

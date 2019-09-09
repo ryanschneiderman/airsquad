@@ -29,6 +29,8 @@ Rails.application.routes.draw do
   get 'get_group_conversation', to: 'messengers#get_group_conversation'
   get 'open_messenger', to: 'messengers#open_messenger'
 
+  post '/teams/:team_id/join_team' => "teams#join_member"
+
   resources :teams, :members
 
   resources :plays do
@@ -75,7 +77,7 @@ Rails.application.routes.draw do
   end
 
 
-  get 'join_team' => 'teams#join'
+  post 'join_team' => 'teams#join'
 
   devise_scope :user do
 	  get 'login', to: 'devise/sessions#new'

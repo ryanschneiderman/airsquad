@@ -3,8 +3,8 @@
     function initialize_canvas(width_m, height_m, canvas_id, line_width){
         var canvas = new fabric.Canvas(canvas_id,{
             targetFindTolerance: 15,
-             perPixelTargetFind: true,
-             preserveObjectStacking: true,
+            perPixelTargetFind: true,
+            preserveObjectStacking: true,
         }); 
         //canvas.onresize
         var canvas_width = window.innerWidth * width_m;
@@ -37,12 +37,12 @@
         });
 
         var corner_three_left = new fabric.Rect({
-          left: canvas_width * 0.088,
+          left: canvas_width * 0.089,
           top: -1,
           stroke: 'black',
           strokeWidth: line_width,
           fill: 'transparent',
-          height: canvas_height * .208,
+          height: canvas_width * .1456,
           hasControls: false,
           selectable: false,
           hasBorders: false,
@@ -52,12 +52,12 @@
         });
 
         var corner_three_right = new fabric.Rect({
-          left: canvas_width  *.9172,
+          left: canvas_width  *.9181,
           top: -1,
           stroke: 'black',
           strokeWidth: line_width,
           fill: 'transparent',
-          height: canvas_height * .208,
+          height: canvas_width * .1456,
           hasControls: false,
           selectable: false,
           hasBorders: false,
@@ -79,6 +79,7 @@
           hasBorders: false,
           evented: false,
           perPixelTargetFind: true,
+          objectCaching: false,
         });
 
         var key_circle =  new fabric.Circle({
@@ -93,6 +94,7 @@
             hasBorders: false,
             evented: false,
             perPixelTargetFind: true,
+            objectCaching: false,
         });
 
         var backboard = new fabric.Rect({
@@ -106,6 +108,7 @@
           hasBorders: false,
           evented: false,
           perPixelTargetFind: true,
+          objectCaching: false,
         });
 
         canvas.add(backboard)
@@ -153,13 +156,13 @@
         })
         paint.setCoords()
         corner_three_left.set({
-            left: canvas_width * 0.088,
-            height: canvas_height * .208,
+            left: canvas_width * 0.089,
+            height: canvas_width * .1456,
         })
         corner_three_left.setCoords()
         corner_three_right.set({
-            left: canvas_width *.9172,
-            height: canvas_height * .208,
+            left: canvas_width  *.9181,
+            height: canvas_width * .1456,
         })
         corner_three_right.setCoords()
         backboard.set({
@@ -176,8 +179,7 @@
 
     
     function set_canvas_dimensions(canvas, canvas_height, canvas_width){
-        canvas.setHeight(canvas_height);
-        canvas.setWidth(canvas_width);
+      canvas.setDimensions({width: canvas_width, height: canvas_height});
     }
 
 </script>

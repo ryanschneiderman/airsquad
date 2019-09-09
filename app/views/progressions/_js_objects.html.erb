@@ -527,6 +527,7 @@
 
     function onMouseUp(options, line) {
       isDown = false;
+      line.moveTo(3);
       line.setCoords();
       var centerX = line.x2 - anchorOffset  + Math.cos(line.anchorAngle) * 10;
       var centerY = line.y2 - anchorOffset + Math.sin(line.anchorAngle) * 10;
@@ -555,9 +556,11 @@
       canvas.add(toAnchor);
       line.toAnchorId = toAnchor.id;
       line.toAnchor = toAnchor;
+      
+      line.toAnchor.moveTo(4)
       canvas.requestRenderAll();
       selection();
-      canvas.sendToBack(line);
+
       return line;
     }
 
@@ -823,9 +826,13 @@
           ball: ball,
         });
 
+
+
         
         canvas.add(c);
         canvas.add(text)
+        c.moveTo(1000)
+        text.moveTo(1001)
 
         return c;
       }

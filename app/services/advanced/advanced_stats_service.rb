@@ -43,10 +43,11 @@ class Advanced::AdvancedStatsService
 		@team_points = params[:team_points].to_f 
 		@opp_points = params[:opp_points].to_f 
 		@minutes = params[:minutes].to_f 
-		@team_minutes = params[:team_minutes].to_f 
+		@team_minutes = params[:team_minutes].to_f
+		puts "team_minutes" 
 		puts @team_minutes
 
-		@opp_minutes=  params[:team_minutes].to_f 
+		@opp_minutes =  params[:team_minutes].to_f 
 		@fouls = params[:fouls].to_f 
 		@team_fouls = params[:team_fouls].to_f 
 		@opp_fouls = params[:opp_fouls].to_f 
@@ -54,6 +55,7 @@ class Advanced::AdvancedStatsService
 
 		@member_id = params[:member_id]
 		@game_id = params[:game_id]
+		@team_id = params[:team_id]
 
 
 		@possessions = params[:possessions]
@@ -76,7 +78,8 @@ class Advanced::AdvancedStatsService
 	end
 
 	def call
-		advanced_stats = TeamStat.joins(:stat_list).select("stat_lists.advanced as advanced, team_stats.*").where("stat_lists.advanced" => true, "team_stat.team_id" => @team_id).sort_by{|e| e.stat_list_id}
+		advanced_stats = TeamStat.joins(:stat_list).select("stat_lists.advanced as advanced, team_stats.*").where("stat_lists.advanced" => true, "team_stats.team_id" => @team_id).sort_by{|e| e.stat_list_id}
+
 		advanced_stats.each do |stat|
 			case stat.stat_list_id
 			when 18 
@@ -118,12 +121,14 @@ class Advanced::AdvancedStatsService
 			end		
 		end
 
+		puts "OBPM"
+		puts @obpm
+
 		## return box plus minus values to adjust later
 		return {"obpm" => @obpm, "bpm" => @bpm , "new_obpm" => @season_obpm, "new_bpm" => @season_bpm, "member_id" => @member_id}
 	end
 
 	private 
-
 
 	def steal_pct()
 
@@ -1037,7 +1042,6 @@ class Advanced::AdvancedStatsService
 	end
 
 	def offensive_rating()
-		## CORRECT
 		@offensive_rating = Advanced::OffensiveRatingService.new({
 			team_off_reb: @team_off_reb,
 			off_reb: @off_reb,
@@ -1441,6 +1445,8 @@ class Advanced::AdvancedStatsService
 			possessions: @possessions,
 			opp_possessions: @opp_possessions,
 		}).call
+		puts "@off_box_plus_minus"
+		puts @off_box_plus_minus
 
 		@obpm = AdvancedStat.create({
 			stat_list_id: 47,

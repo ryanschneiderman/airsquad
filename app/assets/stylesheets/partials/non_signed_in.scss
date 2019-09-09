@@ -2,9 +2,8 @@
 
 #grey-canvas{
 	background-color: #333333;
-	height: 100vh;
-	display: grid;
-	grid-template-rows: 20vh 60vh 20vh;
+	display: flex;
+	flex-direction: column;
 }
 
 #slogan{
@@ -12,10 +11,7 @@
 	color: white;
 	text-align: center;
 	font-size: 50px;
+	position: relative;
+	bottom: 15vw;
 }
 
-.jordan{
-	height: 400px;
-	display: block;
-    margin: auto;
-}

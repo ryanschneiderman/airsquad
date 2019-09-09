@@ -63,6 +63,14 @@ class Advanced::DefensiveRatingService
 		stops_b = (((@opp_field_goal_att - @opp_field_goals_made - @team_blocks) / @team_minutes) * fm_wt * (1 - 1.07 * dor_pct) + ((@opp_turnovers - @team_steals) / @team_minutes)) * @minutes +(foul_quot) * 0.4 * @opp_free_throw_att * (1 - (opp_free_throw_quot))**2
 
 		stops = stops_a+stops_b
+		puts "stops"
+		puts stops
+		puts "@opp_minutes"
+		puts @opp_minutes
+		puts "@opp_possessions"
+		puts @opp_possessions
+		puts "@minutes"
+		puts @minutes
 		if @opp_possessions == 0
 			return 0.0
 		else

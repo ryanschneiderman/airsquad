@@ -5,6 +5,8 @@
 		width: 100vw; height: 56vw;
 		background: url(/assets/Jordan/Sprite-Grid.png); 1px -3px;
 		transform: scale(.55);
+		position: relative;
+		bottom: 5vw;
 	}
 	#background{
 		width: 100vw;
@@ -17,77 +19,64 @@
 	<div id = "grey-canvas">
 		
 		<div id = "sprite"></div>
-		<div id = "space"></div>
 		<div id = "slogan">Hello, <%= current_user.name %>.</div>
 	</div>
 	<div id = "main-grid">
-		<div id = "page-links">
-					<div class = "page-link">Teams</div>
-					<div class = "page-link">
-						<%= link_to "stat_list", stat_lists_path %>
-					</div>
-					<div class = "page-link"><%= link_to "Plays", plays_path %></div>
-				</div>
 		<div id = "teams">
-			<div class = "header teams">
-				<div id = "team-text">TEAMS</div>
-			</div>
 			<div class = "team-grid">
 				<%= render @teams %>
 				<div class = "add-join-team">
-					<div><%= link_to 'add_team', add_team_path%></div>
-					<div><%= link_to 'join_team', join_team_path %></div>
+					<div><%= link_to 'create_team', new_team_path %></div>
+					<div><button onclick = "show_join_team_box()">Join team</button></div>
+
 				</div>
 			</div>
 		</div>
 	</div>	
 </div>
+<div class = "modal-overlay" style= "display: none;"></div>
+<div class = "new-overlay modal-overlay" style= "display: none;">
+	<div class = "new-box" style= "display: none;">
+		<div class = "join-team-header">
+			<button class = "close-button" onclick="hide_new_game_form()">x</button>
+			<div id = "new-play-header-text">Join Team</div>
+		</div>
+		<div id = "join-team-body">
+			<div id = "username-body">
+				<label for="enter-username">Enter username. This should have been provided by your coach.</label><br>
+				<input type = "text" id = "enter-username" placeholder="Enter username">
+			</div>
+			<div id = "password-body">
+				<label for="enter-password">Enter Password. This also should have been provided by your coach.</label><br>
+				<input type = "password" id = "enter-password" placeholder="Enter password">
+			</div>
+			<button class = "bar-button join-team-submit" id = "submit-button" onclick = "submit_join_team()">Submit</button>
+		</div>
+	</div>
+</div>
 
+
+<%= render 'pages/index/landing/sprite_js' %>
 
 <script>
-	var row = 0;
-	var col = 0;
-	var startingTop = 0;
-	var startingLeft = 0;
-	var ypos = -3;
-	var xpos = 1;
-    var move_count = 0;
-
-	function calc_ypos(){
-		return (row * -744) - 3
+	function submit_join_team(){
+		var username = $("#enter-username").val()
+		var password = $("#enter-password").val()
+		var url = "/join_team/"
+		$.ajax({
+	      url: url,
+	      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+	      type: "post",
+	      data_type: 'json',
+	      data: {username: username, password: password}
+	    });
 	}
 
-	function calc_xpos(){
-		return (col * -1276) + 1
+	function show_join_team_box(){
+		$(".modal-overlay").show()
+		$(".new-overlay").show()
+		$(".new-box").show()
 	}
-		
-
-	$(document).mousemove(function(event) {
-		
-	if(move_count % 8 == 0){
-		row++;
-		if(row  > 7){
-			col++;
-			row = 0;
-		}
-		if(col > 5 && row > 4){
-			row = 0;
-			col = 0;
-		}
-		$('#sprite').css("backgroundPosition", calc_xpos().toString() + "px " + calc_ypos().toString() + "px"); 
 	
-		}
-		move_count++; 
-	});
-
-	$("#grey-canvas")
-	.mouseenter(function(e){
-		startingTop = e.clientY;
-		startingLeft = e.clientX;
-		isInCanvas = true;
-	})
-	.mouseleave(function(e){
-		isInCanvas = false;
-	});
 		
 </script>

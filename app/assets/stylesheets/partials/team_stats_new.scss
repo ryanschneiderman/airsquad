@@ -1,12 +1,13 @@
 #team-stat-grid{
-	display: grid;
-	grid-template-rows: 25vh 75vh;
+	display: flex;
+	flex-direction: column;
 }
 
 #stat-choices-grid{
+	margin-top: 30px;
 	padding-left: 20px;
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: 2fr 3fr 4fr;
 }
 
 #team-stat-header{
@@ -37,16 +38,20 @@
 
 .stat-choice-grid{
 	padding-left: 0px;
-	display: grid;
-	grid-template-columns: 1fr 1fr 1fr;
+	display: flex;
+	flex-direction: column;
 	justify-content: center;
 }
 
 .your-stats-grid{
 	padding-left: 20px;
-	display: grid;
-	grid-template-rows: 1fr 1fr;
-	grid-template-columns: 1fr 1fr;
+	display: flex;
+	justify-content: center;
+}
+.adv-stats-grid{
+	padding-left: 20px;
+	display: flex;
+	flex-direction: column;
 	justify-content: center;
 }
 
@@ -61,7 +66,24 @@
 }
 
 .stat-choice{
-	display: block;
+	display: inline-block;
+	margin-right: 2px;
+	margin-left: 2px;
+	padding: 5px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	border-radius: 5px;
+	font-size: 15px;
+}
+
+.stat-choice-inactive{
+	border: 1px solid #b5b5b5;
+	color: #b5b5b5;
+}
+
+.stat-choice-active{
+	border: 1px solid #21a0ed;
+	color: #21a0ed;
 }
 
 #team-stats-submit{
