@@ -14,7 +14,7 @@
 		<%end%>
 
 		<%@advanced_stats.each do |stat|%>
-			advanced_stats.push({"value": "<%= stat.value%>","stat_list_id" : "<%= stat.stat_list_id%>" , "stat" : "<%= stat.stat%>"})
+			advanced_stats.push({"value": "<%= stat.value%>","stat_list_id" : "<%= stat.stat_list_id%>" , "stat" : "<%= stat.stat%>" , "description" : "<%=stat.stat_description%>"})
 		<%end%>
 		console.log(basic_stats)
 	}
@@ -26,7 +26,7 @@
 		console.log(display_stats)
 
 		<% @adv_stat_table_columns.each do |display_stat| %>
-			display_stats_adv.push({"stat": "<%= display_stat[:display_name] %>", "display_priority": "<%= display_stat[:display_priority] %>", "stat_name":  "<%= display_stat[:stat_name] %>", "stat_list_id" : "<%= display_stat[:stat_list_id] %>"})
+			display_stats_adv.push({"stat": "<%= display_stat[:display_name] %>", "display_priority": "<%= display_stat[:display_priority] %>", "stat_name":  "<%= display_stat[:stat_name] %>", "stat_list_id" : "<%= display_stat[:stat_list_id] %>" , "stat_description" : "<%= display_stat[:stat_description] %>"})
 		<% end %>
 	}
 
@@ -52,10 +52,6 @@
 		insert_basic_player_stat_header(per_minute_table)
 	}
 
-	function toggle_player_table(){
-		
-	}
-
 	function insert_basic_player_stat_header(table){
 		var insert_index = 0;
 		var header = table.createTHead();
@@ -63,7 +59,7 @@
 		var num_stats = display_stats.length
 		for(i = 0; i < num_stats; i++){
 			var col = row.insertCell(insert_index)
-			col.innerHTML += "<button class = 'stat-table-button' onclick='sort_basic_table(" + display_stats[i].display_priority + ")'>" + display_stats[i].stat + "</button>";
+			col.innerHTML += "<button class = 'stat-table-button'  onclick='sort_basic_table(" + display_stats[i].display_priority + ")'>" + display_stats[i].stat + "</button>";
 			if(display_stats[i].display_type == "fraction"){
 				insert_index++;
 				var pct_col = row.insertCell(insert_index);
@@ -172,13 +168,21 @@
 			col.innerHTML = find_player_stat(display_stats_adv[j].stat_list_id, true, false)
 		}
 	}
+
+	function show_stat_info(display_stat){
+
+	}
+
 	function insert_adv_stat_header(table){
 		var header = table.createTHead();
 		var row = header.insertRow(0);
 		var num_stats = display_stats_adv.length
 		for(i = 0; i < num_stats; i++){
 			var col = row.insertCell(i)
-			col.innerHTML += "<button class = 'stat-table-button' onclick='sort_advanced_table(" + display_stats_adv[i].display_priority +")'>" + display_stats_adv[i].stat + "</button>";
+			var description = document.createElement( 'html' );
+			var description.innerHTML = display_stats_adv[i].stat_description;
+			console.log(description)
+			col.innerHTML += "<div class = 'stat-table-header'><button class = 'stat-table-button' onmouseover= 'show_stat_info(" + display_stats[i] + ")' onclick='sort_advanced_table(" + display_stats_adv[i].display_priority +")'>" + display_stats_adv[i].stat + "</button> <div class = 'stat-description'>" + description + " </div> </div>";
 		}
 	}
 </script>

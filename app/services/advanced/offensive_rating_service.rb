@@ -22,17 +22,22 @@ class Advanced::OffensiveRatingService
 		@team_free_throws_made = params[:team_free_throw_makes]
 		@field_goal_att = params[:field_goal_att] 
 		@team_field_goal_att = params[:team_field_goal_att] 
-		@minutes_played = params[:minutes]
-		@team_minutes_played = params[:team_minutes] 
+		@minutes = params[:minutes]
+		@team_minutes = params[:team_minutes] 
 		@team_assists = params[:team_assists] 
 		@assists = params[:assists]
 		@turnovers = params[:turnovers]
 		@team_turnovers = params[:team_turnovers]
+		puts "team minutes in orating"
+		puts @team_minutes
 
 	end
 
 	def call()
 		@qassists = get_qassists()
+
+		puts "@qassists"
+		puts @qassists
 
 		@fg_part = get_fg_part()
 		puts "@fg_part"
@@ -101,10 +106,42 @@ class Advanced::OffensiveRatingService
 	private
 	## CORRECT
 	def get_qassists()
-		return (( @minutes_played / (@team_minutes_played / 5)) * (1.14 * ((@team_assists - @assists) / @team_field_goals_made ))) + ((((@team_assists / @team_minutes_played) * @minutes_played * 5 - @assists) / ((@team_field_goals_made / @team_minutes_played) * @minutes_played * 5 - @field_goals_made)) *  (1 -  (@minutes_played / (@team_minutes_played / 5))))
+		puts "@minutes"
+		puts @minutes
+		puts "@team_minutes"
+		puts @team_minutes
+		puts "@assists"
+		puts @assists
+		puts "@team_assists"
+		puts @team_assists
+		puts "@team_field_goals_made"
+		puts @team_field_goals_made
+		puts "@field_goals_made"
+		puts @field_goals_made
+		puts "Pre qassists"
+		val_1 = (@minutes / (@team_minutes / 5))
+		puts val_1
+		val_2 = (1.14 * ((@team_assists - @assists) / @team_field_goals_made ))
+		puts val_2
+		val_3 = ((@team_assists / @team_minutes) * @minutes * 5 - @assists)
+		puts val_3
+		val_4 = ((@team_field_goals_made / @team_minutes) * @minutes * 5 - @field_goals_made)
+		puts val_4
+		val_5 = (1 -  (@minutes / (@team_minutes / 5)))
+		puts val_5
+
+		if val_4 == 0
+			val_4 = 0.01
+		end
+		puts (val_1 * val_2) + ((val_3 / val_4) * val_5)
+
+
+		##puts (( @minutes / (@team_minutes / 5)) * (1.14 * ((@team_assists - @assists) / @team_field_goals_made ))) + ((((@team_assists / @team_minutes) * @minutes * 5 - @assists) / ((@team_field_goals_made / @team_minutes) * @minutes * 5 - @field_goals_made)) *  (1 -  (@minutes / (@team_minutes / 5))))
+		return (val_1 * val_2) + ((val_3 / val_4) * val_5)
 	end
 	## CORRECT
 	def get_fg_part()
+
 		if @field_goal_att == 0
 			return 0.0
 		else 

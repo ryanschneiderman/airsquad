@@ -7,6 +7,7 @@
 	var three_pt_fg_index = 3;
 	var ft_index = 5;
 	var ft_pct_index = 6;
+	var game_mode_state;
 
 
 	var curr_player = null; 
@@ -35,7 +36,8 @@
 	var canvas;
 	var gm_canvas_width;
 	var gm_canvas_height;
-
+	var minutes;
+	var seconds;
 
 	var basket_x;
 	var basket_y;
@@ -55,6 +57,9 @@
 	var active_players = [];
 	var players_in_game = 0;
 
+	var curr_lineup;
+	var lineups_arr = [];
+
 
 	var home_score = 0;
 	var opponent_score = 0;
@@ -65,14 +70,11 @@
 
 	var player_charts_toggle = false;
 
-
-	// TODO make dynamic
 	var periods = 4;
 	var curr_period = 1;
-	// TODO make dynamic
+
 	var minutes_per_period = <%=@minutes_p_q%>;
-	var minutes = minutes_per_period;
-	var seconds = 0;
+
 
 	var minutes_index;
 	var points_index;
@@ -80,6 +82,10 @@
 	var total_minutes = 0;
 
 	var select_inactives_html = "";
+
+	var scoreboard_clock = new ScoreboardClock();
+
+	var game_mode_initialized = false;
 
 	Element.prototype.remove = function() {
     	this.parentElement.removeChild(this);
@@ -112,6 +118,9 @@
 			else{
 				deselect_stat();
 			}
+			if(!player_charts_toggle){
+				to_team_shot_chart()
+			}
 		}
 	});
 
@@ -141,10 +150,6 @@
 	/*********************** <INITIALIZERS> ***********************/
 	/**************************************************************/
 
-	function initialize_toolbar(){
-
-	}
-
 	function initialize_globals(c, canvas_width, canvas_height){
 		canvas = c;
 		gm_canvas_width = canvas_width;
@@ -152,9 +157,9 @@
 		arc_vert_radius = gm_canvas_width/2.39;
 		arc_horiz_radius = gm_canvas_width/2.39;
 
-		basket_radius = gm_canvas_width/59.855;
+		basket_radius = 14;
 		basket_x = basket_radius + gm_canvas_width/1.978;
-		basket_y = basket_radius + canvas_height/11.5;
+		basket_y = basket_radius + gm_canvas_width/16.43;
 	}
 
 
@@ -210,23 +215,169 @@
 		minutes_index = i;
 	}
 
-	function start_game_mode(){
+	function initializeActivePlayerTimers(){
+		var len = active_players.length
+		for(var i = 0; i < len; i++){
+			var timer = active_players[i].timer
+			var new_player_timer = new PlayerTimer(active_players[i].is_in_game, timer.player_index)
+			new_player_timer.clock_moving = timer.clock_moving;
+			new_player_timer.interval = timer.interval;
+			new_player_timer.stat_index = timer.stat_index;
+			new_player_timer.time_played = timer.time_played;
+			active_players[i].timer = new_player_timer;
+		}
+	}
+
+	function setActivePlayerTimers(old_active_players){
+		var len = active_players.length
+		for(var i = 0; i < len; i++){
+			var timer = active_players[i].timer
+			old_active_players[i].timer.clock_moving = timer.clock_moving;
+			old_active_players[i].timer.interval = timer.interval;
+			old_active_players[i].timer.stat_index = timer.stat_index;
+			old_active_players[i].timer.time_played = timer.time_played;
+			old_active_players[i].timer.is_in_game = timer.is_in_game;
+
+			active_players[i].timer = old_active_players[i].timer
+		}
+	}
+
+	function setPlayerTimesInTable(){
+		var len = active_players.length
+		for(var i = 0; i < len; i++){
+			active_players[i].timer.setPlayingTime()
+		}
+	}
+
+	function playerIsInGame(player_id){
+		var len = active_players.length
+		for(var i = 0; i < len; i++){
+			if (active_players[i].id == player_id){
+				return active_players[i].is_in_game;
+			}
+		}
+	}
+
+	// TODO: Problem could still be here.
+	function update_lineup(lineup_data){
+		if(!playerIsInGame(lineup_data.player_to_game.id)){
+			swap_players(lineup_data.player_to_game, lineup_data.player_to_bench)
+		}
+	}
+
+	function granule_exists(granule){
+		var index = all_stat_granules.length -1;
+		if(granule.stat == 1 || granule.stat == 2){
+			index = index -1;
+		}
+		if(all_stat_granules[index] && all_stat_granules[index].granule_id == granule.granule_id){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
+	function loadStatGranules(granules){
+		var len = granules.length
+		for(var i = 0; i < len; i++){
+			loadStatGranule(granules[i], true)
+		}
+		console.log(stat_array);
+	}
+
+	function loadStatGranule(stat_granule, is_loading){
+		var stat_i = find_stat_in_player_arr(stat_granule.stat);
+		var index = find_stat_index(stat_array[0].cumulative_arr[stat_i]);
+		
+		if(stat_granule.is_opponent){
+			var stat_object = {"player": opponent_obj.player_obj, "stat": stat_granule.stat, "metadata" : stat_granule.metadata, "is_opponent": true, "index": stat_granule.index, "sent_by": stat_granule.sent_by, "granule_id" : stat_granule.granule_id};
+			var stat_i = find_stat_in_player_arr(stat_object.stat)
+			add_stat_to_obj(opponent_obj, -1, stat_object, true, true, stat_i);
+			if(!is_loading){
+				all_stat_granules.push(stat_object)
+			}
+		}
+		else{
+			var stat_object = {"player": stat_array[stat_granule.player.stat_index -1].player_obj, "stat": stat_granule.stat, "metadata" : stat_granule.metadata, "is_opponent": false, "index": stat_granule.index, "sent_by": stat_granule.sent_by, "granule_id" : stat_granule.granule_id};
+			var stat_i = find_stat_in_player_arr(stat_object.stat)
+			add_stat_to_obj(stat_array[stat_granule.player.stat_index -1],  stat_granule.player.stat_index -1, stat_object, false, true, stat_i)
+			
+			if(!is_loading){
+				all_stat_granules.push(stat_object)
+			}
+		}
+		if(stat_granule.metadata){
+		 	var y_loc = stat_granule.metadata.y_loc * gm_canvas_width
+		 	var x_loc = stat_granule.metadata.x_loc * gm_canvas_width
+		 	if(stat_granule.stat == "1"){
+		 		update_score(parseInt(stat_granule.metadata.shot_value), stat_granule.is_opponent)
+		 		plot_make(y_loc, x_loc, make_radius, stat_granule.player.id, !stat_granule.is_opponent, stat_granule.metadata.shot_value, stat_granule.index, stat_granule.player.stat_index, gm_canvas_width, canvas)
+		 	}
+		 	else if (stat_granule.stat == "2"){
+		 		plot_miss([x_loc, y_loc, x_loc , y_loc ], stat_granule.player.id, !stat_granule.is_opponent, stat_granule.metadata.shot_value, stat_granule.index, stat_granule.player.stat_index, gm_canvas_width, canvas) ;
+		 	}
+		}
+	}
+
+
+	function load_game_state(game_state){
+		populate_display_stats();
+		all_stat_granules = game_state.all_stat_granules;
+		console.log(game_state)
+		active_players = game_state.active_players;
+		console.log(active_players)
+
+		populate_stat_arrays();
+
+		initializeActivePlayerTimers();
+
+		populate_stat_table();
+		setPlayerTimesInTable();
+		loadStatGranules(all_stat_granules)
+		to_team_shot_chart()
+
+		load_lineups_arr(game_state.lineups_arr)
+		console.log(lineups_arr)
+		console.log(curr_lineup)
+
+		minutes = game_state.clock.minutes;
+		seconds = game_state.clock.seconds;
+		curr_period = game_state.clock.period;
+		total_minutes = (minutes_per_period - game_state.clock.minutes -1) * 60 + (minutes_per_period * (curr_period -1)) + game_state.clock.seconds;
+		scoreboard_clock.set_timer()
+		scoreboard_clock.set_period()
+		if(game_state.clock.clock_moving){
+			scoreboard_clock.start_timer()
+		}
+		else{
+			scoreboard_clock.stop_timer()
+		}
+	}
+
+	function start_game_mode(game_state_exists){
 		//remove overlays
 		$(".GM-modal").css("display", "none");
 		$(".modal-overlay").css("display", "none");
+		$("#GM-initializer").css("display", "none");
 
+		// KEEP I THINK
 		$("#in-game-players").html(populate_player_buttons(true));
 		$("#bench-players").html(populate_player_buttons(false));
 
 		opponent_button_html = "<button class = 'player-button' id = 'opponent-button' type = 'button' onclick = 'opponent_button( <%= @opponent.id %>, this)'> <%= @opponent.name %>  </button>"
 		$("#opponent").html(opponent_button_html);
 		on_game_page = true;
-		populate_stat_arrays();
-		populate_display_stats();
-		populate_stat_table();	
-		populate_player_shot_charts();
+		update_curr_lineup(true);
 		
-
+		if(!game_state_exists){
+			minutes = minutes_per_period;
+			seconds = 0;
+			scoreboard_clock.set_timer();
+			populate_display_stats();
+			populate_stat_arrays();
+			populate_stat_table();
+		}
 	}
 
 	/**************************************************************/
@@ -308,7 +459,7 @@
 			deselect_starter(button, player_id)
 		}
 		if(players_in_game >= 5){
-			start_game_mode();
+			start_game_mode(false);
 		}
 	}
 
@@ -349,6 +500,112 @@
 
 
 
+	/**************************************************************/
+	/************************* <LINEUPS>***************************/
+	/**************************************************************/
+
+
+	// TODO: PROBLEM COULD BE HERE
+	function load_lineups_arr(new_lineups_arr){
+		var len = new_lineups_arr.length;
+		console.log("new_lineups_arr")
+		console.log(new_lineups_arr)
+		for(var i=0; i < len; i++){
+
+			var lineup = lineup_exists(new_lineups_arr[i].ids)
+			if(lineup){
+				console.log("Lineup in load")
+				console.log(lineup)
+				var timer = new_lineups_arr[i].timer;
+				lineup.timer.clock_moving = timer.clock_moving;
+				lineup.timer.interval = timer.interval;
+				lineup.timer.stat_index = timer.stat_index;
+				lineup.timer.time_played = timer.time_played;
+				lineup.timer.is_in_game = timer.is_in_game;
+				lineup.cumulative_arr = new_lineups_arr[i].cumulative_arr;
+				if(timer.is_in_game){
+					curr_lineup = lineup;
+				}
+			}
+			else{
+				var timer = new_lineups_arr[i].timer;
+				var new_lineup_timer = new LineupTimer(active_players[i].is_in_game, timer.player_index, scoreboard_clock.isRunning)
+				new_lineup_timer.clock_moving = timer.clock_moving;
+				new_lineup_timer.interval = timer.interval;
+				new_lineup_timer.stat_index = timer.stat_index;
+				new_lineup_timer.time_played = timer.time_played;
+				console.log(new_lineup_timer.time_played)
+				new_lineups_arr[i].timer = new_lineup_timer;
+				if(new_lineups_arr[i].timer.is_in_game){
+					curr_lineup = new_lineups_arr[i]
+				}
+			}
+		}
+		lineups_arr = new_lineups_arr;
+	}
+
+	function create_new_lineup(id_arr, index){
+		var lineup_timer = new LineupTimer(true, index, scoreboard_clock.isRunning);
+		var lineup_object = {"ids": id_arr, "timer" : lineup_timer, "cumulative_arr" : [], "opponent_stats" : []}
+
+		<% @basic_stats.each do |stat| %>
+			lineup_object.cumulative_arr.push({"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>"})
+			lineup_object.opponent_stats.push({"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>"})
+		<% end %>
+		lineups_arr.push(lineup_object)
+		return lineup_object
+	}
+
+	function lineup_exists_helper(lineup_ids, ids_to_check){
+		var len = ids_to_check.length;
+		for(var i = 0; i < len;i++){
+			 if($.inArray(ids_to_check[i], lineup_ids) == -1) return false;
+		}
+		return true;
+	}
+
+	// TODO: PROBLEM COULD BE HERE
+	function lineup_exists(id_arr){
+		var len = lineups_arr.length;
+		var exists = false;
+		for(var i = 0; i < len; i++){
+			exists = lineup_exists_helper(lineups_arr[i].ids, id_arr)
+			if(exists){
+				return lineups_arr[i];
+			}
+		}
+		return exists;
+	}
+
+	function update_curr_lineup(init){
+		var len = active_players.length;
+		var in_game_ids = []
+		for(var i = 0; i < len; i++){
+			if(active_players[i].is_in_game){
+				in_game_ids.push(active_players[i].id)
+			}	
+		}
+		var lineup = lineup_exists(in_game_ids);
+		if(!lineup){
+			lineup = create_new_lineup(in_game_ids, lineups_arr.length)
+		}
+		if(curr_lineup && !init){
+			console.log("curr_lineup")
+			console.log(curr_lineup)
+			curr_lineup.timer.setInGame(false)
+		}
+		curr_lineup = lineup;
+		curr_lineup.timer.setInGame(true)
+		console.log(curr_lineup)
+		console.log(lineups_arr)
+	}
+
+
+	/**************************************************************/
+	/************************* </LINEUPS>**************************/
+	/**************************************************************/
+
+
 
 
 
@@ -363,9 +620,8 @@
 		html = "";
 		var len = active_players.length
 		for(var i = 0; i < len; i++){
-			// set timer for players in game
 			if(active_players[i].is_in_game == is_in_game){
-				if(is_in_game) active_players[i].timer.toggleIsInGame();
+				active_players[i].timer.setInGame(is_in_game);
 				active_players[i].timer.setIndex(active_players[i].stat_index);
 				html += "<button class = 'player-button' id = 'player-"+ active_players[i].id + "'" + " type = 'button' onclick = 'player_button(" +  active_players[i].id + ", this)'> " + active_players[i].name + " </button>"
 			}
@@ -451,21 +707,22 @@
 
 	function swap_players(player_to_game, player_to_bench){
 		// splice both in the arrays
-		set_not_in_game(player_to_bench.player_obj.id);
-		set_in_game(player_to_game.player_obj.id);
+		set_not_in_game(player_to_bench.id);
+		set_in_game(player_to_game.id);
 
 		// push to new arrays respectively
-		player_to_game.player_obj.timer.toggleIsInGame();
-		player_to_bench.player_obj.timer.toggleIsInGame();
+		player_to_game.timer.is_in_game = true;
+		player_to_bench.timer.is_in_game = false;
 
 		// change HTML
-		var player_to_game_identifier = "#player-" + player_to_game.player_obj.id
-		var player_to_bench_identifier = "#player-" + player_to_bench.player_obj.id
+		var player_to_game_identifier = "#player-" + player_to_game.id
+		var player_to_bench_identifier = "#player-" + player_to_bench.id
 		$(player_to_game_identifier).remove();
 		$(player_to_bench_identifier).remove();
-		$("#bench-players").append(player_html(player_to_bench.player_obj));
-		$("#in-game-players").append(player_html(player_to_game.player_obj));
+		$("#bench-players").append(player_html(player_to_bench));
+		$("#in-game-players").append(player_html(player_to_game));
 		curr_player = null;
+		update_curr_lineup(false)
 	}
 
 	function select_player(new_curr_player, button){
@@ -473,7 +730,8 @@
 		select_button(button);
 		curr_player_button = button;
 		curr_player_is_opponent = false;
-		shot_chart_button(curr_player.player_obj.id)
+		if(player_charts_toggle) shot_chart_button(curr_player.player_obj.id);
+		else to_team_shot_chart();
 	}
 
 	function select_opponent(button){
@@ -533,8 +791,16 @@
 		}
 
 		else if(curr_player && !curr_player_is_opponent && is_in_game(curr_player.player_obj)  ){
-			if(!is_in_game(new_curr_player.player_obj)) 
-				swap_players(new_curr_player, curr_player) 
+			if(!is_in_game(new_curr_player.player_obj)) {
+				console.log("front end swap")
+				var player_to_game = Object.assign({}, new_curr_player.player_obj);
+				var player_to_bench = Object.assign({},curr_player.player_obj);
+				swap_players(new_curr_player.player_obj, curr_player.player_obj)
+				update_fg_locations() 
+				gameModeChannel.send({sent_by: <%=current_user.id%>, game_state: {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr,  "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}, lineup_data: {"player_to_game" : player_to_game, "player_to_bench" : player_to_bench, "active_players" : active_players}});
+				//curr_player = null;
+				game_mode_initialized = true;	
+			}
 			else {
 				deselect_player();
 				select_player(new_curr_player, button);
@@ -542,8 +808,16 @@
 		}
 
 		else if (curr_player && !curr_player_is_opponent) {
-			if (is_in_game(new_curr_player.player_obj)) 
-				swap_players(curr_player, new_curr_player) 
+			if (is_in_game(new_curr_player.player_obj)) {
+				console.log("front end swap")
+				var player_to_game = Object.assign({}, curr_player.player_obj);
+				var player_to_bench = Object.assign({},new_curr_player.player_obj);
+				swap_players(curr_player.player_obj, new_curr_player.player_obj)
+				update_fg_locations() 
+				gameModeChannel.send({sent_by: <%=current_user.id%>, game_state: {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr, "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}, lineup_data: {"player_to_game" : player_to_game, "player_to_bench" : player_to_bench, "active_players" : active_players}})
+				//curr_player = null;
+				game_mode_initialized = true;
+			}
 			else {
 				deselect_player();
 				select_player(new_curr_player, button);
@@ -579,16 +853,16 @@
 
 	
 	function determine_3_or_2(x_loc, y_loc){
-
-		var rel_pos_x = basket_x - x_loc;
-		var rel_pos_y = y_loc - basket_y;
-		if(y_loc < gm_canvas_height * .202 + 1){
-			if(x_loc < gm_canvas_width * .088 || x_loc > gm_canvas_width *.9172){
+		var rel_pos_x = basket_x - x_loc - basket_radius;
+		var rel_pos_y = y_loc - basket_y - basket_radius/2;
+		if(y_loc < gm_canvas_width * .1456){
+			if(x_loc < gm_canvas_width * .089 || x_loc > gm_canvas_width *.9181){
 				return 3;
 			}
 			else return 2;
 		}
 		else {
+
 			var x_val = (rel_pos_x * rel_pos_x);
 			var x_denom = arc_horiz_radius * arc_horiz_radius; 
 			var x_ratio = x_val/x_denom
@@ -603,11 +877,9 @@
 		}
 	}
 
-
 	function make(e){
 		var x_loc = e.pageX - make_radius - horiz_offset;
 		var y_loc = e.pageY - make_radius - vert_offset;
-
 
 		var point_val = determine_3_or_2(x_loc, y_loc);
 		var fg_counter = stat_array_counter;
@@ -729,11 +1001,11 @@
     }
 
     function update_shot_data(obj, point_value, shot_result){
-
-    	var player = find_player(obj);
+    	var player = find_player(obj)
     	var granule_array = find_stat_granule(player, obj.index);
     	var result = granule_array[0];
     	var result_w_point = granule_array[1];
+
 
     	var stat_id_array = (shot_result == "Make") ? update_make_data(obj, player, result, result_w_point, point_value) : update_miss_data(obj, player, result, result_w_point, point_value)
 
@@ -786,8 +1058,6 @@
 					evented: true,})
 				}
 			});	
-
-
 			canvas.getObjects().forEach(function(o){
 				if(o.type != "Basket"){
 					if(o.id != id && o.player == true){
@@ -804,16 +1074,6 @@
 		else {
 			$("#canvas-label").html("<%=@team.name%>")
 		}
-	}
-
-	function populate_player_shot_charts(){
-		var len = active_players.length;
-		var html_string = "";
-		for(var i = 0; i < len; i++){
-			html_string += "<button class = 'shot-chart-button' type = 'button' onclick='shot_chart_button(" + active_players[i].id +", this)'> " + active_players[i].name + " </button>"
-		}
-		$("#player-shot-chart-buttons").html(html_string)
-		$("#player-shot-chart-buttons").css("grid-template-rows", "repeat( "+ len/3 + ", 81px)"); ;
 	}
 
 	function to_team_shot_chart(){
@@ -893,7 +1153,6 @@
 			var row = player_stats_table.insertRow(i);
 			populate_row(row, i, true);	
 		}
-		
 	}
 
 	function populate_row(row, i, is_player, team_name){
@@ -1001,7 +1260,13 @@
 		}
 	}
 
-	function statAdded(stat_name, player){
+	function statAdded(stat_name, player, stat_object, is_loading){
+		if(!is_loading){
+			update_fg_locations();
+			gameModeChannel.send({sent_by: <%=current_user.id%>, game_state: {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr, "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}, new_stat: stat_object})
+			game_mode_initialized = true;
+		}
+
 		$("#stat-added-player-name").html(player.name + ": &nbsp;");
 		$("#stat-added-name").html(stat_name + " &nbsp; +1");
 		$(".stat-added-alert").css("opacity", "1")
@@ -1013,79 +1278,83 @@
 	    setTimeout( function() {
 	        $(".stat-added-alert").css("transition", "none");
 	    }, 1800);
-	    $("#stat-added-username").html("Added by: " + " &nbsp; <%=current_user.name%>" );
+	    $("#stat-added-username").html("Added by: " + " &nbsp; " + stat_object.sent_by );
 
 	}
 
-	// TODO -- CHANGE STAT_NAME TO STAT_ID
-	function add_stat_to_obj(stat, obj, metadata, player_i, index){
-		var stat_name = getStatName(stat)
-		var stat_i = find_stat_in_player_arr(stat)
-		obj.gran_stat_arr.push({"metadata" : metadata, "stat_list_id" : obj.cumulative_arr[stat_i].id, "index" : index});
-		switch(stat){
+	// TODO -- REDO: stat object should contain everything needed here
+	function add_stat_to_obj(obj, player_i, stat_object, is_opponent, is_loading, stat_i){
+		var stat_name = getStatName(stat_object.stat)
+		//var stat_i = find_stat_in_player_arr(stat_object.stat)
+		obj.gran_stat_arr.push(stat_object);
+		switch(stat_object.stat){
 			//FG Make
 			case 1 :
 				update_field_goals_make(player_i, stat_i, fg_index);
 				++obj.cumulative_arr[stat_i].total;
-				if (!curr_player_is_opponent) ++team_stat_totals[stat_i].total;
+				if (!is_opponent) ++team_stat_totals[stat_i].total;
+				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
 				break;
 			// FG Miss
 			case 2 :
 				update_field_goals_miss(player_i, stat_i, fg_index);
 				++obj.cumulative_arr[stat_i].total;
-				if (!curr_player_is_opponent) ++team_stat_totals[stat_i].total;
+				if (!is_opponent) ++team_stat_totals[stat_i].total;
+				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
 				break;
 			// 2 point make
 			case 9 :
-				statAdded(stat_name, obj.player_obj)
 				//update_field_goals_make(player_i, stat_i, two_pt_fg_index);
 				increment_points(player_i, 2, obj);
 				++obj.cumulative_arr[stat_i].total;
-				if (!curr_player_is_opponent) ++team_stat_totals[stat_i].total;
+				if (!is_opponent) ++team_stat_totals[stat_i].total;
+				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
 				break;
 			// 2 point miss
 			case 10 :
-				statAdded(stat_name, obj.player_obj)
 				//update_field_goals_miss(player_i, stat_i, two_pt_fg_index);
 				++obj.cumulative_arr[stat_i].total;
-				if (!curr_player_is_opponent) ++team_stat_totals[stat_i].total;
+				if (!is_opponent) ++team_stat_totals[stat_i].total;
+				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
 				break;
 			// 3 point make
 			case 11 :
-				statAdded(stat_name, obj.player_obj)
 				update_field_goals_make(player_i, stat_i, three_pt_fg_index);
 				increment_points(player_i, 3, obj);
 				++obj.cumulative_arr[stat_i].total;
-				if (!curr_player_is_opponent) ++team_stat_totals[stat_i].total;
+				if (!is_opponent) ++team_stat_totals[stat_i].total;
+				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
 				break;
 			// 3 point miss
 			case 12 :
-				statAdded(stat_name, obj.player_obj)
+				
 				update_field_goals_miss(player_i, stat_i, three_pt_fg_index);
 				++obj.cumulative_arr[stat_i].total;
-				if (!curr_player_is_opponent) ++team_stat_totals[stat_i].total;
+				if (!is_opponent) ++team_stat_totals[stat_i].total;
+				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
 				break;
 			// Ft make
 			case 13 :
-				statAdded(stat_name, obj.player_obj)
+				
 				insert_fg_in_table(player_i, ft_index, "Make", obj);
 				increment_points(player_i, 1, obj);
-				update_score(1, curr_player_is_opponent);
+				update_score(1, is_opponent);
 				++obj.cumulative_arr[stat_i].total;
-				if (!curr_player_is_opponent) ++team_stat_totals[stat_i].total
+				if (!is_opponent) ++team_stat_totals[stat_i].total
+				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
 				break;
 			// Ft miss
 			case 14 :
-				statAdded(stat_name, obj.player_obj)
 				insert_fg_in_table(player_i, ft_index, "Miss", obj);
 				++obj.cumulative_arr[stat_i].total;
-				if (!curr_player_is_opponent) ++team_stat_totals[stat_i].total
+				if (!is_opponent) ++team_stat_totals[stat_i].total
+				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
 				break;
 			default :
-				statAdded(stat_name, obj.player_obj)
 				var index = find_stat_index(obj.cumulative_arr[stat_i]);
 				update_stat_table(index, player_i, ++obj.cumulative_arr[stat_i].total);
-				if (!curr_player_is_opponent) team_stat_totals[stat_i].total++;
+				if (!is_opponent) team_stat_totals[stat_i].total++;
+				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
 		}
 	}
 
@@ -1093,25 +1362,31 @@
 		var player_found = false;
 		var player_i = 0;
 		var stat_object;
-
+		stat_array_counter++;
 		if(curr_player_is_opponent){
-			stat_object = {"player": player, "stat": stat, "metadata" : metadata, "is_opponent": true, "index": index};
-			add_stat_to_obj(stat, opponent_obj, metadata, -1, index);
+			stat_object = {"player": opponent_obj.player_obj, "stat": stat, "metadata" : metadata, "is_opponent": true, "index": index, "sent_by": "<%=current_user.name%>", "granule_id" : stat_array_counter};
+			all_stat_granules.push(stat_object);
+			var stat_i = find_stat_in_player_arr(stat_object.stat)
+			console.log(curr_lineup)
+			++curr_lineup.opponent_stats[stat_i].total
+			add_stat_to_obj(opponent_obj, -1, stat_object, curr_player_is_opponent, false, stat_i);
 		}
 
 		else if (is_in_game(player)){
 			while(!player_found){
 				var curr_player_obj = stat_array[player_i];
 				if(curr_player_obj.player_obj.id == player.id){
-					stat_object = {"player": player, "stat": stat, "metadata" : metadata, "is_opponent": false, "index": index};
-					add_stat_to_obj(stat, curr_player_obj, metadata, player_i, index);
+					stat_object = {"player": player, "stat": stat, "metadata" : metadata, "is_opponent": false, "index": index, "sent_by": "<%=current_user.name%>", "granule_id":stat_array_counter};
+					all_stat_granules.push(stat_object);
+					var stat_i = find_stat_in_player_arr(stat_object.stat)
+					++curr_lineup.cumulative_arr[stat_i].total;
+					add_stat_to_obj(curr_player_obj, player_i, stat_object, curr_player_is_opponent, false, stat_i);
 					player_found = true;
 				}
 				player_i++;
 			}
+
 		}
-		all_stat_granules.push(stat_object);
-		stat_array_counter++;
 	}
 
 
@@ -1163,12 +1438,17 @@
 			
 			team_stat_totals[stat_i].total += shot_value;
 			player_obj.cumulative_arr[stat_i].total += shot_value;
+			if(curr_lineup){
+				curr_lineup.cumulative_arr[stat_i].total += shot_value;
+			}
 		}
-		// if player is the opponent (team)
 		else {
 			var opponent_row = team_stats_table.rows[2];
 			points_in_table(opponent_row, shot_value);
 			opponent_obj.cumulative_arr[stat_i].total += shot_value;
+			if(curr_lineup){
+				curr_lineup.opponent_stats[stat_i].total += shot_value;
+			}
 		}
 		
 	}
@@ -1364,23 +1644,61 @@
 		}
 	}
 
+	function send_clock_state(){
+		if(game_mode_initialized){
+			gameModeChannel.send({sent_by: <%=current_user.id%>, clock_load: {"active_players" : active_players,  "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}})
+		}
+	}
+
+	function load_clock(clock_info){
+		seconds = clock_info.clock.seconds;
+		minutes = clock_info.clock.minutes;
+		old_active_players = active_players.slice();
+		active_players = clock_info.active_players;
+		setActivePlayerTimers(old_active_players)
+		scoreboard_clock.set_timer();
+		curr_period = clock_info.clock.period;
+		scoreboard_clock.set_period();
+		if(clock_info.clock.clock_moving){
+			scoreboard_clock.start_timer()
+		}
+		else{
+			scoreboard_clock.stop_timer()
+		}
+	}
+
+	function clock_update(clock_info){
+		if(clock_info.clock_moving){
+			scoreboard_clock.start_timer();
+		}
+		else{
+			scoreboard_clock.stop_timer();
+		}
+	}
 
 
+	function clock_moving_style(){
+		$("#time").css("border", "2px solid #00c500")
+		$("#time").css("box-shadow", "0px 0px 5px 0px #00c500")
+	}
 
-	var scoreboard_clock = new ScoreboardClock();
-	scoreboard_clock.set_timer();
+	function clock_stopped_style(){
+		$("#time").css("border", "2px solid red")
+			$("#time").css("box-shadow", "0px 0px 5px 0px red")
+	}
+
 
 	function toggleClock(){
 		scoreboard_clock.toggle_timer();
 		if(scoreboard_clock.isRunning){
-			$("#time").css("border", "2px solid #00c500")
-			$("#time").css("box-shadow", "0px 0px 5px 0px #00c500")
+			clock_moving_style()
 		}
 		else{
-			$("#time").css("border", "2px solid red")
-			$("#time").css("box-shadow", "0px 0px 5px 0px red")
+			clock_stopped_style()
 		}
-		
+		update_fg_locations()
+		gameModeChannel.send({sent_by: <%=current_user.id%>, game_state: {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr,  "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}, clock_update: true});
+		game_mode_initialized = true;
 	}
 
 	document.onkeydown = function(e){
@@ -1399,8 +1717,6 @@
 	    	undo_player_array_stat(stat_object);
 	    }
 	}
-	
-
 
 	function ScoreboardClock(){
 		var self = this;
@@ -1411,13 +1727,27 @@
 			for(var i = 0; i < len; i++){
 				active_players[i].timer.toggleClockMoving()
 			}
+			curr_lineup.timer.toggleClockMoving();
 		}
 		this.stop_timer = function(){
 			self.isRunning = false;
 			var len = active_players.length
 			for(var i = 0; i < len; i++){
-				active_players[i].timer.stopClockMoving()
+				active_players[i].timer.setClockMoving(false);
 			}
+			curr_lineup.timer.setClockMoving(false);
+			clock_stopped_style();
+		}
+		this.start_timer = function(){
+			self.isRunning = true;
+			var len = active_players.length
+			for(var i = 0; i < len; i++){
+				if(active_players[i].timer.is_in_game){
+					active_players[i].timer.setClockMoving(true);
+				}
+			}
+			curr_lineup.timer.setClockMoving(true);
+			clock_moving_style();
 		}
 		this.set_timer = function(){
 			$("#timer").text(function(){
@@ -1459,6 +1789,37 @@
 		    }
 		}, 1000);
 	}
+
+	function LineupTimer(is_in_game, lineup_index, clock_moving){
+		var self = this;
+		this.time_played = 0;
+		this.is_in_game = is_in_game;
+		this.clock_moving = clock_moving;
+		this.lineup_index = lineup_index;
+
+		this.updatePlayingTime = function() {
+		      if(self.is_in_game && self.clock_moving){
+		      	self.time_played++;
+		      }
+		  }
+
+		  this.returnPlayingTime = function(){
+		  	return self.time_played;
+		  }
+		  this.toggleClockMoving = function(){
+		  	self.clock_moving = !self.clock_moving;
+		  }
+		  this.setInGame = function(is_in_game){
+		  	self.is_in_game = is_in_game;
+		  }
+		  this.toggleIsInGame = function(){
+		  	self.is_in_game = !self.is_in_game;
+		  }
+		  this.setClockMoving = function(clock_moving){
+		  	self.clock_moving = clock_moving;
+		  }
+		  this.interval = setInterval(this.updatePlayingTime, 1000);
+	}
 	
 
 	function PlayerTimer(is_in_game, player_index) {
@@ -1475,11 +1836,19 @@
 		      	update_minutes_played(self.player_index, self.time_played);
 		      }
 		  }
+
+		  this.setPlayingTime = function (){
+		  	update_minutes_played(self.player_index, self.time_played);
+		  }
+
 		  this.returnPlayingTime = function(){
 		  	return self.time_played;
 		  }
 		  this.toggleClockMoving = function(){
 		  	self.clock_moving = !self.clock_moving;
+		  }
+		  this.setInGame = function(is_in_game){
+		  	self.is_in_game = is_in_game;
 		  }
 		  this.toggleIsInGame = function(){
 		  	self.is_in_game = !self.is_in_game;
@@ -1487,8 +1856,8 @@
 		  this.setIndex = function(stat_index){
 		  	self.stat_index = stat_index;
 		  }
-		  this.stopClockMoving = function(){
-		  	self.clock_moving = false;
+		  this.setClockMoving = function(clock_moving){
+		  	self.clock_moving = clock_moving;
 		  }
 		  this.interval = setInterval(this.updatePlayingTime, 1000);
 	}
@@ -1533,40 +1902,66 @@
 
 	function set_team_minutes(){
 		var team_stat_arr_len = team_stat_totals.length
-		var minutes_index;
-		for(var i = 0; i < team_stat_arr_len; i++){
-			if(team_stat_totals[i].stat == "Minutes") {
-				minutes_index = i;
-			}
-		}
+		var minutes_index = find_stat_in_player_arr(16);
 		team_stat_totals[minutes_index].total = total_minutes * 5;
+	}
+
+	function set_lineup_minutes(){
+		var len = lineups_arr.length;
+		var minutes_index = find_stat_in_player_arr(16);
+		for(var i = 0; i < len; i++){
+			lineups_arr[i].cumulative_arr[minutes_index].total = lineups_arr[i].timer.time_played
+		}
 	}
 
 	function update_fg_locations(){
 		canvas.getObjects().forEach(function(o){
-			if (o.type != "Basket"){
+			if (o.player != null){
 				player = (o.player) ? stat_array[o.player_index-1] : opponent_obj;
 				granule_array_len = player.gran_stat_arr.length
 				for(var i = 0; i < granule_array_len; i++){
-					if(player.gran_stat_arr[i].index == o.index){						
-						player.gran_stat_arr[i].metadata.x_loc = o.left;
-						player.gran_stat_arr[i].metadata.y_loc = o.top;
+					if(player.gran_stat_arr[i].index == o.index){	
+						player.gran_stat_arr[i].metadata.x_loc = o.left/gm_canvas_width;
+						player.gran_stat_arr[i].metadata.y_loc = o.top/gm_canvas_width;
 					}
 				}
 			}
 		});
 	}
 
-	function submit_game_mode(){
-		scoreboard_clock.stop_timer();
-
-		//update_fg_locations();
-
-		var url = "/teams/" + <%= @team_id%> +  "/games/"+ <%=@game_id%> + "/game_mode"
+	function submit_game_mode_button(){
+		$(".modal-overlay").css("display", "block");
+		$(".GM-modal").css("display", "flex");
+		$("#GM-submit").show();
+		$("#GM-initializer").css("display", "none");
+		set_lineup_minutes()
 		set_minutes_in_player_array();
 		set_team_minutes();
-		var json_data = {"player_stats": stat_array, "team_stats": team_stat_totals, "opponent_stats": opponent_obj}
+		console.log(team_stat_totals)
+		console.log(lineups_arr)
+	}
+
+	function close_game_mode(){
+		$(".modal-overlay").css("display", "none");
+		$(".GM-modal").css("display", "none");
+		$("#GM-submit").hide();
+	}
+
+	function submit_game_mode(){
+		$("#GM-submit-body").hide()
+		$("#GM-submit-header").text("This may take a moment...")
+		$(".loader").show()
+
+		scoreboard_clock.stop_timer();
+
+		update_fg_locations();
+
+		var url = "/teams/" + <%= @team_id%> +  "/games/"+ <%=@game_id%> + "/game_mode"
 		
+
+
+		var json_data = {"player_stats": stat_array, "team_stats": team_stat_totals, "opponent_stats": opponent_obj, "lineup_stats": lineups_arr}
+		console.log(json_data)
 		 $.ajax({
 			url: url,
 			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
@@ -1574,6 +1969,10 @@
 			data_type: 'json',
 			data: json_data,
 		});
+
+		setTimeout( function() {
+			$("#GM-submit-header").text("Calculating advanced stats...")
+	    }, 6000);
 	}
 
 	/**************************************************************/

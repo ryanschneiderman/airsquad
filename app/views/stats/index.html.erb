@@ -4,7 +4,7 @@
 
 <div id = "stats-landing">
 	<%= image_tag("stats-wallpaper.jpg", :alt => "stats", :class => "stats-img") %>
-	<div id = "stats-landing-title">Stats</div>
+	<div class = "content-page-landing-title">Stats</div>
 </div>
 
 
@@ -76,6 +76,8 @@
 	var curr_basic_button = $("#basic-trend-buttons").children(".trend-button-0")[0]
 	var curr_basic_index = 0;
 
+	var total_games = <%=@num_games%>;
+
 	initialize_tables(per_game_table, per_minute_table, team_stats_table, adv_stats_player_table, adv_stats_team_table)
 	populate_display_stats_basic();
 	populate_display_stats_adv();
@@ -86,38 +88,22 @@
 	populate_team_stats();
 
 	sort_basic_table(17, true);
-	populate_stat_tables();
+	populate_stat_tables(true);
 
 	
 
 	initialize_basic_trend_stat_arrays();
 	select_basic_trend_stat(0, $('.trend-button-0')[ 0 ])
+	//set_stat_description_pos()
+	// $(".stat-info").show()
+	// var position = $(".stat-info").first().offset()
+	// console.log(position)
+	// $(".stat-info").hide()
 
 	$("#per-minute-table").hide();
 	$("#adv-player-stats-table").hide()
 
 
-	function toggle_player_table(type, button){
-		$(".table-toggle-button").css("text-decoration", "none")
-		button.style.textDecoration = "underline";
-		switch(type){
-			case 1 :
-				$("#per-game-table").show()
-				$("#per-minute-table").hide();
-				$("#adv-player-stats-table").hide()
-				break;
-			case 2 :
-				$("#per-game-table").hide()
-				$("#per-minute-table").hide();
-				$("#adv-player-stats-table").show()
-				break;
-			case 3:
-				$("#per-game-table").hide()
-				$("#per-minute-table").show();
-				$("#adv-player-stats-table").hide()
-				break;
-		}
-	}
 
 	function initialize_basic_trend_stat_arrays(){
 

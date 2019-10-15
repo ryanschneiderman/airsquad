@@ -12,6 +12,7 @@
 
 #team-stat-header{
 	width: 100%;
+	color: #b2cce6;
 }
 
 #ts-header-title{
@@ -33,7 +34,7 @@
 }
 
 #choose-stats{
-	border-right: 1px solid black;
+	border-right: 1px solid #c7e3ff;
 }
 
 .stat-choice-grid{
@@ -73,7 +74,6 @@
 	margin-top: 5px;
 	margin-bottom: 5px;
 	border-radius: 5px;
-	font-size: 15px;
 }
 
 .stat-choice-inactive{
@@ -82,8 +82,8 @@
 }
 
 .stat-choice-active{
-	border: 1px solid #21a0ed;
-	color: #21a0ed;
+	border: 1px solid #00c1ff;
+	color: #00efff;
 }
 
 #team-stats-submit{

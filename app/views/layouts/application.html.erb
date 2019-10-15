@@ -38,7 +38,7 @@
   <body 
     <% if content_for?(:body_attributes) %>
       <%= yield(:body_attributes) %> 
-    <% end %>>
+    <% end %> class = "<%= controller_name %> <%= action_name %>">
     <%= render 'layouts/navigation' %>
     <%= yield %>
     

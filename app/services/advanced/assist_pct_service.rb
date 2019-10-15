@@ -7,10 +7,20 @@ NOTE: final value is muliplied by 100 and then rounded and divided by 100.0 to r
 class Advanced::AssistPctService
 	def initialize(params)
 		@assists = params[:assists]
+		puts "assists"
+		puts @assists
 		@minutes_played = params[:minutes]
+		puts "@minutes_played"
+		puts @minutes_played
 		@team_minutes_played = params[:team_minutes]
+		puts "@team_minutes"
+		puts @team_minutes_played
 		@team_field_goals = params[:team_field_goals]
+		puts "team_field_goals"
+		puts @team_field_goals
 		@field_goals = params[:field_goals]
+		puts "@field_goals"
+		puts @field_goals
 
 	end
 

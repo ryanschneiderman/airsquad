@@ -1,28 +1,29 @@
+
 <div id = "new-team-block">
-	<div class = "page-subheader">Create Team!</div>
+	<div class = "page-subheader" id = "create-team-header">Create Team!</div>
 	<div id = "team-info-block">
-		<div class = "new-form">
+		<div class = "new-form new-team-secondary-color" >
 			<div class = "team-info-input">
-				<label for="enter-team-name">Enter team name. This will be what is displayed throughout the app.</label><br>
-				<input type = "text" id = "enter-team-name" placeholder="Enter team name...">
+				<label for="enter-team-name">Enter team name. This is what will be displayed throughout the app.</label><br>
+				<input type = "text" class = "new-team-input" id = "enter-team-name" placeholder="Enter team name...">
 			</div>
 			<div class = "team-info-input">
 				<label for="enter-unique-username">Enter a unique username. This is what players and other team members will use to join the team.</label><br>
-					<input type = "text" id = "enter-unique-username" placeholder="Select username...">
+					<input type = "text" class = "new-team-input" id = "enter-unique-username" placeholder="Select username...">
 			</div>
 			<div class = "team-info-input">
 				<label for="choose-password">Choose a password for others to join the team.</label><br>
-				<input  id = "choose-password" placeholder="Select password..." type = "password">
+				<input  id = "choose-password"class = "new-team-input"  placeholder="Select password..." type = "password">
 			</div>
 			<div class = "team-info-input">
 				<label for="minutes-per-quarter">How long are the quarters in your league (in minutes)?</label><br>
-				<input type = "number" id = "minutes-per-quarter" >
+				<input type = "number" class = "new-team-input" id = "minutes-per-quarter" >
 			</div>
 		</div>
 		<div id = "add-players-block">
-			<div class = "new-form">
+			<div class = "new-form new-team-secondary-color">
 				<label for="add_player">Enter the names of your players. These are the names that will be used throughout the app. </label><br>
-				<input type = "text" id = "add_player">
+				<input type = "text" class = "new-team-input" id = "add_player">
 				<button class="btn btn-primary" onclick = "add_player()">Add Player</button>	
 			</div>
 			<div id = "current-members">
@@ -36,7 +37,7 @@
 
 	<div id = "team-stat-grid" style = "display: none">
 		<div id = "team-stat-header">
-			<div id = "ts-header-body">
+			<div id = "ts-header-body" class = "new-team-secondary-color">
 				Here you will select the stats you would like to keep for you team. Some stats are default and essential to the function of the application. Others you can choose to keep if you want. The more you keep, the more advanced stats the application can derive for you. 
 			</div>
 		</div>
@@ -69,7 +70,7 @@
 				<div class = "stat-choice-header">Your Advanced stats</div>
 				<div class = "adv-stats-grid">
 					<div class = "stats-choice-box">
-						<div class = "stat-choice-subheader">Advanced individual stats</div>
+						<div class = "stat-choice-subheader new-team-secondary-color">Advanced individual stats</div>
 						<div id = "adv-individual">
 							<%@default_indiv_advanced.each do |stat|%>
 								<button class = "stat-choice stat-choice-active" type = "button" id = "stat-<%=stat.id%>" onclick="to_choose_stats(this, 'advanced', '<%= stat.stat %>', <%= stat.id %>)"> <%= stat.stat %> </button>
@@ -81,7 +82,7 @@
 						</div>
 					</div>
 					<div class = "stats-choice-box">
-						<div class = "stat-choice-subheader">Advanced team stats</div>
+						<div class = "stat-choice-subheader new-team-secondary-color">Advanced team stats</div>
 						<div id = "adv-team">
 							<%@default_team_advanced.each do |stat|%>
 								<button class = "stat-choice stat-choice-active" type = "button" id = "stat-<%=stat.id%>" onclick="to_choose_stats(this, 'advanced', '<%= stat.stat %>', <%= stat.id %>)"> <%= stat.stat %> </button>
@@ -95,26 +96,25 @@
 			</div>
 		</div>
 		<div id = "button-bar">
-			<button class = "bar-button" id = "previous-button" onclick = "show_team_info_block()">Previous</button>
-			<button class = "bar-button" id = "next-button" onclick = "submit_new_team()">Submit</button>
+			<button class = "bar-button bar-button-offset" id = "previous-button" onclick = "show_team_info_block()">Previous</button>
+			<button class = "bar-button bar-button-offset" id = "next-button" onclick = "submit_new_team()">Submit</button>
 		</div>
 	</div>
 </div>
-<div id = "background-color"></div>
 
 <%= render "/team_stats/team_stats_js"%>
 
 
 <script>
-
-	$(".navbar").addClass("navbar-active");
+$(".navbar").addClass("navbar-inactive");
+	/*$(".navbar").addClass("navbar-active");
     $(".navbar-default a").addClass("navbar-text-active");
     $(".home-link").css("border-color", "black");
-
+*/
     $(window).on("scroll", function() {
-        $(".navbar").addClass("navbar-active");
-        $(".navbar-default a").addClass("navbar-text-active");
-        $(".home-link").css("border-color", "black")
+        $(".navbar").removeClass("navbar-active");
+        $(".navbar-default a").removeClass("navbar-text-active");
+        $(".home-link").css("border-color", "white")
 
 	});
 

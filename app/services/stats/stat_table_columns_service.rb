@@ -33,28 +33,29 @@ class Stats::StatTableColumnsService
 	def determine_display_name_team_adv(stat)
 		case stat.id
 		when 18
-			@display_stats.push({:display_name=> "EFG%", :display_priority => 1, :is_opponent => false, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
-			@display_stats.push({:display_name=> "EFG%", :display_priority => 5, :is_opponent => true, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			puts stat.stat_description
+			@display_stats.push({:display_name=> "EFG%", :display_priority => 1, :is_opponent => false, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
+			@display_stats.push({:display_name=> "EFG%", :display_priority => 5, :is_opponent => true, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 38
-			@display_stats.push({:display_name => "TOV%", :display_priority => 2, :is_opponent => false, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
-			@display_stats.push({:display_name => "TOV%", :display_priority => 6, :is_opponent => true, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "TOV%", :display_priority => 2, :is_opponent => false, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
+			@display_stats.push({:display_name => "TOV%", :display_priority => 6, :is_opponent => true, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 33 
-			@display_stats.push({:display_name => "ORB%", :display_priority => 3, :is_opponent => false, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "ORB%", :display_priority => 3, :is_opponent => false, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 49 
-			@display_stats.push({:display_name => "FT/FGA", :display_priority => 4, :is_opponent => false, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
-			@display_stats.push({:display_name => "FT/FGA", :display_priority => 8, :is_opponent => true, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "FT/FGA", :display_priority => 4, :is_opponent => false, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
+			@display_stats.push({:display_name => "FT/FGA", :display_priority => 8, :is_opponent => true, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 34 
-			@display_stats.push({:display_name => "DRB%", :display_priority => 7, :is_opponent => false, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "DRB%", :display_priority => 7, :is_opponent => false, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 22 
-			@display_stats.push({:display_name => "FTAr", :display_priority => 9, :is_opponent => false, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "FTAr", :display_priority => 9, :is_opponent => false, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 21 
-			@display_stats.push({:display_name => "3PAr", :display_priority => 10, :is_opponent => false, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "3PAr", :display_priority => 10, :is_opponent => false, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 48 
-			@display_stats.push({:display_name => "Pace", :display_priority => 11, :is_opponent => false, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "Pace", :display_priority => 11, :is_opponent => false, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 30 
-			@display_stats.push({:display_name => "OEff", :display_priority => 12, :is_opponent => false, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "OEff", :display_priority => 12, :is_opponent => false, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 31 
-			@display_stats.push({:display_name => "DEff", :display_priority => 13, :is_opponent => false, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "DEff", :display_priority => 13, :is_opponent => false, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		end
 
 	end
@@ -79,47 +80,47 @@ class Stats::StatTableColumnsService
 	def determine_display_name_adv(stat)
 		case stat.id
 		when 18
-			@display_stats.push({:display_name => "EFG%", :display_priority => 1, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "EFG%", :display_priority => 1, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 19
-			@display_stats.push({:display_name => "TS%", :display_priority => 2, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "TS%", :display_priority => 2, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 21
-			@display_stats.push({:display_name => "3PAr", :display_priority => 3, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "3PAr", :display_priority => 3, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 22
-			@display_stats.push({:display_name => "FTAr", :display_priority => 4, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "FTAr", :display_priority => 4, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 39
-			@display_stats.push({:display_name => "AST%", :display_priority => 5, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "AST%", :display_priority => 5, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 38
-			@display_stats.push({:display_name => "TOV%", :display_priority => 6, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "TOV%", :display_priority => 6, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 33
-			@display_stats.push({:display_name => "ORB%", :display_priority => 7, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "ORB%", :display_priority => 7, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 34
-			@display_stats.push({:display_name => "DRB%", :display_priority => 8, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "DRB%", :display_priority => 8, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 35
-			@display_stats.push({:display_name => "TRB%", :display_priority => 9, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "TRB%", :display_priority => 9, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 36
-			@display_stats.push({:display_name => "STL%", :display_priority => 10, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "STL%", :display_priority => 10, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 37
-			@display_stats.push({:display_name => "BLK%", :display_priority => 11, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "BLK%", :display_priority => 11, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 23
-			@display_stats.push({:display_name => "USG%", :display_priority => 12, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "USG%", :display_priority => 12, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 24
-			@display_stats.push({:display_name => "ORtg", :display_priority => 13, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "ORtg", :display_priority => 13, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 25
-			@display_stats.push({:display_name => "DRtg", :display_priority => 14, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "DRtg", :display_priority => 14, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 26
-			@display_stats.push({:display_name => "NetRtg", :display_priority => 15, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "NetRtg", :display_priority => 15, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 20
-			@display_stats.push({:display_name => "LinPER", :display_priority => 16, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "LinPER", :display_priority => 16, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 46
-			@display_stats.push({:display_name => "uOBPM", :display_priority => 17, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "uOBPM", :display_priority => 17, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 47
-			@display_stats.push({:display_name => "uBPM", :display_priority => 18, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "uBPM", :display_priority => 18, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 41
-			@display_stats.push({:display_name => "DBPM", :display_priority => 19, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "DBPM", :display_priority => 19, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 40
-			@display_stats.push({:display_name => "OBPM", :display_priority => 20, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "OBPM", :display_priority => 20, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		when 42
-			@display_stats.push({:display_name => "BPM", :display_priority => 21, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:display_name => "BPM", :display_priority => 21, :stat_name => stat.stat, stat_list_id: stat.id, :stat_kind => stat.stat_kind, :stat_description => stat.stat_description})
 		end
 	end
 

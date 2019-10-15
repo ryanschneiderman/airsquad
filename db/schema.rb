@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_23_180105) do
+ActiveRecord::Schema.define(version: 2019_10_09_180751) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,6 +44,7 @@ ActiveRecord::Schema.define(version: 2019_08_23_180105) do
     t.bigint "opponent_id"
     t.boolean "played"
     t.bigint "schedule_event_id"
+    t.json "game_state"
     t.index ["schedule_event_id"], name: "index_games_on_schedule_event_id"
     t.index ["team_id"], name: "index_games_on_team_id"
   end
@@ -73,11 +74,35 @@ ActiveRecord::Schema.define(version: 2019_08_23_180105) do
     t.index ["user_id"], name: "index_group_messages_on_user_id"
   end
 
+  create_table "lineup_adv_stats", force: :cascade do |t|
+    t.bigint "stat_list_id"
+    t.bigint "lineup_id"
+    t.json "constituent_stats"
+    t.integer "rank"
+    t.float "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lineup_id"], name: "index_lineup_adv_stats_on_lineup_id"
+    t.index ["stat_list_id"], name: "index_lineup_adv_stats_on_stat_list_id"
+  end
+
+  create_table "lineup_stats", force: :cascade do |t|
+    t.integer "value"
+    t.bigint "lineup_id"
+    t.bigint "stat_list_id"
+    t.integer "rank"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lineup_id"], name: "index_lineup_stats_on_lineup_id"
+    t.index ["stat_list_id"], name: "index_lineup_stats_on_stat_list_id"
+  end
+
   create_table "lineups", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "team_id"
+    t.integer "season_minutes"
     t.index ["team_id"], name: "index_lineups_on_team_id"
   end
 
@@ -231,10 +256,8 @@ ActiveRecord::Schema.define(version: 2019_08_23_180105) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "member_id"
-    t.bigint "opponent_id"
     t.index ["game_id"], name: "index_stat_granules_on_game_id"
     t.index ["member_id"], name: "index_stat_granules_on_member_id"
-    t.index ["opponent_id"], name: "index_stat_granules_on_opponent_id"
     t.index ["stat_list_id"], name: "index_stat_granules_on_stat_list_id"
   end
 
@@ -250,6 +273,7 @@ ActiveRecord::Schema.define(version: 2019_08_23_180105) do
     t.boolean "rankable"
     t.boolean "is_percent"
     t.integer "stat_kind"
+    t.text "stat_description"
   end
 
   create_table "stat_totals", force: :cascade do |t|

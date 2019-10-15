@@ -75,6 +75,11 @@ nav {
   }
 }
 
+
+.navbar-inactive{
+  position: absolute !important;
+}
+
 .navbar-default, .navbar-toggle:focus, .collapsed, button.navbar-toggle {
   padding-top: 20px;
   position: fixed;

@@ -4,6 +4,7 @@ class TeamsController < ApplicationController
 	end
 
 	def show
+		##InsertStatDescriptionsService.new().call()
 		@non_user_members = nil
 		@joined_team = params[:joined_team]
 		if params[:joined_team]

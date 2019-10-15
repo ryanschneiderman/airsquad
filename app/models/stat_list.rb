@@ -9,4 +9,6 @@ class StatList < ApplicationRecord
 	has_many :advanced_stats
 	has_many :team_advanced_stats
 	has_many :season_advanced_stats
+	has_many :lineup_stats
+	has_many :lineup_adv_stats
 end

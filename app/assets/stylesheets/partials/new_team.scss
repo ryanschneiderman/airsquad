@@ -2,18 +2,40 @@
 	
 }
 
+#create-team-header{
+	padding-top: 30px;
+	padding-bottom: 20px;
+}
+
 #new-team-block{
-	display: flex;
+	width: 90vw;
+    margin: auto;
+    color: #eeffff;
+    display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 88vh;
-    margin-left: 15px;
-    margin-right: 15px;
-    margin-top: 70px;
-    border-radius: 3px;
-    box-shadow: 1px 1px 5px #888888;
-    position: relative;
-    background-color: white;
+    margin-top: 90px;
+    border-radius: 5px;
+    background-color: #152138;
+    box-shadow: 0px 0px 5px #00ffe7;
+    padding-bottom: 40px;
+    margin-bottom: 20px
+}
+
+.new-team-input{
+	outline: none;
+    border: 2px solid #afc9ce;
+    color: #152138;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.new-team-input:focus{
+	box-shadow: 0px 0px 5px #00ffe7;
+}
+
+.teams{
+	background-color: #000d23;
 }
 
 #background-color{
@@ -23,7 +45,7 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background-color: #f0f0f0;
+	background-color: #000d23;
 
 }
 
@@ -54,24 +76,37 @@
 
 .new-form{
 	padding: 20px;
+	padding-top: 0;
+	padding-bottom: 0;
+	
+}
+
+.new-team-secondary-color{
+	color: #c7e3ff;
 }
 
 #current-members{
+	width: 600px;
 	display: flex;
 	flex-wrap: wrap;
-	margin:20px;
+	margin: 20px;
+	margin-bottom: 10px;
 }
 
 .new-player{
 	font-family: "Open Sans";
-	border: 1px solid #21a0ed;
-	font-size: 15px;
-	border-radius: 10px;
-	padding-left: 10px;
-	padding-right: 10px;
-	margin-left: 5px;
-	margin-right: 5px;
-	color: #21a0ed;
+    border: 1px solid #00c1ff;
+    font-size: 15px;
+    border-radius: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    color: #00efff;
 }
 
 .new-player:hover > .remove-player-x{
@@ -90,11 +125,32 @@
 #button-bar{
 
 }
+
+.bar-button{
+	background-color: #ff2b6d;
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-radius: 10px;
+    font-size: 17PX;
+    font-weight: bold;
+}
+
+.bar-button-offset{
+	margin-left: 30px;
+	margin-right: 30px;
+	margin-top: 15px;
+}
 #next-button{
 	float: right;
 }
 #previous-button{
 	float: left;
+	float: left;
+    border: 1px solid #ff2b6d;
+    color: #ff2b6d;
+    background: transparent;
 }
 
 .team-info-input{

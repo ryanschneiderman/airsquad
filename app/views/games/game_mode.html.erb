@@ -24,35 +24,37 @@
 	</div>
 	<div id = "top-grid">
 		<div id = "gm-toolbar">
-			<div id = "tb-first-level" class = "flex-horiz tb-container">
-				<div id = "player-buttons" class = "flex-margin-auto">
-					<div id = "in-game">
-						<div id = "in-game-label">In Game</div>
-						<div id = "in-game-players"></div>
+			<div id = "players_w_stats">
+				<div id = "tb-first-level" class = "flex-horiz tb-container">
+					<div id = "player-buttons" class = "flex-margin-auto tb-elem">
+						<div id = "in-game">
+							<div id = "in-game-label">In Game</div>
+							<div id = "in-game-players"></div>
+						</div>
+						<div id = "player-shot-chart-toggle">
+							<input id = "player-charts-button" type="checkbox" name="player-shot-charts" value="false"> Show Player Shot Charts
+						</div>
+						<div id = "oppenent-label">Opponent</div>
+						<div id = "opponent"></div>
+						
 					</div>
-					<div id = "player-shot-chart-toggle">
-						<input id = "player-charts-button" type="checkbox" name="player-shot-charts" value="false"> Show Player Shot Charts
+					<div id = "stat-buttons" class = "flex-margin-auto tb-elem">
+						<% counter = 0 %>
+						<% @collection_stats.each do |stat|%>
+								<button class = "stat-button stat-button-<%=stat[:id]%>" id = "stat-button-<%=counter%>" type = "button" onclick = "stat_button('<%= stat[:id] %>', this)"> <%= stat[:display_name] %> </button>
+						<%counter+=1%>
+						<% end %>
 					</div>
-					<div id = "oppenent-label">Opponent</div>
-					<div id = "opponent"></div>
-					
 				</div>
-				<div id = "stat-buttons" class = "flex-margin-auto">
-					<% counter = 0 %>
-					<% @collection_stats.each do |stat|%>
-							<button class = "stat-button stat-button-<%=stat[:id]%>" id = "stat-button-<%=counter%>" type = "button" onclick = "stat_button('<%= stat[:id] %>', this)"> <%= stat[:display_name] %> </button>
-					<%counter+=1%>
-					<% end %>
-				</div>
-			</div>
-			<div id = "tb-second-level" class = "flex-horiz tb-container">
-				<div id = "bench">
-					<div id = "bench-label">Bench</div>
-					<div id = "bench-players"></div>
+				<div id = "tb-second-level" class = "flex-horiz tb-container">
+					<div id = "bench" class = "tb-elem">
+						<div id = "bench-label">Bench</div>
+						<div id = "bench-players"></div>
+					</div>
 				</div>
 			</div>
 			<div id = "tb-third-level" class = "tb-container flex-vert">
-				<button class = "gm-submit" type = "button" onclick = "submit_game_mode()"> SUBMIT </button>
+				<button class = "gm-submit" type = "button" onclick = "submit_game_mode_button()"> SUBMIT </button>
 			</div>
 		</div>
 		<div id = "gm-middle">
@@ -84,13 +86,13 @@
 
 <div class = "modal-overlay"></div>
 <div class = "GM-modal modal-overlay">
-	<div id = "GM-initializer">
-		<div id = "GM-init-wrapper">
-			<div id = "GM-init-header" class = "GM-init">Welcome to Game Mode!</div>
-			<div id = "GM-init-body" class = "GM-init">
+	<div id = "GM-initializer" class = "modal-container">
+		<div id = "GM-init-wrapper" class = "GM-modal-wrapper">
+			<div id = "GM-init-header" class = "GM-modal-header">Welcome to Game Mode!</div>
+			<div id = "GM-init-body" class = "GM-modal-body">
 				
 				<div id = "personel-selection-wrapper">
-					<div id = "personel-selection-header">Select Inactives</div>
+					<div id = "personel-selection-header" class = "GM-modal-content">Select Inactives</div>
 					<div id = "personel-selection-body">
 
 					</div>
@@ -99,17 +101,69 @@
 			<div id = "GM-init-footer" class = "GM-init">Next</div>
 		</div>
 	</div>
+	<div id = "GM-submit" class = "modal-container">
+		<div id = "GM-submit-wrapper" class = "GM-modal-wrapper">
+			<div id = "GM-submit-header" class = "GM-modal-header"> Are you sure you want to submit? </div>
+			<div id = "GM-submit-body" class = "GM-modal-body">
+				<div id = "confirm-message" class = "GM-modal-content"> Once you submit, all data from this game will be final.</div>
+				<div id = "confirm-buttons">
+					<button id = "dont-submit" class = "confirm-buttons" onclick = "close_game_mode()">I'm not finished</button>
+					<button id = "confirm-submit" class = "confirm-buttons" onclick = "submit_game_mode()">Yes, Submit</button>
+				</div>
+			</div>
+			<span class="loader" style = "display:none;"><span class="loader-inner"></span></span>
+		</div>
+	</div>
 </div>
 
+<%= content_tag :div, class: "game-mode-id", data: {game_id: @game_id} do %>
+<% end %>
+
+
+<%= render 'game_mode_channel_js' %>
 <%= render 'canvas_js' %>
 <%= render 'game_mode_js' %>
 <%= render 'game_mode_js_objects' %>
+
 <script>
+	var canvas_vars;
+	function myFunction(max_w, min_w, portrait) {
+		console.log(max_w)
+		console.log(min_w)
+	  if (max_w.matches && min_w.matches && portrait) { // If media query matches
+	    canvas_vars = initialize_canvas(0.9, 0.635, 'c', 3)
+	  } else {
+	   canvas_vars = initialize_canvas(0.6, 0.635, 'c', 3)
+	  }
+	}
+
+	var max_w = window.matchMedia("(max-device-width : 1024px) ");
+	var min_w = window.matchMedia("(min-device-width : 768px)");
+	var orientation = window.matchMedia("(orientation: portrait)");
+	var portrait = false;
+	if(window.innerHeight > window.innerWidth){
+    	portrait = true;
+	}
+	myFunction(max_w, min_w, portrait) // Call listener function at run time
+	//x.addListener(myFunction) // Attach listener function on state changes
+
 	$(".navbar").hide()
-	canvas_vars = initialize_canvas(0.6, 0.635, 'c', 3)
+	
 	initialize_globals(canvas_vars.canvas, canvas_vars.canvas_width, canvas_vars.canvas_height)
-	populate_players();
-	populate_inactive_selection(false);
+	var game_state = JSON.parse('<%= @game_state.to_json.html_safe%>')
+	if ('<%= raw @game_state%>' != ''){
+		console.log(game_state)
+		load_game_state(game_state)
+		start_game_mode(true)
+	}
+	else{
+		$(".modal-overlay").css("display", "block");
+		$(".GM-modal").css("display", "flex");
+		
+		populate_players();
+		populate_inactive_selection(false);
+	}
+
 	plotBasket(canvas_vars.canvas_width/1.978, canvas_vars.canvas_width/16.43, 14, canvas_vars.canvas_width, canvas_vars.canvas);
 
 	$( window ).on("load", function() {

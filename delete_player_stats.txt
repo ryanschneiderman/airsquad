@@ -1,5 +1,5 @@
-delete from advanced_stats A using members B where B.id = A.member_id AND B.team_id = 7;
-delete from season_advanced_stats A using members B where B.id = A.member_id AND B.team_id = 7;
-delete from season_stats A using members B where B.id = A.member_id AND B.team_id = 7;
-delete from stat_granules A using members B where B.id = A.member_id AND B.team_id = 7;
-delete from stats A using members B where B.id = A.member_id AND B.team_id = 7;
+delete from advanced_stats A using members B where B.id = A.member_id AND B.team_id = 9;
+delete from season_advanced_stats A using members B where B.id = A.member_id AND B.team_id = 9;
+delete from season_stats A using members B where B.id = A.member_id AND B.team_id = 9;
+delete from stat_granules A using members B where B.id = A.member_id AND B.team_id = 9;
+delete from stats A using members B where B.id = A.member_id AND B.team_id = 9;

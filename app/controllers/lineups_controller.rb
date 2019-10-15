@@ -11,6 +11,8 @@ class LineupsController < ApplicationController
 			end
 		end
 
+		@lineup_stats = LineupStat.joins(:stat_list, :lineup).select("stat_lists.stat as stat, lineup_stats.*, lineups.team_id as team_id, lineups.id as lineup_id").where("lineups.team_id" => @team_id).sort_by{|e| [e.lineup_id, e.stat_list_id]}
+		
 		## need season stats for each player
 		@def_season_stats = SeasonStat.joins(:stat_list, :member).select("members.games_played as games_played, members.season_minutes as season_minutes, stat_lists.stat as stat, stat_lists.stat_kind as stat_kind, members.nickname as nickname, stat_lists.display_priority as display_priority, stat_lists.is_percent as is_percent, season_stats.*").where('members.team_id' => @team_id, 'stat_lists.stat_kind' => 2).sort_by{|e| [e.member_id, e.stat_list_id]}
 		@off_season_stats = SeasonStat.joins(:stat_list, :member).select("members.games_played as games_played, members.season_minutes as season_minutes, stat_lists.stat as stat, stat_lists.stat_kind as stat_kind, members.nickname as nickname, stat_lists.display_priority as display_priority, stat_lists.is_percent as is_percent, season_stats.*").where('members.team_id' => @team_id, 'stat_lists.stat_kind' => 1).sort_by{|e| [e.member_id, e.stat_list_id]}

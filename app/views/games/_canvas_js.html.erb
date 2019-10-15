@@ -119,6 +119,7 @@
         canvas.add(key_circle);
 
         $(window).resize(function(){
+            console.log("in window resize")
             canvas_width = window.innerWidth * width_m;
             canvas_height = canvas_width * height_m;
             set_canvas_dimensions(canvas, canvas_height, canvas_width);
