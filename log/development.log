@@ -16993,3 +16993,767 @@ Group::ConversationChannel is streaming from group_conversation_2
   ↳ app/channels/group/conversation_channel.rb:35
 Group::ConversationChannel is transmitting the subscription confirmation
 Group::ConversationChannel is streaming from group_conversation_1
+Started DELETE "/users/sign_out" for ::1 at 2019-11-26 16:59:34 -0500
+Processing by Devise::SessionsController#destroy as HTML
+  Parameters: {"authenticity_token"=>"2Yt81Q5V3BUGyKBpCOHpV/0cypOPOqGzwpd0uKSOvpzsVI20NP9TJEpvxtOKZmdWC6iuqmCc8C7Hw+hjyI/hng=="}
+  [1m[36mUser Load (1.1ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 21], ["LIMIT", 1]]
+  ↳ /Users/Home/.rbenv/versions/2.6.3/lib/ruby/gems/2.6.0/gems/activerecord-5.2.3/lib/active_record/log_subscriber.rb:98
+  [1m[36mPrivate::Conversation Load (8.3ms)[0m  [1m[34mSELECT "private_conversations".* FROM "private_conversations" WHERE ("private_conversations"."recipient_id" = $1 OR "private_conversations"."sender_id" = $2)[0m  [["recipient_id", 21], ["sender_id", 21]]
+  ↳ app/services/order_conversations_service.rb:14
+  [1m[36mPrivate::Message Load (3.5ms)[0m  [1m[34mSELECT "private_messages".* FROM "private_messages" WHERE "private_messages"."conversation_id" = $1[0m  [["conversation_id", 1]]
+  ↳ app/services/order_conversations_service.rb:14
+  [1m[36mGroup::Conversation Load (13.8ms)[0m  [1m[34mSELECT "group_conversations".* FROM "group_conversations" INNER JOIN "group_conversations_users" ON "group_conversations"."id" = "group_conversations_users"."conversation_id" WHERE "group_conversations_users"."user_id" = $1[0m  [["user_id", 21]]
+  ↳ app/services/order_conversations_service.rb:14
+  [1m[36mGroup::Message Load (14.0ms)[0m  [1m[34mSELECT "group_messages".* FROM "group_messages" WHERE "group_messages"."conversation_id" IN ($1, $2)[0m  [["conversation_id", 1], ["conversation_id", 2]]
+  ↳ app/services/order_conversations_service.rb:14
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1[0m  [["id", 21]]
+  ↳ app/services/order_conversations_service.rb:14
+  [1m[35m (0.4ms)[0m  [1m[34mSELECT "group_conversations"."id" FROM "group_conversations" INNER JOIN "group_conversations_users" ON "group_conversations"."id" = "group_conversations_users"."conversation_id" WHERE "group_conversations_users"."user_id" = $1[0m  [["user_id", 21]]
+  ↳ app/controllers/application_controller.rb:47
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT "group_conversations"."id" FROM "group_conversations" INNER JOIN "group_conversations_users" ON "group_conversations"."id" = "group_conversations_users"."conversation_id" WHERE "group_conversations_users"."user_id" = $1[0m  [["user_id", 21]]
+  ↳ app/controllers/application_controller.rb:50
+  [1m[36mTeam Load (14.8ms)[0m  [1m[34mSELECT "teams".* FROM "teams" INNER JOIN "members" ON "members"."team_id" = "teams"."id" WHERE "members"."user_id" = $1[0m  [["user_id", 21]]
+  ↳ app/controllers/application_controller.rb:34
+  [1m[36mMember Load (0.7ms)[0m  [1m[34mSELECT "members".* FROM "members" WHERE "members"."team_id" = $1[0m  [["team_id", 1]]
+  ↳ app/controllers/application_controller.rb:36
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 5], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 19], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 11], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 17], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 9], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 19], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 15], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 13], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 17], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 15], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 19], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mMember Load (0.4ms)[0m  [1m[34mSELECT "members".* FROM "members" WHERE "members"."team_id" = $1[0m  [["team_id", 3]]
+  ↳ app/controllers/application_controller.rb:36
+  [1m[36mMember Load (0.5ms)[0m  [1m[34mSELECT "members".* FROM "members" WHERE "members"."team_id" = $1[0m  [["team_id", 10]]
+  ↳ app/controllers/application_controller.rb:36
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mMember Load (0.3ms)[0m  [1m[34mSELECT "members".* FROM "members" WHERE "members"."team_id" = $1[0m  [["team_id", 12]]
+  ↳ app/controllers/application_controller.rb:36
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 22], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 23], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 24], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mMember Load (0.3ms)[0m  [1m[34mSELECT "members".* FROM "members" WHERE "members"."team_id" = $1[0m  [["team_id", 14]]
+  ↳ app/controllers/application_controller.rb:36
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  ↳ /Users/Home/.rbenv/versions/2.6.3/lib/ruby/gems/2.6.0/gems/activerecord-5.2.3/lib/active_record/log_subscriber.rb:98
+  [1m[35m (0.1ms)[0m  [1m[35mCOMMIT[0m
+  ↳ /Users/Home/.rbenv/versions/2.6.3/lib/ruby/gems/2.6.0/gems/activerecord-5.2.3/lib/active_record/log_subscriber.rb:98
+Redirected to http://localhost:3000/
+Completed 302 Found in 198ms (ActiveRecord: 62.4ms)
+
+
+Started GET "/" for ::1 at 2019-11-26 16:59:34 -0500
+Processing by PagesController#index as HTML
+  Rendering pages/index.html.erb within layouts/application
+  Rendered pages/index/landing/_non_signed_in_content.html.erb (1.6ms)
+  Rendered pages/index.html.erb within layouts/application (3.6ms)
+  Rendered layouts/navigation/header/_home_button.html.erb (1.1ms)
+  Rendered layouts/navigation/header/_toggle_button.html.erb (0.5ms)
+  Rendered layouts/navigation/_header_left.html.erb (6.8ms)
+  Rendered layouts/navigation/collapsible_elements/_non_signed_in_links.html.erb (0.7ms)
+  Rendered layouts/navigation/_collapsible_elements.html.erb (5.4ms)
+  Rendered layouts/_navigation.html.erb (15.7ms)
+  Rendered layouts/application/_private_conversations_windows.html.erb (0.7ms)
+  Rendered layouts/application/_group_conversations_windows.html.erb (0.5ms)
+Completed 200 OK in 3293ms (Views: 3291.0ms | ActiveRecord: 0.0ms)
+
+
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 16:59:37 -0500
+Group::ConversationChannel stopped streaming from group_conversation_1
+Group::ConversationChannel stopped streaming from group_conversation_2
+Private::ConversationChannel stopped streaming from private_conversations_21
+Started GET "/cable" for ::1 at 2019-11-26 16:59:38 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 16:59:38 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 16:59:38 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 16:59:38 -0500
+Started GET "/cable" for ::1 at 2019-11-26 16:59:48 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 16:59:48 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 16:59:48 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 16:59:48 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:00:02 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:02 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:02 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:02 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:00:11 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:11 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:11 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:11 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:00:11 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:11 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:11 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:11 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:00:20 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:20 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:20 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:20 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:00:27 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:27 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:27 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:27 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:00:41 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:41 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:41 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:41 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:00:53 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:53 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:53 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:53 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:00:57 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:57 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:57 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:00:57 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:01:05 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:01:05 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:01:05 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:01:05 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:01:11 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:01:11 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:01:11 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:01:11 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:01:18 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:01:18 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:01:18 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:01:18 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:01:31 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:01:31 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:01:31 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:01:31 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:01:44 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:01:44 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:01:44 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:01:44 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:01:58 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:01:58 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:01:58 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:01:58 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:02:12 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:02:12 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:02:12 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:02:12 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:02:26 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:02:26 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:02:26 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:02:26 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:02:41 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:02:41 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:02:41 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:02:41 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:02:56 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:02:56 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:02:56 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:02:56 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:02:58 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:02:58 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:02:58 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:02:58 -0500
+Started GET "/" for ::1 at 2019-11-26 17:02:59 -0500
+Processing by PagesController#index as HTML
+  Rendering pages/index.html.erb within layouts/application
+  Rendered pages/index/landing/_non_signed_in_content.html.erb (1.8ms)
+  Rendered pages/index.html.erb within layouts/application (3.3ms)
+Completed 500 Internal Server Error in 7ms (ActiveRecord: 0.0ms)
+
+
+  
+SyntaxError (/Users/Home/Desktop/ateam-dev/app/views/pages/index/landing/_non_signed_in_content.html.erb:113: syntax error, unexpected ensure, expecting end-of-input
+          ensure
+          ^~~~~~):
+  
+app/views/pages/index/landing/_non_signed_in_content.html.erb:113: syntax error, unexpected ensure, expecting end-of-input
+app/views/pages/index.html.erb:1:in `_app_views_pages_index_html_erb__1776567258894831454_70164017819360'
+Started GET "/" for ::1 at 2019-11-26 17:03:09 -0500
+Processing by PagesController#index as HTML
+  Rendering pages/index.html.erb within layouts/application
+  Rendered pages/index/landing/_non_signed_in_content.html.erb (1888.9ms)
+  Rendered pages/index.html.erb within layouts/application (1897.0ms)
+Completed 500 Internal Server Error in 1902ms (ActiveRecord: 0.0ms)
+
+
+  
+ActionView::Template::Error (undefined local variable or method `singup_path' for #<#<Class:0x00007fa0a4943828>:0x00007fa0ad831580>
+Did you mean?  signup_path):
+    13: 		<div id = "sprite"></div>
+    14: 		<div id = "slogan">The Game Digitized</div>
+    15: 		<div id = "portal">
+    16: 			<%=link_to singup_path do %>
+    17: 				<button class = "portal-button" id = "create-team-button">Sign Up</button>
+    18: 			<%end%>
+    19: 			<%=link_to login_path do%>
+  
+app/views/pages/index/landing/_non_signed_in_content.html.erb:16:in `_app_views_pages_index_landing__non_signed_in_content_html_erb__104845290793135537_70164041321220'
+app/views/pages/index.html.erb:1:in `_app_views_pages_index_html_erb__1776567258894831454_70164041274220'
+Started GET "/" for ::1 at 2019-11-26 17:03:54 -0500
+Processing by PagesController#index as HTML
+  Rendering pages/index.html.erb within layouts/application
+  Rendered pages/index/landing/_non_signed_in_content.html.erb (6.4ms)
+  Rendered pages/index.html.erb within layouts/application (8.4ms)
+  Rendered layouts/navigation/header/_home_button.html.erb (0.6ms)
+  Rendered layouts/navigation/header/_toggle_button.html.erb (0.8ms)
+  Rendered layouts/navigation/_header_left.html.erb (6.1ms)
+  Rendered layouts/navigation/collapsible_elements/_non_signed_in_links.html.erb (0.9ms)
+  Rendered layouts/navigation/_collapsible_elements.html.erb (3.5ms)
+  Rendered layouts/_navigation.html.erb (13.7ms)
+  Rendered layouts/application/_private_conversations_windows.html.erb (1.0ms)
+  Rendered layouts/application/_group_conversations_windows.html.erb (0.8ms)
+Completed 200 OK in 180ms (Views: 178.2ms | ActiveRecord: 0.0ms)
+
+
+Started GET "/cable" for ::1 at 2019-11-26 17:03:55 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:03:55 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:03:55 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:03:55 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:04:05 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:04:05 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:04:05 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:04:05 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:04:12 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:04:12 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:04:12 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:04:12 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:04:23 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:04:23 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:04:23 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:04:23 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:04:35 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:04:35 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:04:35 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:04:35 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:04:46 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:04:46 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:04:46 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:04:46 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:04:57 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:04:57 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:04:57 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:04:57 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:05:08 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:05:08 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:05:08 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:05:08 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:05:20 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:05:20 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:05:20 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:05:20 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:05:32 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:05:32 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:05:32 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:05:32 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:05:44 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:05:44 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:05:44 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:05:44 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:05:57 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:05:57 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:05:57 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:05:57 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:06:16 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:06:16 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:06:16 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:06:16 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:06:36 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:06:36 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:06:36 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:06:36 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:06:56 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:06:56 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:06:56 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:06:56 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:07:17 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:07:17 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:07:17 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:07:17 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:07:28 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:07:28 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:07:28 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:07:28 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:07:46 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:07:46 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:07:46 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:07:46 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:08:01 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:08:01 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:08:01 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:08:01 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:08:16 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:08:16 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:08:16 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:08:16 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:08:24 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:08:24 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:08:24 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:08:24 -0500
+Started GET "/" for ::1 at 2019-11-26 17:08:25 -0500
+Processing by PagesController#index as HTML
+  Rendering pages/index.html.erb within layouts/application
+  Rendered pages/index/landing/_non_signed_in_content.html.erb (3.7ms)
+  Rendered pages/index.html.erb within layouts/application (5.9ms)
+  Rendered layouts/navigation/header/_home_button.html.erb (0.8ms)
+  Rendered layouts/navigation/header/_toggle_button.html.erb (0.6ms)
+  Rendered layouts/navigation/_header_left.html.erb (4.4ms)
+  Rendered layouts/navigation/collapsible_elements/_non_signed_in_links.html.erb (0.4ms)
+  Rendered layouts/navigation/_collapsible_elements.html.erb (2.3ms)
+  Rendered layouts/_navigation.html.erb (9.7ms)
+  Rendered layouts/application/_private_conversations_windows.html.erb (0.7ms)
+  Rendered layouts/application/_group_conversations_windows.html.erb (0.6ms)
+Completed 200 OK in 207ms (Views: 204.6ms | ActiveRecord: 0.0ms)
+
+
+Started GET "/cable" for ::1 at 2019-11-26 17:08:26 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:08:26 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:08:26 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:08:26 -0500
+Started GET "/cable" for ::1 at 2019-11-26 17:08:35 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:08:35 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:08:35 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 17:08:35 -0500
+Started GET "/login" for ::1 at 2019-11-26 17:08:38 -0500
+Processing by Devise::SessionsController#new as HTML
+  Rendering devise/sessions/new.html.erb within layouts/application
+  Rendered devise/sessions/new.html.erb within layouts/application (3.3ms)
+  Rendered layouts/navigation/header/_home_button.html.erb (0.5ms)
+  Rendered layouts/navigation/header/_toggle_button.html.erb (0.6ms)
+  Rendered layouts/navigation/_header_left.html.erb (3.3ms)
+  Rendered layouts/navigation/collapsible_elements/_non_signed_in_links.html.erb (0.2ms)
+  Rendered layouts/navigation/_collapsible_elements.html.erb (1.4ms)
+  Rendered layouts/_navigation.html.erb (6.8ms)
+  Rendered layouts/application/_private_conversations_windows.html.erb (0.5ms)
+  Rendered layouts/application/_group_conversations_windows.html.erb (0.7ms)
+Completed 200 OK in 205ms (Views: 203.7ms | ActiveRecord: 0.0ms)
+
+
+Started POST "/users/sign_in" for ::1 at 2019-11-26 17:08:42 -0500
+Processing by Devise::SessionsController#create as HTML
+  Parameters: {"utf8"=>"✓", "authenticity_token"=>"slf69TvFiLBgiiJy1lYjj44uR7U35USVsZO/LvZYSG9dJsLbvDS+WA+Q0QbJb6ypVgxKRr38zMjeKQ7PKD06kg==", "user"=>{"email"=>"rschneides21@gmail.com", "password"=>"[FILTERED]", "remember_me"=>"0"}, "commit"=>"Log in"}
+  [1m[36mUser Load (5.4ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."email" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["email", "rschneides21@gmail.com"], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:10
+  [1m[36mPrivate::Conversation Load (11.9ms)[0m  [1m[34mSELECT "private_conversations".* FROM "private_conversations" WHERE ("private_conversations"."recipient_id" = $1 OR "private_conversations"."sender_id" = $2)[0m  [["recipient_id", 21], ["sender_id", 21]]
+  ↳ app/services/order_conversations_service.rb:14
+  [1m[36mPrivate::Message Load (4.2ms)[0m  [1m[34mSELECT "private_messages".* FROM "private_messages" WHERE "private_messages"."conversation_id" = $1[0m  [["conversation_id", 1]]
+  ↳ app/services/order_conversations_service.rb:14
+  [1m[36mGroup::Conversation Load (0.7ms)[0m  [1m[34mSELECT "group_conversations".* FROM "group_conversations" INNER JOIN "group_conversations_users" ON "group_conversations"."id" = "group_conversations_users"."conversation_id" WHERE "group_conversations_users"."user_id" = $1[0m  [["user_id", 21]]
+  ↳ app/services/order_conversations_service.rb:14
+  [1m[36mGroup::Message Load (4.4ms)[0m  [1m[34mSELECT "group_messages".* FROM "group_messages" WHERE "group_messages"."conversation_id" IN ($1, $2)[0m  [["conversation_id", 1], ["conversation_id", 2]]
+  ↳ app/services/order_conversations_service.rb:14
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1[0m  [["id", 21]]
+  ↳ app/services/order_conversations_service.rb:14
+  [1m[35m (0.5ms)[0m  [1m[34mSELECT "group_conversations"."id" FROM "group_conversations" INNER JOIN "group_conversations_users" ON "group_conversations"."id" = "group_conversations_users"."conversation_id" WHERE "group_conversations_users"."user_id" = $1[0m  [["user_id", 21]]
+  ↳ app/controllers/application_controller.rb:47
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT "group_conversations"."id" FROM "group_conversations" INNER JOIN "group_conversations_users" ON "group_conversations"."id" = "group_conversations_users"."conversation_id" WHERE "group_conversations_users"."user_id" = $1[0m  [["user_id", 21]]
+  ↳ app/controllers/application_controller.rb:50
+  [1m[36mTeam Load (0.8ms)[0m  [1m[34mSELECT "teams".* FROM "teams" INNER JOIN "members" ON "members"."team_id" = "teams"."id" WHERE "members"."user_id" = $1[0m  [["user_id", 21]]
+  ↳ app/controllers/application_controller.rb:34
+  [1m[36mMember Load (0.3ms)[0m  [1m[34mSELECT "members".* FROM "members" WHERE "members"."team_id" = $1[0m  [["team_id", 1]]
+  ↳ app/controllers/application_controller.rb:36
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 5], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 19], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 11], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 17], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 9], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 19], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 15], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 13], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 17], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.1ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 15], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 19], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mMember Load (0.6ms)[0m  [1m[34mSELECT "members".* FROM "members" WHERE "members"."team_id" = $1[0m  [["team_id", 3]]
+  ↳ app/controllers/application_controller.rb:36
+  [1m[36mMember Load (0.4ms)[0m  [1m[34mSELECT "members".* FROM "members" WHERE "members"."team_id" = $1[0m  [["team_id", 10]]
+  ↳ app/controllers/application_controller.rb:36
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mMember Load (0.4ms)[0m  [1m[34mSELECT "members".* FROM "members" WHERE "members"."team_id" = $1[0m  [["team_id", 12]]
+  ↳ app/controllers/application_controller.rb:36
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.5ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 22], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 23], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 24], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mMember Load (0.3ms)[0m  [1m[34mSELECT "members".* FROM "members" WHERE "members"."team_id" = $1[0m  [["team_id", 14]]
+  ↳ app/controllers/application_controller.rb:36
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+Redirected to http://localhost:3000/
+Completed 302 Found in 266ms (ActiveRecord: 35.3ms)
+
+
+Started GET "/" for ::1 at 2019-11-26 17:08:42 -0500
+Processing by PagesController#index as HTML
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 21], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:10
+  [1m[36mPrivate::Conversation Load (1.2ms)[0m  [1m[34mSELECT "private_conversations".* FROM "private_conversations" WHERE ("private_conversations"."recipient_id" = $1 OR "private_conversations"."sender_id" = $2)[0m  [["recipient_id", 21], ["sender_id", 21]]
+  ↳ app/services/order_conversations_service.rb:14
+  [1m[36mPrivate::Message Load (0.4ms)[0m  [1m[34mSELECT "private_messages".* FROM "private_messages" WHERE "private_messages"."conversation_id" = $1[0m  [["conversation_id", 1]]
+  ↳ app/services/order_conversations_service.rb:14
+  [1m[36mGroup::Conversation Load (6.4ms)[0m  [1m[34mSELECT "group_conversations".* FROM "group_conversations" INNER JOIN "group_conversations_users" ON "group_conversations"."id" = "group_conversations_users"."conversation_id" WHERE "group_conversations_users"."user_id" = $1[0m  [["user_id", 21]]
+  ↳ app/services/order_conversations_service.rb:14
+  [1m[36mGroup::Message Load (0.5ms)[0m  [1m[34mSELECT "group_messages".* FROM "group_messages" WHERE "group_messages"."conversation_id" IN ($1, $2)[0m  [["conversation_id", 1], ["conversation_id", 2]]
+  ↳ app/services/order_conversations_service.rb:14
+  [1m[36mUser Load (1.5ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1[0m  [["id", 21]]
+  ↳ app/services/order_conversations_service.rb:14
+  [1m[35m (5.9ms)[0m  [1m[34mSELECT "group_conversations"."id" FROM "group_conversations" INNER JOIN "group_conversations_users" ON "group_conversations"."id" = "group_conversations_users"."conversation_id" WHERE "group_conversations_users"."user_id" = $1[0m  [["user_id", 21]]
+  ↳ app/controllers/application_controller.rb:47
+  [1m[35mCACHE  (0.0ms)[0m  [1m[34mSELECT "group_conversations"."id" FROM "group_conversations" INNER JOIN "group_conversations_users" ON "group_conversations"."id" = "group_conversations_users"."conversation_id" WHERE "group_conversations_users"."user_id" = $1[0m  [["user_id", 21]]
+  ↳ app/controllers/application_controller.rb:50
+  [1m[36mTeam Load (0.6ms)[0m  [1m[34mSELECT "teams".* FROM "teams" INNER JOIN "members" ON "members"."team_id" = "teams"."id" WHERE "members"."user_id" = $1[0m  [["user_id", 21]]
+  ↳ app/controllers/application_controller.rb:34
+  [1m[36mMember Load (0.4ms)[0m  [1m[34mSELECT "members".* FROM "members" WHERE "members"."team_id" = $1[0m  [["team_id", 1]]
+  ↳ app/controllers/application_controller.rb:36
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 5], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 19], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 11], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 17], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 9], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 19], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 15], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 13], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 7], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 17], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 15], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 19], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mMember Load (0.3ms)[0m  [1m[34mSELECT "members".* FROM "members" WHERE "members"."team_id" = $1[0m  [["team_id", 3]]
+  ↳ app/controllers/application_controller.rb:36
+  [1m[36mMember Load (0.3ms)[0m  [1m[34mSELECT "members".* FROM "members" WHERE "members"."team_id" = $1[0m  [["team_id", 10]]
+  ↳ app/controllers/application_controller.rb:36
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mMember Load (0.4ms)[0m  [1m[34mSELECT "members".* FROM "members" WHERE "members"."team_id" = $1[0m  [["team_id", 12]]
+  ↳ app/controllers/application_controller.rb:36
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 22], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 23], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2[0m  [["id", 24], ["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mMember Load (0.3ms)[0m  [1m[34mSELECT "members".* FROM "members" WHERE "members"."team_id" = $1[0m  [["team_id", 14]]
+  ↳ app/controllers/application_controller.rb:36
+  [1m[36mCACHE User Load (0.0ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  ↳ app/controllers/application_controller.rb:38
+  [1m[36mMember Load (0.5ms)[0m  [1m[34mSELECT * FROM members WHERE user_id = 21[0m
+  ↳ app/controllers/pages_controller.rb:6
+  [1m[36mTeam Load (0.3ms)[0m  [1m[34mSELECT  "teams".* FROM "teams" WHERE "teams"."id" = $1 LIMIT $2[0m  [["id", 10], ["LIMIT", 1]]
+  ↳ app/controllers/pages_controller.rb:9
+  [1m[36mTeam Load (0.2ms)[0m  [1m[34mSELECT  "teams".* FROM "teams" WHERE "teams"."id" = $1 LIMIT $2[0m  [["id", 12], ["LIMIT", 1]]
+  ↳ app/controllers/pages_controller.rb:9
+  [1m[36mTeam Load (0.4ms)[0m  [1m[34mSELECT  "teams".* FROM "teams" WHERE "teams"."id" = $1 LIMIT $2[0m  [["id", 3], ["LIMIT", 1]]
+  ↳ app/controllers/pages_controller.rb:9
+  [1m[36mTeam Load (0.4ms)[0m  [1m[34mSELECT  "teams".* FROM "teams" WHERE "teams"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/pages_controller.rb:9
+  [1m[36mTeam Load (0.8ms)[0m  [1m[34mSELECT  "teams".* FROM "teams" WHERE "teams"."id" = $1 LIMIT $2[0m  [["id", 14], ["LIMIT", 1]]
+  ↳ app/controllers/pages_controller.rb:9
+  Rendering pages/index.html.erb within layouts/application
+  Rendered collection of teams/_team.html.erb [5 times] (3.3ms)
+  Rendered pages/index/landing/_sprite_js.html.erb (0.4ms)
+  Rendered pages/index/landing/_signed_in_content.html.erb (16.0ms)
+  Rendered pages/index.html.erb within layouts/application (17.2ms)
+  Rendered layouts/navigation/header/_home_button.html.erb (0.5ms)
+  Rendered layouts/navigation/header/_toggle_button.html.erb (0.5ms)
+  Rendered layouts/navigation/_header_left.html.erb (3.5ms)
+  Rendered layouts/navigation/_header_middle.html.erb (1.5ms)
+  Rendered layouts/navigation/collapsible_elements/_signed_in_links.html.erb (0.6ms)
+  Rendered layouts/navigation/_collapsible_elements.html.erb (2.7ms)
+  Rendered layouts/_navigation.html.erb (24.7ms)
+  Rendered layouts/application/_private_conversations_windows.html.erb (0.6ms)
+  Rendered layouts/application/_group_conversations_windows.html.erb (0.4ms)
+Completed 200 OK in 579ms (Views: 467.7ms | ActiveRecord: 24.5ms)
+
+
+Started GET "/cable" for ::1 at 2019-11-26 17:08:43 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 17:08:43 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+  [1m[36mUser Load (64.8ms)[0m  [1m[34mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 21], ["LIMIT", 1]]
+  ↳ app/channels/application_cable/connection.rb:12
+Registered connection (Z2lkOi8vYmJhbGwtc2l0ZS9Vc2VyLzIx)
+Private::ConversationChannel is transmitting the subscription confirmation
+Private::ConversationChannel is streaming from private_conversations_21
+  [1m[35m (2.2ms)[0m  [1m[34mSELECT "group_conversations"."id" FROM "group_conversations" INNER JOIN "group_conversations_users" ON "group_conversations"."id" = "group_conversations_users"."conversation_id" WHERE "group_conversations_users"."user_id" = $1[0m  [["user_id", 21]]
+  ↳ app/channels/group/conversation_channel.rb:35
+Group::ConversationChannel is transmitting the subscription confirmation
+Group::ConversationChannel is streaming from group_conversation_2
+  [1m[35m (26.7ms)[0m  [1m[34mSELECT "group_conversations"."id" FROM "group_conversations" INNER JOIN "group_conversations_users" ON "group_conversations"."id" = "group_conversations_users"."conversation_id" WHERE "group_conversations_users"."user_id" = $1[0m  [["user_id", 21]]
+  ↳ app/channels/group/conversation_channel.rb:35
+Group::ConversationChannel is transmitting the subscription confirmation
+Group::ConversationChannel is streaming from group_conversation_1

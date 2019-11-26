@@ -11,8 +11,15 @@
 
 <div id = "grey-canvas">
 		<div id = "sprite"></div>
-		<div id = "space"></div>
 		<div id = "slogan">The Game Digitized</div>
+		<div id = "portal">
+			<%=link_to signup_path do %>
+				<button class = "portal-button" id = "create-team-button">Sign Up</button>
+			<%end%>
+			<%=link_to login_path do%>
+				<button class = "portal-button" id = "join-team-button">Login</button>
+			<%end%>
+		</div>
 </div>
 
 
