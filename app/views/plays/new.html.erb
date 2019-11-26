@@ -210,7 +210,7 @@ function save_and_next_progression(){
     var json_data = JSON.stringify(canvas.toJSON(['id']));
     var play_image = canvas.toDataURL('png')
     var create_url = "/teams/" + <%= @team_id %> +"/plays/";
-    var notes_text = $(".progression-notes-text").val().replace(/\n/g, "<br />");
+    var notes_text = $(".progression-notes-text").html().replace(/\n/g, "<br />");
 
   /* Send the data using post and put the results in a div */
     $.ajax({
