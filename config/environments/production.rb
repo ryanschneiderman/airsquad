@@ -45,11 +45,11 @@ Rails.application.configure do
 
   # Mount Action Cable outside main process or domain
   #config.action_cable.mount_path = nil
-  #config.action_cable.url = 'wss://ateambball.com/cable'
-  #config.action_cable.allowed_request_origins = [ 'http://ateam-dev.us-east-1.elasticbeanstalk.com', 'https://ateambball.com' ]
+  config.action_cable.url = 'wss://ateambball.com/cable'
+  config.action_cable.allowed_request_origins = [ 'http://ateam-dev.us-east-1.elasticbeanstalk.com', 'https://ateambball.com' ]
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # config.force_ssl = true
+  #config.force_ssl = true
 
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
