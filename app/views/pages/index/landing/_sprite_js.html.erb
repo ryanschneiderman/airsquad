@@ -6,6 +6,8 @@
 	var ypos = -3;
 	var xpos = 1;
     var move_count = 0;
+    var curr_pos = null;
+    var curr_diff = 0;
 
 	function calc_ypos(){
 		return (row * -744) - 3
@@ -14,24 +16,33 @@
 	function calc_xpos(){
 		return (col * -1276) + 1
 	}
+
+
+
 		
 
-	$(document).mousemove(function(event) {
-		
-	if(move_count % 12 == 0){
-		row++;
-		if(row  > 7){
-			col++;
-			row = 0;
+	$("#sprite").mousemove(function(event) {
+		if(curr_pos!= null){
+			x_diff = Math.abs(curr_pos.x - event.clientX)
+			y_diff = Math.abs(curr_pos.y - event.clientY)
+			curr_diff += x_diff + y_diff;
 		}
-		if(col > 5 && row > 4){
-			row = 0;
-			col = 0;
+		curr_pos = {x: event.clientX, y: event.clientY}
+
+		if(curr_diff > 25){
+			row++;
+			if(row  > 7){
+				col++;
+				row = 0;
+			}
+			if(col > 5 && row > 4){
+				row = 0;
+				col = 0;
+			}
+			$('#sprite').css("backgroundPosition", calc_xpos().toString() + "px " + calc_ypos().toString() + "px"); 
+			curr_diff = 0;
 		}
-		$('#sprite').css("backgroundPosition", calc_xpos().toString() + "px " + calc_ypos().toString() + "px"); 
-	
-		}
-		move_count++; 
+		//move_count++; 
 	});
 
 	$("#grey-canvas")

@@ -3,10 +3,16 @@
 }
 
 #sprite{
-	width: 100vw; height: 56vw;
+	width: 100vw; height: 100vh;
 	transform: scale(.55);
 	position: relative;
-	top: -60px;
+	top: -30px;
+}
+
+#portal{
+	position: relative;
+	bottom: 10vh;
+	color: white;
 }
 
 .logout-link{
