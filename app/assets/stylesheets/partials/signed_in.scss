@@ -9,9 +9,36 @@
 	top: -30px;
 }
 
+
 #portal{
 	position: relative;
+	justify-content: center;
+	display: flex;
 	bottom: 10vh;
+	color: white;
+}
+
+.portal-button{
+	width: 275px;
+    
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border-radius: 30px;
+    font-size: 16px;
+    margin-right: 50px;
+    margin-left: 50px;
+    font-weight: 600;
+    font-family: system-ui;
+    letter-spacing: 1px;
+}
+
+#join-team-button{
+	border: 1px solid #ff2b6d;
+	color: white;
+}
+
+#create-team-button{
+	background-color: #ff2b6d;
 	color: white;
 }
 
@@ -66,6 +93,7 @@
 }
 
 #team-block{
+	height: 250px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
