@@ -1,0 +1,43 @@
+DEVELOPMENT
+
+open_messenger.html.erb -- partial to open messenger
+
+must create a way to initiate a conversation from the messenger
+__________________________________________________________________________________
+
+
+Messages -- It is important to consider where messages should live, and in what places should there be a link to messages. Obviously, messages are an important feature because instant communication within a team is important if a coach or players want to discuss preparation for a game, insights from a game, notes on their play etc. The question is whether or not it makes sense to link messages to teams. I think it makes sense to establish a group chat with every member of a team upon creation of a team, and also to be able to click on another user/team member to message them. 
+
+A better way of thinking about this is what is the minimum integration of messaging that will make the feature useful, but also malleable for future changes? In the end, i think it would be cool to have a sort of profile based app a la facebook where users could click on other users to see their statistics and their performances on other teams and things of that nature (and be able to message players by clicking on their profile), but this is something that I think is best implemented towards the end of development because it is not an absolutely essential feature, and it is a labor intensive feature of a high complexity. 
+
+The minimum integration of messaging should be for a user to be able to see all of his messages, be able to message anyone in any of his teams, and for their to exist a group chat for the team. So, when you click on a user in the messages page (or location in a page), there should be a prompt which asks if you would like to DM this person. There should also be a way to create subsets of group messages. A big question is whether teammates should be able to communicate with each other in DMs or whether the coach should always be a part of any group message. There is something to be said for coaches only being able to create group messages because it would significantly lower the chances for innapropriate content to be shared on the website via direct messaging, and players can communicate with each other directly using a number of other platforms such as texting, facebook, instagram dms, snapchat, and things of that nature. What doesn't exist is the ability for coaches to interact with their players outside of the gym because it is not especially appropriate for coaches to be in touch with their players using these other mediums. Currently email is the medium of choice for a coach to communicate with his players, but kids don't check email, and instant messaging achieves the same thing as email without the barrier to entry. 
+
+I think it would also make it easier to implement because the graph is much less complicated. There is a coach who can communicate with his players but players cannot communicate with each other. This sounds a bit restrictive, and maybe it is, but there doesnt seem to be a use case where players messaging each other is a feature that is needed. Except for maybe the novelty of it, and to get players excited about using it. But at the same time I think there are dangers with kids, especially in that age group, for sharing inappropriate content that in reality can live on other sites. There is no need to expose the site to that kind of liability. 
+
+So with that in mind, i think it is now important to reconsider the name of the feature and where it lives. Messaging doesn't seem to accurately represent the nature of the feature because messaging usually implies the ability for anyone to communicate with anyone as in facebook, twitter, instagram and other many to many messaging relationships. Since this is a one to many relationship (coach to players), I think it should have a different name. Dialogues, huddles (that is dangerous because of the website), coach's office (sounds too formal), Squad logs, coach convos, team talks.
+
+Another possibility is for players to be able to initiate conversations, but the coach must be involved. To me this is the best strategy. And once again the question of whether messages should belong to team members or users must be asked. As the risk of seeming flip floppy, I think it may make the most sense to make them based on team members because if a coach is always involved it will inherently be tied to a team. I suppose there is a possibility where a coach coaches a player on two different teams, and whether there should be two different chats for the two different teams is a consideration. I guess the crux of the matter is, is there a downside to having them be attached to users. Since you could always get to the team from the user, accessing team members from users is not really an issue. I guess the only potential downside is it requires another level of comparison at the database level. It could potentially be slower. This is something to ask jason about. 
+
+The slow down is the most important consideration in my opinion. In order to initiate a message, you must retrieve all members and check the members against the coach. NO.
+
+So how would messages work in a user context. That is, if a user wanted to see all of his messages from all of their teams, how would that work. I dont think it makes sense to have a full page dedicated to messages. I think it makes much mores sense to have a pop of window of messages for all teams, to be accessed from anywhere. SEE TWITTER. For now, it is okay to have a messages page, but that is definitely something to be revisited at a later point. On a messages page, what do we need? At the top of the page, a link to create a new message. Below, a snapshot of all messages strings.
+
+What is the simplest rendering of the messages application? We have a list of players on the left, and we have a box on the right. When you click on a player, their message string comes up. At the bottom of the message string is a text entry box, and a send button. 
+
+What now? I have an application which can initiate a conversation between a single user, and add to conversations that already exist. Cool. Now I want to add to the page a way to choose between any of the members on the team. 
+
+The first thing to do is to change the model so its between team members instead of users. That way messages can be a sub route of team and access all of the members of a given team. 
+
+Before that though, I think it is important to consider the manner in which messages will be present throughout the app. Because depending on where they live, it might be beneficial to have them based on users instead of team members. So lets say it follows the twitter model, and all conversations between all members of the team are in one place. What are the restrictions/considerations of this model? As a player, if you cannot initiate conversations but only respond to conversations you are already a part of, then the only interesting case is for the coach. If a coach wants to start a conversation between two players, and he coaches multiple teams, the two players must be on the same team. Or do they have to be on the same team? is that really a requirement? if you coach two similar players on two different teams, maybe it would make sense to have the possibility of connecting two players on different teams. Maybe just have a prompt that says something to the effect of: "are you sure you would like to start a conversation with players on different teams?", to ensure that it is intentional. 
+
+But I think that case is a very minimal one. The most frequent case is that a coach coaches one team. And most players will be on multiple teams, but since they cannot start conversations, it doesnt really matter. The users they will be in conversations with will in almost every case be on the same team. 
+
+So, I believe it does make sense to have the messages be attached to users and not members. This will make for an easier implementation across the app as well. 
+
+So when a coach starts a conversation, he should have the option of connecting to anyone who belongs to one of the teams he belongs to. So the list of players on the page should be all players from all teams the coach belongs to. 
+
+
+
+
+
+

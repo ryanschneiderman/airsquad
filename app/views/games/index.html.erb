@@ -1,0 +1,119 @@
+
+<div id='calendar'></div>
+
+<div class = "modal-overlay" style= "display: none;"></div>
+<div class = "new-game-overlay modal-overlay" style= "display: none;">
+	<div class = "new-game-box" style= "display: none;">
+		<div class = "new-game-header">
+			<button class = "close-button" onclick="hide_new_game_form()">x</button>
+			<div id = "new-play-header-text">New Game</div>
+		</div>
+			<div class = "new-game-form">
+				<div class="form-group">
+					<label for="new-game-opponent">Opponent?</label>
+					<input type="text" name="opponent" id = "new-game-opponent" >
+				</div>
+				<div class="form-group">
+					<label for="new-game-location">Location?</label>
+					<input type="text" name="location" id = "new-game-location" >
+				</div>
+				<div class="form-group">
+					<label for="new-game-date">Date of game:</label>
+					<input type="date" name="date" id = "new-game-date">
+				</div>
+				<div class="form-group">
+					<label for="new-game-time">Time of game:</label>
+					<input type="time" name="time" id = "new-game-time">
+				</div>
+				<button onclick = "newGame()" class="btn btn-primary">Submit</button>
+			</div>
+	</div>
+</div>
+
+<script>
+
+	$(".navbar").addClass("navbar-active");
+    $(".navbar-default a").addClass("navbar-text-active");
+    $(".home-link").css("border-color", "black");
+
+    $(window).on("scroll", function() {
+        $(".navbar").addClass("navbar-active");
+        $(".navbar-default a").addClass("navbar-text-active");
+        $(".home-link").css("border-color", "black")
+
+	});
+
+	var new_game_data = []
+
+	function newGame(){
+		var opponent = document.getElementById('new-game-opponent').value
+		var location = document.getElementById('new-game-location').value
+		var date = document.getElementById('new-game-date').value
+		var time = document.getElementById('new-game-time').value
+
+		var url =  "/teams/" + <%= @team_id %> + "/games/" 
+		$.ajax({
+	        url: url,
+	        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+	        type: "POST",
+	        data_type: 'json',
+	        data: {opponent: opponent, date: date, time: time, location: location}
+	    });
+	}
+
+	function hide_new_game_form(){
+		$(".modal-overlay").hide()
+		$(".new-game-overlay").hide()
+		$(".new-game-box").hide()
+	}
+
+        var calendarEl = document.getElementById('calendar');
+        var event_arr = []
+
+       
+
+        <% @schedule_events.each do |event|%>
+        	event_arr.push({id : '<%=event.id%>', title: "Game vs <%=event.name%> @ <%=event.place%>", start: "<%=event.date%>", game_id: "<%=event.game_id%>"})
+        <%end%>
+
+
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+	        plugins: [ 'interaction', 'dayGrid' ],
+			defaultView: 'dayGridMonth',
+			aspectRatio : 2,
+			selectable: true,
+			dateClick: function(info) {
+			    
+			},
+			customButtons: {
+			    newGame: {
+			      text: 'Create New Game',
+			      click: function() {
+			        $(".modal-overlay").show()
+					$(".new-game-overlay").show()
+					$(".new-game-box").show()
+			      }
+			    }
+			},
+			header: {
+			    left: 'title',
+			    center: 'newGame',
+			    right: 'today prev,next'
+			},
+			events: event_arr,
+		    eventRender: function(info) {
+		    	if(info.event.id != "new"){
+		    		return $('<a href="/teams/' + <%= @team_id%> + '/games/'+ info.event.extendedProps.game_id +'">' +info.event.title + '</a>');
+		    	}
+		    	else{
+		    		//$(info.el).hide()
+		    		console.log(info.el)
+		    	}
+			  }
+        });
+        var evento = calendar.getEventById("new")
+
+        calendar.render();
+
+</script>

@@ -1,0 +1,559 @@
+<script>
+	var per_game_table;
+	var per_minute_table;
+	var team_stats_table;
+	var adv_stats_player_table; 
+	var adv_stats_team_table; 
+	var display_stats = [];
+	var display_stats_adv = []
+	var display_stats_team_adv = []
+	var minutes_factor = <%=@per_minutes%>;
+
+	var player_stats = [];
+	var per_game_stats = [];
+	var per_minute_stats = [];
+
+	var team_stat_array = [];
+	var team_advanced_stat_array = [];
+	var opponent_stat_array = [];
+
+
+
+	/**********************************************************************************************************************************************/
+	/**********************************************************************************************************************************************/
+	/*************************************************************** <INITIALIZERS> ***************************************************************/
+	/**********************************************************************************************************************************************/
+	/**********************************************************************************************************************************************/
+
+	function initialize_tables(per_game, per_minute, team, adv_player, adv_team){
+		per_game_table = per_game[0];
+		per_minute_table = per_minute_table[0]
+		team_stats_table = team[0];
+		adv_stats_player_table = adv_player[0];
+		adv_stats_team_table = adv_team[0];
+	}
+
+	function populate_display_stats_basic(){
+		<% @stat_table_columns.each do |display_stat| %>
+			display_stats.push({"stat": "<%= display_stat[:stat_name] %>", "display_priority": "<%= display_stat[:display_priority] %>", "display_type" : "<%= display_stat[:display_type] %>", "percentage_string":  "<%= display_stat[:percentage_string] %>", "stat_list_id" : "<%= display_stat[:stat_list_id] %>"})
+		<% end %>
+	}
+
+	function populate_display_stats_adv(){
+		<% @adv_stat_table_columns.each do |display_stat| %>
+			display_stats_adv.push({"stat": "<%= display_stat[:display_name] %>", "display_priority": "<%= display_stat[:display_priority] %>", "stat_name":  "<%= display_stat[:stat_name] %>", "stat_list_id" : "<%= display_stat[:stat_list_id] %>" , "stat_description" : "<%=display_stat[:stat_description]%>"})
+		<% end %>
+
+		console.log(display_stats_adv)
+	}
+
+	function populate_team_display_stats_adv(){
+		<% @team_adv_stat_table_columns.each do |display_stat| %>
+			display_stats_team_adv.push({"stat": "<%= display_stat[:display_name] %>", "display_priority": "<%= display_stat[:display_priority] %>", "stat_name":  "<%= display_stat[:stat_name] %>", "stat_list_id" : "<%= display_stat[:stat_list_id] %>", "is_opponent" : "<%= display_stat[:is_opponent] %>"})
+		<% end %>
+	}
+	
+	function populate_stat_array(){
+		var i = 0;
+		player_id_arr = [];
+		<% @player_stats.each do |stat|%>
+			var len = player_id_arr.length
+			if(player_id_arr[len - 1] !=  "<%= stat.member_id%>"){
+				player_id_arr.push("<%= stat.member_id%>");
+				var player_obj = {"id" : "<%= stat.member_id%>", "name" : "<%= stat.nickname%>" , "stat_arr" : [], "adv_stat_arr" : [], "minutes": parseInt("<%= stat.season_minutes%>"), "games": parseInt("<%= stat.games_played%>")}
+				player_stats.push(player_obj);
+				i++;
+			}
+			player_stats[i-1].stat_arr.push({"value": parseInt("<%= stat.value%>"), "stat_list_id" : "<%= stat.stat_list_id%>", "stat" : "<%= stat.stat%>","display_priority" : "<%= stat.display_priority%>"})
+		<%end%>
+		var j = 0;
+
+		<% @advanced_stats.each do |stat|%>
+			if("<%= stat.member_id%>" != player_stats[j].id){
+				j++;
+			}
+			player_stats[j].adv_stat_arr.push({"value": parseFloat("<%= stat.value%>"),"stat_list_id" : "<%= stat.stat_list_id%>" ,"display_priority" : "<%= stat.display_priority%>", "stat" : "<%= stat.stat%>"})
+		<%end%>
+		console.log(player_stats)
+	}
+
+	function populate_team_stats(){
+		<% @team_stats.each do |stat| %>
+			team_stat_array.push({"value": parseInt("<%= stat.value%>"), "stat_list_id" : "<%= stat.stat_list_id%>", "display_priority" : "<%= stat.display_priority%>", "name" : "<%= @team.name %>"})
+		<%end %>
+	}
+
+	function populate_opponent_stats(){
+		<% @opponent_stats.each do |stat| %>
+			opponent_stat_array.push({"value": parseInt("<%= stat.value%>"), "stat_list_id" : "<%= stat.stat_list_id%>", "display_priority" : "<%= stat.display_priority%>", "name" : "<%= @opponent_name %>"})
+		<%end %>
+	}
+
+	function populate_team_advanced_stats(){
+		<% @team_advanced_stats.each do |stat| %>
+			team_advanced_stat_array.push({"value": parseFloat("<%= stat.value%>") , "stat": "<%= stat.stat%>", "stat_list_id" : "<%= stat.stat_list_id%>", "display_priority" : "<%= stat.display_priority%>", "name" : "<%= @team.name %>", "is_opponent" : "<%= stat.is_opponent%>"})
+		<%end %>
+		console.log(team_advanced_stat_array)
+	}
+
+	function populate_stat_tables(is_stat_index){
+		populate_team_stat_tables(true);
+		populate_player_stat_tables(is_stat_index);
+	}
+
+	function populate_team_stat_tables(opponent){
+		populate_basic_team_stat_header(team_stats_table);
+		populate_team_adv_stat_header(adv_stats_team_table);
+		var team_row = team_stats_table.insertRow(1);
+		if(opponent)var opponent_row = team_stats_table.insertRow(2);
+		populate_basic_row(team_row, 1, false, team_stat_array);
+		if(opponent) populate_basic_row(opponent_row, 2, false, opponent_stat_array);
+		var team_advanced_row = adv_stats_team_table.insertRow(2)
+		populate_team_advanced_row(team_advanced_row, 2)
+	}
+
+	function populate_player_stat_tables(is_stat_index){
+
+		populate_basic_player_stat_header(per_game_table, true);	
+		populate_basic_player_stat_header(per_minute_table, false);
+
+		populate_adv_stat_header(adv_stats_player_table, "adv_stats_player_table");
+
+		var num_players = player_stats.length
+		var i = 1;
+		for(i; i < num_players +1; i++){
+			var per_game_row = per_game_table.insertRow(i);
+			var per_minute_row = per_minute_table.insertRow(i)
+			var advanced_row = adv_stats_player_table.insertRow(i)
+			// TODO: this is where we will add an extra boolean to account for extra case !!!
+			populate_basic_row(per_game_row, i, true, null, is_stat_index, false);	
+			populate_basic_row(per_minute_row, i, true, null, false, true);	
+			populate_advanced_row(advanced_row, i);
+		}
+	}
+
+	
+
+	function populate_team_advanced_row(row, i){
+		var num_stats = display_stats_team_adv.length
+		for(j = 0 ;j < num_stats + 1; j++){
+			var col = row.insertCell(j);
+			if (j == 0 && i > 0){
+				column_header = "<%= @team.name %>";
+				col.innerHTML += "<div>" + column_header + "</div>";
+			}
+			else if (i > 0 && j > 0){
+				insert_team_adv_data(col, display_stats_team_adv[j - 1])
+			}
+		}
+	}
+
+	function populate_advanced_row(row, i){
+		var num_stats = display_stats_adv.length
+		var player = player_stats[i-1];
+		for(j = 0 ;j < num_stats + 1; j++){
+			if(row.cells.length <= j){
+				var col = row.insertCell(j);
+			}
+			else var col = row.cells[j];
+			if (j == 0 && i > 0){
+				col.innerHTML = "<div>" + player_stats[i-1].name + "</div>";
+			}
+			else if (i > 0 && j > 0){
+				insert_standard_data(col, display_stats_adv[j - 1].display_priority, player, true, true, null, null)
+			}
+		}
+	}
+
+
+	// DONE?: Accomodate for a single game data
+	function populate_basic_row(row, i, is_player, team, is_per_game, is_per_minute){
+		var insert_index = 0;
+		var num_stats = (is_player) ? display_stats.length : display_stats.length - 1
+		var player = (is_player) ? player_stats[i-1] : team;
+
+		for(j = 0 ;j < num_stats + 1; j++){
+			if(row.cells.length <= insert_index){
+				var col = row.insertCell(insert_index);
+			}
+			else 
+				var col = row.cells[insert_index];
+
+			if (j == 0 && i > 0){
+				if(is_player){
+					column_header = player_stats[i-1].name;
+				}else{
+					column_header = team[0].name;
+				}
+				col.innerHTML = "<div>" + column_header + "</div>";
+			}
+			else if (i > 0 && j > 0){
+				if(display_stats[j-1].display_type == "fraction"){
+					insert_fraction_data(row, col, display_stats[j - 1].display_priority, ++insert_index, player, is_player, is_per_game, is_per_minute);
+				}
+				else if (display_stats[j-1].display_type == "minutes"){
+					if(is_player)insert_minutes_data(col, display_stats[j - 1].display_priority, player, is_player, is_per_game, is_per_minute);
+				}
+				else{
+					insert_standard_data(col, display_stats[j - 1].display_priority, player, is_player, false, is_per_game, is_per_minute)
+				}
+			}
+			insert_index++;
+		}
+	}
+
+	/**********************************************************************************************************************************************/
+	/**********************************************************************************************************************************************/
+	/*************************************************************** </INITIALIZERS> **************************************************************/
+	/**********************************************************************************************************************************************/
+	/**********************************************************************************************************************************************/
+
+
+	/**********************************************************************************************************************************************/
+	/**********************************************************************************************************************************************/
+	/****************************************************************** <CHANGERS> ****************************************************************/
+	/**********************************************************************************************************************************************/
+	/**********************************************************************************************************************************************/
+
+	
+
+	function insert_team_adv_data(col, display_stat){
+		var len = team_advanced_stat_array.length
+		for(var i = 0; i < len; i++){
+			if (display_stat.stat_list_id == team_advanced_stat_array[i].stat_list_id)
+				if(display_stat.is_opponent == team_advanced_stat_array[i].is_opponent)
+					col.innerHTML = team_advanced_stat_array[i].value.toFixed(1)
+		}
+	}
+	
+	function insert_standard_data(col, display_priority, player, is_player, is_advanced, is_per_game, is_per_minute){
+		var player_stat =  find_player_stat(display_priority, player, is_player, is_advanced)
+		if(!is_advanced && is_player){
+			if (is_per_game) player_stat = (player_stat / player.games).toFixed(1)
+			else if (is_per_minute) player_stat = (minutes_factor * player_stat / (player.minutes / 60)).toFixed(1)
+			else player_stat = parseFloat(player_stat).toFixed(1)
+		}
+		else if (is_player){
+			player_stat = parseFloat(player_stat).toFixed(1)
+		}
+		// Team Case
+		else {
+			player_stat = (player_stat / total_games).toFixed(1)
+		}
+
+		col.innerHTML = player_stat;
+	}
+
+	function insert_minutes_data(col, display_priority, player, is_player, is_per_game, is_per_minute){
+		var stat = find_player_stat(display_priority, player, is_player);
+		var player_minutes;
+		var player_seconds;
+		var seconds_str;
+		if(is_per_game) {
+			stat = stat/player.games;
+			player_minutes = Math.floor(stat / 60)
+			player_seconds = (stat - player_minutes * 60).toFixed(1);
+		}
+		else if (is_per_minute){
+			player_minutes = minutes_factor;
+			player_seconds = 0;
+		}
+		else {
+			player_minutes = Math.floor(stat / 60)
+			player_seconds = (stat - player_minutes * 60).toFixed(1);
+		}
+
+		(player_seconds < 10) ? seconds_str = "0" + player_seconds.toString() : seconds_str = player_seconds.toString();
+		col.innerHTML = player_minutes.toString() + ":" + seconds_str
+	}
+
+	// TODO: rethink total_games and toFixed
+	function insert_fraction_data(row, col, display_priority, index, player, is_player, is_per_game, is_per_minute){
+		if (row.cells.length <= index){
+			var pct_col = row.insertCell(index)
+		}
+		else var pct_col = row.cells[index];
+		var make_miss = find_player_fraction_stat(display_priority, player, is_player);
+		var makes = parseInt(make_miss[0]);
+		var misses = parseInt(make_miss[1]);
+		if(is_player){
+			if(is_per_game){
+				makes = makes / player.games
+				misses = misses/ player.games
+			}
+			else if (is_per_minute) {
+				makes = minutes_factor * makes / (player.minutes / 60)
+				misses = minutes_factor * misses/ (player.minutes / 60)
+			}
+		}
+		var numerator = makes;
+		var denomenator = makes + misses;
+		if (is_player) col.innerHTML = numerator.toFixed(1) + "/" + denomenator.toFixed(1);
+		else col.innerHTML = (numerator/total_games).toFixed(1) + "/" + (denomenator/total_games).toFixed(1)
+		pct_col.innerHTML = (denomenator != 0) ? Math.round(numerator / denomenator * 100) + "%" : "0%"  
+	}
+
+
+	// TODO: minutes should only be per game in a per game case
+	function sort_basic_table(display_priority, is_per_game, table_name, is_per_minute){
+		var sort_index = find_player_stat_index(display_priority, player_stats[0].stat_arr)
+		if(is_per_game){
+			player_stats.sort(function(a, b){
+				return (b.stat_arr[sort_index].value/b.games) - (a.stat_arr[sort_index].value/a.games)
+			});
+			rerender_basic_table(per_game_table, is_per_game);
+		}
+		else if (is_per_minute){
+			player_stats.sort(function(a, b){
+				if (display_priority == 17){
+					return (b.stat_arr[sort_index].value) -  (a.stat_arr[sort_index].value)
+				}
+				else {
+					return (b.stat_arr[sort_index].value / b.minutes) -  (a.stat_arr[sort_index].value / a.minutes)
+				}
+			});
+			rerender_basic_table(per_minute_table, is_per_game);
+		}
+		else {
+			player_stats.sort(function(a, b){
+				return (b.stat_arr[sort_index].value) -  (a.stat_arr[sort_index].value)
+			});
+			rerender_basic_table(per_minute_table, is_per_game);
+		}
+	}
+
+	function sort_advanced_table(display_priority){
+		var sort_index = find_player_stat_index(display_priority, player_stats[0].adv_stat_arr)
+		player_stats.sort(function(a,b){
+			return (b.adv_stat_arr[sort_index].value) - (a.adv_stat_arr[sort_index].value)
+		})
+		rerender_adv_table(adv_stats_player_table);
+	}
+
+	function rerender_basic_table(table, is_per_game){
+		var num_rows = table.rows.length
+		for(var i = 1; i < num_rows; i++){
+			if (is_per_game) {
+				populate_basic_row(table.rows[i], i, true, null, true);
+			}
+			else populate_basic_row(table.rows[i], i, true, null, false);
+		}
+	}
+
+	function rerender_adv_table(table){
+		var num_rows = table.rows.length
+		for(var i = 1; i < num_rows; i++){
+			populate_advanced_row(table.rows[i], i)
+		}
+	}
+
+
+
+
+
+	function populate_basic_player_stat_header(table, is_per_game){
+		var insert_index = 0;
+		var row = table.insertRow(0)
+		var num_stats = display_stats.length
+		for(i = 0; i < num_stats + 1; i++){
+			var col = row.insertCell(insert_index)
+			if (i > 0) {
+				col.innerHTML += "<button class = 'stat-table-button' onclick='sort_basic_table(" + display_stats[i-1].display_priority + "," + is_per_game + ")'>" + display_stats[i - 1].stat + "</button>";
+				if(display_stats[i - 1].display_type == "fraction"){
+					insert_index++;
+					var pct_col = row.insertCell(insert_index);
+					pct_col.innerHTML = "<div>" + display_stats[i - 1].percentage_string + "</div>"; 
+				}
+			}
+			insert_index++;
+		}
+	}
+
+	function populate_basic_team_stat_header(table, table_name){
+		var insert_index = 0;
+		var row = table.insertRow(0)
+		var num_stats = display_stats.length
+		for(i = 0; i < num_stats; i++){
+			var col = row.insertCell(insert_index)
+			if (i > 0) {
+				if(display_stats[i-1].stat_list_id != 16) col.innerHTML += "<div>" + display_stats[i - 1].stat + "</div>";
+				if(display_stats[i - 1].display_type == "fraction"){
+					insert_index++;
+					var pct_col = row.insertCell(insert_index);
+					pct_col.innerHTML = "<div>" + display_stats[i - 1].percentage_string + "</div>"; 
+				}
+			}
+			insert_index++;
+		}
+	}
+
+	function show_info(button){
+		//console.log($(button).position())
+		var parent = $(button).parent()
+		console.log(parent)
+		var description = parent.find(".stat-info")
+		var position = parent.offset()
+		console.log(position)
+		description.offset({top: position.top -55, left: position.left -8})
+	}
+
+	function show_more_info(button){
+		var parent = $(button).parent()
+		var description = parent.find(".stat-description")
+
+		description.show()
+		$(button).hide()
+	}
+
+	function hide_info(button){
+		$(".stat-description").hide()
+		$(".stat-info-show").show()
+	}
+
+	function populate_adv_stat_header(table){
+		var row = table.insertRow(0)
+		var num_stats = display_stats_adv.length
+		for(i = 0; i < num_stats + 1; i++){
+			var col = row.insertCell(i)
+			if (i > 0) {
+				var description =  display_stats_adv[i-1].stat_description.replace(/&lt;/g,"<").replace(/&gt;/g,">");
+				
+				$(col).html("<div class = 'stat-table-header'><button class = 'stat-table-button' onmouseover = 'show_info(this)' onmouseout = 'hide_info(this)' onclick='sort_advanced_table(" + display_stats_adv[i-1].display_priority +")'>" + display_stats_adv[i-1].stat + "</button> <div class = 'stat-info'> <div class = 'stat-name stat-info-show'>" + display_stats_adv[i-1].stat_name + "</div> <button class = 'stat-info-show' onclick = 'show_more_info(this)'> See More Info</button> <div class = 'stat-description'>" + description + " </div> </div> </div>")
+			}
+		}
+	}
+
+	function populate_team_adv_stat_header(table){
+		var meta_row = table.insertRow(0)
+		var stat_row = table.insertRow(1)
+
+		var blank_cell = meta_row.insertCell(0)
+		var offense_four_factors = meta_row.insertCell(1)
+		offense_four_factors.colSpan = "4";
+		offense_four_factors.innerHTML = "Offense Four Factors"
+
+		var defense_four_factors = meta_row.insertCell(2)
+		defense_four_factors.colSpan = "4";
+		defense_four_factors.innerHTML = "Defense Four Factors"
+
+		var other_advanced = meta_row.insertCell(3)
+		other_advanced.colSpan = "5";
+		other_advanced.innerHTML = "Other Advanced"
+
+		var num_stats = display_stats_team_adv.length
+		for(i = 0; i < num_stats + 1; i++){
+			var col = stat_row.insertCell(i)
+			if (i > 0) {
+				col.innerHTML += "<div>" + display_stats_team_adv[i - 1].stat + "</div>";
+			}
+		}
+	}
+
+
+	/**********************************************************************************************************************************************/
+	/**********************************************************************************************************************************************/
+	/****************************************************************** </CHANGERS> ***************************************************************/
+	/**********************************************************************************************************************************************/
+	/**********************************************************************************************************************************************/
+
+
+
+
+	/**********************************************************************************************************************************************/
+	/**********************************************************************************************************************************************/
+	/****************************************************************** <FINDERS> *****************************************************************/
+	/**********************************************************************************************************************************************/
+	/**********************************************************************************************************************************************/
+
+	function find_header_index(display_priority, arr){
+		var len = arr.length
+		for(var i = 0; i < len; i++){
+			if (parseInt(arr[i].display_priority) == display_priority){
+				return i;
+			}
+		}
+	}
+
+	function find_player_stat_index(display_priority, arr){
+		var len = arr.length
+		for(var i = 0; i < len; i++){
+			if (parseInt(arr[i].display_priority) == display_priority){
+				return i;
+			}
+		}
+	}
+
+	function find_player_stat(display_priority, player, is_player, is_advanced){
+		var stat_arr;
+		if(is_player){
+			if(is_advanced) stat_arr = player.adv_stat_arr;
+			else stat_arr = player.stat_arr;
+		}
+		
+		else {
+			stat_arr = player;
+		}
+		var len = stat_arr.length
+		for(var i = 0; i < len; i++){
+			if(stat_arr[i].display_priority == display_priority){
+				return (is_advanced) ? stat_arr[i].value : stat_arr[i].value;
+			}
+		}
+	}
+
+
+	function find_player_fraction_stat(display_priority, player, is_player){
+		var stat_arr = (is_player) ? player.stat_arr : player
+		var len = stat_arr.length
+		var makes = 0;
+		var misses = 0;
+		var return_arr = [];
+		for(var i = 0; i < len; i++){
+			if(stat_arr[i].display_priority == display_priority){
+				//misses all have odd stat_list_ids, makes all have even stat_lsit_ids
+				if (parseInt(stat_arr[i].stat_list_id) % 2 == 0){
+					misses = stat_arr[i].value
+				}
+				else 
+					makes = stat_arr[i].value
+			}
+		}
+		return_arr.push(makes);
+		return_arr.push(misses)
+
+		return return_arr;
+	}
+
+	function toggle_player_table(type, button){
+		$(".table-toggle-button").css("text-decoration", "none")
+		button.style.textDecoration = "underline";
+		switch(type){
+			case 1 :
+				$("#per-game-table").show()
+				$("#per-minute-table").hide();
+				$("#adv-player-stats-table").hide()
+				break;
+			case 2 :
+				$("#per-game-table").hide()
+				$("#per-minute-table").hide();
+				$("#adv-player-stats-table").show()
+				break;
+			case 3:
+				$("#per-game-table").hide()
+				$("#per-minute-table").show();
+				$("#adv-player-stats-table").hide()
+				break;
+		}
+	}
+
+	/**********************************************************************************************************************************************/
+	/**********************************************************************************************************************************************/
+	/****************************************************************** </FINDERS> ****************************************************************/
+	/**********************************************************************************************************************************************/
+	/**********************************************************************************************************************************************/
+
+
+
+
+
+</script>

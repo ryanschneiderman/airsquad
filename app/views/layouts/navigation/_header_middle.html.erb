@@ -1,0 +1,16 @@
+<div class="navbar-header header-middle">
+	<%if params.has_key?(:team_id)%>
+		<%=link_to "Stats", team_stats_path(params[:team_id])%>
+		<%=link_to "Schedule", team_games_path(params[:team_id])%>
+		<%=link_to "Plays", team_plays_path(params[:team_id])%>
+		<%=link_to "Lineup Explorer", team_lineups_path(params[:team_id])%>
+		<%=link_to "Settings", team_settings_path(params[:team_id])%>
+	<%elsif params.has_key?(:id)%>
+		<%=link_to "Stats", team_stats_path(params[:id])%>
+		<%=link_to "Schedule", team_games_path(params[:id])%>
+		<%=link_to "Plays", team_plays_path(params[:id])%>
+		<%=link_to "Lineup Explorer", team_lineups_path(params[:id])%>
+		<%=link_to "Settings", team_settings_path(params[:id])%>
+	<%else%>
+	<%end%>
+</div><!-- navbar-header -->

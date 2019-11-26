@@ -1,0 +1,503 @@
+<script>
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <BUTTON FUNCTIONS> *********************************************************/
+    /*********************************************************************************************************************************/
+
+    function validateAnchor(object){
+      var isValidAnchor = false;
+      var object_type = object.get("type");
+      if (object_type == "PlayerCircle" || object_type == "LineWithArrow" || object_type == "PassLine" || object_type == "DribbleLine" || object_type == "ScreenLine"){
+        isValidAnchor = true;
+      }
+      return isValidAnchor;
+    }
+
+    function lineToRun(event){
+        line_type = "run";
+        var anchor = canvas.getActiveObject()
+            if(anchor && validateAnchor(anchor)){
+                draw(anchor);
+                canvas.requestRenderAll.bind(canvas);
+            }    
+    }
+
+    function lineToPass(event){
+        line_type = "pass";
+         var anchor = canvas.getActiveObject()
+            if(anchor && validateAnchor(anchor)){
+                draw(anchor);
+                canvas.requestRenderAll.bind(canvas);
+            } 
+    }
+
+    function lineToScreen(event){
+        line_type = "screen";
+        var anchor = canvas.getActiveObject()
+            if(anchor && validateAnchor(anchor)){
+                draw(anchor);
+                canvas.requestRenderAll.bind(canvas);
+                
+            } 
+    }
+
+    function lineToDribble(event){
+        line_type = "dribble";
+        var anchor = canvas.getActiveObject()
+            if(anchor && validateAnchor(anchor)){
+                draw(anchor);
+                canvas.requestRenderAll.bind(canvas);
+            } 
+    }
+
+    function setBallPos(obj){
+      obj.ball.set({left: obj.left + obj.radius * 1.7, top: obj.top + obj.radius * 1.7})
+      obj.ball.setCoords()
+      canvas.renderAll()
+    }
+
+
+    function hasBall(event){
+      var anchor = canvas.getActiveObject()
+      var ball_found = false;
+      if(anchor){
+        var type = anchor.get("type")
+        if(type == "PlayerCircle"){
+          canvas.getObjects().forEach(function(o) {
+            if(o.has_ball){
+              o.has_ball = false;
+              anchor.ball = o.ball;
+              setBallPos(anchor)
+              o.ball = null;
+              ball_found = true;
+            }
+          });
+          if (!ball_found){
+            var ball = makeBasketball(anchor.top, anchor.left, anchor.radius)
+            anchor.ball = ball;
+          }
+          anchor.has_ball = true;
+        }
+      }
+    }
+
+    
+    /* 
+
+    function background_to_halfcourt(){
+        var img = new Image();
+        img.onload = function() {
+            // this is syncronous
+            var background_img = new fabric.Image(img);
+            background_img.objectCaching = false;
+            background_img.scaleToHeight(window.innerHeight * .9);
+
+            canvas.setBackgroundImage(background_img, canvas.renderAll.bind(canvas), {
+                top: 0,
+                left: halfcourt_img_left
+            });
+            canvas.requestRenderAll.bind(canvas);
+        };
+        img.src = "<%= asset_path('halfcourt.png')%>";
+    }
+
+    function background_to_fullcourt(){
+        var img = new Image();
+        img.onload = function() {
+            // this is syncronous
+            var background_img = new fabric.Image(img);
+            background_img.objectCaching = false;
+            background_img.scaleToHeight(window.innerHeight);
+
+            canvas.setBackgroundImage(background_img, canvas.renderAll.bind(canvas), {
+                top: 0,
+                left: fullcourt_img_left
+            });
+            canvas.requestRenderAll.bind(canvas);
+        };
+        img.src = "<%= asset_path('full_court.png')%>";
+    }
+    */
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <BUTTON FUNCTIONS/> *********************************************************/
+    /*********************************************************************************************************************************/
+
+
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <HELPER FUNCTIONS> *********************************************************/
+    /*********************************************************************************************************************************/
+
+
+    function setLine (LineId, obj, index) {
+        canvas.getObjects().forEach(function(o) {
+            if(o.id == LineId) {
+                obj.lines[index] = o;
+                return o;
+            }
+        });
+    }
+
+    function setToAnchor(toAnchorId, line, centerX, centerY){
+      canvas.getObjects().forEach(function(o) {
+            if(o.id == toAnchorId) {
+                o.set({top: centerY, left: centerX});
+                line.toAnchor = o;
+                return o;
+            }
+      });
+    }
+
+    function getToAnchor(toAnchorId, line){
+       canvas.getObjects().forEach(function(o) {
+            if(o.id == toAnchorId) {
+                line.toAnchor = o;
+                return o;
+            }
+      });
+    }
+
+    function recurseLines(obj){
+      if(!obj.lines){
+        obj.lines = [];
+        populateLines(obj);
+      }
+       var line_arr_length = obj.lines.length;
+        if(line_arr_length == 0){
+          return 0;
+        }
+        else{
+          var max_depth = recurseLines(obj.lines[0])
+          obj.lines[0].set({x1: obj.toAnchorPoint.x, y1: obj.toAnchorPoint.y});
+          rotateAnchor(obj.lines[0]);
+          obj.lines[0].setCoords();
+          for (var i = 1; i < line_arr_length; i++){
+            obj.lines[i].set({x1: obj.toAnchorPoint.x, y1: obj.toAnchorPoint.y});
+            rotateAnchor(obj.lines[i]);
+            obj.lines[i].setCoords();
+            var depth = recurseLines(obj.lines[i])
+            if(depth > max_depth) max_depth = depth;
+          }
+          return max_depth + 1;
+        }
+    }
+
+    function populateLines(obj){
+      var lineId_arr_length = obj.lineIds.length;
+      for(var i = 0; i < lineId_arr_length; i++){
+        setLine(obj.lineIds[i], obj, i);
+      }
+    }
+
+    function rotateAnchor(line){
+      var centerX = line.x2 - anchorOffset + (Math.cos(line.anchorAngle) * 10);
+      var centerY = line.y2 - anchorOffset + (Math.sin(line.anchorAngle) * 10);
+      setToAnchor(line.toAnchorId, line, centerX, centerY);
+      line.toAnchorPoint.x = centerX + anchorOffset
+      line.toAnchorPoint.y = centerY + anchorOffset;
+    }
+
+
+    function add_players(bench, playerRadius){
+        var off1 = makeCircle(bench, canvas.height * .07, 'blue', 'off1', '1', false, playerRadius);
+        var off2 = makeCircle(bench, canvas.height * .14, 'blue', 'off2', '2', false, playerRadius);
+        var off3 = makeCircle(bench, canvas.height * .21, 'blue', 'off3', '3', false, playerRadius);
+        var off4 = makeCircle(bench, canvas.height * .28, 'blue', 'off4', '4', false, playerRadius);
+        var off5 = makeCircle(bench, canvas.height * .35, 'blue', 'off5', '5', false, playerRadius);
+
+        var def1 = makeCircle(bench, canvas.height * .49, 'red', 'def1', '1', false, playerRadius);
+        var def2 = makeCircle(bench, canvas.height * .56, 'red', 'def2', '2', false, playerRadius);
+        var def3 = makeCircle(bench, canvas.height * .63, 'red', 'def3', '3', false, playerRadius);
+        var def4 = makeCircle(bench, canvas.height * .7, 'red', 'def4', '4', false, playerRadius);
+        var def5 = makeCircle(bench, canvas.height * .77, 'red', 'def5', '5', false, playerRadius);
+    }
+
+    function add_fullcourt_players(bench, playerRadius){
+        var off1 = makeCircle(canvas.width * .20, bench, 'blue', 'off1', '1', false, playerRadius);
+        var off2 = makeCircle(canvas.width * .25, bench, 'blue', 'off2', '2', false, playerRadius);
+        var off3 = makeCircle(canvas.width * .30, bench, 'blue', 'off3', '3', false, playerRadius);
+        var off4 = makeCircle(canvas.width * .35, bench, 'blue', 'off4', '4', false, playerRadius);
+        var off5 = makeCircle(canvas.width * .40, bench, 'blue', 'off5', '5', false, playerRadius);
+
+        var def1 = makeCircle(canvas.width * .50, bench, 'red', 'def1', '1', false, playerRadius);
+        var def2 = makeCircle(canvas.width * .55, bench, 'red', 'def2', '2', false, playerRadius);
+        var def3 = makeCircle(canvas.width * .60, bench, 'red', 'def3', '3', false, playerRadius);
+        var def4 = makeCircle(canvas.width * .65, bench, 'red', 'def4', '4', false, playerRadius);
+        var def5 = makeCircle(canvas.width * .70, bench, 'red', 'def5', '5', false, playerRadius);
+    }
+
+    function anchorPositioning(e){
+      var obj = e.target;
+      var type = obj.get('type');
+      if(validateLine(obj)){
+          obj.toAnchorPoint.x = canvas.getPointer(e.e).x + Math.cos(obj.anchorAngle) * 10;
+          obj.toAnchorPoint.y =  canvas.getPointer(e.e).y + Math.sin(obj.anchorAngle) * 10;
+          obj.set({x2: canvas.getPointer(e.e).x, y2: canvas.getPointer(e.e).y})
+          obj.setCoords();
+          rotateAnchor(obj);
+      }
+      else if (type == "PlayerCircle"){
+          obj.toAnchorPoint.x = obj.left + obj.radius;
+          obj.toAnchorPoint.y = obj.top + obj.radius;
+          obj.text.left = obj.left + obj.radius + 2;
+          obj.text.top = obj.top + obj.radius + 2;
+
+          if(obj.has_ball){
+            obj.ball.left = obj.left + obj.radius * 1.7
+            obj.ball.top = obj.top + obj.radius * 1.7
+          }
+      } 
+      
+      if(obj.lines){ 
+        recurseLines(obj); 
+      }
+      else{
+        obj.lines = [];
+        populateLines(obj);
+        recurseLines(obj);
+      }  
+    }
+
+    function boundObjects(obj){
+      // if object is too big ignore
+      if(obj.currentHeight > obj.canvas.height -1 || obj.currentWidth > obj.canvas.width -1){
+          return;
+      }        
+      obj.setCoords();        
+      // top-left  corner
+      if(obj.getBoundingRect().top < 1 || obj.getBoundingRect().left < 1){
+          obj.top = Math.max(obj.top, obj.top-obj.getBoundingRect().top);
+          obj.left = Math.max(obj.left, obj.left-obj.getBoundingRect().left);
+      }
+          // bot-right corner
+      if(obj.getBoundingRect().top+obj.getBoundingRect().height  > obj.canvas.height || obj.getBoundingRect().left+obj.getBoundingRect().width  > obj.canvas.width){
+          obj.top = Math.min(obj.top, obj.canvas.height-obj.getBoundingRect().height+obj.top-obj.getBoundingRect().top);
+          obj.left = Math.min(obj.left, obj.canvas.width-obj.getBoundingRect().width+obj.left-obj.getBoundingRect().left);
+      }
+    }
+
+    function validateLine(obj){
+      var type = obj.get("type");
+      if (type == 'LineWithArrow' || type == 'ScreenLine' || type == "PassLine" || type == "DribbleLine"){
+        return true;
+      }
+      else return false;
+    }
+
+    function removeLineRef(line){
+      canvas.getObjects().forEach(function(o){
+        if(o.id == line.anchorId && validateAnchor(o)){
+          var array_length = o.lineIds.length
+          for(var i = 0; i < array_length; i++){ 
+             if (o.lineIds[i] == line.id) {
+               o.lineIds.splice(i, 1); 
+               if(o.lines){
+                o.lines.splice(i, 1);
+               }
+             }
+          }
+        }
+      });
+    }
+
+
+    function animateMovement(player, o){
+      var wait = false;
+    canvas.getObjects().forEach(function(obj) {
+        if (obj.anchorId == o.id && (obj.type == "LineWithArrow" || obj.type == "DribbleLine" || obj.type == "ScreenLine")){
+          
+          var new_left = obj.toAnchorPoint.x;
+          var new_top = obj.toAnchorPoint.y;
+          
+          player.animate('left', new_left - player.radius, {
+            duration: 1300,
+            onChange: canvas.renderAll.bind(canvas),
+          });
+          player.animate('top', new_top - player.radius, {
+            duration: 1300,
+            onChange: canvas.renderAll.bind(canvas),
+          });
+
+          player.text.animate('top', new_top + 2, {
+            duration: 1300,
+            onChange: canvas.renderAll.bind(canvas),
+          });
+
+          player.text.animate('left', new_left+ 2, {
+            duration: 1300,
+            onChange: canvas.renderAll.bind(canvas),
+          });
+
+          if(player.has_ball){
+            player.ball.animate('top', new_top- player.radius + player.radius * 1.7, {
+            duration: 1300,
+            onChange: canvas.renderAll.bind(canvas),
+            });
+
+            player.ball.animate('left', new_left - player.radius + player.radius * 1.7, {
+              duration: 1300,
+              onChange: canvas.renderAll.bind(canvas),
+            });
+          }
+
+          player.toAnchorPoint.x = new_left
+          player.toAnchorPoint.y = new_top
+
+          setTimeout(function(){ 
+            if (o.lines[0]){
+              animateMovement(player, o.lines[0])
+            } 
+          }, 1300);
+          
+        }
+        else if (player.has_ball && obj.anchorId == o.id && (obj.type == "PassLine" )){
+          var new_left = obj.toAnchorPoint.x;
+          var new_top = obj.toAnchorPoint.y;
+          player.ball.animate('top', new_top, {
+            duration: 1300,
+            onChange: canvas.renderAll.bind(canvas),
+            });
+
+          player.ball.animate('left', new_left , {
+              duration: 1300,
+              onChange: canvas.renderAll.bind(canvas),
+          });
+          setTimeout(function(){ 
+            var new_play_w_ball = closestToBall(new_left, new_top)
+            setBallPlayer(new_play_w_ball)
+          }, 1300);
+          
+        }
+    });
+  }
+
+  function setBallPlayer(player){
+      var ball_found = false;
+      canvas.getObjects().forEach(function(o) {
+            if(o.has_ball && !ball_found){
+              o.has_ball = false;
+              canvas.remove(o.ball)
+              o.ball = null;
+              var new_ball = makeBasketball(player.top, player.left, player.radius)
+              
+              player.ball = new_ball
+              
+              setBallPos(player)
+              ball_found = true;
+
+            }
+      });
+
+      if (!ball_found){
+          var ball = makeBasketball(player.top, player.left, player.radius)
+          player.ball = ball;
+      }
+      player.has_ball = true;
+    }
+
+    function closestToBall(x, y){
+      var curr_player = null;
+      var min_distance = null;
+      canvas.getObjects().forEach(function(o) {
+        if(o.type == "PlayerCircle"){
+          var player_x = o.left + o.radius;
+          var player_y = o.top + o.radius;
+          var dx = Math.pow(player_x - x, 2);
+          var dy = Math.pow(player_y - y, 2);
+          if(min_distance == null){
+            curr_player = o;
+            min_distance = dx + dy
+          }
+          else if (dx + dy < min_distance){
+            min_distance = dx + dy
+            curr_player = o
+          }
+        }
+      });
+      return curr_player;
+    }
+
+
+
+  function attachBallClosest(){
+
+  }
+
+  function hideLines(){
+    canvas.getObjects().forEach(function(obj) {
+      if(obj.type == 'LineWithArrow' || obj.type == 'ScreenLine' || obj.type == "DribbleLine" || obj.type == "PassLine"){
+          obj.opacity = 0;
+      }   
+    });
+  }
+
+  function removeLines(){
+    canvas.getObjects().forEach(function(obj) {
+      if(obj.type == 'LineWithArrow' || obj.type == 'ScreenLine' || obj.type == "DribbleLine" || obj.type == "PassLine"){
+          removeLineRef(obj);
+          canvas.remove(obj.toAnchor);
+          canvas.remove(obj);
+      }   
+    });
+  }
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <HELPER FUNCTIONS/> ********************************************************/
+    /*********************************************************************************************************************************/
+
+
+
+    function deselect_all_active(){
+      canvas.getActiveObjects().forEach(function(o) {
+        var type = o.get('type');
+            if(type == "PlayerCircle"){
+                o.set({stroke: o.color});
+            } 
+            if(validateLine(o)){
+              if(!o.toAnchor){
+                getToAnchor(o.toAnchorId, o);
+              }
+              o.toAnchor.set('opacity', '0')
+            }
+      });
+    }
+
+
+    
+    $(document).keyup(function(e){
+        if(e.keyCode == 46 || e.keyCode == 8) {
+            canvas.getActiveObjects().forEach(function(o) {
+                var type = o.get('type');
+                if(type == 'LineWithArrow' || type == 'ScreenLine' || type == "PassLine" || type == "DribbleLine"){
+                    removeLineRef(o);
+                    canvas.remove(o.toAnchor);
+                    canvas.remove(o);
+                }   
+        });
+        }
+    });
+
+
+/*
+    $(document).keydown(function(e) {
+        if(e.keyCode == 16) {
+            var anchor = canvas.getActiveObject();
+            if(anchor && validateValidAnchor(anchor)){
+                draw(anchor);
+                canvas.renderAll();
+            } 
+        } 
+    }
+);*/
+
+
+
+    
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <DOCUMENT ON READY/> *******************************************************/
+    /*********************************************************************************************************************************/
+
+
+</script>

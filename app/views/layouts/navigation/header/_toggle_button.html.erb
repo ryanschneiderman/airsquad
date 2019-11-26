@@ -1,0 +1,12 @@
+<div class = "page-dropdown">
+	<div id = "curr-page">
+		<%if params.has_key?(:team_id)%>
+			<button class = "dropbtn"><%=link_to get_team_name(params[:team_id]), team_path(params[:team_id] ) %></button>
+		<%elsif params.has_key?(:id)%>
+			<button class = "dropbtn"><%=link_to get_team_name(params[:id]), team_path(params[:id] ) %></button>
+		<%else%>
+		<%end%>
+	</div>
+</div>
+
+

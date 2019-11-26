@@ -1,0 +1,91 @@
+<script>
+	$("#team-stats-color-overlay").hover(
+		function() {
+	    $("#team-overlay-message").show();
+	  }, function() {
+	     $("#team-overlay-message").hide();
+	 });
+
+	$("#player-stats-color-overlay").hover(
+		function() {
+	    $("#player-overlay-message").show();
+	  }, function() {
+	     $("#player-overlay-message").hide();
+	 });
+
+	$("#team-stats-color-overlay").click(function() {
+		$(this).css("cursor", "default")
+		$("#gr-player-stats-content").hide();
+  		$("#gr-team-stats").animate({
+	    	width: "90%",
+        right: "10%",
+  		}, 500);
+  		$("#gr-player-stats").animate({
+        width: "10%",
+	    	left: "90%",
+  		}, 500);
+      $("#player-stats-color-overlay").css({ 'z-index' : '2001'});
+      $("#player-overlay-header").show()
+      $("#team-overlay-header").hide()
+
+  		$("#player-stats-color-overlay").animate({
+	    	width: "100%",
+  		}, 500);
+  		$("#team-stats-color-overlay").animate({
+	    	width: "100%",
+  		}, 500, function() {
+    		$( this ).animate({
+    			opacity: 0
+    		}, 100);
+    		$("#team-stats-white-overlay").animate({
+    			opacity: 0
+    		}, 100);
+    		$("#player-stats-color-overlay").animate({
+	    		opacity: 1,
+  			}, 100);
+  			$("#player-stats-white-overlay").animate({
+	    		opacity: 1,
+  			}, 100);
+  			$("#gr-team-stats-content").show();
+  		});
+	});
+
+	$("#player-stats-color-overlay").click(function() {
+	  $(this).css("cursor", "default")
+	  	$("#gr-team-stats-content").hide();
+  		$("#gr-team-stats").animate({
+        width: "10%",
+	    	right: "90%",
+  		}, 500);
+  		$("#gr-player-stats").animate({
+	    	width: "90%",
+        left: "10%",
+  		}, 500);
+      $("#player-overlay-header").hide()
+      $("#team-overlay-header").show()
+      
+
+  		$("#player-stats-color-overlay").animate({
+	    	width: "100%",
+  		}, 500, function() {
+    		$( this ).animate({
+    			opacity: 0
+    		}, 100);
+        $("#player-stats-color-overlay").css({ 'z-index' : '-2'});
+    		$("#player-stats-white-overlay").animate({
+    			opacity: 0
+    		}, 100);
+    		$("#team-stats-color-overlay").animate({
+	    		opacity: 1,
+  			}, 100);
+  			$("#team-stats-white-overlay").animate({
+	    		opacity: 1,
+  			}, 100);
+  			$("#gr-player-stats-content").show();
+  		});
+
+  		$("#team-stats-color-overlay").animate({
+	    	width: "100%",
+  		}, 500);
+	});
+</script>

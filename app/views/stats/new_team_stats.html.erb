@@ -1,0 +1,9 @@
+
+<%= form_for @team_stat, :url => url_for(:controller => 'stats', :action => 'create_team_stats') do |f| %>
+  <% @stat_list.each do |stat| %>
+    <%= f.check_box :stat_list_id, {multiple: true}, stat.id, '' %>
+    <%= f.label :stat_list_id, stat.stat %>
+    <br> </br>
+  <% end %>
+  <%= f.submit "Create stats to be recorded", class: 'form-control' %>
+<% end %>

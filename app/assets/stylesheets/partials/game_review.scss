@@ -1,0 +1,20 @@
+
+
+#gr-shot-chart-grid{
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
+.stats-table-header{
+	text-align: center;
+}
+
+.stat-table-button{
+	background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+}

@@ -1,0 +1,103 @@
+Effective shooting = (FG + .5 * 3P)/FGA
+
+True shooting =  Points / (2 * (FGA + .44 * FTA)
+
+Linear PEF = [ (FGM x 85.910) + (STEALS x 53.897) + (3PTM x 51.757) + (FTM x 46.845) + ( Blocks x 39.190) + (Offensive_Reb x 39.190) + (Assists x 34.677) + (Defensive_Reb x 14.707) - (Foul x 17.174) - (FT_Miss x 20.091) - (FG_Miss x 39.190) - (TO x 53.897)] x (1 / Minutes)
+
+3pt attempt rate = (3PA / FGA)
+
+FT attempt rate = (FTA/FGA)
+
+Usage rate = 100 * ((FGA + 0.44 * FTA +TOV) * (Tm MP / 5)) / (MP * (Tm FGA + 0.44 * Tm FTA + Tm TOV))
+
+Offensive rating = 
+
+	ScPoss = (FG_Part + AST_Part + FT_Part) * (1 - (Team_ORB / Team_Scoring_Poss) * Team_ORB_Weight * Team_Play%) + ORB_Part
+
+		where...
+
+		I.    FG_Part = FGM * 1- .5 * ((PTS - FTM) / (2 * FGA)) * qAST)
+
+		II.   qAST = ((MP / (Team_MP / 5)) * (1.14 * ((Team_Ast - AST) / Team_FGM ))) + ((((Team_AST - AST ) / Team_FGM))) + ((((Team_AST / Team_MP) * 
+			  MP  * 5 -AST) / ((Team_FGM / Team_MP) * MP * 5 - FGM)) * (1 - (MP / (Team_MP / 5))))
+
+		III.  AST_Part = .5 * (((Team_PTS - Team_FTM) - (PTS - FTM)) / (2 * (Team_FGA - FGA))) * AST
+
+		IV.   FT_Part = (1-(1-(FTM/FTA)) ^2)*.4 *FTA
+
+		V.    Team_scoring_poss = Team_FGM + (1-(1-(Team_FTM/Team_FTA))^2) * Team_FTA * .4
+
+		VI.   Team_ORB_Weight = ((1 - Team_ORB%) * Team_Play%) / ((1 - Team_ORB%) * Team_Play% + Team_ORB% * (1 - Team_Play%))
+
+			   1. Team_ORB% = Team_ORB / (Team_ORB + (Opponent_TRB - Opponent_ORB))
+			   2. Team_Play% = Team_Scoring_Poss / (Team_FGA + Team_FTA * 0.4 + Team_TOV)
+
+		VII.  ORB_Part = ORB * Team_ORB_Weight * Team_Play%
+
+
+
+	FGxPoss = (FGA - FGM) * (1 - 1.07 * Team_ORB%)
+
+	FTxPoss = ((1 - (FTM / FTA))^2) * 0.4 * FTA
+
+	TotPoss = ScPoss + FGxPoss + FTxPoss + TOV
+
+
+	PProd = (PProd_FG_Part + PProd_AST_Part + FTM) * (1 - (Team_ORB / Team_Scoring_Poss) * Team_ORB_Weight * Team_Play%) + PProd_ORB_Part
+
+		where...
+
+		I.    PProd_FG_Part = 2 * (FGM + 0.5 * 3PM) * (1 - 0.5 * ((PTS - FTM) / (2 * FGA)) * qAST)
+		II.   PProd_AST_Part = 2 * ((Team_FGM - FGM + 0.5 * (Team_3PM - 3PM)) / (Team_FGM - FGM)) * 0.5 * (((Team_PTS - Team_FTM) - (PTS - FTM)) / (2 * (Team_FGA - FGA))) * AST
+	    III.  PProd_ORB_Part = ORB * Team_ORB_Weight * Team_Play% * (Team_PTS / (Team_FGM + (1 - (1 - (Team_FTM / Team_FTA))^2) * 0.4 * Team_FTA))
+
+
+	********** ORtg = 100 * (PProd / TotPoss) ******
+
+
+Defensive Rating = 
+
+	Stops = Stops1 + Stops2
+
+		where...
+
+		Stops1 = STL + BLK * FMwt * (1 - 1.07 * DOR%) + DRB * (1 - FMwt)
+
+		FMwt = (DFG% * (1 - DOR%)) / (DFG% * (1 - DOR%) + (1 - DFG%) * DOR%)
+
+		DOR% = Opponent_ORB / (Opponent_ORB + Team_DRB)
+
+		DFG% = Opponent_FGM / Opponent_FGA
+
+		Stops2 = (((Opponent_FGA - Opponent_FGM - Team_BLK) / Team_MP) * FMwt * (1 - 1.07 * DOR%) + ((Opponent_TOV - Team_STL) / Team_MP)) * MP + (PF / Team_PF) * 0.4 * Opponent_FTA * (1 - (Opponent_FTM / Opponent_FTA))^2
+
+		Stop% = (Stops * Opponent_MP) / (Team_Possessions * MP
+
+		DRtg = Team_Defensive_Rating + 0.2 * (100 * D_Pts_per_ScPoss * (1 - Stop%) - Team_Defensive_Rating)
+
+		Team_Defensive_Rating = 100 * (Opponent_PTS / Team_Possessions)
+
+		D_Pts_per_ScPoss = Opponent_PTS / (Opponent_FGM + (1 - (1 - (Opponent_FTM / Opponent_FTA))^2) * Opponent_FTA*0.4)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,21 @@
+
+<%= bootstrap_form_for(@stat_list) do |f| %>
+  <%= f.text_field  :stat, 
+                    maxlength: 100, 
+                    class: 'form-control',
+                    required: true, 
+                    minlength: 1,
+                    maxlength: 100 %>
+  <%= f.radio_button :granular, true %> GRANULAR YES
+  <%= f.radio_button :granular, false %> GRANULAR NO
+  <%= f.radio_button :advanced, true %>  ADVANCED YES
+  <%= f.radio_button :advanced, false %> ADVANCED NO
+  <%= f.radio_button :default, true %> DEFAULT YES
+  <%= f.radio_button :default, false %> DEFAULT NO
+  <%= f.radio_button :collectable, true %> COLLECTABLE YES
+  <%= f.radio_button :collectable, false %> COLLECTABLE NO
+  <%= f.radio_button :team_stat, true %> TEAM STAT YES
+  <%= f.radio_button :team_stat, false %> TEAM STAT NO
+
+  <%= f.submit "Create stat", class: 'form-control' %>
+<% end %>

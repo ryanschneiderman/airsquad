@@ -1,0 +1,27 @@
+defaults: &defaults
+  fog_provider: "AWS"
+  aws_access_key_id: "xxxx"
+  aws_secret_access_key: "zzzz"
+  region: "eu-west-1"
+  run_on_precompile: false
+  fog_path_style: true
+  cache_asset_regexps: ['cache_me.js', !ruby/regexp '/cache_some\.\d{8}\.css/']
+
+development:
+  <<: *defaults
+  fog_directory: "rails_app_development"
+  existing_remote_files: keep
+
+test:
+  <<: *defaults
+  fog_directory: "rails_app_test"
+  existing_remote_files: keep
+
+production:
+  <<: *defaults
+  fog_directory: "rails_app_production"
+  existing_remote_files: delete
+
+hybrid:
+  <<: *defaults
+  enabled: false

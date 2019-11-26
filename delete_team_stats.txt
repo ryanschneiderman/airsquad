@@ -1,0 +1,4 @@
+delete from season_team_adv_stats * where team_id = 12;
+delete from stat_totals * where team_id = 12;
+delete from team_season_stats * where team_id = 12;
+delete from team_advanced_stats A using games B where B.id = A.game_id AND B.team_id = 12;

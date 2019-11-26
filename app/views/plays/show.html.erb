@@ -1,0 +1,228 @@
+<div id = "show-grid" style = "margin-top: 60px;">
+	<div><button class = "left" type = "button" onclick="change_progression(-1)"></button></div>
+    <div id = "tool-bar">
+        <div id = "play-header">
+            <div id = "play-progression">
+                <div id = "play-name"> <%= @play.name %> - </div>
+                <div id = "progression_index">1</div>
+            </div>
+            <div class = "settings-dropdown" style = "display: none;">
+                <button onclick = "show_actions()"><%= image_tag("settings-icon.png", :alt => "settings", :class => "settings-icon") %></button>
+                <div id="play-dropdown" class="dropdown-content">
+                    <%= link_to 'Delete Play',  team_play_path(@team_id, @play.id),
+                                data: { confirm: 'Are you sure you want to delete this play' }, method: :delete %>
+                </div>
+            </div>
+        </div>
+        <div id = "drawing-buttons">
+          <div id = "run" class = "drawing-button">
+            <div class = "drawing-button-name">RUN</div>
+            <div class = "drawing-button-arrow">
+              <div class="line"></div>
+              <div class="triangle-point"></div>
+            </div>
+          </div>
+          
+          <div id = "pass" class = "drawing-button">
+            <div class = "drawing-button-name">PASS</div>
+            <div class = "drawing-button-arrow">
+              <div class="dotted-line"></div>
+              <div class="triangle-point"></div>
+            </div>
+          </div>
+          
+          <div id = "drive" class = "drawing-button">
+            <div class = "drawing-button-name">DRIBBLE</div>
+            <div class = "drawing-button-arrow">
+              <div class="zigzag"></div>
+              <div class="triangle-point"></div>
+            </div>
+          </div>
+          
+          <div id = "screen" class = "drawing-button">
+            <div class = "drawing-button-name">SCREEN</div>
+            <div class = "drawing-button-arrow">
+               <div class="line"></div>
+               <div class="vert-line"></div>
+            </div>
+          </div> 
+          <div id = "has-ball" class = "drawing-button">
+            <div class = "drawing-button-name">Has Ball</div>
+               <%= image_tag("basketball-icon.png", :alt => "basketball", :class => "basketball-icon") %>
+          </div>         
+        </div>
+
+    </div>
+	<canvas id ="c" class = "show-canvas"></canvas>
+	<div id = "progression-notes">
+		<div class = "progression-notes-header">Notes</div>
+		<div class = "progression-notes-text"></div>
+	</div>
+	<div><button class = "right" type = "button" onclick="change_progression(1)"></button></div>
+</div>
+<div id = "play-scrollbar">
+	<%@progressions.each do |progression|%>
+	<div id = "progression-block">
+		<div id = "progression-img">
+            
+			<button onclick = "loadCanvasFromJson(<%=progression.index%> -1)">
+				<%= image_tag(url_for(progression.play_image), :alt => "progression", :class => "progression-img") %>
+				<div class = "progression-num"><%=progression.index%></div>
+			</button>
+
+		</div>
+	</div>
+	<%end%>
+	
+</div>
+
+<%= render 'progressions/js_objects' %>
+<%= render 'progressions/javascript' %>
+<script>
+         $(".navbar").addClass("navbar-active");
+    $(".navbar-default a").addClass("navbar-text-active");
+    $(".home-link").css("border-color", "black");
+
+    $(window).on("scroll", function() {
+        $(".navbar").addClass("navbar-active");
+        $(".navbar-default a").addClass("navbar-text-active");
+        $(".home-link").css("border-color", "black")
+
+    });
+        var index = 0
+        var line_type;
+    
+        var line, isDown, evented;
+        var anchorRadius = 3;
+        var anchorOffset = anchorRadius - .5;
+
+        var convert = function(convert){
+            return $("<span />", { html: convert }).text();
+            //return document.createElement("span").innerText;
+        };
+        var json_diagrams = []
+        <% @progressions.each do |progression| %>
+            json_diagrams.push({"json": "<%=progression.json_diagram%>" , "canvas_width" : parseFloat("<%=progression.canvas_width%>"), "notes" : convert("<%=progression.notes%>")});
+        <%end%>
+
+        //canvas.requestRenderAll.bind(canvas);
+        
+        var canvas = new fabric.Canvas("c",{
+            targetFindTolerance: 15,
+             perPixelTargetFind: true,
+             preserveObjectStacking: true,
+        }); 
+        var canvas_width = window.innerWidth * .5;
+        var canvas_height = canvas_width * .7;
+        canvas.setHeight(canvas_height);
+        canvas.setWidth(canvas_width);
+
+        loadCanvasFromJson(index);
+
+        function change_progression(change){
+            var max_depth = 0;
+            if(change > 0){
+                canvas.getObjects().forEach(function(o) {
+                  if (o.type == "PlayerCircle"){
+                    o.lines = [];
+                    populateLines(o)
+                    var depth = recurseLines(o)
+                    //console.log("DEPTH: " + depth)
+                    if(depth > max_depth) max_depth = depth;
+                    animateMovement(o, o)
+                  }
+                });
+                hideLines()
+            }
+            else max_depth = 0;
+            console.log("max_depth: " + max_depth)
+
+        	index = index + change;
+            setTimeout(function(){ 
+                if(index > json_diagrams.length -1){
+                    loadCanvasFromJson(0)
+                }
+                else if (index < 0){
+                    loadCanvasFromJson(json_diagrams.length -1)
+                }
+                else{
+                    loadCanvasFromJson(index);
+                }
+            }, 1300 *  max_depth);  
+        }
+
+        function loadCanvasFromJson(new_index){
+        	$(".progression-notes-text").html(json_diagrams[new_index].notes)
+            var json_diagrams_len = json_diagrams.length;
+            index = new_index;
+           
+            if(new_index > json_diagrams_len -1){
+                index = 0;
+            }
+            else if (new_index < 0 ){
+                index = json_diagrams_len -1;
+            }
+
+            var old_canvas_width = json_diagrams[index].canvas_width;
+            var width_ratio = old_canvas_width/canvas.width;
+
+            var json_data = json_diagrams[index].json.replace(/&quot;/g,'"');
+            canvas.loadFromJSON(json_data, function() {
+                var ball;
+                var player_with_ball;
+                var objs = canvas.getObjects().map(function(o) {
+                    o.set({lockMovementX: true, lockMovementY: true, selectable: false, evented: false, left: o.left / width_ratio, top: o.top/width_ratio})
+                    if(o.type == "circle"){
+                        o.set({lockMovementX: true, lockMovementY: true, selectable: false, radius: o.radius / width_ratio})
+                        o.moveTo(102)
+                    }
+                    else if (o.type == "rect"){
+                        o.set({lockMovementX: true, lockMovementY: true, selectable: false, evented: false, width: o.width / width_ratio, height: o.height / width_ratio})
+                    }
+                    else if (o.type == "text"){
+                        o.set({lockMovementX: true, lockMovementY: true, selectable: false, evented: false, fontSize: o.fontSize / width_ratio})
+                        o.moveTo(101);
+                    }
+                    else if (o.type == "basketball"){
+                        ball = o;
+                    }
+                    else if (o.type == "PlayerCircle"){
+                        canvas.getObjects().forEach(function(obj) {
+                            if(obj.id == o.id && obj.type == "text") {
+                                o.text = obj;
+                                obj.moveTo(20)
+                            }
+                        });
+                        if(o.has_ball == true){
+                            player_with_ball = o;
+                        }
+                        o.toAnchorPoint.x = o.toAnchorPoint.x / width_ratio
+                        o.toAnchorPoint.y = o.toAnchorPoint.y / width_ratio
+                        o.strokeWidth = o.strokeWidth/width_ratio;
+                        o.set({radius: o.radius / width_ratio})
+                        o.moveTo(100)
+                        o.setCoords()
+                    }
+                    else if (o.type == "LineWithArrow" || o.type == "DribbleLine" || o.type == "PassLine" || o.type == "ScreenLine"){
+                        o.toAnchorPoint.x = o.toAnchorPoint.x / width_ratio
+                        o.toAnchorPoint.y = o.toAnchorPoint.y / width_ratio
+                        o.set({x1: o.x1 / width_ratio, x2: o.x2 / width_ratio, y1: o.y1 / width_ratio, y2: o.y2 / width_ratio})
+                        o.moveTo(99)
+                        o.setCoords()
+                        
+                    }
+                    o.setCoords()
+                    return o;
+                });
+                if(player_with_ball){
+                    player_with_ball.ball = ball;
+                    setBallPos(player_with_ball);
+                }
+                canvas.renderAll();
+            }); 
+            $("#progression_index").html(index+1);
+        }
+</script>
+
+
+

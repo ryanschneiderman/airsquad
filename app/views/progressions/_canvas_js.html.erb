@@ -1,0 +1,43 @@
+<script>
+
+    var canvas = new fabric.Canvas('c',{
+        targetFindTolerance: 15,
+         perPixelTargetFind: true,
+         preserveObjectStacking: true,
+    }); 
+
+     function background_to_halfcourt(){
+        var img = new Image();
+        img.onload = function() {
+            // this is syncronous
+            var background_img = new fabric.Image(img);
+            background_img.objectCaching = false;
+            background_img.scaleToHeight(window.innerHeight * .7);
+
+            canvas.setBackgroundImage(background_img, canvas.renderAll.bind(canvas), {
+                top: 0,
+                left: halfcourt_img_left
+            });
+            canvas.requestRenderAll.bind(canvas);
+        };
+        img.src = "<%= asset_path('halfcourt.png')%>";
+    }
+
+    function background_to_fullcourt(){
+        var img = new Image();
+        img.onload = function() {
+            // this is syncronous
+            var background_img = new fabric.Image(img);
+            background_img.objectCaching = false;
+            background_img.scaleToHeight(window.innerHeight);
+
+            canvas.setBackgroundImage(background_img, canvas.renderAll.bind(canvas), {
+                top: 0,
+                left: fullcourt_img_left
+            });
+            canvas.requestRenderAll.bind(canvas);
+        };
+        img.src = "<%= asset_path('full_court.png')%>";
+    }
+
+</script>

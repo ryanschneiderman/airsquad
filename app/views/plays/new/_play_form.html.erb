@@ -1,0 +1,19 @@
+
+<%= bootstrap_form_for(@play) do |f| %>
+  <%= f.text_field  :name, 
+                    maxlength: 100, 
+                    placeholder: 'What is the name of the play?', 
+                    class: 'form-control',
+                    required: true, 
+                    minlength: 1,
+                    maxlength: 100 %>
+  <div>Is this an offensive or defensive play?</div>
+  <%= f.radio_button :offense_defense, true, label: "Offense", value: true  %>
+  <%= f.radio_button :offense_defense, false, label: "Defense",  value: false%>
+  <div>What kind of play is it?</div>
+  <% @play_types.each do|type|%>
+    <%= f.radio_button :play_type_id, type.id, label: type.play_type, value: type.id %>
+  <%end%>
+  <%= f.hidden_field :team_id,  value: @team_id  %> 
+  <%= f.submit "Create play", class: 'form-control' %>
+<% end %>

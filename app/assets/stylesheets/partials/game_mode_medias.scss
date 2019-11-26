@@ -1,0 +1,59 @@
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : portrait) { 
+
+	#top-grid{
+		display: flex;
+		flex-direction: column-reverse;
+	}
+
+	#gm-middle{
+		width: 100vw;
+	}
+
+	#canvas-wrapper{
+		display: block;
+		margin: auto;
+	}
+
+	#gm-toolbar{
+		width: 100vw;
+	}
+
+	#stat-buttons{
+		grid-template-columns: repeat(3, 130px);
+	}
+
+	#in-game-players{
+		grid-template-columns: repeat(2, 100px);
+	}
+	.player-button{
+		height: 60px;
+	}
+
+	#players_w_stats{
+		display: flex;
+		flex-direction: row-reverse;
+	}
+
+	#bench-players{
+		grid-template-columns: repeat(2, 100px);
+	}
+
+	#bench{
+		margin: 0;
+		border-right: 1px solid white;
+	}
+
+	.tb-elem{
+		padding-left: 30px;
+		padding-right: 30px;
+	}
+
+	.gm-submit{
+		margin-right: 150px;
+		margin-left: 150px;
+	}
+
+}

@@ -1,0 +1,56 @@
+<script>
+        var court_margin = { left: 20, right: 20, top: 20, bottom: 20 };
+        var court_width =  window.innerWidth * 0.65
+        var court_height = court_width * 0.7
+        var innerWidth = court_width - court_margin.left - court_margin.right;
+        var innerHeight = court_height - court_margin.top - court_margin.bottom;
+        var x_offset = 2;
+        var y_offset = 1;
+        var court = d3.select("#shot-trends").append('court').append('svg');
+
+        // 14 shot locations = length of array
+        var make_array = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        var efg_array = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        var att_array = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        var court_regions = [];
+
+        var color_array = ["#d10002", "#de2429", "#e7767b", "#f0aaad", "#f7d3d4", "#e4eaf4", "#abbddd" ,"#7c98ca" ,"#5176b8", "#3661ad", "#bdbdbd"]
+        
+        court.attr('width', court_width)
+             .attr('height', court_height)
+
+             
+        var heat_g = court.append('g')
+        var court_g = court.append('g');
+        var title = d3.select(document.getElementById('caption')).append('text');
+
+        var slider_axis = court.append('g')
+                               .attr('class', 'slider-axis');
+        var slider_rect = court.append('g')
+                               .attr('class', 'slider-rect');
+
+        var rect_entity = slider_rect.append('rect');
+
+        var court_xScale = d3.scaleLinear()
+                                     .domain([0, court_width]);
+        var court_yScale = d3.scaleLinear()
+                                     .domain([0,court_height]);
+
+        var color = d3.scaleSequential(d3.interpolateOrRd)
+                      .domain([5e-6, 3e-2]); // Points per square pixel.
+        
+        var RestrictedArea = court_g.append('path')
+        
+        var BottomFreeThrow = court_g.append('path')
+        var ThreeLine = court_g.append('path')
+        var CenterOuter = court_g.append('path')
+        var CenterInner = court_g.append('path')
+
+        var BasketRegion = court_g.append('circle');
+        var MidRangeRegion = court_g.append('circle');
+
+        draw_court(court_width, court);
+        initialize_shot_chart_data();
+        initCalibration()
+
+</script>

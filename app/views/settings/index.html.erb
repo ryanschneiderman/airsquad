@@ -1,0 +1,148 @@
+<div id = "settings-landing" class = "page-landing">
+	<%= image_tag("settings-wallpaper.jpg", :alt => "settings", :class => "landing-img") %>
+	<div class = "content-page-landing-title">Settings</div>
+</div>
+<div id = "edit-team-stats" class = "dark-block">
+	<div id = "edit-stats-block">
+		<div id = "team-stat-grid">
+			<div id = "edit-stats-header">
+				Edit Stats
+			</div>
+			<div id = "stat-choices-grid">
+				<div id = "choose-stats"> 
+					<div class = "stat-choice-header">Choose Additional Stats</div>
+					<div class = "stat-choice-grid">
+						<div class = "stats-choice-box">
+							<div id = "choose-basic-collectors">
+								<% @non_default_collectable_add.each do |stat| %>
+									<button class = "stat-choice stat-choice-active" type = "button" onclick="to_your_stats(this, 'basic', '<%= stat.stat %>', <%= stat.id %>)"> <%= stat.stat %> </button>
+								<% end %>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id = "your-basic-stats"> 
+					<div class = "stat-choice-header">Your basic stats</div>
+					<div class = "your-stats-grid">
+						<div class = "stats-choice-box">
+							<div id = "basic-collectors">
+								<% @default_basic.each do |stat| %>
+									<div class = "stat-choice stat-choice-active"> <%= stat.stat %> </div>
+								<% end %>
+								<% @non_default_collectable_belongs.each do |stat| %>
+									<button class = "stat-choice stat-choice-active" type = "button" id = "stat-<%=stat.stat_list_id%>" onclick="to_choose_stats(this, 'basic', '<%= stat.stat %>', <%= stat.stat_list_id %>)"> <%= stat.stat %> </button>
+
+								<% end %>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id = "your-advanced-stats"> 
+					<div class = "stat-choice-header">Your Advanced stats</div>
+					<div class = "adv-stats-grid">
+						<div class = "stats-choice-box">
+							<div class = "stat-choice-subheader new-team-secondary-color">Advanced individual stats</div>
+							<div id = "adv-individual">
+								<%@default_indiv_advanced.each do |stat|%>
+									<button class = "stat-choice stat-choice-active" type = "button" id = "stat-<%=stat.id%>" onclick="to_choose_stats(this, 'advanced', '<%= stat.stat %>', <%= stat.id %>)"> <%= stat.stat %> </button>
+								<%end%>
+
+								<%@non_default_advanced_belongs.each do |stat|%>
+									<button class = "stat-choice stat-choice-active" type = "button" id = "stat-<%=stat.stat_list_id%>" onclick="to_choose_stats(this, 'advanced', '<%= stat.stat %>', <%= stat.stat_list_id %>)"> <%= stat.stat %> </button>
+								<%end%>
+
+								
+
+								<%@non_default_advanced_add.each do |stat|%>
+									<button class = "stat-choice stat-choice-inactive" id = "stat-<%=stat.id%>"> <%= stat.stat %> </button>
+								<%end%>
+							</div>
+						</div>
+						<div class = "stats-choice-box">
+							<div class = "stat-choice-subheader new-team-secondary-color">Advanced team stats</div>
+							<div id = "adv-team">
+								<%@default_team_advanced.each do |stat|%>
+									<button class = "stat-choice stat-choice-active" type = "button" id = "stat-<%=stat.id%>" onclick="to_choose_stats(this, 'advanced', '<%= stat.stat %>', <%= stat.id %>)"> <%= stat.stat %> </button>
+								<%end%>
+								<%@non_default_team_advanced_belongs.each do |stat|%>
+									<button class = "stat-choice stat-choice-active" type = "button" id = "stat-<%=stat.stat_list_id%>" onclick="to_choose_stats(this, 'advanced', '<%= stat.stat %>', <%= stat.stat_list_id %>)"> <%= stat.stat %> </button>
+								<%end%>
+								
+								<%@non_default_team_advanced_add.each do |stat|%>
+									<button class = "stat-choice stat-choice-inactive" id = "stat-<%=stat.stat_list_id%>"> <%= stat.stat %> </button>
+								<%end%>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<div id = "button-bar">
+			<button class = "bar-button bar-button-offset" id = "edit-stats-submit" onclick = "submit_edit_team()">Submit</button>
+		</div>
+	</div>
+
+
+</div>
+
+<div id = "edit-roster-block">
+	
+</div>
+<%= render "edit_team_stats_js"%>
+
+<script>
+	var stats_to_add = []
+	var stats_to_remove = []
+	var non_default_adv_stats = []
+	var non_default_team_adv_stats = []
+	 initialize_adv_stats()
+	 initialize_stats_kept()
+
+
+	function add_player(){
+		var player = $("#add_player").val()
+		$("#add_player").val("")
+		if(player != ""){
+			players.push(player);
+			$("#current-members").append("<button class = 'new-player' onclick = 'remove_player(this)'><div class = 'new-player-name'>" + player + "</div><div class = 'remove-player-x'> x </div></button>")
+		}
+		else {
+			alert("Enter player name")
+		}
+		
+	}
+
+	function remove_player(button){
+		var player = button.childNodes[0].innerText
+		console.log(button.childNodes[0].innerText)
+		players.splice(players.indexOf(player),1)
+		$(button).remove();
+		console.log(players)
+	}
+
+	function show_team_stat_block(){
+		$("#team-info-block").hide()
+		$("#team-stat-grid").show()
+	}
+
+	function show_team_info_block(){
+		$("#team-info-block").show()
+		$("#team-stat-grid").hide()
+	}
+
+	function submit_edit_team(){
+		/*var team_name = $("#enter-team-name").val()
+		var username = $("#enter-unique-username").val()
+		var password = $("#choose-password").val()
+		var minutes_p_q = $("#minutes-per-quarter").val()*/
+		var url = "/teams/" + <%=@team_id%> + "/settings/"
+		$.ajax({
+	      url: url,
+	      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+	      type: "post",
+	      data_type: 'json',
+	      data: {stats_to_add: stats_to_add, stats_to_remove: stats_to_remove}
+	    });
+	}
+</script>

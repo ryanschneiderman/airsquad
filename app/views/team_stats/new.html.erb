@@ -1,0 +1,225 @@
+<div id = "team-stat-grid">
+	<div id = "team-stat-header">
+		<div id = "ts-header-title">Stat Selection</div>
+		<div id = "ts-header-body">
+			Welcome! Here you will select the stats you would like to keep for you squad. Some stats are default and essential to the function of the application. Others you can choose to keep if you want. The more you keep, the more advanced stats the application can derive for you. 
+		</div>
+	</div>
+	<div id = "stat-choices-grid">
+		<div id = "choose-stats"> 
+			<div class = "stat-choice-header">Choose stats</div>
+			<div class = "stat-choice-grid">
+				<div class = "stats-choice-box">
+					<div class = "stat-choice-subheader">Basic collectors</div>
+					<div id = "choose-basic-collectors">
+						<% @non_default_collectable.each do |stat| %>
+							<button class = "stat-choice" type = "button" onclick="to_your_stats(this, 'basic', '<%= stat.stat %>', <%= stat.id %>)"> <%= stat.stat %> </button>
+						<% end %>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id = "your-stats"> 
+			<div class = "stat-choice-header">Your stats</div>
+			<div class = "your-stats-grid">
+				<div class = "stats-choice-box">
+					<div class = "stat-choice-subheader">Basic collectors</div>
+					<div id = "basic-collectors">
+						<% @default_collectable.each do |stat| %>
+							<div class = "stat-choice"> <%= stat.stat %> </div>
+						<% end %>
+					</div>
+				</div>
+				<div class = "stats-choice-box">
+					<div class = "stat-choice-subheader">Other basic stats</div>
+					<div id = "other-basic-stats">
+						<% @default_application_basic.each do |stat| %>
+							<div class = "stat-choice"> <%= stat.stat %> </div>
+						<% end %>
+					</div>
+				</div>
+				<div class = "stats-choice-box">
+					<div class = "stat-choice-subheader">Advanced individual stats</div>
+					<div> SHOW ADVANCED STATS THAT ARE AUTOMATICALLY CALCULATED FROM THE BASIC STATS </div>
+				</div>
+				<div class = "stats-choice-box">
+					<div class = "stat-choice-subheader">Advanced team stats</div>
+					<div id = "team-stats">
+						<div> SHOW ADVANCED STATS THAT ARE AUTOMATICALLY CALCULATED FROM THE BASIC STATS </div>
+					</div>
+				</div>
+			</div>
+			<button id = "team-stats-submit" type = "button" onclick = "submit_team_stats()">SUBMIT</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	var basic_stats = [];
+	var collection_stats = [];
+	var non_default_adv_stats = []
+	var advanced_stats = [];
+	var team_stats = [];
+	var team_advanced_stats = [];
+
+	function add_basic_stat(stat_name, stat_id, destination){
+		switch(destination){
+			case "your_stats" :
+				
+				collection_stats.push(stat_id);
+				$("#basic-collectors").append('<button class = "stat-choice" type = "button" onclick = "to_choose_stats(this, \'basic\', \''+ stat_name +'\', '+ stat_id +')">' + stat_name +'</button>')
+				adv_stat_add_check(stat_id)
+				break;
+			case "choose_stats" :
+				var removeIndex = collection_stats.map(function(item) { return item;}).indexOf(stat_id);
+        		~removeIndex && collection_stats.splice(removeIndex, 1);
+				$("#choose-basic-collectors").append('<button class = "stat-choice" type = "button" onclick = "to_your_stats(this, \'basic\', \''+ stat_name +'\', '+ stat_id +')">' + stat_name +'</button>')
+				adv_stat_remove_check(stat_id)
+				break;
+		}
+		
+	}
+
+	function add_advanced_stat(stat_name, stat_id, destination){
+		switch(destination){
+			case "your_stats" :
+				advanced_stats.push(stat_id);
+				break;
+			case "choose_stats" :
+				var removeIndex = advanced_stats.map(function(item) { return item;}).indexOf(stat_id);
+        		~removeIndex && advanced_stats.splice(removeIndex, 1);
+				break;
+		}
+		
+	}
+
+	function add_team_stat(stat_name, stat_id, destination){
+		switch(destination){
+			case "your_stats" :
+				team_stats.push(stat_id);
+				$("#team-stats").append('<button class = "stat-choice" type = "button" onclick = "to_choose_stats(this, \'team\', \''+ stat_name +'\', '+ stat_id +')">' + stat_name +'</button>')
+				break;
+			case "choose_stats" :
+				var removeIndex = team_stats.map(function(item) { return item;}).indexOf(stat_id);
+        		~removeIndex && team_stats.splice(removeIndex, 1);
+				$("#choose-team-stats").append('<button class = "stat-choice" type = "button" onclick = "to_your_stats(this, \'team\', \''+ stat_name +'\', '+ stat_id +')">' + stat_name +'</button>')
+				break;
+		}
+		
+	}
+
+	function to_your_stats(button, stat_type, stat_name, stat_id){
+		$(button).remove();
+		switch(stat_type){
+			case "basic" :
+				add_basic_stat(stat_name, stat_id, "your_stats");
+				break;
+			case "advanced" :
+				add_advanced_stat(stat_name, stat_id, "your_stats");
+				break;
+			case "team" :
+				add_team_stat(stat_name, stat_id, "your_stats");
+				break;
+		}
+	}
+
+	function to_choose_stats(button, stat_type, stat_name, stat_id){
+		$(button).remove();
+		switch(stat_type){
+			case "basic" :
+				add_basic_stat(stat_name, stat_id, "choose_stats");
+				break;
+			case "advanced" :
+				add_advanced_stat(stat_name, stat_id, "choose_stats");
+				break;
+			case "team" :
+				add_team_stat(stat_name, stat_id, "choose_stats");
+				break;
+		}
+	}
+
+	function initialize_stat_arr(){
+		<% @default_collectable.each do |stat| %>
+			collection_stats.push(<%=stat.id%>);
+		<% end %>
+
+		<% @default_application_basic.each do |stat| %>
+			basic_stats.push(<%=stat.id%>);
+			console.log("<%=stat.stat%>")
+		<% end %>
+
+		<% @default_application_advanced.each do |stat| %>
+			advanced_stats.push(<%=stat.id%>);
+		<% end %>
+	}
+
+	function initialize_adv_stats(){
+		<%@advanced_stats.each do |stat|%>
+			non_default_adv_stats.push( {"id" : <%=stat[0]%>, "stats_needed" : <%=stat[1]%>, "stats_satisfied" : <%=stat[2]%>, "name" : "<%=stat[3]%>"})
+		<%end %>
+	}
+
+	function adv_stat_add_check(stat_id){
+		var len = non_default_adv_stats.length
+		for(var i = 0; i < len; i++){
+			var stats_needed_len = non_default_adv_stats[i].stats_needed.length
+			if(stats_needed_len > 0){
+				for(var j = 0; j < stats_needed_len; j++){
+					if (non_default_adv_stats[i].stats_needed[j] == stat_id){
+						non_default_adv_stats[i].stats_needed.splice(j, 1);
+						non_default_adv_stats[i].stats_satisfied.push(stat_id)
+						if(non_default_adv_stats[i].stats_needed.length == 0){
+							advanced_stats.push(non_default_adv_stats[i].id)
+						}
+					}
+				}
+			}
+		}
+	}
+
+	function adv_stat_remove_check(stat_id){
+		var len = non_default_adv_stats.length
+		for(var i = 0; i < len; i++){
+			var stats_satisfied_len = non_default_adv_stats[i].stats_satisfied.length
+			if(stats_satisfied_len > 0){
+				for(var j = 0; j < stats_satisfied_len; j++){
+					if (non_default_adv_stats[i].stats_satisfied[j] == stat_id){
+						non_default_adv_stats[i].stats_satisfied.splice(j, 1);
+						non_default_adv_stats[i].stats_needed.push(stat_id)
+						if(non_default_adv_stats[i].stats_needed.length == 1){
+							var removeIndex = advanced_stats.map(function(item) { return item;}).indexOf(non_default_adv_stats[i].id);
+        					~removeIndex && advanced_stats.splice(removeIndex, 1);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	function print_advanced_stats(){
+		var advanced_stats_len = advanced_stats.length
+		for(var i = 0; i < advanced_stats_len; i++){
+			console.log(advanced_stats[i])
+		}
+
+	}
+
+	function submit_team_stats(){
+		var url = "/teams/" + <%= @team_id%> +  "/team_stats/";
+		print_advanced_stats();
+		var stat_arr = collection_stats.concat(basic_stats).concat(advanced_stats).concat(team_stats);
+		var json_data = {"team_stats": stat_arr}
+		 $.ajax({
+			url: url,
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			type: "post",
+			data_type: 'json',
+			data: json_data
+		});
+	}
+	initialize_adv_stats();
+	initialize_stat_arr();
+	
+</script>
+
+

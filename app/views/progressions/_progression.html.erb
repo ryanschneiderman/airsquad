@@ -1,0 +1,48 @@
+<div id = "progression-block">
+	<div id = "progression-img">
+		<button onclick = "loadCanvasFromJson(<%=progression.index%> - 1)">
+			<%= image_tag(url_for(progression.play_image), :alt => "progression", :class => "progression-img") %>
+			<div class = "progression-num"><%=progression.index%></div>
+		</button>
+		
+		
+		<%= link_to team_play_progression_path(@team_id, @play.id, progression.id), :class => "progression-link", method: :delete  do %>
+			<div class = "show-link-block">
+				<div class = "progression-link-text">Delete</div>
+			</div>
+		<%end%>
+		
+		
+		<%= link_to({:controller => "progressions", :action => "new", :play_id => @play.id, progression_index: progression.index}) do %>
+			<div class = "edit-link-block">
+				<div class = "progression-link-text">Insert new &rarr;</div>
+			</div>	
+		<% end %>
+	</div>
+</div>
+
+
+<script>
+	$(".next-progression")
+	.mouseover(function(){
+		$(this).children("#plus-sign").attr('style', "opacity: .9");
+		$(this).children("#plus-sign").attr('src', '<%= image_path("plus-dark.png") %>');
+		$(this).children("#next-text").attr('style', "opacity: 1");
+	})
+	.mouseout(function(){
+		$(this).children("#plus-sign").attr('style', "opacity: .9");
+		$(this).children("#plus-sign").attr('src', '<%= image_path("plus-thick.png") %>');	
+		$(this).children("#next-text").attr('style', "opacity: 0;");
+	});
+
+	$(".delete-progression")
+	.mouseover(function(){
+		$(this).children("#X-sign").attr('src', '<%= image_path("X-dark.png") %>');
+		$(this).children("#delete-text").attr('style', "opacity: 1");
+	})
+	.mouseout(function(){
+		$(this).children("#X-sign").attr('src', '<%= image_path("X-thick.png") %>');
+		$(this).children("#delete-text").attr('style', "opacity: 0;");
+	});
+
+</script>

@@ -1,0 +1,34 @@
+<script>
+	const gameModeChannel = App.cable.subscriptions.create({channel: "GameModeChannel", game_id: $('.game-mode-id').data('game-id')}, {
+	    connected: function() {
+	    	gameModeChannel.send({trigger_update: true})
+	    },
+	    disconnected: function() {},
+		received: function(data) {
+			if(data.trigger_update && scoreboard_clock.isRunning){
+				send_clock_state()
+			}
+			else if (data.load_clock && !game_mode_initialized){
+				load_clock(data.load_clock)
+				game_mode_initialized = true;
+			}
+			else if (data.clock_update ){
+				clock_update(data.clock_update)
+			}
+			else if (data.lineup_data){
+				update_lineup(data.lineup_data)
+				//load_lineups_arr(data.lineups_arr);	
+			}
+			else if (data.new_stat && !granule_exists(data.new_stat)){
+				console.log("LOADING STAT GRANULE")
+				loadStatGranule(data.new_stat, false)
+				load_lineups_arr(data.lineups_arr);
+			}
+			else if (data.undo_stat && granule_exists(data.undo_stat)){
+				undo_player_array_stat(data.undo_stat);
+			}
+		}
+	});
+
+	
+</script>

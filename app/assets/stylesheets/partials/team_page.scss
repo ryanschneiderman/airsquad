@@ -1,0 +1,76 @@
+
+.team-page-link {
+	color: white;
+	font-size: 40px;
+	position: relative;
+	font-weight: 300;
+    top: 40%;
+}
+
+#main{
+	text-align: center;
+
+}
+
+#content-grid{
+	background: #040b27;
+	display: grid;
+	grid-template-columns: 1.5fr 1fr 1fr;
+	padding-bottom: 5px;
+}
+
+#col2{
+	display: grid;
+	grid-template-rows: 1fr 1fr;
+}
+
+#col3{
+	display: grid;
+	grid-template-rows: 1fr 1fr;
+}
+
+#col1{
+	border-radius: 3px;
+	margin-top: 5px;
+	margin-left: 5px;
+}
+
+.big-box{
+	margin-top: 5px;
+	margin-left: 5px;
+}
+
+#schedule{
+	background-color: #de457d;
+}
+
+#schedule:hover{
+	background-color:#f385ad;
+}
+
+#plays{
+	background-color: #fa815c;
+}
+
+#plays:hover{
+	background-color: #fbb099;
+}
+
+#roster{
+	background-color: #57d6bd;
+}
+
+#roster:hover{
+	background-color: #8ae0cf;
+}
+
+#stats{
+	background-color: #7a83e6;
+}
+
+#stats:hover{
+	background-color: #b7bdfd;
+}
+
+
+

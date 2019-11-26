@@ -1,0 +1,65 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="row">
+
+      <!-- Elements visible all the time -->
+      <div class="col-sm-3 header-elem">
+        <%= render 'layouts/navigation/header_left' %>
+      </div><!-- col-sm-7 -->
+
+      <div class="col-sm-5 header-elem">
+        <% if user_signed_in? %>
+          <%= render 'layouts/navigation/header_middle' %>
+        <%end%>
+      </div><!-- col-sm-7 -->
+
+      <!-- Elements collapses on smaller devices -->
+      <div class="col-sm-4 header-elem">
+        <%= render 'layouts/navigation/collapsible_elements' %>
+      </div><!-- col-sm-5 -->
+
+    </div><!-- row -->
+  </div><!-- container -->
+</nav>
+
+
+<script>
+  /*var lastScrollTop = 0; 
+$(window).on("scroll", function() {
+        var st = window.pageYOffset || document.documentElement.scrollTop; 
+        if (st > lastScrollTop){
+            $(".navbar").addClass("navbar-inactive");
+            $(".navbar").addClass("navbar-active");
+            $(".navbar").removeClass("navbar-active");
+        } else {
+          
+          if(st > 40){
+            if(st %10 == 0){
+               $(".navbar").addClass("navbar-active");
+               $(".navbar-default a").addClass("navbar-text-active");
+               $(".home-link").css("border-color", "black")
+               $(".navbar").removeClass("navbar-inactive")
+            }
+          }
+          else{
+            $(".navbar").removeClass("navbar-active");
+            $(".navbar-default a").removeClass("navbar-text-active");
+            $(".home-link").css("border-color", "white")
+          }
+        }
+        lastScrollTop = st <= 0 ? 0 : st; // For Mobile or negative scrolling
+
+});*/
+  $(window).on("scroll", function() {
+    if($(window).scrollTop() > 25) {
+        $(".navbar").addClass("navbar-active");
+        $(".navbar-default a").addClass("navbar-text-active");
+        $(".home-link").css("border-color", "black")
+    } else {
+       $(".navbar").removeClass("navbar-active");
+       $(".navbar-default a").removeClass("navbar-text-active");
+       $(".home-link").css("border-color", "white")
+    }
+});
+</script>
+

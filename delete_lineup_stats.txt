@@ -1,0 +1,2 @@
+delete from lineup_stats *;
+delete from lineup_adv_stats *;

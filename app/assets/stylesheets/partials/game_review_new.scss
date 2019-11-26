@@ -1,0 +1,66 @@
+
+.canvas-container{
+	margin: auto;
+}
+
+.player-canvas{
+	border: 2px solid black;
+
+}
+
+#gr-player-stats{
+	margin-bottom: 30px;
+}
+
+
+.table-header{
+	font-size: 17px;
+	margin-left: 60px;
+	margin-bottom: 10px;
+}
+
+
+#gr-team-stats-content{
+	height: auto;
+	overflow-y: scroll;
+	display: none;
+}
+#gr-player-stats-content{
+	display: none;
+}
+
+.gr-header{
+	font-size: 46px;
+    text-align: center;
+    font-weight: 300;
+    margin-bottom: 30px;
+    margin-top: 20px;
+}
+
+.gr-stat-header{
+	color: black;
+	position: relative;
+	text-align: center;
+	font-size: 30px;
+}
+
+.team-stat-header{
+	text-align: center;
+	font-size:25px;
+}
+
+
+.gr-stats-table{
+	margin: auto;
+	width: 70%;
+	margin-bottom: 40px;
+}
+
+.full-profile{
+	display: none;
+	text-align: right;
+	margin-right: 30px;
+}
+
+
+

@@ -1,0 +1,13 @@
+-- AESTHETICS --
+
+
+Before delving too far into implementing the aesthetic of the site, I think it is important to formally analyze what kind of aesthetic we are going for. What do we want to convey with the aesthetic and what kinds of design choices will achieve this aesthetic. Then, I want to put pen to paper on exactly what features I want to implement throughout the site (for ubiqutous features and page specific features). This way I will feel less like I am ambling through implementing an aesthetic and more like I am taking direct steps to achieve the goal.
+
+
+In terms of general aesthetics, I want something that balances professionalism with playfulness, as is important in any team. It is important to approach a team with the mindset that basketball is a game and it is played to have fun, but it is also a serious matter. Every team wants to win. My initial thought is to have playful colors, and bold text. A playful backdrop, with a serious message. Now the question begs, what color(s) do I want to have? I think the most obvious choices are red (varisty red), blue, and orange (basketball). 
+
+#4da1a8
+
+#f9f7f1
+
+#e15e48

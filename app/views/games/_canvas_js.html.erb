@@ -1,0 +1,593 @@
+<script>
+
+    function initialize_full_court_canvas(width_m, height_m, canvas_id, line_width){
+        var canvas = new fabric.Canvas(canvas_id,{
+            targetFindTolerance: 15,
+            perPixelTargetFind: true,
+            preserveObjectStacking: true,
+        }); 
+        var canvas_width = window.innerWidth * width_m;
+        var canvas_height = canvas_width * height_m;
+        set_canvas_dimensions(canvas, canvas_height, canvas_width);
+
+        var angle = Math.atan((10-0.75)/(70))* 180 / Math.PI
+        var start_angle = (angle+90)*(Math.PI/180)
+        var end_angle = (270-angle)*(Math.PI/180)
+
+        var endline_offset = canvas_width * 0.04;
+
+
+        var arc_left = new fabric.Circle({
+            radius: canvas_width / (2.39 * 2),
+            left: canvas_width * 0.258 + endline_offset,
+            top: canvas_width * .5095,
+            angle: 180,
+            startAngle: start_angle,
+            endAngle: end_angle,
+            stroke: '#000',
+            strokeWidth: line_width,
+            fill: '',
+            hasControls: false,
+            selectable: false,
+            hasBorders: false,
+            evented: false,
+            perPixelTargetFind: true,
+            objectCaching: false,
+        });
+
+        var corner_three_top_left = new fabric.Rect({
+          left: endline_offset,
+          top: canvas_width * 0.089,
+          stroke: 'black',
+          strokeWidth: line_width,
+          fill: 'transparent',
+          width: canvas_width * .1456 / 2,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+        var corner_three_bottom_left = new fabric.Rect({
+          left: endline_offset,
+          top: canvas_width * .504,
+          stroke: 'black',
+          strokeWidth: line_width,
+          fill: 'transparent',
+          width: canvas_width * .1456 / 2,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+        var paint_left = new fabric.Rect({
+          left: endline_offset,
+          top: canvas_width * .233,
+          stroke: 'black',
+          strokeWidth: line_width,
+          fill: 'transparent',
+          width: canvas_width / 2.63 / 2 + line_width,
+          height: canvas_width /  4.18 / 2,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+        var key_circle_left =  new fabric.Circle({
+            radius: canvas_width / (8.33 * 2), 
+            fill: 'transparent', 
+            stroke: 'black',
+            strokeWidth: line_width,
+            left: canvas_width / 7.7 + endline_offset, 
+            top: canvas_width / 4.3,
+            hasControls: false,
+            selectable: false,
+            hasBorders: false,
+            evented: false,
+            perPixelTargetFind: true,
+            objectCaching: false,
+        });
+
+        var backboard_left = new fabric.Rect({
+          left: canvas_width * .02 + endline_offset,
+          top: canvas_width * 0.265,
+          fill: 'black',
+          width: line_width,
+          height: canvas_width / 8.33 / 2,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+        var endline_left = new fabric.Rect({
+          left: endline_offset,
+          top: canvas_width * 0.05,
+          fill: 'black',
+          width: line_width + 1,
+          height: canvas_width * 0.5,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+        var sideline_top = new fabric.Rect({
+          left: endline_offset,
+          top: canvas_width * 0.05,
+          fill: 'black',
+          width: canvas_width + 1 - 2 * endline_offset,
+          height: line_width,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+        var sideline_bottom = new fabric.Rect({
+          left: endline_offset,
+          top: canvas_width * 0.55,
+          fill: 'black',
+          width: canvas_width + 1 - 2 * endline_offset,
+          height: line_width,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+        var midcourt = new fabric.Rect({
+          left: canvas_width / 2,
+          top: canvas_width * 0.051,
+          fill: 'black',
+          width: line_width,
+          height: canvas_height - canvas_width * 0.1,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+
+
+        var arc_right = new fabric.Circle({
+            radius: canvas_width / (2.39 * 2),
+            left: canvas_width * 0.745 - endline_offset,
+            top: canvas_width * .09,
+            angle: 0,
+            startAngle: start_angle,
+            endAngle: end_angle,
+            stroke: '#000',
+            strokeWidth: line_width,
+            fill: '',
+            hasControls: false,
+            selectable: false,
+            hasBorders: false,
+            evented: false,
+            perPixelTargetFind: true,
+            objectCaching: false,
+        });
+
+        var corner_three_top_right = new fabric.Rect({
+          left: canvas_width - canvas_width * .1456 / 2  - endline_offset,
+          top: canvas_width * 0.092,
+          stroke: 'black',
+          strokeWidth: line_width,
+          fill: 'transparent',
+          width: canvas_width * .1456 / 2,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+        var corner_three_bottom_right = new fabric.Rect({
+          left: canvas_width - canvas_width * .1456 / 2  - endline_offset,
+          top: canvas_width * .507,
+          stroke: 'black',
+          strokeWidth: line_width,
+          fill: 'transparent',
+          width: canvas_width * .1456 / 2,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+        var paint_right = new fabric.Rect({
+          left: canvas_width - canvas_width / 2.63 / 2 - line_width *2 - endline_offset,
+          top: canvas_width * .233,
+          stroke: 'black',
+          strokeWidth: line_width,
+          fill: 'transparent',
+          width: canvas_width / 2.63 / 2 + line_width,
+          height: canvas_width /  4.18 / 2,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+        var key_circle_right =  new fabric.Circle({
+            radius: canvas_width / (8.33 * 2), 
+            fill: 'transparent', 
+            stroke: 'black',
+            strokeWidth: line_width,
+            left: canvas_width * 0.745 - endline_offset, 
+            top: canvas_width / 4.3,
+            hasControls: false,
+            selectable: false,
+            hasBorders: false,
+            evented: false,
+            perPixelTargetFind: true,
+            objectCaching: false,
+        });
+
+        var backboard_right = new fabric.Rect({
+          left: canvas_width * .98 - endline_offset,
+          top: canvas_width * 0.265,
+          fill: 'black',
+          width: line_width,
+          height: canvas_width / 8.33 / 2,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+        var endline_right = new fabric.Rect({
+          left: canvas_width - 3 - endline_offset,
+          top: canvas_width * 0.05,
+          fill: 'black',
+          width: line_width + 1,
+          height: canvas_width * .5,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+
+
+        canvas.add(backboard_left)
+        canvas.add(corner_three_top_left);
+        canvas.add(paint_left);
+        canvas.add(corner_three_bottom_left);
+        canvas.add(arc_left);
+        canvas.add(key_circle_left);
+        canvas.add(endline_left)
+        canvas.add(sideline_top)
+        canvas.add(sideline_bottom)
+        canvas.add(midcourt)
+
+        canvas.add(backboard_right)
+        canvas.add(corner_three_top_right);
+        canvas.add(paint_right);
+        canvas.add(corner_three_bottom_right);
+        canvas.add(arc_right);
+        canvas.add(key_circle_right);
+        canvas.add(endline_right)
+
+        $(window).resize(function(){
+            console.log("in window resize")
+            canvas_width = window.innerWidth * width_m;
+            canvas_height = canvas_width * height_m;
+            set_canvas_dimensions(canvas, canvas_height, canvas_width);
+            resize_fullcourt(canvas, canvas_height, canvas_width, backboard_left, corner_three_top_left, paint_left, corner_three_bottom_left, arc_left, key_circle_left, endline_left, sideline_top, sideline_bottom, backboard_right, corner_three_top_right, paint_right, corner_three_bottom_right, arc_right, key_circle_right, endline_right, line_width);
+        })
+        return {"canvas":canvas, "canvas_height" : canvas_height, "canvas_width": canvas_width }
+    }
+
+    function resize_fullcourt(canvas, canvas_height, canvas_width, backboard_left, corner_three_top_left, paint_left, corner_three_bottom_left, arc_left, key_circle_left, endline_left, sideline_top, sideline_bottom, backboard_right, corner_three_top_right, paint_right, corner_three_bottom_right, arc_right, key_circle_right, endline_right, line_width){
+        arc_left.set({
+            radius: canvas_width / (2.39 * 2),
+            left: canvas_width * 0.255 + endline_offset,
+            top: canvas_width * .509,
+        });
+        arc_left.setCoords();
+        key_circle_left.set({
+            radius: canvas_width / (8.33 * 2),
+            left: canvas_width / 7.7 + endline_offset,
+            top: canvas_width / 4.3,
+        })
+        key_circle_left.setCoords()
+        paint_left.set({
+            top: canvas_width * .233,
+            width: canvas_width / 2.63 / 2 + line_width,
+            height: canvas_width /  4.18 / 2,
+        })
+        paint_left.setCoords()
+        corner_three_top_left.set({
+            top: canvas_width * 0.089,
+            width: canvas_width * .1456 / 2,
+        })
+        corner_three_top_left.setCoords()
+        corner_three_bottom_left.set({
+            top: canvas_width * .504,
+            width: canvas_width * .1456 /2,
+        })
+        corner_three_bottom_left.setCoords()
+        backboard_left.set({
+            left: canvas_width * .02 + endline_offset,
+            top: canvas_width * 0.265,
+            height: canvas_width / 8.33 / 2,
+        })
+        backboard_left.setCoords()
+
+        endline_left.set({
+          top: canvas_width * 0.05,
+          height: canvas_width * 0.5,
+        })
+        endline_left.setCoords()
+
+        sideline_top.set({
+          top: canvas_width * 0.05,
+          width: canvas_width + 1 - 2* endline_offset,
+        })
+
+        sideline_top.setCoords();
+
+        sideline_bottom.set({
+          top: canvas_width * 0.55,
+          width: canvas_width + 1 - 2 * endline_offset,
+        })
+
+        sideline_bottom.setCoords();
+
+
+
+        arc_right.set({
+            radius: canvas_width / (2.39 * 2),
+            left: canvas_width * 0.745 - endline_offset,
+            top: canvas_width * .09,
+        });
+        arc_right.setCoords();
+        key_circle_right.set({
+            radius: canvas_width / (8.33 * 2),
+            left: canvas_width * 0.745 - endline_offset,
+            top: canvas_width / 4.3,
+        })
+        key_circle_right.setCoords()
+        paint_right.set({
+            left: canvas_width - canvas_width / 2.63 / 2 - line_width *2 - endline_offset,
+            top: canvas_width * .233,
+            width: canvas_width / 2.63 / 2 + line_width,
+            height: canvas_width /  4.18 / 2,
+        })
+        paint_right.setCoords()
+        corner_three_top_right.set({
+            left: canvas_width - canvas_width * .1456 / 2 - endline_offset,
+            top: canvas_width * 0.092,
+            width: canvas_width * .1456 / 2,
+        })
+        corner_three_top_right.setCoords()
+        corner_three_bottom_right.set({
+          left: canvas_width - canvas_width * .1456 / 2 - endline_offset,
+            top: canvas_width * .507,
+            width: canvas_width * .1456 /2,
+        })
+        corner_three_bottom_right.setCoords()
+        backboard_right.set({
+            left: canvas_width * .98 - endline_offset,
+            top: canvas_width * 0.265,
+            height: canvas_width / 8.33 / 2,
+        })
+        backboard_right.setCoords()
+
+        endline_right.set({
+          left: canvas_width - 3 - endline_offset,
+          top: canvas_width * 0.05,
+          height: canvas_width * .5,
+        })
+        endline_right.setCoords()
+    }
+
+    function initialize_canvas(width_m, height_m, canvas_id, line_width){
+        var canvas = new fabric.Canvas(canvas_id,{
+            targetFindTolerance: 15,
+            perPixelTargetFind: true,
+            preserveObjectStacking: true,
+        }); 
+        //canvas.onresize
+        var canvas_width = window.innerWidth * width_m;
+        var canvas_height = canvas_width * height_m;
+        //width_multiplier = width_m;
+        //height_multiplier = height_m;
+        set_canvas_dimensions(canvas, canvas_height, canvas_width);
+
+        var angle = Math.atan((10-0.75)/(70))* 180 / Math.PI
+        var start_angle = (angle+90)*(Math.PI/180)
+        var end_angle = (270-angle)*(Math.PI/180)
+
+
+        var arc = new fabric.Circle({
+            radius: canvas_width / 2.39,
+            left: canvas_width * 0.085,
+            top: canvas_width* .51,
+            angle: 270,
+            startAngle: start_angle,
+            endAngle: end_angle,
+            stroke: '#000',
+            strokeWidth: line_width,
+            fill: '',
+            hasControls: false,
+            selectable: false,
+            hasBorders: false,
+            evented: false,
+            perPixelTargetFind: true,
+            objectCaching: false,
+        });
+
+        var corner_three_left = new fabric.Rect({
+          left: canvas_width * 0.089,
+          top: -1,
+          stroke: 'black',
+          strokeWidth: line_width,
+          fill: 'transparent',
+          height: canvas_width * .1456,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+        var corner_three_right = new fabric.Rect({
+          left: canvas_width  *.9181,
+          top: -1,
+          stroke: 'black',
+          strokeWidth: line_width,
+          fill: 'transparent',
+          height: canvas_width * .1456,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+        var paint = new fabric.Rect({
+          left: canvas_width / 2.6,
+          top: line_width * -1,
+          stroke: 'black',
+          strokeWidth: line_width,
+          fill: 'transparent',
+          width: canvas_width / 4.17,
+          height: canvas_width / 2.63 + line_width,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+        var key_circle =  new fabric.Circle({
+            radius: canvas_width / 8.33, 
+            fill: 'transparent', 
+            stroke: 'black',
+            strokeWidth: line_width,
+            left: canvas_width / 2.6, 
+            top: canvas_width / 3.8,
+            hasControls: false,
+            selectable: false,
+            hasBorders: false,
+            evented: false,
+            perPixelTargetFind: true,
+            objectCaching: false,
+        });
+
+        var backboard = new fabric.Rect({
+          left: canvas_width / 2.242,
+          top: canvas_width/17,
+          fill: 'black',
+          width: canvas_width / 8.33,
+          height: line_width,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+        canvas.add(backboard)
+        canvas.add(corner_three_left);
+        canvas.add(paint);
+        canvas.add(corner_three_right);
+        canvas.add(arc);
+        canvas.add(key_circle);
+
+        $(window).resize(function(){
+            console.log("in window resize")
+            canvas_width = window.innerWidth * width_m;
+            canvas_height = canvas_width * height_m;
+            set_canvas_dimensions(canvas, canvas_height, canvas_width);
+            resize_court(canvas, canvas_height, canvas_width, arc, key_circle, paint, corner_three_left, corner_three_right, backboard, line_width);
+        })
+        return {"canvas":canvas, "canvas_height" : canvas_height, "canvas_width": canvas_width }
+    }
+
+    /**********************************************************************/
+    /****************************** NEW COURT******************************/
+    /**********************************************************************/
+    
+
+    /**********************************************************************/
+    /****************************** NEW COURT******************************/
+    /**********************************************************************/
+
+    function resize_court(canvas, canvas_height, canvas_width, arc, key_circle, paint, corner_three_left, corner_three_right, backboard, line_width){
+        arc.set({
+            radius: canvas_width / 2.39,
+            left: canvas_width * 0.085,
+            top: canvas_width* .51,
+        });
+        arc.setCoords();
+        key_circle.set({
+            radius: canvas_width / 8.33,
+            left: canvas_width / 2.6,
+            top: canvas_width / 3.8,
+        })
+        key_circle.setCoords()
+        paint.set({
+            left: canvas_width / 2.6,
+            width: canvas_width / 4.17,
+            height: canvas_width / 2.63 + line_width,
+        })
+        paint.setCoords()
+        corner_three_left.set({
+            left: canvas_width * 0.089,
+            height: canvas_width * .1456,
+        })
+        corner_three_left.setCoords()
+        corner_three_right.set({
+            left: canvas_width  *.9181,
+            height: canvas_width * .1456,
+        })
+        corner_three_right.setCoords()
+        backboard.set({
+            left: canvas_width / 2.242,
+            top: canvas_width/17,
+            width: canvas_width / 8.33,
+        })
+        backboard.setCoords()
+
+        canvas.renderAll();
+    }
+    
+    function set_canvas_dimensions(canvas, canvas_height, canvas_width){
+      canvas.setDimensions({width: canvas_width, height: canvas_height});
+    }
+
+</script>

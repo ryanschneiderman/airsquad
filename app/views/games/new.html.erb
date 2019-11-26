@@ -1,0 +1,13 @@
+<%= bootstrap_form_for(@game) do |f| %>
+  <%= f.text_field  :opponent, 
+                    maxlength: 100, 
+                    placeholder: 'Who is the opponent?', 
+                    class: 'form-control',
+                    required: true, 
+                    minlength: 1,
+                    maxlength: 100 %>
+  <div>What is the date of the game?</div>
+  <%= f.date_field :date, value: f.object.try(:strftime,"%m/%d/%Y"), class: 'form-control' %>
+  <%= f.hidden_field :team_id,  value: @team_id  %> 
+  <%= f.submit "Create game", class: 'form-control' %>
+<% end %>

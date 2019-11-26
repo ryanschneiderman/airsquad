@@ -1,0 +1,73 @@
+#main{
+
+}
+
+#sprite{
+	width: 100vw; height: 56vw;
+	transform: scale(.55);
+	position: relative;
+	top: -60px;
+}
+
+.logout-link{
+	color: white;
+}
+
+.logout-link:hover{
+	color: grey;
+}
+
+
+
+#main-grid{
+	display: grid;
+	align-items: center;
+}
+.teams{
+
+}
+.header.teams{
+	width: 100%;
+	background-image: url(bball.JPG);
+	background-size: cover;
+	color: white;
+	height: 150px;
+	padding-top: 40px;
+	text-align: center;
+	font-size: 40px;
+}
+
+.header.teams:before{
+	content: '';
+	position: absolute;
+	background: rgba(0, 0, 0, 0.2);
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+}
+
+#team-text{
+	color: white;
+	position: relative;
+}
+
+.team-grid{
+	width: 100%;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+  	grid-template-rows: repeat(auto-fill, 250px);
+}
+
+#team-block{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-right: 1px solid #dbdbdb;
+}
+
+.add-join-team div{
+	width: 100%;
+	padding-left: 5px;
+	margin-top: 20%;
+}

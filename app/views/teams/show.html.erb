@@ -1,0 +1,125 @@
+
+<div id = "main">
+	<div id = "content-grid">
+		<div id = "col1">
+			<div id = "feed" class = "full-column">
+				<div class = "team-page-link">Feed</div>
+					<%= link_to new_team_post_path(@team.id) do %>
+						<div class = "team-page-link"></div>
+					<%end%>
+				<%= render @posts %>
+			</div>
+		</div>
+		<div id = "col2">
+			<%= link_to  team_games_path(@team.id) do %>
+				<div id = "schedule" class = "big-box"> 
+					<div class = "team-page-link">Schedule</div>
+				</div>	
+			<%end%>	
+			
+			<%= link_to team_stats_path(@team.id) do %>
+				<div id = "stats" class = "big-box">
+					<div class = "team-page-link">Stats</div>
+				</div>
+			<%end%>
+				
+		</div>
+		<div id = "col3">
+			<%= link_to team_plays_path(@team.id) do %>
+				<div id = "plays" class = "big-box ">
+					<div class = "team-page-link">Plays</div>
+				</div>
+			<%end%>
+			
+			<%= link_to  team_lineups_path(@team.id) do%>
+				<div id = "roster" class = "big-box">
+					<div class = "team-page-link">Lineup Explorer</div>
+				</div>	
+			<%end%>
+		</div>
+	</div>
+</div>
+
+<div class = "modal-overlay" style= "display: none;"></div>
+<div class = "new-overlay modal-overlay" style= "display: none;">
+	<div class = "new-box" style= "display: none;">
+		<div class = "join-team-header">
+			<div id = "new-play-header-text">Select Your Name</div>
+		</div>
+		<div id = "join-team-body">
+			<div id = "add-players-block">
+			<div id = "current-members">
+				<% if params[:joined_team] %>
+					<%@non_user_members.each do |member|%>
+						<button class = "new-player" onclick = "select_member(this, <%=member.id%>)"><%=member.nickname%></button>
+					<%end%>	
+				<%end%>
+			</div>
+			<button onclick = "submit_join_member()">Submit</button>
+		</div>
+		</div>
+	</div>
+</div>
+
+
+<script>
+	var member_to_join; 
+	var curr_button;
+	$("#main").css("margin-top", "55px");
+	$(".navbar").addClass("navbar-active");
+    $(".navbar-default a").addClass("navbar-text-active");
+    $(".home-link").css("border-color", "black");
+
+    $(window).on("scroll", function() {
+        $(".navbar").addClass("navbar-active");
+        $(".navbar-default a").addClass("navbar-text-active");
+        $(".home-link").css("border-color", "black")
+
+	});
+	var window_height = $(window).height() - 70;
+
+	$(".big-box").height(window_height/2);
+	$(".horiz-rectangle").height(window_height/4);
+	$(".vert-rectangle").height(window_height/2);
+
+	$(window).on("resize", function() {
+    	window_height = $(window).height() - 70;
+	    $(".big-box").height(window_height/2);
+		$(".horiz-rectangle").height(window_height/4);
+		$(".vert-rectangle").height(window_height/2);
+	});
+
+	if(<%=params.has_key?(:joined_team)%> && "<%=@current_member%>" == ""){
+		$(".modal-overlay").show()
+		$(".new-box").show()
+	}
+
+
+	function select_member(button, member_id){
+		member_to_join = member_id;
+		if (button.style.backgroundColor != "#21a0ed"){
+			button.style.backgroundColor = "#21a0ed";
+			button.style.color = "white";
+		}
+		if(curr_button){
+			curr_button.style.backgroundColor = "white";
+			curr_button.style.color = "#21a0ed";
+		}
+		curr_button = button;
+	}
+
+	function submit_join_member(){
+		$.ajax({
+			url: "/teams/" + <%=params[:id]%> + "/join_team/", 
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		    type: "post",
+		    data_type: 'json',
+		    data: {member_id: member_to_join},
+			success: function(result){
+		        $(".modal-overlay").hide()
+				$(".new-box").hide()
+		    }
+		});
+	}
+
+</script>

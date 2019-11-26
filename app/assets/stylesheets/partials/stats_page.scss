@@ -1,0 +1,168 @@
+
+
+.color-scale-text{
+	font-size: 10px;
+}
+
+#color-key{
+	margin: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+#color-key-header{
+	text-align: center;
+	font-size: 20px;
+	margin-bottom: 10px;
+}
+.calibration{
+	
+}
+
+#no-games-played{
+	height: 100vh;
+	overflow: hidden;
+	background-color: black;
+}
+
+.no-games-text{
+	font-family: 'Open Sans', serif;
+	z-index: 4;
+	position: absolute;
+    text-align: center;
+    top: 30%;
+    margin: 0 auto;
+    width: 100%;
+    color: white;
+    font-weight: 700;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.no-games-header{
+	font-size: 50px;
+}
+.no-games-subheader{
+	font-size: 30px;
+}
+
+.no-games-img{
+	width: 100%;
+	opacity: .5;
+}
+
+.stat-page-header{
+	text-align: center;
+	font-size: 35px;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
+
+.stat-info{
+	display: none; 
+    position: absolute;
+    min-width: 100px;
+    max-width: 250px;
+    z-index: 4;
+    box-shadow: 0px 0px 5px #d6d6d6;
+    background-color: white;
+    padding: 8px;
+    background: #ffffa3;
+    border-radius: 3px;
+}
+
+.stat-info:hover{
+	display: block;
+}
+
+.stat-name{
+	font-weight: bold;
+	margin-bottom: 5px;
+}
+
+.stat-description{
+	display: none;
+}
+
+.stat-table-button:hover + .stat-info{
+	display: block;
+}
+
+
+.landing-img{
+	width: 100vw;
+	opacity: .7;
+}
+
+.page-landing{
+	background-color: black; 
+	position: relative;
+}
+
+.content-page-landing-title{
+	font-family: 'Open Sans', serif;
+	font-size: 85px;
+	z-index: 4;
+	position: absolute;
+    text-align: center;
+    top: 35%;
+    margin: 0 auto;
+    width: 100%;
+    color: white;
+    font-weight: 700;
+}
+
+.content-page-landing-subheader{
+	font-family: 'Open Sans', serif;
+	font-size: 50px;
+	z-index: 4;
+	position: absolute;
+    text-align: center;
+    top: 65%;
+    margin: 0 auto;
+    width: 100%;
+    color: white;
+    font-weight: 700;
+}
+
+#table-toggle-buttons{
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.table-toggle-button{
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.stats-table{
+	font-size: 12px;
+	width: 95vw;
+	text-align: center;
+	margin: auto;
+	margin-top: 20px;
+}
+
+#per-game-stats-button{
+	text-decoration: underline;
+}
+/*add jquery to make compatible with any number of team members!!!*/
+#player-links{
+	margin: 30px;
+	text-align: center;
+	display: grid;
+	grid-template-columns: repeat(7, 13.5vw);
+	grid-template-rows: repeat(2, 13.5vw);
+	align-items: center;
+	grid-gap: 3px;
+}
+
+.player-link{
+	font-size: 17px;
+	padding-top: 42%;
+	padding-bottom: 42%;
+	border: 1px solid black;
+	border-radius: 4px;
+	color: black;
+}

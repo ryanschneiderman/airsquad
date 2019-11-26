@@ -1,0 +1,9 @@
+<div class="messages-list">
+  <%= render partial: load_group_messages_partial_path(conversation),
+             locals: { conversation: conversation, messenger_boolean: false } %>
+  <div class="loading-more-messages">
+  </div>
+  <!-- messages -->
+  <ul>
+  </ul>
+</div>

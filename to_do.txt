@@ -1,0 +1,6 @@
+
+TO DO
+
+- go through each job/service file to see what it is doing and what sorts of things are accomplished
+- go through each controller and see if any of the logic can be/should be separated into jobs/services/helpers
+- go through each view and see if anything can be separated into different files (especially javascript)s

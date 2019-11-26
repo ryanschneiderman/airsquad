@@ -1,0 +1,125 @@
+#bball-court{
+	
+}
+
+#tactical-grid{
+	display: grid;
+	grid-template-columns: 15vw 70vw 15vw;
+	max-height: 100vh;
+}
+
+#c{
+}
+
+#tool-bar{
+	display: flex;
+	flex-direction: column;
+}
+
+#graphs{
+	position: relative;
+}
+
+.drawing-button{
+	border: 1px solid black;
+	display: block;
+	margin-bottom: 10px;
+	width: 100px;
+	height: 45px;
+	margin-left: 10px;
+	border-radius: 3px;
+}
+
+.save-button{
+	display: block;
+	color: white;
+	background-color: black;
+	margin-top: 20px;
+	margin-bottom: 10px;
+	width: 100px;
+	height: 45px;
+	margin-left: 10px;
+	border-radius: 3px;
+}
+
+.line {
+    margin-top:5px;
+    width:70px;
+    background:black;
+    height:2px;
+    float:left;
+}
+.triangle-point {    
+    width: 0;
+    height: 0; 
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 10px solid black;
+    float:left;
+}
+
+.dotted-line{
+	margin-top:5px;
+    width:70px;
+    border-top: 2px dotted black;
+    height: 0;
+    float:left;
+}
+
+.drawing-button-arrow{
+	padding-left: 10px;
+}
+
+.drawing-button-name{
+	text-align: center;
+}
+
+$height: 16px;
+$halfheight: ($height/2);
+$thickness: 300%; // increase to make the line thicker
+$offset: 4px;
+$backgroundcolor: white;
+$linecolor: black;
+
+
+.zigzag {
+	width: 70px;
+	float: left;
+	background: $backgroundcolor;
+	position: relative;
+	height: 1px;
+	z-index: 1;
+	&:before,
+	&:after {
+		content: "";
+		display: block;
+		position: absolute;
+		left: 0;
+  		right: 0;
+	}
+	&:before {
+		height: ($height - $offset);
+		top: $thickness;
+		background: linear-gradient(-135deg, $linecolor $halfheight, transparent 0) 0 $halfheight, linear-gradient( 135deg, $linecolor $halfheight, transparent 0) 0 $halfheight;
+		background-position: top left;
+		background-repeat: repeat-x;
+		background-size: $height $height;
+	}
+	&:after {
+		height: $height;
+		top: 100%;
+		background: linear-gradient(-135deg, $backgroundcolor $halfheight, transparent 0) 0 $halfheight, linear-gradient( 135deg, $backgroundcolor $halfheight, transparent 0) 0 $halfheight;
+		background-position: top left;
+		background-repeat: repeat-x;
+		background-size: $height $height;
+	}
+}
+
+.vert-line{
+	top: 5px;
+	width: 2px;
+    height: 12px;
+    background-color: black;
+    float:left;
+}
+

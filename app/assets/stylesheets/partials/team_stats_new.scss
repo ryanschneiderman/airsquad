@@ -1,0 +1,97 @@
+#team-stat-grid{
+	display: flex;
+	flex-direction: column;
+}
+
+#stat-choices-grid{
+	margin-top: 30px;
+	padding-left: 20px;
+	display: grid;
+	grid-template-columns: 2fr 3fr 4fr;
+}
+
+#team-stat-header{
+	width: 100%;
+	color: #b2cce6;
+}
+
+#ts-header-title{
+	text-align: center;
+	font-size: 40px;
+}
+
+#ts-header-body{
+	margin-top: 20px;
+	font-size: 17px;
+	margin-left: 100px;
+	margin-right: 100px;
+}
+
+.stat-choice-header{
+	text-align: center;
+	font-size: 20px;
+	text-decoration: underline;
+}
+
+#choose-stats{
+	border-right: 1px solid #c7e3ff;
+}
+
+.stat-choice-grid{
+	padding-left: 0px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.your-stats-grid{
+	padding-left: 20px;
+	display: flex;
+	justify-content: center;
+}
+.adv-stats-grid{
+	padding-left: 20px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.stat-choice-subheader{
+	font-size: 15px;
+	font-weight: bold;
+	padding-bottom: 10px;
+}
+
+.stats-choice-box{
+	margin: 10px;
+}
+
+.stat-choice{
+	display: inline-block;
+	margin-right: 2px;
+	margin-left: 2px;
+	padding: 5px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	border-radius: 5px;
+}
+
+.stat-choice-inactive{
+	border: 1px solid #b5b5b5;
+	color: #b5b5b5;
+}
+
+.stat-choice-active{
+	border: 1px solid #00c1ff;
+	color: #00efff;
+}
+
+#team-stats-submit{
+	font-size: 17px;
+	padding-bottom: 25px;
+	width: 100%;
+}
+
+
+
+

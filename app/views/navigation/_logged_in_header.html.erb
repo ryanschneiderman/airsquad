@@ -1,0 +1,13 @@
+<div id = "logged-in-header"> 
+	<div class = "header-left">
+		<div id = "AS-logo">AS</div>
+		<div id = "curr-squad"><%= current_user.name %></div>
+	</div>
+	<div id = "header-orange">
+		<div class='pull-right' id ='conversations-menu'>
+		  <%= render 'layouts/navigation/header/dropdowns/conversations' %>
+		</div>
+	</div>
+	<div id = "my-squads" class = "header-right">My Squads</div>
+	<div id = "profile" class = "header-right">Profile</div>
+</div>

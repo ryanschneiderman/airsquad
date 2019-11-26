@@ -1,0 +1,174 @@
+
+<div id = "edit-header"><%= @play.name %> Progression <%= @progression_index %></div>
+<div id = "tactical-grid">
+    <div id = "tool-bar">
+        <div id = "drawing-buttons">
+          <button id = "run" class = "drawing-button" type = "button" onclick="lineToRun(event)">
+            <div class = "drawing-button-name">RUN</div>
+            <div class = "drawing-button-arrow">
+              <div class="line"></div>
+              <div class="triangle-point"></div>
+            </div>
+          </button>
+          
+          <button id = "pass" class = "drawing-button" type = "button" onclick="lineToPass(event)">
+            <div class = "drawing-button-name">PASS</div>
+            <div class = "drawing-button-arrow">
+              <div class="dotted-line"></div>
+              <div class="triangle-point"></div>
+            </div>
+          </button>
+          
+          <button id = "drive" class = "drawing-button" type = "button" onclick="lineToDribble(event)">
+            <div class = "drawing-button-name">DRIBBLE</div>
+            <div class = "drawing-button-arrow">
+              <div class="zigzag"></div>
+              <div class="triangle-point"></div>
+            </div>
+          </button>
+          
+          <button id = "screen" class = "drawing-button" type = "button" onclick="lineToScreen(event)">
+            <div class = "drawing-button-name">SCREEN</div>
+            <div class = "drawing-button-arrow">
+               <div class="line"></div>
+               <div class="vert-line"></div>
+            </div>
+          </button>          
+        </div>
+        <div id = "save-block">
+          <button id = "save-button" type ="button" onclick="update_progression()"> SAVE </button>
+        </div>
+    </div>
+    <canvas id ="c"></canvas>
+</div>
+
+<%= render 'js_objects' %>
+<%= render 'javascript' %>
+<script>
+  var line_type;
+    
+  var line, isDown, evented;
+  var anchorRadius = 3;
+  var anchorOffset = anchorRadius - .5;
+  var all_added = false;
+  var canvas = new fabric.Canvas("c",{
+            targetFindTolerance: 15,
+             perPixelTargetFind: true,
+             preserveObjectStacking: true,
+  }); 
+  var canvas_width = window.innerWidth * .7;
+  var canvas_height = canvas_width * .7;
+  canvas.setHeight(canvas_height);
+  canvas.setWidth(canvas_width);
+  var playerRadius = canvas.height * .03;
+  var old_canvas_width = parseFloat("<%= @progression.canvas_width %>");
+  var width_ratio = old_canvas_width/canvas.width;
+
+  canvas.on('object:added', function(e) {
+          //console.log("object added")
+          var object = e.target;
+          console.log(object)
+          object.added = true;
+    });
+
+
+	var json_data = "<%= @progression.json_diagram %>".replace(/&quot;/g,'"');
+		canvas.loadFromJSON(json_data, function() {
+      var objs = canvas.getObjects().map(function(o) {
+                  o.set({ left: o.left / width_ratio, top: o.top/width_ratio})
+                  if(o.type == "circle"){
+                    o.set({radius: o.radius / width_ratio, lockMovementX: true, lockMovementY: true, selectable: false,})
+                  }
+                  else if (o.type == "rect"){
+                    o.set({width: o.width / width_ratio, height: o.height / width_ratio, lockMovementX: true, lockMovementY: true, selectable: false,})
+                  }
+                  else if (o.type == "PlayerCircle"){
+                    o.set({radius: o.radius / width_ratio})
+                    o.moveTo(10)
+                  }
+                  else if (o.type == "LineWithArrow" || o.type == "DribbleLine"){
+                    o.set({x1: o.x1 / width_ratio, x2: o.x2 / width_ratio, y1: o.y1 / width_ratio, y2: o.y2 / width_ratio})
+                    o.moveTo(10)
+                  }
+                  o.setCoords()
+                    return o
+                });
+	    	canvas.renderAll()
+		});
+
+    canvas.on('object:moving', function (e) {
+
+            var obj = e.target;
+            if(obj.get("anchorable") == true && obj.added){
+               console.log("anchor positioning")
+              anchorPositioning(e);
+            }
+    });
+
+    canvas.on('selection:created', function() {
+        canvas.getActiveObjects().forEach(function(o) {
+            var type = o.get('type');
+            if(type == "PlayerCircle"){
+                o.lockMovementY = false;
+                o.lockMovementX = false;
+                o.set({stroke: "black"});
+            }
+            if(validateLine(o)){
+              if(!o.toAnchor){
+                getToAnchor(o.toAnchorId, o);
+              }
+              o.toAnchor.animate('opacity', '1', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+            } 
+        });
+    });
+
+    canvas.on('before:selection:cleared', function() {
+         canvas.getActiveObjects().forEach(function(o) {
+            var type = o.get('type');
+            if(type == "PlayerCircle"){
+                o.set({stroke: o.color});
+            } 
+            if(validateLine(o)){
+              if(!o.toAnchor){
+                getToAnchor(o.toAnchorId, o);
+              }
+              o.toAnchor.animate('opacity', '0', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+            }       
+        });
+    });
+
+    canvas.on('selection:updated', function() {
+        canvas.getActiveObjects().forEach(function(o) {
+            var type = o.get('type');
+            if(type == "PlayerCircle"){
+                o.lockMovementY = false;
+                o.lockMovementX = false;
+            }   
+        });
+    });
+
+    function update_progression(){
+      deselect_all_active()
+      /* get values from elements on the page: */
+        var json_data = JSON.stringify(canvas.toJSON(['id']));
+        var patch_url = "/plays/" + <%= @play.id %> + "/progressions/" + <%= @progression.id %>
+
+      /* Send the data using post and put the results in a div */
+        $.ajax({
+          url: patch_url,
+          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+          type: "PATCH",
+          data_type: 'json',
+          data: {progression: {json_diagram: json_data , progression_id: <%= @progression.id %>, play_id: <%= @play.id %>, team_id: <%=@team_id%>}}
+        });
+    }
+
+
+</script>
+

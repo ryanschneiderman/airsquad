@@ -1,0 +1,25 @@
+<%= bootstrap_form_for(@team) do |f| %>
+  <%= f.text_field  :name, 
+                    maxlength: 100, 
+                    placeholder: 'Team Name (what is displayed on your page)', 
+                    class: 'form-control',
+                    required: true, 
+                    minlength: 5,
+                    maxlength: 100 %>
+  <%= f.text_field  :username, 
+                    maxlength: 100, 
+                    placeholder: 'Unique Username', 
+                    class: 'form-control',
+                    required: true, 
+                    minlength: 5,
+                    maxlength: 100 %>
+  <%= f.text_field  :password, 
+                    maxlength: 100, 
+                    placeholder: 'Choose a password so others can join', 
+                    class: 'form-control',
+                    required: true, 
+                    minlength: 5,
+                    maxlength: 100 %>   
+        
+  <%= f.submit "Create a Team", class: 'form-control' %>
+<% end %>

@@ -1,0 +1,131 @@
+<% content_for(:body_attributes) do %>
+    data-turbolinks="false"
+ <% end %>
+
+	<% if @played %>
+	<div class = "content-page-landing">
+		<%= image_tag("scorebook_trimmed.png", :alt => "Game Review", :class => "content-page-landing-img") %>
+		<div class = "content-page-landing-title">Game Review</div>
+		<div class = "content-page-landing-subheader">vs. <%=@opponent.name%></div>
+	</div>
+	<div id = "game-review" >
+		<div id = "game-review-stats">
+			<div class = "stat-page-header">Player Stats</div>
+			<div id = "table-toggle-buttons">
+				<button id = "per-game-stats-button" class = "table-toggle-button" onclick="toggle_player_table(1, this)">Game Stats</button>
+				<button id = "per-minute-stats-button" class = "table-toggle-button" onclick="toggle_player_table(3, this)">Per <%=@per_minutes%> Minutes Stats</button>
+				<button id = "advanced-stats-button" class = "table-toggle-button" onclick="toggle_player_table(2, this)">Advanced Stats</button>
+			</div>
+			<div id = "gr-player-stats">
+				<table class = "stats-table" id = "per-game-table">
+			
+				</table>
+
+				<table class = "stats-table" id = "adv-player-stats-table" style = "display: none;">
+								
+				</table>
+				<table class = "stats-table" id = "per-minute-table" style = "display: none;">
+								
+				</table>
+			</div>
+			<div class = "stat-page-header">Team Stats</div>
+			<div id = "basic-stats-table">
+				<table class = "stats-table" id = "team-stats-table"></table>
+			</div>
+
+			<div id = "advanced-stats-table">
+				<table class = "stats-table" id = "adv-team-stats-table"></table>
+			</div>
+			<div class = "stat-page-header">Shot Charts</div>
+			<div id = "gr-team-shot-charts">
+				<div class = "shot-distribution">
+					<canvas id ="gr-canvas" class = "gm-canvas"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+
+<%= render 'canvas_js' %>
+<%= render 'game_mode_js_objects' %>
+<%= render 'stats/team_stat_tables_js' %>
+<%= render 'game_review_js' %>
+<%= render 'game_review_slide_js' %>
+<script>
+		console.log("IN SHOW")
+	
+		var per_game_table = $("#per-game-table");
+		var per_minute_table = $("#per-minute-table");
+		var team_stats_table = $("#team-stats-table");
+		var adv_stats_player_table = $("#adv-player-stats-table");
+		var adv_stats_team_table = $("#adv-team-stats-table");
+
+		var total_games = 1;
+
+		initialize_tables(per_game_table, per_minute_table, team_stats_table, adv_stats_player_table, adv_stats_team_table)
+		//initialize_tables(show_team_stats_table, show_adv_stats_team_table);
+		populate_display_stats_basic();
+		populate_display_stats_adv();
+		populate_team_display_stats_adv()
+		populate_team_advanced_stats();
+		populate_stat_array();
+		populate_team_stats();
+		populate_opponent_stats();
+
+		sort_basic_table(17, true);
+		populate_stat_tables(false);
+
+		
+
+		var canvas_vars = initialize_canvas(0.5, 0.7, "gr-canvas", 3);
+		plotBasket(canvas_vars.canvas_width/1.978, canvas_vars.canvas_height/11.5, 14, canvas_vars.canvas_width, canvas_vars.canvas)
+		populate_shot_chart(canvas_vars.canvas, canvas_vars.canvas_width);
+
+		$(window).resize(function(){
+	        canvas_vars.canvas.getObjects().forEach(function(o){
+	        	switch(o.type){
+	        		case "MakeSymbol" :
+		        		var old_canvas_width = o.canvas_width;
+		        		var change_ratio = old_canvas_width/canvas_vars.canvas.width;
+
+		        		o.set({left: o.left/ change_ratio, top: o.top / change_ratio, canvas_width: canvas_vars.canvas.width});
+		        		o.setCoords();
+		        		canvas_vars.canvas.calcOffset();
+		  				canvas_vars.canvas.renderAll();
+	        		break;
+	        		case "Basket" :
+	        			var old_canvas_width = o.canvas_width;
+		        		var change_ratio = old_canvas_width/canvas_vars.canvas.width;
+		        		var basket_radius = o.radius /change_ratio
+
+		        		o.set({left: o.left/ change_ratio, top: o.top / change_ratio, canvas_width: canvas_vars.canvas.width, radius: basket_radius});
+		        		o.setCoords();
+		        		canvas_vars.canvas.calcOffset();
+		  				canvas_vars.canvas.renderAll();
+		  			break;
+	        		case "MissSymbol" :
+	        			var old_canvas_width = o.canvas_width;
+		        		var change_ratio = old_canvas_width/canvas_vars.canvas.width;
+		        		o.set({x1: o.x1 / change_ratio, y1: o.y1 / change_ratio, x2: o.x2 / change_ratio, y2: o.y2 / change_ratio, canvas_width: canvas_vars.canvas.width});
+		        		o.setCoords();
+		        		canvas_vars.canvas.calcOffset();
+		        		canvas_vars.canvas.renderAll();
+	        		break
+	        	}
+	    	})
+	    })
+
+		//insert_player_modules();
+		
+		//populate_team_stat_tables(true);
+	
+
+</script>
+
+<%else%>
+
+<%= render 'game_preview' %>
+<% end %>
+
+
+
+

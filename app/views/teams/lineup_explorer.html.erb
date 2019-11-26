@@ -1,0 +1,81 @@
+<div class = "content-page-landing">
+	<%= image_tag("scorebook.png", :alt => "plays", :class => "content-page-landing-img") %>
+	<div class = "content-page-landing-title">Lineup Explorer</div>
+</div>
+
+<div id = "lineup-explorer">
+	<div id = "saved-lineups">
+		<div id = "saved-lineup-grid">
+			<% lineup_counter = 0 %>
+			<% @lineups.each do |lineup| %>
+				<button class = "lineup-chart-wrapper" onclick="expand_lineup(<%=lineup.id%>, <%=lineup_counter%>)">
+					<div id = "lineup-button-<%=lineup_counter%>"></div>
+				</button>
+				
+				<% lineup_counter +=1 %>
+			<%end%>
+		</div>
+
+		<%lineup_counter = 0%>
+		<% @lineups.each do |lineup|%>
+			<div class = "lineup-content" id = "lineup-content-<%=lineup_counter%>">
+				<div id = "toggle-buttons">
+					<button class = "basic-chart-toggle" id = "to-per-game-button" onclick = "toggle_radar_chart(1, this, '<%=lineup_counter%>')">Per Game</button>
+					<button class = "basic-chart-toggle" id = "to-per-minute-button" onclick = "toggle_radar_chart(2, this, '<%=lineup_counter%>')">Per Minute</button>
+					<button class = "basic-chart-toggle" id = "advanced-button" onclick = "toggle_radar_chart(3, this, '<%=lineup_counter%>')">Advanced</button>
+				</div>
+				<div id = "lineup-chart-<%=lineup_counter%>"></div>
+				<div id = "lineup-basic-stats-headers">
+					<button class = "lineup-basic-stats-headers">Per Game</button>
+					<button class = "lineup-basic-stats-headers">Per Minute</button>
+				</div>
+				<table id = "per-game-table-<%=lineup_counter%>"></table>
+				<table id = "lineup-basic-stats-<%=lineup_counter%>"></table>
+				<table id = "lineup-adv-stats-<%=lineup_counter%>"></table>
+			</div>
+			<%lineup_counter +=1%>
+		<%end%>
+	</div>
+	<div id = "new-lineup">
+		<div id = "new-lineup-grid">
+			
+			<div id = "lineup-radar-charts">
+				<div id = "lineup-toolbar">
+					<div id = "select-players-lineup">
+						<% counter = 0 %>
+						<%@members.each do |member|%>
+							<button class = "btn lineup-member-button" id = "lineup-member-button-<%=counter%>" data-member-id = "<%=member.id%>" onclick="select_player(this, <%=member.id%>)"><%=member.nickname%></button>
+							<% counter +=1 %>
+						<%end%>
+					</div>
+					<button id = "save-lineup" onclick = "saveLineup()">Save Lineup</button>
+				</div>
+				<div class = "lineup-chart">
+					<div id = "toggle-buttons">
+						<button class = "basic-chart-toggle" id = "to-per-game-button" onclick = "toggle_new_chart(1, this)">Per Game</button>
+						<button class = "basic-chart-toggle" id = "to-per-minute-button" onclick = "toggle_new_chart(2, this)">Per Minute</button>
+						<button class = "basic-chart-toggle" id = "advanced-button" onclick = "toggle_new_chart(3, this)">Advanced</button>
+					</div>
+					<div class = "overlaid-chart"></div>
+				</div>
+				<div class = "lineup-chart">
+					<div id = "aggr-chart-header">Aggregate Chart</div>
+					<div class = "aggregate-chart"></div>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+	
+</div>
+
+<%= render 'stats/radar/radar_js' %>
+<%= render 'stats/radar/lineup_radar_controller_js' %>
+<%= render 'tables/table_js' %>
+
+<script>
+	
+	instantiate_lineups()
+
+</script>
+

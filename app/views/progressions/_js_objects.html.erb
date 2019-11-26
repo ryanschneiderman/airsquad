@@ -1,0 +1,819 @@
+ <script>
+
+
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <DRAWING OBJECTS> **********************************************************/
+    /*********************************************************************************************************************************/
+
+    fabric.Basket = fabric.util.createClass(fabric.Circle, {
+        type: 'Basket',
+        initialize(options) {
+            options || (options = { });
+            this.callSuper('initialize', options);
+            this.set({
+              hasControls: false,
+              selectable: false,
+              hasBorders: false,
+              evented: false,
+              perPixelTargetFind: true,
+            });
+        },
+
+        _render(ctx) {
+            this.callSuper('_render', ctx);
+        }, 
+
+        toObject() {
+            return fabric.util.object.extend(this.callSuper('toObject'), {
+              customProps: this.customProps,
+              color: this.color,
+              hasControls: this.hasControls,
+              selectable: this.selectable,
+              hasBorders: this.hasBorders,
+              evented: this.evented,
+              perPixelTargetFind: this.perPixelTargetFind,
+              id: this.id,
+            });
+        },
+
+    });
+
+    function plotBasket(basket_left, basket_top, r, canvas_width, canvas){
+      var basket = new fabric.Basket({
+        left: basket_left - r,
+        top: basket_top,
+        strokeWidth: 2,
+        radius: r,
+        fill: "white",
+        stroke: "black",
+        canvas_width: canvas_width,
+      });
+      canvas.add(basket);
+      return basket;
+    }
+
+    fabric.Basket.fromObject = function(object, callback) {
+        return fabric.Object._fromObject('Basket', object, callback);
+    };
+
+    /**************************************************** <LINE WITH ARROW> **********************************************************/
+
+      fabric.LineWithArrow = fabric.util.createClass(fabric.Line, {
+      type: 'LineWithArrow',
+
+      initialize(element, options) {
+        options || (options = {});
+        this.callSuper('initialize', element, options);
+
+        // Set default options
+        this.set({
+          id:   this.id,
+          hasControls: false,
+          selectable: true,
+          hasBorders: false,
+          evented: true,
+          perPixelTargetFind: true,
+          anchorable: true,
+        });
+      },
+
+      _render(ctx) {
+        this.callSuper('_render', ctx);
+        ctx.save();
+        const xDiff = this.x2 - this.x1;
+        const yDiff = this.y2 - this.y1;
+        const angle = Math.atan2(yDiff, xDiff);
+        ctx.translate((this.x2 - this.x1) / 2, (this.y2 - this.y1) / 2);
+        ctx.rotate(angle);
+        this.anchorAngle = angle;
+        ctx.beginPath();
+        // Move 5px in front of line to start the arrow so it does not have the square line end showing in front (0,0)
+        ctx.moveTo(5, 0);
+        ctx.lineTo(-5, 5);
+        ctx.lineTo(-5, -5);
+        ctx.closePath();
+        ctx.fillStyle = this.stroke;
+        ctx.fill();
+        ctx.restore();
+      },
+
+      toObject() {
+        return fabric.util.object.extend(this.callSuper('toObject'), {
+          id: this.id,
+          customProps: this.customProps,
+          anchorAngle: this.anchorAngle,
+          color: this.color,
+          toAnchorPoint: this.toAnchorPoint,
+          anchorable: this.anchorable,
+          anchorId: this.anchorId,
+          toAnchorId: this.toAnchorId,
+          hasControls: this.hasControls,
+          selectable: this.selectable,
+          hasBorders: this.hasBorders,
+          evented: this.evented,
+          lineIds: this.lineIds,
+          perPixelTargetFind: this.perPixelTargetFind,
+          padding: this.padding,
+          objectCaching: this.objectCaching,
+          x1: this.x1,
+          x2: this.x2,
+          y1: this.y1,
+          y2: this.y2,
+        });
+
+      },
+
+
+    });
+
+    fabric.LineWithArrow.fromObject = function(object, callback) {
+      callback && callback(new fabric.LineWithArrow([object.x1, object.y1, object.x2, object.y2], object));
+    };
+
+
+
+
+    /********************************************************* <LINE WITH ARROW/> *****************************************************/
+
+
+
+
+
+
+    /************************************************************ <PASS LINE> *********************************************************/
+
+    fabric.PassLine = fabric.util.createClass(fabric.Line, {
+      type: 'PassLine',
+      strokeDashArray: [5, 5],
+
+      initialize(element, options) {
+        options || (options = {});
+        this.callSuper('initialize', element, options);
+
+        // Set default options
+        this.set({
+          id:   this.id,
+          hasControls: false,
+          selectable: true,
+          hasBorders: false,
+          evented: true,
+          perPixelTargetFind: true,
+        });
+      },
+
+      _render(ctx) {
+        this.callSuper('_render', ctx);
+        ctx.save();
+        const xDiff = this.x2 - this.x1;
+        const yDiff = this.y2 - this.y1;
+        const angle = Math.atan2(yDiff, xDiff);
+        ctx.translate((this.x2 - this.x1) / 2, (this.y2 - this.y1) / 2);
+        ctx.rotate(angle);
+        this.anchorAngle = angle;
+        ctx.beginPath();
+        // Move 5px in front of line to start the arrow so it does not have the square line end showing in front (0,0)
+        ctx.moveTo(5, 0);
+        ctx.lineTo(-5, 5);
+        ctx.lineTo(-5, -5);
+        ctx.closePath();
+        ctx.fillStyle = this.stroke;
+        ctx.fill();
+        ctx.restore();
+      },
+
+      toObject() {
+        return fabric.util.object.extend(this.callSuper('toObject'), {
+          id: this.id,
+          customProps: this.customProps,
+          lineIds: this.lineIds,
+          color: this.color,
+          toAnchorPoint: this.toAnchorPoint,
+          anchorAngle: this.anchorAngle,
+          anchorable: this.anchorable,
+          anchorId: this.anchorId,
+          toAnchorId: this.toAnchorId,
+          hasControls: this.hasControls,
+          selectable: this.selectable,
+          hasBorders: this.hasBorders,
+          evented: this.evented,
+          perPixelTargetFind: this.perPixelTargetFind,
+          padding: this.padding,
+          objectCaching: this.objectCaching,
+          x1: this.x1,
+          x2: this.x2,
+          y1: this.y1,
+          y2: this.y2,
+        });
+      },
+    });
+
+    fabric.PassLine.fromObject = function(object, callback) {
+      callback && callback(new fabric.PassLine([object.x1, object.y1, object.x2, object.y2], object));
+    };
+
+    /************************************************************ <PASS LINE/> ********************************************************/
+
+
+
+
+
+
+    /************************************************************ <SCREEN LINE> *******************************************************/
+
+    fabric.ScreenLine = fabric.util.createClass(fabric.Line, {
+      type: 'ScreenLine',
+
+      initialize(element, options) {
+        options || (options = {});
+        this.callSuper('initialize', element, options);
+
+        // Set default options
+        this.set({
+          id:   this.id,
+          hasControls: false,
+          hasBorders: false,
+          selectable: true,
+          evented: true,
+          perPixelTargetFind: true,
+        });
+      },
+
+      _render(ctx) {
+        this.callSuper('_render', ctx);
+        ctx.save();
+        const xDiff = this.x2 - this.x1;
+        const yDiff = this.y2 - this.y1;
+        const angle = Math.atan2(yDiff, xDiff);
+        ctx.translate((this.x2 - this.x1) / 2, (this.y2 - this.y1) / 2);
+        ctx.rotate(angle);
+        this.anchorAngle = angle;
+        ctx.beginPath();
+        // Move 5px in front of line to start the arrow so it does not have the square line end showing in front (0,0)
+        ctx.moveTo(0, -10);
+        ctx.lineTo(0, 10);
+        ctx.stroke()
+        ctx.closePath();
+        ctx.strokeStyle = this.stroke;
+        //ctx.fill();
+        ctx.restore();
+      },
+
+      toObject() {
+        return fabric.util.object.extend(this.callSuper('toObject'), {
+          id: this.id,
+          customProps: this.customProps,
+          lineIds: this.lineIds,
+          color: this.color,
+          toAnchorPoint: this.toAnchorPoint,
+          anchorAngle: this.anchorAngle,
+          anchorable: this.anchorable,
+          anchorId: this.anchorId,
+          toAnchorId: this.toAnchorId,
+          hasControls: this.hasControls,
+          selectable: this.selectable,
+          hasBorders: this.hasBorders,
+          evented: this.evented,
+          perPixelTargetFind: this.perPixelTargetFind,
+          padding: this.padding,
+          objectCaching: this.objectCaching,
+          x1: this.x1,
+          x2: this.x2,
+          y1: this.y1,
+          y2: this.y2,
+        });
+      },
+    });
+
+    fabric.ScreenLine.fromObject = function(object, callback) {
+      callback && callback(new fabric.ScreenLine([object.x1, object.y1, object.x2, object.y2], object));
+    };
+
+    /************************************************************ <SCREEN LINE/> ******************************************************/
+
+
+
+
+
+
+
+    /************************************************************ <DRIBBLE LINE> ******************************************************/
+
+    fabric.DribbleLine = fabric.util.createClass(fabric.Line, {
+      type: 'DribbleLine',
+
+      initialize(element, options) {
+        options || (options = {});
+        this.callSuper('initialize', element, options);
+
+        // Set default options
+        this.set({
+          id:   this.id,
+          hasControls: false,
+          hasBorders: false,
+          selectable: true,
+          evented: true,
+          perPixelTargetFind: true,
+        });
+      },
+
+      _render(ctx) {
+        //this.callSuper('_render', ctx);
+        ctx.save();
+      const xDiff = this.x2 - this.x1;
+      const yDiff = this.y2 - this.y1;
+      const angle = Math.atan2(yDiff, xDiff);
+      ctx.translate(xDiff / 2, yDiff / 2);
+      ctx.rotate(angle);
+      this.anchorAngle = angle;
+      ctx.beginPath();
+      // Move 5px in front of line to start the arrow so it does not have the square line end showing in front (0,0)
+      ctx.moveTo(3, 0);
+      ctx.lineTo(-3, 3);
+      ctx.lineTo(-3, -3);
+      ctx.closePath();
+      ctx.fillStyle = this.stroke;
+      ctx.fill();
+      ctx.restore();
+      var p = this.calcLinePoints();
+      var point = this.pointOnLine(this.point(p.x2, p.y2), this.point(p.x1, p.y1), 10)
+      this.wavy(this.point(p.x1, p.y1), point, this.point(p.x2, p.y2), ctx);
+      ctx.stroke();
+      },
+
+
+
+
+      point: function(x, y) {
+          return {
+            x: x,
+            y: y
+          };
+      },
+
+      wavy: function(from, to, endPoint, ctx) {
+          var cx = 0,
+            cy = 0,
+            fx = from.x,
+            fy = from.y,
+            tx = to.x,
+            ty = to.y,
+            i = 0,
+            step = 2,
+            waveOffsetLength = 0,
+
+            ang = Math.atan2(ty - fy, tx - fx),
+            distance = Math.sqrt((fx - tx) * (fx - tx) + (fy - ty) * (fy - ty)),
+            amplitude = -10
+            f = distance / 4;
+
+          for (i; i <= distance; i += step) {
+            waveOffsetLength = triangle_line((i / distance) * f);
+            cx = from.x + Math.cos(ang) * i + Math.cos(ang - Math.PI / 2) * waveOffsetLength;
+            cy = from.y + Math.sin(ang) * i + Math.sin(ang - Math.PI / 2) * waveOffsetLength;
+            i > 0 ? ctx.lineTo(cx, cy) : ctx.moveTo(cx, cy);
+          }
+          ctx.lineTo(to.x, to.y);
+          ctx.lineTo(endPoint.x, endPoint.y);
+    },
+
+    pointOnLine: function(point1, point2, dist) {
+      var len = Math.sqrt(((point2.x - point1.x) * (point2.x - point1.x)) + ((point2.y - point1.y) * (point2.y - point1.y)));
+      var t = (dist) / len;
+      var x3 = ((1 - t) * point1.x) + (t * point2.x),
+        y3 = ((1 - t) * point1.y) + (t * point2.y);
+      return new fabric.Point(x3, y3);
+    },
+
+      toObject() {
+        return fabric.util.object.extend(this.callSuper('toObject'), {
+          id: this.id,
+          customProps: this.customProps,
+          lineIds: this.lineIds,
+          color: this.color,
+          toAnchorPoint: this.toAnchorPoint,
+          anchorAngle: this.anchorAngle,
+          anchorable: this.anchorable,
+          anchorId: this.anchorId,
+          toAnchorId: this.toAnchorId,
+          hasControls: this.hasControls,
+          selectable: this.selectable,
+          hasBorders: this.hasBorders,
+          evented: this.evented,
+          perPixelTargetFind: this.perPixelTargetFind,
+          padding: this.padding,
+          objectCaching: this.objectCaching,
+          x1: this.x1,
+          x2: this.x2,
+          y1: this.y1,
+          y2: this.y2,
+        });
+      },
+    });
+
+    fabric.DribbleLine.fromObject = function(object, callback) {
+      callback && callback(new fabric.DribbleLine([object.x1, object.y1, object.x2, object.y2], object));
+    };
+
+
+    /************************************************************ <DRIBBLE LINE/> *****************************************************/
+
+
+
+
+
+
+    /********************************************************** <DRAWING FUNCTIONS> ***************************************************/
+
+    function triangle_line(x){
+      let g = x % 6;
+      if(g<=3) return g*5;
+      if(g>3) return (6-g)*5;
+    }
+
+    function selection() {
+      changeObjSelection(true);
+      canvas.off('mouse:down');
+      canvas.off('mouse:move');
+      canvas.off('mouse:up');
+      evented = false;
+    }
+
+    function draw(anchor) {
+      var line;
+      changeObjSelection(false);
+      if (!evented) {
+        canvas.on('mouse:down', function(e){
+            line = onMouseDown(anchor, line_type, e)});
+        canvas.on('mouse:move', function(e){
+            line = onMouseMove(e, line)});
+        canvas.on('mouse:up', function(e){
+            line = onMouseUp(e, line);
+            line.anchorId = anchor.id;
+            anchor.lineIds.push(line.id);
+            if(!anchor.lines){
+              anchor.lines = []
+            }
+            anchor.lines.push(line);
+            canvas.setActiveObject(line);
+        });
+        evented = true;
+      }
+    }
+
+
+    function changeObjSelection(value) {
+      canvas.selection = value;
+      canvas.forEachObject(function(obj){
+        obj.selectable = value;
+      });
+      canvas.requestRenderAll();
+    }
+
+    function onMouseDown(anchor, line_type, options) {
+      isDown = true;
+      var pointer = canvas.getPointer(options.e);
+      var anchor_point = anchor.toAnchorPoint;
+      var points = [anchor_point.x, anchor_point.y, pointer.x, pointer.y]
+      
+      var line = selectLine(points, anchor.color, line_type);
+      line.color = anchor.color;
+      var num_anchor_lines = anchor.lineIds.length;
+      line.id = anchor.id + "_line_" + num_anchor_lines.toString();
+      canvas.add(line);
+      line.moveTo(3);
+      return line;
+
+    }
+
+    function onMouseMove(options, line) {
+      if (!isDown) return;
+      var pointer = canvas.getPointer(options.e);
+      line.set({
+        x2: pointer.x,
+        y2: pointer.y,
+      });
+      
+      canvas.renderAll();
+      return line;
+    }
+
+    function onMouseUp(options, line) {
+      isDown = false;
+      line.moveTo(3);
+      line.setCoords();
+      var centerX = line.x2 - anchorOffset  + Math.cos(line.anchorAngle) * 10;
+      var centerY = line.y2 - anchorOffset + Math.sin(line.anchorAngle) * 10;
+
+      /*CHANGE*/
+      line.toAnchorPoint = new fabric.Point(centerX + anchorOffset, centerY + anchorOffset);
+
+      /*CHANGE*/
+      toAnchor = new fabric.Circle({
+        id: line.id + "_toAnchor",
+        selectable: false,
+        evented: false,
+        hasControls: false,
+        hasBorders: false,
+        left: centerX,
+        top: centerY,
+        lockMovementY: true,
+        lockMovementX: true,
+        radius: anchorRadius,
+        strokeWidth: 1,
+        stroke: line.color,
+        fill: "white",
+        added: true,
+      });
+      line.anchorable = true;
+      canvas.add(toAnchor);
+      line.toAnchorId = toAnchor.id;
+      line.toAnchor = toAnchor;
+      
+      line.toAnchor.moveTo(4)
+      canvas.requestRenderAll();
+      selection();
+
+      return line;
+    }
+
+
+
+    function drawLineWithArrow(points, color) {
+      return new fabric.LineWithArrow(points, {
+        strokeWidth: 2,
+        stroke: color,
+        objectCaching: false,
+        selectable: true,
+        padding: 10,
+        lines: [],
+        lineIds: [],
+        added: true,
+      })
+    }
+
+    function drawScreenLine(points, color) {
+      return new fabric.ScreenLine(points, {
+        strokeWidth: 2,
+        stroke: color,
+        objectCaching: false,
+        selectable: true,
+        padding: 10,
+        lines: [],
+        lineIds: [],
+        added: true,
+      })
+    }
+
+    function drawPassLine(points, color) {
+      return new fabric.PassLine(points, {
+        strokeWidth: 2,
+        stroke: color,
+        objectCaching: false,
+        selectable: true,
+        padding: 10,
+        lines: [],
+        lineIds: [],
+        added: true,
+      })
+    }
+
+    function drawDribbleLine(points, color) {
+      return new fabric.DribbleLine(points, {
+        strokeWidth: 2,
+        stroke: color,
+        objectCaching: false,
+        selectable: true,
+        padding: 10,
+        lines: [],
+        lineIds: [],
+        added: true,
+      })
+    }
+
+    function selectLine(points, color, line_type) {
+      switch(line_type){
+        case "run"  :
+            return drawLineWithArrow(points, color)
+        case "screen" :
+            return drawScreenLine(points, color);
+        case "pass" :
+            return drawPassLine(points, color);
+        case "dribble" :
+            return drawDribbleLine(points, color);
+      }
+      
+    }
+
+    /********************************************************** <DRAWING FUNCTIONS/> ***************************************************/
+
+
+    fabric.PlayerCircle = fabric.util.createClass(fabric.Circle, {
+        type: 'PlayerCircle',
+        initialize(options) {
+            options || (options = { });
+            this.callSuper('initialize', options);
+            this.set({
+              id: this.id
+            })
+        },
+        _render(ctx) {
+            this.callSuper('_render', ctx);
+        }, 
+
+        toObject() {
+            return fabric.util.object.extend(this.callSuper('toObject'), {
+              customProps: this.customProps,
+              id: this.id,
+              toAnchorPoint: this.toAnchorPoint,
+              color: this.color,
+              anchorable: this.anchorable,
+              hasControls: this.hasControls,
+              selectable: this.selectable,
+              hasBorders: this.hasBorders,
+              evented: this.evented,
+              perPixelTargetFind: this.perPixelTargetFind,
+              lineIds: this.lineIds,
+              has_ball: this.has_ball,
+            });
+        },
+
+    });
+
+    fabric.PlayerCircle.fromObject = function(object, callback) {
+        return fabric.Object._fromObject('PlayerCircle', object, callback);
+    };
+
+
+    fabric.Basketball = fabric.util.createClass(fabric.Group, {
+        type : 'basketball',
+
+        initialize : function(objects, options) {
+            options || ( options = { });
+            this.callSuper('initialize', objects, options);
+        },
+
+        toObject() {
+            return fabric.util.object.extend(this.callSuper('toObject'), {
+                // insert custom attributes
+            });
+        },
+
+        _render : function(ctx) {
+            this.callSuper('_render', ctx);
+        }
+    })
+
+    fabric.Basketball.fromObject = function (object, callback) {
+        fabric.util.enlivenObjects(object.objects, function (enlivenedObjects) {
+            delete object.objects;
+            callback && callback(new fabric.Basketball(enlivenedObjects, object));
+        });
+    };
+
+    //fabric.CustomGroup.async = true;
+
+
+
+    /******************************************************** <CIRCLE> ***************************************************************/
+
+
+    function makeBasketball(top, left, playerRadius){
+      var angle = Math.atan((10-0.75)/(70))* 180 / Math.PI
+      var start_angle = (angle+90)*(Math.PI/180)
+      var end_angle = (270-angle)*(Math.PI/180)
+
+      var c = new fabric.Circle({
+        radius: 6,
+        stroke: "black",
+        strokeWidth: 1,
+        fill: 'orange'
+      });
+
+      var arc = new fabric.Circle({
+        radius: 3.5,
+        originX: 'center',
+        originY: 'center',
+        top: 12,
+        left: 6.5,
+        angle: 90,
+        startAngle: start_angle,
+        endAngle: end_angle,
+        stroke: 'black',
+        strokeWidth: 1,
+        fill: '',
+        hasControls: false,
+        selectable: false,
+        hasBorders: false,
+        evented: false,
+      });
+
+      var line = new fabric.Rect({
+        stroke: 'black',
+        strokeWidth: 1,
+        width: 13,
+        top: 6,
+        left: -0.5,
+        fill: '',
+      })
+
+      var arc2 = new fabric.Circle({
+        radius: 3.5,
+        originX: 'center',
+        originY: 'center',
+        top: 1,
+        left: 6.5 ,
+        angle: 270,
+        startAngle: start_angle,
+        endAngle: end_angle,
+        stroke: 'black',
+        strokeWidth: 1,
+        fill: '',
+        perPixelTargetFind: true,
+        objectCaching: false,
+      });
+
+      var line2 = new fabric.Rect({
+        stroke: 'black',
+        strokeWidth: 1,
+        height: 13,
+        top: -0.5,
+        left: 6,
+        fill: '',
+      })
+
+
+
+      var g = new fabric.Basketball([c, arc, line, arc2, line2], {
+        top: top + 1.7* playerRadius,
+        left: left + 1.7* playerRadius,
+        hasControls: false,
+        hasBorders: false,
+      })
+      canvas.add(g)
+
+      return g;
+
+    }
+
+    function makeCircle(left, top, color, id, num, has_ball, playerRadius) {
+        var ball = null;
+        var text = new fabric.Text(num, {
+          id: id,
+          left: left + playerRadius + 2,
+          top: top + playerRadius + 2,
+          fontSize: 14,
+          fill: 'white',
+          originX: 'center',
+          originY: 'center',
+          hasBorders: false,
+          hasControls: false,
+          selectable: false,
+          evented: false,
+          fontFamily: 'Helvetica',
+        });
+
+        if(has_ball){
+          ball = makeBasketball(top, left, playerRadius)
+        }
+        var c = new fabric.PlayerCircle({
+          id: id,
+          left: left,
+          top: top,
+          strokeWidth: 3,
+          radius: playerRadius,
+          fill: color,
+          stroke: color,
+          padding: 10,
+          color: color,
+          hasBorders: false,
+          hasControls: false,
+          toAnchorPoint: new fabric.Point(left + playerRadius, top + playerRadius),
+          anchorable: true,
+          lines: [],
+          lineIds: [],
+          added: true,
+          text: text,
+          has_ball: has_ball,
+          ball: ball,
+        });
+
+
+
+        
+        canvas.add(c);
+        canvas.add(text)
+        c.moveTo(1000)
+        text.moveTo(1001)
+
+        return c;
+      }
+
+    /******************************************************** <CIRCLE/> ***************************************************************/
+
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <DRAWING OBJECTS/> **********************************************************/
+    /*********************************************************************************************************************************/
+
+</script>    

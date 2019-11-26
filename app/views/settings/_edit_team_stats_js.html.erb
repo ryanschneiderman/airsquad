@@ -1,0 +1,239 @@
+<script>
+
+
+
+	function initialize_stats_kept(){
+		<%@non_default_collectable_belongs.each do |stat|%>
+			adv_stat_add_check(<%=stat.stat_list_id%>, true)
+			team_adv_stat_add_check(<%=stat.stat_list_id%>, true)
+		<%end%>
+	}
+
+
+	// WHAT IS GOING ON HERE
+	function adv_stat_add_check(stat_id, init){
+		var len = non_default_adv_stats.length
+		// iterate over non default advanced stats
+		for(var i = 0; i < len; i++){
+			// check the stats needed for each advanced stat
+			var stats_needed_len = non_default_adv_stats[i].stats_needed.length
+			// if there are any stats that are not yet already satisfied
+			if(stats_needed_len > 0){
+				for(var j = 0; j < stats_needed_len; j++){
+					// if a needed stat is the stat we are passing in
+					if (non_default_adv_stats[i].stats_needed[j] == stat_id){
+						// splice from needed array
+						non_default_adv_stats[i].stats_needed.splice(j, 1);
+						// add to satisfied array
+						non_default_adv_stats[i].stats_satisfied.push(stat_id)
+						// if no more stats are needed to satisfy adv stat
+						if(non_default_adv_stats[i].stats_needed.length == 0 && !init){
+							if(stats_to_remove.includes(non_default_adv_stats[i].id)){
+								var removeIndex = stats_to_remove.map(function(item) { return item;}).indexOf(non_default_adv_stats[i].id);
+	        					~removeIndex && stats_to_remove.splice(removeIndex, 1);
+							}
+							else{
+								stats_to_add.push(non_default_adv_stats[i].id)
+							}
+							$("#stat-" + non_default_adv_stats[i].id).removeClass("stat-choice-inactive")
+							$("#stat-" + non_default_adv_stats[i].id).addClass("stat-choice-active")
+						}
+					}
+				}
+			}
+		}
+	}
+
+	function adv_stat_remove_check(stat_id){
+		var len = non_default_adv_stats.length
+		// iterate over non default advanced stats
+		for(var i = 0; i < len; i++){
+			// check the stats satisfied for each advanced stat
+			var stats_satisfied_len = non_default_adv_stats[i].stats_satisfied.length
+			// if there are satisfied stats...
+			if(stats_satisfied_len > 0){
+				for(var j = 0; j < stats_satisfied_len; j++){
+					if (non_default_adv_stats[i].stats_satisfied[j] == stat_id){
+						non_default_adv_stats[i].stats_satisfied.splice(j, 1);
+						non_default_adv_stats[i].stats_needed.push(stat_id)
+						if(non_default_adv_stats[i].stats_needed.length >= 1){
+							if(stats_to_add.includes(non_default_adv_stats[i].id)){
+								var removeIndex = stats_to_add.map(function(item) { return item;}).indexOf(non_default_adv_stats[i].id);
+	        					~removeIndex && stats_to_add.splice(removeIndex, 1);
+	        				}
+	        				else{
+	        					stats_to_remove.push(non_default_adv_stats[i].id)
+	        				}
+        					$("#stat-" + non_default_adv_stats[i].id).addClass("stat-choice-inactive")
+							$("#stat-" + non_default_adv_stats[i].id).removeClass("stat-choice-active")
+						}
+
+					}
+				}
+			}
+		}
+	}
+
+	function team_adv_stat_add_check(stat_id, init){
+		var len = non_default_team_adv_stats.length
+		for(var i = 0; i < len; i++){
+			var stats_needed_len = non_default_team_adv_stats[i].stats_needed.length
+			if(stats_needed_len > 0){
+				for(var j = 0; j < stats_needed_len; j++){
+					if (non_default_team_adv_stats[i].stats_needed[j] == stat_id){
+						non_default_team_adv_stats[i].stats_needed.splice(j, 1);
+						non_default_team_adv_stats[i].stats_satisfied.push(stat_id)
+						if(non_default_team_adv_stats[i].stats_needed.length == 0 && !init){
+							if(stats_to_remove.includes(non_default_team_adv_stats[i].id)){
+								var removeIndex = stats_to_remove.map(function(item) { return item;}).indexOf(non_default_team_adv_stats[i].id);
+	        					~removeIndex && stats_to_remove.splice(removeIndex, 1);
+							}
+							else{
+								stats_to_add.push(non_default_team_adv_stats[i].id)
+							}
+							$("#stat-" + non_default_team_adv_stats[i].id).removeClass("stat-choice-inactive")
+							$("#stat-" + non_default_team_adv_stats[i].id).addClass("stat-choice-active")
+						}
+					}
+				}
+			}
+		}
+	}
+
+	function team_adv_stat_remove_check(stat_id){
+		var len = non_default_team_adv_stats.length
+		for(var i = 0; i < len; i++){
+			var stats_satisfied_len = non_default_team_adv_stats[i].stats_satisfied.length
+			if(stats_satisfied_len > 0){
+				for(var j = 0; j < stats_satisfied_len; j++){
+					if (non_default_team_adv_stats[i].stats_satisfied[j] == stat_id){
+						non_default_team_adv_stats[i].stats_satisfied.splice(j, 1);
+						non_default_team_adv_stats[i].stats_needed.push(stat_id)
+						if(non_default_team_adv_stats[i].stats_needed.length == 1){
+							if(stats_to_add.includes(non_default_team_adv_stats[i].id)){
+								var removeIndex = stats_to_add.map(function(item) { return item;}).indexOf(non_default_team_adv_stats[i].id);
+        						~removeIndex && stats_to_add.splice(removeIndex, 1);
+							}
+							else{
+								stats_to_remove.push(non_default_team_adv_stats[i].id)
+							}
+							
+        					$("#stat-" + non_default_team_adv_stats[i].id).addClass("stat-choice-inactive")
+							$("#stat-" + non_default_team_adv_stats[i].id).removeClass("stat-choice-active")
+						}
+					}
+				}
+			}
+		}
+	}
+
+	function initialize_adv_stats(){
+		<%@advanced_stats.each do |stat|%>
+			non_default_adv_stats.push( {"id" : <%=stat[0]%>, "stats_needed" : <%=stat[1]%>, "stats_satisfied" : <%=stat[2]%>, "name" : "<%=stat[3]%>"})
+		<%end%>
+
+		<%@team_advanced_stats.each do |stat|%>
+			non_default_team_adv_stats.push( {"id" : <%=stat[0]%>, "stats_needed" : <%=stat[1]%>, "stats_satisfied" : <%=stat[2]%>, "name" : "<%=stat[3]%>"})
+		<%end%>
+		console.log(non_default_team_adv_stats)
+	}
+
+
+	function add_basic_stat(stat_name, stat_id, destination){
+		switch(destination){
+			case "your_stats" :
+				if(stats_to_remove.includes(stat_id)){
+					var removeIndex = stats_to_remove.map(function(item) { return item;}).indexOf(stat_id);
+        			~removeIndex && stats_to_remove.splice(removeIndex, 1);
+				}
+				else{
+					stats_to_add.push(stat_id)
+				}
+				$("#basic-collectors").append('<button class = "stat-choice stat-choice-active" type = "button" onclick = "to_choose_stats(this, \'basic\', \''+ stat_name +'\', '+ stat_id +')">' + stat_name +'</button>')
+				adv_stat_add_check(stat_id)
+				team_adv_stat_add_check(stat_id)
+				break;
+			case "choose_stats" :
+				if(stats_to_add.includes(stat_id)){
+					var removeIndex = stats_to_add.map(function(item) { return item;}).indexOf(stat_id);
+        			~removeIndex && stats_to_add.splice(removeIndex, 1);
+				}
+				else{
+					stats_to_remove.push(stat_id)
+				}
+				$("#choose-basic-collectors").append('<button class = "stat-choice stat-choice-active" type = "button" onclick = "to_your_stats(this, \'basic\', \''+ stat_name +'\', '+ stat_id +')">' + stat_name +'</button>')
+				console.log("STAT_ID: " + stat_id)
+				adv_stat_remove_check(stat_id)
+				team_adv_stat_remove_check(stat_id)
+				break;
+		}
+		
+	}
+
+	function add_advanced_stat(stat_name, stat_id, destination){
+		switch(destination){
+			case "your_stats" :
+				advanced_stats.push(stat_id);
+				break;
+			case "choose_stats" :
+				var removeIndex = advanced_stats.map(function(item) { return item;}).indexOf(stat_id);
+        		~removeIndex && advanced_stats.splice(removeIndex, 1);
+				break;
+		}
+		
+	}
+
+
+	// TODO: Review whats going on here. Doesnt seem right.
+	function add_team_stat(stat_name, stat_id, destination){
+		switch(destination){
+			case "your_stats" :
+				team_stats.push(stat_id);
+				$("#team-stats").append('<button class = "stat-choice" type = "button" onclick = "to_choose_stats(this, \'team\', \''+ stat_name +'\', '+ stat_id +')">' + stat_name +'</button>')
+				break;
+			case "choose_stats" :
+				var removeIndex = team_stats.map(function(item) { return item;}).indexOf(stat_id);
+        		~removeIndex && team_stats.splice(removeIndex, 1);
+				$("#choose-team-stats").append('<button class = "stat-choice" type = "button" onclick = "to_your_stats(this, \'team\', \''+ stat_name +'\', '+ stat_id +')">' + stat_name +'</button>')
+				break;
+		}
+		
+	}
+
+	function to_your_stats(button, stat_type, stat_name, stat_id){
+		$(button).remove();
+		switch(stat_type){
+			case "basic" :
+				add_basic_stat(stat_name, stat_id, "your_stats");
+				break;
+			case "advanced" :
+				add_advanced_stat(stat_name, stat_id, "your_stats");
+				break;
+			case "team" :
+				add_team_stat(stat_name, stat_id, "your_stats");
+				break;
+		}
+		console.log(stats_to_add)
+		console.log(stats_to_remove)
+	}
+
+	function to_choose_stats(button, stat_type, stat_name, stat_id){
+		$(button).remove();
+		switch(stat_type){
+			case "basic" :
+				add_basic_stat(stat_name, stat_id, "choose_stats");
+				break;
+			case "advanced" :
+				add_advanced_stat(stat_name, stat_id, "choose_stats");
+				break;
+			case "team" :
+				add_team_stat(stat_name, stat_id, "choose_stats");
+				break;
+		}
+		console.log(stats_to_add)
+		console.log(stats_to_remove)
+	}
+
+
+
+</script>

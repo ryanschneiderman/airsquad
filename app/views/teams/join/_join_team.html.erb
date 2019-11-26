@@ -1,0 +1,14 @@
+
+
+<%= form_tag url_for(:controller => 'teams', :action => "join"), :method => "get" do %>
+    <%= radio_button_tag(:member_type, 2) %>
+    <%= label_tag(:coach, "I am a coach!") %>
+    <%= radio_button_tag(:member_type, 1) %>
+    <%= label_tag(:player, "I am a player!") %>
+    <%= radio_button_tag(:member_type, 3) %>
+    <%= label_tag(:manager, "I am a manager!") %>
+    <%= text_field_tag(:username) %>
+    <%= text_field_tag(:password) %>
+    <%= submit_tag("Join Team") %>
+<% end %>
+

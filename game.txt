@@ -1,0 +1,17 @@
+--GAME PAGE
+
+After we submit the data from the game mode, it makes sense to redirect to the page for the game itself with links and/or information about the statistics just gathered. So, what data do we need? And how do we make sure that the page works whether or not the game mode has been activated yet? In other words, what happens if no stats have been gathered yet, or if stats were uploaded by hand and not using game mode?
+
+So... what stats do we need?
+
+I dont think it makes sense to retrieve all of the granules of data. Thats too much data to be passing to the front end. Nor would we need each individually granule of data anyways. We would just need the make/miss data to create the shot charts. Regardless, we don't need that information on the game page because we should minimize the amount of data needed at any given point. That is, we should have pages for each individual players performance for that game, including the shot chart. The game page should only have information relevant to the entire team. So maybe the full shot chart...
+
+Other than that, there should be stat totals for the team for each statistic that we care about. In addition to that data, there should be information about team leaders, and other important insights like:
+
+-most improved category from last game
+-highest variance from average performance
+-or differential to average performance for each category. 
+-best player based on average performance
+-etc.
+
+So when we are rerending shot charts for a certain player or for a certain game, it is important to consider that there are a variety of ways a user may want to view a shot chart. They may want to view for a certain game, or they may want to view for a certain team, or they may want to view their shot chart for all teams they belong to. Keeping this in mind, I think it makes sense to rerender shot charts from the data itself as opposed to storing json representations of canvases. In theory it should not be that hard to rerender in this manner.
