@@ -4,7 +4,7 @@
 	}
 	#background{
 		width: 100vw;
-		height: 100%;
+		height: 100vw;
 		background-color: black;
 	}
 </style>
@@ -23,89 +23,4 @@
 </div>
 
 
-<script>
-	var row = 0;
-	var col = 0;
-	var startingTop = 0;
-	var startingLeft = 0;
-	var ypos = -3;
-	var xpos = 1;
-    var move_count = 0;
-
-	function calc_ypos(){
-		return (row * -744) - 3
-	}
-
-	function calc_xpos(){
-		return (col * -1276) + 1
-	}
-		
-
-	$(document).mousemove(function(event) {
-		
-	if(move_count % 8 == 0){
-		row++;
-		if(row  > 7){
-			col++;
-			row = 0;
-		}
-		if(col > 5 && row > 4){
-			row = 0;
-			col = 0;
-		}
-		$('#sprite').css("backgroundPosition", calc_xpos().toString() + "px " + calc_ypos().toString() + "px"); 
-	
-		}
-		move_count++; 
-	});
-
-	$("#grey-canvas")
-	.mouseenter(function(e){
-		startingTop = e.clientY;
-		startingLeft = e.clientX;
-		isInCanvas = true;
-	})
-	.mouseleave(function(e){
-		isInCanvas = false;
-	});
-
-
-	/*
-	var startingTop = 0;
-	var startingLeft = 0;
-	var isInCanvas = false;
-	var image_arr = [];
-	var image_i = 0;
-	var oldMath = 0;
-	var move_count = 0;
-
-
-	var image_arr_len = image_arr.length;
-
-	$('#animation').html(image_arr[0]);
-
-	$(document).mousemove(function(event) {
-		if (isInCanvas){
-			if(image_i + 1 > image_arr_len){
-				image_i = 0;
-			}
-			move_count++;
-			console.log(image_i);
-		    if (move_count % 100 == 0){
-		    	$('#animation').html(image_arr[image_i]);
-		    	image_i = image_i + 1;
-		    }
-		}
-	});
-
-	$("#grey-canvas")
-	.mouseenter(function(e){
-		startingTop = e.clientY;
-		startingLeft = e.clientX;
-		isInCanvas = true;
-	})
-	.mouseleave(function(e){
-		isInCanvas = false;
-	});*/
-		
-</script>
+<%= render 'pages/index/landing/sprite_js' %>
