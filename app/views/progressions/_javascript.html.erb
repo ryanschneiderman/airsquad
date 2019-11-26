@@ -463,7 +463,9 @@
       });
     }
 
-
+    $(".progression-notes-text").click(function(){
+      deselect_all_active()
+    });
     
     $(document).keyup(function(e){
         if(e.keyCode == 46 || e.keyCode == 8) {
