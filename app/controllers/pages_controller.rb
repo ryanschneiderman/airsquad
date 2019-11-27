@@ -10,6 +10,10 @@ class PagesController < ApplicationController
   				@teams.push team
 			end
 
+			if @teams.length == 1
+				redirect_to team_path(@teams[0].id)
+			end
+
 			## StatList.delete_all
 			## puts "************************ NEW ************************"
 			## StatList.find_each do |stat_list|
