@@ -18604,3 +18604,752 @@ An unauthorized connection attempt was rejected
 Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
 Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:14:58 -0500
 Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:14:58 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:15:27 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:15:27 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:15:27 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:15:27 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:15:50 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:15:50 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:15:50 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:15:50 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:15:53 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:15:53 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:15:53 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:15:53 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:16:10 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:16:10 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:16:10 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:16:10 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:16:36 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:16:36 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:16:36 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:16:36 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:16:55 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:16:55 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:16:55 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:16:55 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:17:22 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:17:22 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:17:22 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:17:22 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:17:45 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:17:45 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:17:45 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:17:45 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:18:09 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:18:09 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:18:09 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:18:09 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:18:35 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:18:35 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:18:35 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:18:35 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:19:02 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:19:02 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:19:02 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:19:02 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:19:26 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:19:26 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:19:26 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:19:26 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:19:50 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:19:50 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:19:50 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:19:50 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:20:14 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:20:14 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:20:14 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:20:14 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:20:38 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:20:38 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:20:38 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:20:38 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:21:02 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:21:02 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:21:02 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:21:02 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:21:26 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:21:26 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:21:26 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:21:26 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:21:50 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:21:50 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:21:50 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:21:50 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:22:16 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:22:16 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:22:16 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:22:16 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:22:41 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:22:41 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:22:41 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:22:41 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:23:05 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:23:05 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:23:05 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:23:05 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:23:29 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:23:29 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:23:29 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:23:29 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:23:53 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:23:53 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:23:53 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:23:53 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:24:17 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:24:17 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:24:17 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:24:17 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:24:41 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:24:41 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:24:41 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:24:41 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:25:05 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:25:05 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:25:05 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:25:05 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:25:29 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:25:29 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:25:29 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:25:29 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:25:53 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:25:53 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:25:53 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:25:53 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:26:17 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:26:17 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:26:17 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:26:17 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:26:41 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:26:41 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:26:41 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:26:41 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:27:06 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:27:06 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:27:06 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:27:06 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:27:31 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:27:31 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:27:31 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:27:31 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:27:56 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:27:56 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:27:56 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:27:56 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:28:21 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:28:21 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:28:21 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:28:21 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:28:46 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:28:46 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:28:46 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:28:46 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:29:11 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:29:11 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:29:11 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:29:11 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:29:36 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:29:36 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:29:36 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:29:36 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:30:02 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:30:02 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:30:02 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:30:02 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:30:27 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:30:27 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:30:27 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:30:27 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:30:52 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:30:52 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:30:52 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:30:52 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:31:17 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:31:17 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:31:17 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:31:17 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:31:42 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:31:42 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:31:42 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:31:42 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:32:07 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:32:07 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:32:07 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:32:07 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:32:32 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:32:32 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:32:32 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:32:32 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:32:57 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:32:57 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:32:57 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:32:57 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:33:22 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:33:22 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:33:22 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:33:22 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:33:47 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:33:47 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:33:47 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:33:47 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:34:12 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:34:12 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:34:12 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:34:12 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:34:37 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:34:37 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:34:37 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:34:37 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:35:02 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:35:02 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:35:02 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:35:02 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:35:27 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:35:27 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:35:27 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:35:27 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:35:52 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:35:52 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:35:52 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:35:52 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:36:17 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:36:17 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:36:17 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:36:17 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:36:42 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:36:42 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:36:42 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:36:42 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:37:07 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:37:07 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:37:07 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:37:07 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:37:32 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:37:32 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:37:32 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:37:32 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:37:57 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:37:57 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:37:57 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:37:57 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:38:23 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:38:23 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:38:23 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:38:23 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:38:49 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:38:49 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:38:49 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:38:49 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:39:15 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:39:15 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:39:15 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:39:15 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:39:41 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:39:41 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:39:41 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:39:41 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:40:07 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:40:07 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:40:07 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:40:07 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:40:33 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:40:33 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:40:33 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:40:33 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:40:59 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:40:59 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:40:59 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:40:59 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:41:25 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:41:25 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:41:25 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:41:25 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:41:51 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:41:51 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:41:51 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:41:51 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:42:17 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:42:17 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:42:17 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:42:17 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:42:43 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:42:43 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:42:43 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:42:43 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:43:09 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:43:09 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:43:09 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:43:09 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:43:35 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:43:35 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:43:35 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:43:35 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:44:01 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:44:01 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:44:01 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:44:01 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:44:28 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:44:28 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:44:28 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:44:28 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:44:54 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:44:54 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:44:54 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:44:54 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:45:20 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:45:20 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:45:20 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:45:20 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:45:46 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:45:46 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:45:46 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:45:46 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:46:12 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:46:12 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:46:12 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:46:12 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:46:38 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:46:38 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:46:38 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:46:38 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:47:04 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:47:04 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:47:04 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:47:04 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:47:30 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:47:30 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:47:30 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:47:30 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:47:56 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:47:56 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:47:56 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:47:56 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:48:22 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:48:22 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:48:22 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:48:22 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:48:48 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:48:48 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:48:48 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:48:48 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:49:14 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:49:14 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:49:14 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:49:14 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:49:40 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:49:40 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:49:40 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:49:40 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:50:07 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:50:07 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:50:07 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:50:07 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:50:34 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:50:34 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:50:34 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:50:34 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:51:00 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:51:00 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:51:00 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:51:00 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:51:26 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:51:26 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:51:26 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:51:26 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:51:52 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:51:52 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:51:52 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:51:52 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:52:18 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:52:18 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:52:18 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:52:18 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:52:45 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:52:45 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:52:45 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:52:45 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:53:12 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:53:12 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:53:12 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:53:12 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:53:39 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:53:39 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:53:39 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:53:39 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:54:06 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:54:06 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:54:06 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:54:06 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:54:33 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:54:33 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:54:33 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:54:33 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:55:00 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:55:00 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:55:00 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:55:00 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:55:27 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:55:27 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:55:27 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:55:27 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:55:54 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:55:54 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:55:54 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:55:54 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:56:21 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:56:21 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:56:21 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:56:21 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:56:48 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:56:48 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:56:48 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:56:48 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:57:15 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:57:15 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:57:15 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:57:15 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:57:42 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:57:42 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:57:42 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:57:42 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:58:09 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:58:09 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:58:09 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:58:09 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:58:36 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:58:36 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:58:36 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:58:36 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:59:03 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:59:03 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:59:03 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:59:03 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:59:30 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:59:30 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:59:30 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:59:30 -0500
+Started GET "/cable" for ::1 at 2019-11-26 18:59:57 -0500
+Started GET "/cable/" [WebSocket] for ::1 at 2019-11-26 18:59:57 -0500
+Successfully upgraded to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+An unauthorized connection attempt was rejected
+Failed to upgrade to WebSocket (REQUEST_METHOD: GET, HTTP_CONNECTION: Upgrade, HTTP_UPGRADE: websocket)
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:59:57 -0500
+Finished "/cable/" [WebSocket] for ::1 at 2019-11-26 18:59:57 -0500
