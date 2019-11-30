@@ -186,9 +186,11 @@
 
     $(".show-canvas").on("click", function(e) {
 		if(make_selected && curr_player != null){
+			un_grey_out_stats()
 			make(e);
 		}
 		else if (miss_selected && curr_player != null){
+			un_grey_out_stats()
 			miss(e);
 		}
 	}); 	

@@ -121,6 +121,7 @@
 			if(!player_charts_toggle){
 				to_team_shot_chart()
 			}
+			un_grey_out_stats()
 		}
 	});
 
@@ -638,6 +639,22 @@
 	    }, 1000);
 	}
 
+	function grey_out_stats(button_index){
+		$(".stat-button").each(function(index){
+			if(index!=button_index){
+				$(this).css('opacity', '0.6')
+				$(this).prop("disabled",true);
+			}
+		})
+	}
+
+	function un_grey_out_stats(){
+		$(".stat-button").each(function(index){
+			$(this).css('opacity', '1')
+			$(this).prop("disabled",false);
+		})
+	}
+
 	function stat_button(stat_id, button){
 		stat_id = parseInt(stat_id)
 		if(curr_player != null && (is_in_game(curr_player.player_obj) || curr_player_is_opponent )){
@@ -648,6 +665,7 @@
 			}
 			curr_stat_button = button;
 			if(stat_id == 1){
+				grey_out_stats(0)
 				to_shot_chart()
 				$(button).addClass("stat-button-highlight")
 				//select_button(button);
@@ -655,6 +673,7 @@
 
 			}
 			else if (stat_id == 2){
+				grey_out_stats(1)
 				to_shot_chart()
 				$(button).addClass("stat-button-highlight")
 				//select_button(button);
@@ -761,18 +780,20 @@
 
 	function add_stat_to_player(){
 		if(curr_stat == 1){
-				select_button(curr_player_button);
-				make_selected = true;
-			}
-			else if (curr_stat == 2){
-				select_button(curr_player_button);
-				miss_selected = true;
-			}
-			else{
-				add_stat(curr_stat, curr_player.player_obj);
-				deselect_player();
-				deselect_stat();
-			}
+			select_button(curr_player_button);
+			make_selected = true;
+			grey_out_stats(0)
+		}
+		else if (curr_stat == 2){
+			select_button(curr_player_button);
+			miss_selected = true;
+			grey_out_stats(1)
+		}
+		else{
+			add_stat(curr_stat, curr_player.player_obj);
+			deselect_player();
+			deselect_stat();
+		}
 	}
 
 
