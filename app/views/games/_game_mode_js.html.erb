@@ -1025,7 +1025,7 @@
     		fg_in_table(new_index, shot_result, player_row);
     	}
     	else {
-    		undo_table_cell(old_index, shot_result, player_row);
+    		undo_table_cell(old_index, result.stat, player_row);
     	}
     	
     	if(obj.player){
@@ -1033,7 +1033,7 @@
     			fg_in_table(new_index, shot_result, team_row);
 	    	}
 	    	else {
-	    		undo_table_cell(old_index, shot_result, team_row);
+	    		undo_table_cell(old_index, result.stat, team_row);
 	    	}
     		player.cumulative_arr[old_player_stat_index].total--;
     		player.cumulative_arr[new_player_stat_index].total++;
@@ -1482,6 +1482,7 @@
 	}
 
 	function undo_table_cell(index, shot_result, row){
+		console.log("undo table cell result: " + shot_result)
 		var col = row.cells[index];
 		var pct_col = row.cells[index+1];
 		contents = col.innerHTML;
@@ -1537,6 +1538,7 @@
 	    if(!stat_object.is_opponent){
 	    	// only undo for 3pt granules because we don't have a separate column for 2pt shots in table
 		    if(stat_id== 11 || stat_id == 12) {
+		    	console.log("RESULT: " + result)
 		    	undo_table_cell(stat_index, result, player_row);
 		    	undo_table_cell(stat_index, result, team_row);
 		    }
@@ -1636,7 +1638,6 @@
 	    undo_player_array_stat(stat_object);
 	    gameModeChannel.send({sent_by: <%=current_user.id%>, game_state: {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr, "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}, undo_stat: stat_object})
 	    statRemoved(stat_object)
-	    console.log(curr_lineup)
 	}
 
 	
@@ -1998,8 +1999,6 @@
 
 		var url = "/teams/" + <%= @team_id%> +  "/games/"+ <%=@game_id%> + "/game_mode"
 		
-
-
 		var json_data = {"player_stats": stat_array, "team_stats": team_stat_totals, "opponent_stats": opponent_obj, "lineup_stats": lineups_arr}
 		console.log(json_data)
 		 $.ajax({

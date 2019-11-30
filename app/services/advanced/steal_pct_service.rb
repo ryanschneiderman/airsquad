@@ -10,6 +10,11 @@ class Advanced::StealPctService
 		@team_minutes_played = params[:team_minutes]
 		@minutes_played = params[:minutes]
 		@opp_poss = params[:opp_poss]
+		puts "@opp_poss"
+		puts @opp_poss
+
+		puts "@minutes_played"
+		puts @minutes_played
 	end
 
 	def call()

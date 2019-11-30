@@ -150,7 +150,7 @@ class Advanced::TeamAdvancedStatsService
 			is_opponent: true
 		})
 
-		@season_opp_poss = SeasonTeamAdvStat.where(stat_list_id: 45, team_id: @team_id, is_opponent: true).take
+		@season_opp_poss = SeasonTeamAdvStat.where(stat_list_id: 43, team_id: @team_id, is_opponent: true).take
 		if @season_opp_poss
 			new_opp_poss = Advanced::PossessionsService.new({
 				team_field_goal_att: @opp_field_goal_att + @season_opp_poss.constituent_stats["opp_field_goal_att"],
