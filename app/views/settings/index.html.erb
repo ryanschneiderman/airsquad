@@ -1,9 +1,29 @@
-<div id = "settings-landing" class = "page-landing">
-	<%= image_tag("settings-wallpaper.jpg", :alt => "settings", :class => "landing-img") %>
-	<div class = "content-page-landing-title">Settings</div>
-</div>
+
 <div id = "edit-team-stats" class = "dark-block">
 	<div id = "edit-stats-block">
+		<div class = "page-subheader" id = "create-team-header">Edit Team</div>
+		<div id = "team-info-block">
+			<div class = "new-form new-team-secondary-color" >
+				<div class = "team-info-input">
+					<label for="enter-team-name">Edit team name</label><br>
+					<input type = "text" class = "new-team-input" id = "enter-team-name" value="<%=@team.name%>">
+				</div>
+				<div class = "team-info-input">
+					<label for="minutes-per-quarter">Edit length of quarters</label><br>
+					<input type = "number" class = "new-team-input" id = "minutes-per-quarter" value = "<%=@team.minutes_p_q%>">
+				</div>
+			</div>
+			<div id = "add-players-block">
+				<div class = "new-form new-team-secondary-color">
+					<label for="add_player">Add/remove players</label><br>
+					<input type = "text" class = "new-team-input" id = "add_player">
+					<button class="btn btn-primary" onclick = "add_player()">Add Player</button>	
+				</div>
+				<div id = "current-members">
+								
+				</div>
+			</div>
+		</div>
 		<div id = "team-stat-grid">
 			<div id = "edit-stats-header">
 				Edit Stats
@@ -96,15 +116,30 @@
 	var stats_to_remove = []
 	var non_default_adv_stats = []
 	var non_default_team_adv_stats = []
-	 initialize_adv_stats()
-	 initialize_stats_kept()
+	var curr_players = []
+	var curr_player_ids = []
+	var new_players = []
+	var remove_players = []
+	initialize_adv_stats()
+	initialize_stats_kept()
+	initialize_players()
+	
+
+
+	function initialize_players(){
+		<%@players.each do |player|%>
+			curr_players.push("<%=player.nickname%>")
+			curr_player_ids.push(<%=player.id%>)
+			$("#current-members").append("<button class = 'new-player' onclick = 'remove_player(this)'><div class = 'new-player-name'> <%=player.nickname%> </div><div class = 'remove-player-x'> x </div></button>")
+		<%end%>
+	}
 
 
 	function add_player(){
 		var player = $("#add_player").val()
 		$("#add_player").val("")
 		if(player != ""){
-			players.push(player);
+ 			new_players.push(player);
 			$("#current-members").append("<button class = 'new-player' onclick = 'remove_player(this)'><div class = 'new-player-name'>" + player + "</div><div class = 'remove-player-x'> x </div></button>")
 		}
 		else {
@@ -113,12 +148,21 @@
 		
 	}
 
+
 	function remove_player(button){
-		var player = button.childNodes[0].innerText
-		console.log(button.childNodes[0].innerText)
-		players.splice(players.indexOf(player),1)
-		$(button).remove();
-		console.log(players)
+		var r = confirm("Are you sure you want to remove this player? Once you do the action cannot be undone");
+		if (r == true) {
+			  var player = button.childNodes[0].innerText
+			var index = curr_players.indexOf(player)
+			if(index >= 0){
+				remove_players.push(curr_player_ids[index])
+				$(button).remove();
+			}
+			else{
+				new_players.splice(new_players.indexOf(player),1)
+				$(button).remove();
+			}
+		}
 	}
 
 	function show_team_stat_block(){
@@ -132,17 +176,15 @@
 	}
 
 	function submit_edit_team(){
-		/*var team_name = $("#enter-team-name").val()
-		var username = $("#enter-unique-username").val()
-		var password = $("#choose-password").val()
-		var minutes_p_q = $("#minutes-per-quarter").val()*/
+		var team_name = $("#enter-team-name").val()
+		var minutes_p_q = $("#minutes-per-quarter").val()
 		var url = "/teams/" + <%=@team_id%> + "/settings/"
 		$.ajax({
 	      url: url,
 	      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
 	      type: "post",
 	      data_type: 'json',
-	      data: {stats_to_add: stats_to_add, stats_to_remove: stats_to_remove}
+	      data: {stats_to_add: stats_to_add, stats_to_remove: stats_to_remove, new_players: new_players, remove_players: remove_players, team_name: team_name, minutes_p_q: minutes_p_q}
 	    });
 	}
 </script>
