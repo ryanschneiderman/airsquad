@@ -4,7 +4,8 @@
 	<div id = "tool-bar">
         <div id = "play-header">
             <div id = "play-progression">
-                <div id = "play-name"> <%= @play.name %> - </div>
+                <div id = "play-name" contenteditable="true"> <%= @play.name %></div>
+                <div>-</div>
                 <div id = "progression_index">1</div>
             </div>
             <div class = "settings-dropdown" style = "display: none;">
@@ -322,6 +323,7 @@
 	        var patch_url = "/plays/" + <%= @play.id %> + "/progressions/" + progressions_arr[index].id
 	        var new_notes = $(".progression-notes-text").html()
             var play_image = canvas.toDataURL('png')
+            var play_name = $("#play-name").html()
 
 	      /* Send the data using post and put the results in a div */
 	      
@@ -330,7 +332,7 @@
 	          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
 	          type: "PATCH",
 	          data_type: 'json',
-	          data: {progression: {json_diagram: json_data , progression_id: progressions_arr[index].id, play_id: <%= @play.id %>, team_id: <%=@team_id%>, canvas_width: canvas_width, notes: new_notes, play_image: play_image}}
+	          data: {progression: {json_diagram: json_data , progression_id: progressions_arr[index].id, play_id: <%= @play.id %>, team_id: <%=@team_id%>, canvas_width: canvas_width, notes: new_notes, play_image: play_image}, play_name: play_name}
 	        });
 	    }
 </script>

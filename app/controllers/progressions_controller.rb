@@ -49,7 +49,7 @@ class ProgressionsController < ApplicationController
 		progression.play_image.attach(io: StringIO.new(image.to_blob), filename: progression_str, content_type: "image/jpeg")
 		progression.save
 
-		redirect_to edit_team_play_path(team_id, play.id)
+		redirect_to team_plays_path(team_id)
 	end
 
 	def create_next
@@ -101,7 +101,10 @@ class ProgressionsController < ApplicationController
 		progression_id = params[:progression][:progression_id]
 		play_id = params[:progression][:play_id]
 		team_id = params[:progression][:team_id]
+		play_name = params[:play_name]
 		play = Play.find_by_id(play_id)
+		play.update(name: play_name)
+		play.save
 		progression = Progression.find(params[:progression][:progression_id])
 		
 
