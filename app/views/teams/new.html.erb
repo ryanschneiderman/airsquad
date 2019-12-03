@@ -160,6 +160,20 @@ $(".navbar").addClass("navbar-inactive");
 		$("#team-stat-grid").hide()
 	}
 
+	function show_info(button){
+		var parent = $(button).parent()
+		console.log(parent)
+		var description = parent.find(".stat-info")
+		var position = parent.offset()
+		console.log(position)
+		description.offset({top: position.top -55, left: position.left -8})
+	}
+	
+	function hide_info(button){
+		$(".stat-description").hide()
+		$(".stat-info-show").show()
+	}
+
 	function submit_new_team(){
 		var team_name = $("#enter-team-name").val()
 		var username = $("#enter-unique-username").val()
