@@ -73,11 +73,11 @@
 						<div class = "stat-choice-subheader new-team-secondary-color">Advanced individual stats</div>
 						<div id = "adv-individual">
 							<%@default_indiv_advanced.each do |stat|%>
-								<button class = "stat-choice stat-choice-active" type = "button" id = "stat-<%=stat.id%>" onclick="to_choose_stats(this, 'advanced', '<%= stat.stat %>', <%= stat.id %>)"> <%= stat.stat %> </button>
+								<div class = "stat-choice stat-choice-active" type = "button" id = "stat-<%=stat.id%>"> <%= stat.stat %> </div>
 							<%end%>
 
 							<%@non_default_indiv_advanced.each do |stat|%>
-								<button class = "stat-choice stat-choice-inactive" id = "stat-<%=stat.id%>"> <%= stat.stat %> </button>
+								<div class = "stat-choice stat-choice-inactive" id = "stat-<%=stat.id%>"> <%= stat.stat %> </div>
 							<%end%>
 						</div>
 					</div>
@@ -85,10 +85,10 @@
 						<div class = "stat-choice-subheader new-team-secondary-color">Advanced team stats</div>
 						<div id = "adv-team">
 							<%@default_team_advanced.each do |stat|%>
-								<button class = "stat-choice stat-choice-active" type = "button" id = "stat-<%=stat.id%>" onclick="to_choose_stats(this, 'advanced', '<%= stat.stat %>', <%= stat.id %>)"> <%= stat.stat %> </button>
+								<div class = "stat-choice stat-choice-active" type = "button" id = "stat-<%=stat.id%>" > <%= stat.stat %></div>
 							<%end%>
 							<%@non_default_team_advanced.each do |stat|%>
-								<button class = "stat-choice stat-choice-inactive" id = "stat-<%=stat.id%>"> <%= stat.stat %> </button>
+								<div class = "stat-choice stat-choice-inactive" id = "stat-<%=stat.id%>"> <%= stat.stat %></div>
 							<%end%>
 						</div>
 					</div>
