@@ -1,9 +1,10 @@
 
 <div id='calendar'></div>
 
+
 <div class = "modal-overlay" style= "display: none;"></div>
-<div class = "new-game-overlay modal-overlay" style= "display: none;">
-	<div class = "new-game-box" style= "display: none;">
+<div class = "overlay-content modal-overlay" style= "display: none;">
+	<div class = "new-game-box" id = "new-game-box" style= "display: none;">
 		<div class = "new-game-header">
 			<button class = "close-button" onclick="hide_new_game_form()">x</button>
 			<div id = "new-play-header-text">New Game</div>
@@ -28,7 +29,17 @@
 				<button onclick = "newGame()" class="btn btn-primary">Submit</button>
 			</div>
 	</div>
+	<div class = "new-game-box" id = "practice-box" style= "display: none;">
+		<div class = "new-game-header">
+			<button class = "close-button" onclick="hide_practice_mode()">x</button>
+			<%=link_to practice_mode_path(@team_id) do%>
+				<button id = "confirm-submit" class = "confirm-buttons">Enter Practice Mode</button>
+			<%end%>
+		</div>
+	</div>
 </div>
+
+
 
 <script>
 
@@ -61,10 +72,34 @@
 	    });
 	}
 
+	function practice_mode(){
+		$(".modal-overlay").show()
+		$(".overlay-content").show()
+		$("#practice-box").show()
+	}
+
+	function hide_practice_mode(){
+		$(".modal-overlay").hide()
+		$(".overlay-content").hide()
+		$("#practice-box").hide()
+	}
+
 	function hide_new_game_form(){
 		$(".modal-overlay").hide()
-		$(".new-game-overlay").hide()
-		$(".new-game-box").hide()
+		$(".overlay-content").hide()
+		$("#new-game-box").hide()
+	}
+
+	function parseTime(str){
+		var substring = str.substr(str.indexOf(' ')+1); // "tocirah sneab"
+		var military_time = substring.substr(0,substring.indexOf(' '));
+		var length = military_time.length;
+		var seconds_stripped = military_time.substr(0,length - 3);
+		var military_hours = seconds_stripped.substr(0,seconds_stripped.indexOf(":"))
+		var minutes = seconds_stripped.substr(seconds_stripped.indexOf(":")+1)
+		var hours = military_hours % 12;
+		var suffix = (military_hours > 12) ? " PM" : " AM";
+		return hours + ":" + minutes + suffix
 	}
 
         var calendarEl = document.getElementById('calendar');
@@ -73,7 +108,8 @@
        
 
         <% @schedule_events.each do |event|%>
-        	event_arr.push({id : '<%=event.id%>', title: "Game vs <%=event.name%> @ <%=event.place%>", start: "<%=event.date%>", game_id: "<%=event.game_id%>"})
+        	var time = parseTime("<%=event.time%>")
+        	event_arr.push({id : '<%=event.id%>', title: "Game vs <%=event.name%> @ <%=event.place%>, " + time , start: "<%=event.date%>", game_id: "<%=event.game_id%>"})
         <%end%>
 
 
@@ -91,14 +127,20 @@
 			      text: 'Create New Game',
 			      click: function() {
 			        $(".modal-overlay").show()
-					$(".new-game-overlay").show()
-					$(".new-game-box").show()
+					$(".overlay-content").show()
+					$("#new-game-box").show()
+			      }
+			    },
+			    practiceMode: {
+			      text: "Practice Mode",
+			      click: function() {
+			        practice_mode()
 			      }
 			    }
 			},
 			header: {
 			    left: 'title',
-			    center: 'newGame',
+			    center: 'newGame, practiceMode',
 			    right: 'today prev,next'
 			},
 			events: event_arr,

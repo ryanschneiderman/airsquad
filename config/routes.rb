@@ -18,6 +18,8 @@ Rails.application.routes.draw do
 
   get '/teams/:team_id/games/:id/game_mode(.:format)' => 'games#game_mode'
 
+  get '/teams/:team_id/practice_mode(.:format)' => 'games#practice_mode', as: :practice_mode
+
   post '/teams/:team_id/games/:id/game_mode(.:format)' => 'games#game_mode_submit'
 
   get '/teams/:team_id/members/:member_id(.:format)' => 'members#player_profile'

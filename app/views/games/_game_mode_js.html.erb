@@ -121,6 +121,7 @@
 			if(!player_charts_toggle){
 				to_team_shot_chart()
 			}
+			deselect_stat()
 			un_grey_out_stats()
 		}
 	});
@@ -365,7 +366,7 @@
 		$("#GM-initializer").css("display", "none");
 
 		// KEEP I THINK
-		$("#in-game-players").html(populate_player_buttons(true));
+		$(".in-game-players").html(populate_player_buttons(true));
 		$("#bench-players").html(populate_player_buttons(false));
 
 		opponent_button_html = "<button class = 'player-button' id = 'opponent-button' type = 'button' onclick = 'opponent_button( <%= @opponent.id %>, this)'> <%= @opponent.name %>  </button>"
@@ -698,6 +699,8 @@
 
 
 	function deselect_stat(){
+		make_selected = false;
+		miss_selected = false;
 		curr_stat = null;
 		if(curr_stat_button){
 			$(curr_stat_button).removeClass("stat-button-highlight")
@@ -737,7 +740,7 @@
 		$(player_to_game_identifier).remove();
 		$(player_to_bench_identifier).remove();
 		$("#bench-players").append(player_html(player_to_bench));
-		$("#in-game-players").append(player_html(player_to_game));
+		$(".in-game-players").append(player_html(player_to_game));
 		curr_player = null;
 		update_curr_lineup(false)
 	}
@@ -779,6 +782,7 @@
 	}
 
 	function add_stat_to_player(){
+		console.log(curr_stat)
 		if(curr_stat == 1){
 			select_button(curr_player_button);
 			make_selected = true;

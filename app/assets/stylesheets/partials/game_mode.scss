@@ -131,7 +131,7 @@
 	margin-bottom: 20px;
 }
 
-#in-game-players{
+.in-game-players{
 	display: grid;
 	grid-template-columns: repeat(2, 8vw);
 }
@@ -177,6 +177,7 @@
 	display: grid;
     grid-template-columns: repeat(3, 90px);
     grid-auto-rows: 1fr;
+    height: 300px;
 }
 
 
