@@ -990,7 +990,7 @@
     		// 3 point make
     		var old_stat_id = 11;
     		result.metadata.shot_value = "2";
-    		result_w_point.stat_list_id = "9";
+    		result_w_point.stat= new_stat_id;
     		update_score(-1, !obj.player);
     		increment_points(player.player_obj.stat_index -1, -1, stat_array[player.player_obj.stat_index -1])
     	}
@@ -998,7 +998,7 @@
     		var old_stat_id = 9;
     		var new_stat_id = 11;
     		result.metadata.shot_value = "3";
-    		result_w_point.stat_list_id = "11";
+    		result_w_point.stat = new_stat_id;
     		update_score(1, !obj.player);
     		increment_points(player.player_obj.stat_index -1, 1, stat_array[player.player_obj.stat_index -1])
     	}
@@ -1012,13 +1012,13 @@
     		// 3 point miss
     		var old_stat_id = 12;
     		result.metadata.shot_value = "2";
-    		result_w_point.stat_list_id = "10";
+    		result_w_point.stat = new_stat_id;
     	}
     	else if (point_value == 2){
     		var old_stat_id = 10;
     		var new_stat_id = 12;
     		result.metadata.shot_value = "3";
-    		result_w_point.stat_list_id = "12";
+    		result_w_point.stat = new_stat_id;
     	}
     	return [new_stat_id, old_stat_id];
     }
@@ -1563,7 +1563,6 @@
 	    if(!stat_object.is_opponent){
 	    	// only undo for 3pt granules because we don't have a separate column for 2pt shots in table
 		    if(stat_id== 11 || stat_id == 12) {
-		    	console.log("RESULT: " + result)
 		    	undo_table_cell(stat_index, result, player_row);
 		    	undo_table_cell(stat_index, result, team_row);
 		    }
@@ -1660,6 +1659,7 @@
 	// TODO: CURR LINEUP MIGHT NOT BE THE LINEUP ASSOCIATED WITH THE STAT TO BE UNDONE. NOT A CRITICAL FLAW BUT ADDRESS LATER
 	function undo_stat(){
 		stat_object = all_stat_granules.pop();
+		console.log(stat_object)
 	    undo_player_array_stat(stat_object);
 	    gameModeChannel.send({sent_by: <%=current_user.id%>, game_state: {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr, "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}, undo_stat: stat_object})
 	    statRemoved(stat_object)
