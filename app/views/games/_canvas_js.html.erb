@@ -529,11 +529,11 @@
         canvas.add(key_circle);
 
         $(window).resize(function(){
-            console.log("in window resize")
-            canvas_width = window.innerWidth * width_m;
-            canvas_height = canvas_width * height_m;
-            set_canvas_dimensions(canvas, canvas_height, canvas_width);
-            resize_court(canvas, canvas_height, canvas_width, arc, key_circle, paint, corner_three_left, corner_three_right, backboard, line_width);
+
+            // canvas_width = window.innerWidth * width_m;
+            // canvas_height = canvas_width * height_m;
+            // set_canvas_dimensions(canvas, canvas_height, canvas_width);
+            // resize_court(canvas, canvas_height, canvas_width, arc, key_circle, paint, corner_three_left, corner_three_right, backboard, line_width);
         })
         return {"canvas":canvas, "canvas_height" : canvas_height, "canvas_width": canvas_width }
     }
