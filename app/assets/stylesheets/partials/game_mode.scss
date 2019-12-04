@@ -334,10 +334,7 @@ td {
 }
 
 #gm-toggle-buttons{
-	position: fixed;
-    display: inline-flex;
-    bottom: 0;
-    width: 60vw;
+    display: flex;
 }
 
 .gm-toggle-button{
