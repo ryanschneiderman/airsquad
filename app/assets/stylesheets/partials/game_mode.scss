@@ -121,7 +121,6 @@
     margin-left: 20px;
     margin-right: 20px;
     border-radius: 100px;
-    margin-top: 50px;
     font-size: 17px;
     font-weight: bold;
 }
@@ -147,7 +146,7 @@
 
 #opponent{
 	display: flex;
-	width: 16vw;
+	
 }
 
 #opponent-button{
@@ -175,7 +174,7 @@
 
 #stat-buttons{
 	display: grid;
-    grid-template-columns: repeat(3, 90px);
+    grid-template-columns: repeat(3, 7.5vw);
     grid-auto-rows: 1fr;
     height: 300px;
 }
@@ -335,7 +334,10 @@ td {
 }
 
 #gm-toggle-buttons{
-	display: flex;
+	position: fixed;
+    display: inline-flex;
+    bottom: 0;
+    width: 60vw;
 }
 
 .gm-toggle-button{
