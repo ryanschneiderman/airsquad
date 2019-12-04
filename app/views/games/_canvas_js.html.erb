@@ -418,6 +418,8 @@
         }); 
         //canvas.onresize
         var canvas_width = window.innerWidth * width_m;
+        console.log("window_inner_width" + window.innerWidth)
+        console.log("init_width: " + canvas_width)
         var canvas_height = canvas_width * height_m;
         //width_multiplier = width_m;
         //height_multiplier = height_m;
@@ -530,27 +532,28 @@
 
         $(window).resize(function(){
           layout()
-          console.log(update_canvas)
-          if(update_canvas){
-            var new_width_mult;
-            if(curr_aspect_ratio != 3){
-              console.log("in not 3")
-              new_width_mult = 0.6
-            }
-            else{
-              console.log("in 3")
-              new_width_mult = 0.9;
-            }
-            console.log(curr_aspect_ratio)
-            console.log(new_width_mult)
-            var new_canvas_width = window.innerWidth * new_width_mult;
-            var new_canvas_height = new_canvas_width * height_m;
-            set_canvas_dimensions(canvas, new_canvas_height, new_canvas_width);
-            resize_court(canvas, new_canvas_height, new_canvas_width, arc, key_circle, paint, corner_three_left, corner_three_right, backboard, line_width);
-            update_canvas = false;
-          }
+        //   console.log(update_canvas)
+        //   if(update_canvas){
+        //     var new_width_mult;
+        //     if(curr_aspect_ratio != 3){
+        //       console.log("in not 3")
+        //       new_width_mult = 0.6
+        //     }
+        //     else{
+        //       console.log("in 3")
+        //       new_width_mult = 0.9;
+        //     }
+        //     console.log("window_inner_width" + window.innerWidth)
+        //     console.log(curr_aspect_ratio)
+        //     console.log(new_width_mult)
+        //     var new_canvas_width = window.innerWidth * new_width_mult;
+        //     var new_canvas_height = new_canvas_width * height_m;
+        //     set_canvas_dimensions(canvas, new_canvas_height, new_canvas_width);
+        //     resize_court(canvas, new_canvas_height, new_canvas_width, arc, key_circle, paint, corner_three_left, corner_three_right, backboard, line_width);
+        //     update_canvas = false;
+        //   }
             
-        })
+        // })
         return {"canvas":canvas, "canvas_height" : canvas_height, "canvas_width": canvas_width}
     }
 
@@ -565,6 +568,8 @@
     /**********************************************************************/
 
     function resize_court(canvas, canvas_height, canvas_width, arc, key_circle, paint, corner_three_left, corner_three_right, backboard, line_width){
+        console.log("RESIZING COURT")
+        console.log("canvas_width: " + canvas_width)
         arc.set({
             radius: canvas_width / 2.39,
             left: canvas_width * 0.085,
