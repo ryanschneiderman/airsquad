@@ -22,10 +22,10 @@ and (orientation : portrait) {
 	}
 
 	#stat-buttons{
-		grid-template-columns: repeat(3, 10vw);
+		grid-template-columns: repeat(3, 12vw);
 	}
 
-	#in-game-players{
+	.in-game-players{
 		grid-template-columns: repeat(2, 100px);
 	}
 	.player-button{
