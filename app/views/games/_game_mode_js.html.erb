@@ -29,7 +29,7 @@
 		console.log($(".canvas-container").position().left)
 		horiz_offset = $(".canvas-container").position().left + parseInt($(".canvas-container").css("margin-left"));
 		vert_offset  = $(".canvas-container").position().top
-        console.log(horiz_offset)
+        console.log(vert_offset)
 	});
 	
 
@@ -37,7 +37,7 @@
 
 	$(window).resize(function(){
 		horiz_offset = $(".canvas-container").position().left + parseInt($(".canvas-container").css("margin-left"));
-		vert_offset  = $(".canvas-container").position().top
+		vert_offset  = $(".canvas-container").position().top + parseInt($(".canvas-container").css("margin-top"))
 	})
 
 	$("#bench").css("margin-left", $(".flex-margin-auto").css("margin-left"))
