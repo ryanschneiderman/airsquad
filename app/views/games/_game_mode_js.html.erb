@@ -28,7 +28,7 @@
 	$( window ).on("load", function() {
 		console.log($(".canvas-container").position().left)
 		horiz_offset = $(".canvas-container").position().left + parseInt($(".canvas-container").css("margin-left"));
-		vert_offset  = $(".canvas-container").position().top
+		vert_offset  = $("#gm-middle").position().top
         console.log(vert_offset)
 	});
 	
