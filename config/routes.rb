@@ -20,6 +20,8 @@ Rails.application.routes.draw do
 
   get '/teams/:team_id/practice_mode(.:format)' => 'games#practice_mode', as: :practice_mode
 
+  get '/teams/:team_id/scrimmage_mode(.:format)' => 'games#scrimmage_mode', as: :scrimmage_mode
+
   post '/teams/:team_id/games/:id/game_mode(.:format)' => 'games#game_mode_submit'
 
   get '/teams/:team_id/members/:member_id(.:format)' => 'members#player_profile'
@@ -34,8 +36,6 @@ Rails.application.routes.draw do
   get 'open_messenger', to: 'messengers#open_messenger'
 
   post '/teams/:team_id/join_team' => "teams#join_member"
-
-  resources :teams, :members
 
   resources :plays do
     resources :progressions
@@ -61,6 +61,27 @@ Rails.application.routes.draw do
     resources :messages, only: [:index, :create]
   end
 
+  authenticate :user do
+    resources :teams do 
+      resources :team_stats do 
+      end
+      resources :stats do
+      end
+      resources :games do 
+      end
+      resources :plays do 
+        resources :progressions 
+      end
+      resources :posts do 
+      end
+      resources :members do 
+      end
+      resources :lineups do 
+      end
+      resources :settings do
+      end
+    end
+  end
 
   resources :teams do 
     resources :team_stats do 

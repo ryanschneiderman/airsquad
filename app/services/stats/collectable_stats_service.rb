@@ -38,6 +38,8 @@ class Stats::CollectableStatsService
 			@display_stats.push({:display_name => "FT Miss", :id => stat.id, :stat_kind => stat.stat_kind})
 		when 17
 			@display_stats.push({:display_name => "Foul", :id => stat.id, :stat_kind => stat.stat_kind})
+		when 51
+			@display_stats.push({:display_name => "Deflection", :id => stat.id, :stat_kind => stat.stat_kind})
 		end
 	end
 end

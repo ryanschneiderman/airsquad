@@ -32,9 +32,16 @@
 	<div class = "new-game-box" id = "practice-box" style= "display: none;">
 		<div class = "new-game-header">
 			<button class = "close-button" onclick="hide_practice_mode()">x</button>
-			<%=link_to practice_mode_path(@team_id) do %>
-				<button id = "confirm-submit" class = "confirm-buttons">Enter Practice Mode</button>
-			<%end%>
+			<div id = "practice-mode-header">Is it a practice or a scrimmage?</div>
+			<div id = "practice-mode-subheader">(a scrimmage is against another team)</div>
+			<div id = "practice-mode-buttons">
+				<%=link_to practice_mode_path(@team_id) do %>
+					<button id = "confirm-submit" class = "confirm-buttons">Practice Mode</button>
+				<%end%>
+				<%=link_to scrimmage_mode_path(@team_id) do %>
+					<button id = "confirm-submit" class = "confirm-buttons">Scrimmage Mode</button>
+				<%end%>
+			</div>
 		</div>
 	</div>
 </div>

@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
 	before_action :all_ordered_conversations
 	before_action :set_user_data
 	before_action :all_related_members
-
+	before_action :authenticate_user!
 
 	def opened_conversations_windows
 	  if user_signed_in?

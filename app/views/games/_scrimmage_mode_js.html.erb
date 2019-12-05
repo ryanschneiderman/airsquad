@@ -201,7 +201,7 @@
 			<% end %>
 			stat_array.push(player_obj);
 		}
-		opponent_player_obj = {"id" : "<%= @opponent.id %>",  "name" : "<%= @opponent.name %>", "stat_index" : null, "timer": null, "player" : false}
+		opponent_player_obj = {"id" : 0,  "name" : "Opponent", "stat_index" : null, "timer": null, "player" : false}
 		opponent_obj = {"player_obj" : opponent_player_obj,  "cumulative_arr" : [], "gran_stat_arr" : []};
 		user_team_obj = {"cumulative_arr": []}
 		
@@ -376,7 +376,7 @@
 		$(".in-game-players").html(populate_player_buttons(true));
 		$("#bench-players").html(populate_player_buttons(false));
 
-		opponent_button_html = "<button class = 'player-button' id = 'opponent-button' type = 'button' onclick = 'opponent_button( <%= @opponent.id %>, this)'> <%= @opponent.name %>  </button>"
+		opponent_button_html = "<button class = 'player-button' id = 'opponent-button' type = 'button' onclick = 'opponent_button( 0, this)'> Opponent  </button>"
 		$("#opponent").html(opponent_button_html);
 		on_game_page = true;
 		update_curr_lineup(true);
@@ -769,7 +769,7 @@
 		curr_player_is_opponent = true;
 		curr_player_button = button;
 		to_opponent_shot_chart()
-		$("#canvas-label").html("<%= @opponent.name%>")
+		$("#canvas-label").html("Opponent")
 	}
 
 	function deselect_player(){
@@ -829,7 +829,7 @@
 				var player_to_bench = Object.assign({},curr_player.player_obj);
 				swap_players(new_curr_player.player_obj, curr_player.player_obj)
 				update_fg_locations() 
-				gameModeChannel.send({sent_by: <%=current_user.id%>, game_state: {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr,  "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}, lineup_data: {"player_to_game" : player_to_game, "player_to_bench" : player_to_bench, "active_players" : active_players}});
+				//gameModeChannel.send({sent_by: <%=current_user.id%>, game_state: {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr,  "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}, lineup_data: {"player_to_game" : player_to_game, "player_to_bench" : player_to_bench, "active_players" : active_players}});
 				//curr_player = null;
 				game_mode_initialized = true;	
 			}
@@ -846,7 +846,7 @@
 				var player_to_bench = Object.assign({},new_curr_player.player_obj);
 				swap_players(curr_player.player_obj, new_curr_player.player_obj)
 				update_fg_locations() 
-				gameModeChannel.send({sent_by: <%=current_user.id%>, game_state: {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr, "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}, lineup_data: {"player_to_game" : player_to_game, "player_to_bench" : player_to_bench, "active_players" : active_players}})
+				//gameModeChannel.send({sent_by: <%=current_user.id%>, game_state: {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr, "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}, lineup_data: {"player_to_game" : player_to_game, "player_to_bench" : player_to_bench, "active_players" : active_players}})
 				//curr_player = null;
 				game_mode_initialized = true;
 			}
@@ -1315,7 +1315,7 @@
 		if(!is_loading){
 			console.log("updating stat ADDED")
 			update_fg_locations();
-			gameModeChannel.send({sent_by: <%=current_user.id%>, game_state: {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr, "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}, new_stat: stat_object})
+			//gameModeChannel.send({sent_by: <%=current_user.id%>, game_state: {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr, "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}, new_stat: stat_object})
 			game_mode_initialized = true;
 		}
 
@@ -1670,7 +1670,7 @@
 		stat_object = all_stat_granules.pop();
 		console.log(stat_object)
 	    undo_player_array_stat(stat_object);
-	    gameModeChannel.send({sent_by: <%=current_user.id%>, game_state: {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr, "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}, undo_stat: stat_object})
+	    //gameModeChannel.send({sent_by: <%=current_user.id%>, game_state: {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr, "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}, undo_stat: stat_object})
 	    statRemoved(stat_object)
 	}
 
@@ -1722,7 +1722,7 @@
 
 	function send_clock_state(){
 		if(game_mode_initialized){
-			gameModeChannel.send({sent_by: <%=current_user.id%>, clock_load: {"active_players" : active_players,  "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}})
+			//gameModeChannel.send({sent_by: <%=current_user.id%>, clock_load: {"active_players" : active_players,  "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}})
 		}
 	}
 
@@ -1773,7 +1773,7 @@
 			clock_stopped_style()
 		}
 		update_fg_locations()
-		gameModeChannel.send({sent_by: <%=current_user.id%>, game_state: {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr,  "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}, clock_update: true});
+		//gameModeChannel.send({sent_by: <%=current_user.id%>, game_state: {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr,  "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}, clock_update: true});
 		game_mode_initialized = true;
 	}
 
@@ -2004,52 +2004,9 @@
 		});
 	}
 
-	function submit_game_mode_button(){
-		$(".modal-overlay").css("display", "block");
-		$(".GM-modal").css("display", "flex");
-		$("#GM-submit").show();
-		$("#GM-initializer").css("display", "none");
-		set_lineup_minutes()
-		set_minutes_in_player_array();
-		set_team_minutes();
-		console.log(team_stat_totals)
-		console.log(lineups_arr)
-	}
+	
 
-	function close_game_mode(){
-		$(".modal-overlay").css("display", "none");
-		$(".GM-modal").css("display", "none");
-		$("#GM-submit").hide();
-	}
-
-	function submit_game_mode(){
-		$("#GM-submit-body").hide()
-		$("#GM-submit-header").text("Submitting stats...")
-		$(".loader").show()
-
-		scoreboard_clock.stop_timer();
-
-		update_fg_locations();
-
-		var url = "/teams/" + <%= @team_id%> +  "/games/"+ <%=@game_id%> + "/game_mode"
-		
-		var json_data = {"player_stats": stat_array, "team_stats": team_stat_totals, "opponent_stats": opponent_obj, "lineup_stats": lineups_arr}
-		console.log(json_data)
-		 $.ajax({
-			url: url,
-			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-			type: "post",
-			data_type: 'json',
-			data: json_data,
-		});
-
-		setTimeout( function() {
-			$("#GM-submit-header").text("Calculating advanced stats...")
-	    }, 6000);
-	    setTimeout( function() {
-			$("#GM-submit-header").text("This may take a moment..")
-	    }, 12000);
-	}
+	
 
 	/**************************************************************/
 	/************************* </SUBMIT>***************************/

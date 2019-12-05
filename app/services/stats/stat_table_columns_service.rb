@@ -9,7 +9,7 @@ class Stats::StatTableColumnsService
 
 	def call
 		if !@is_advanced
-			@display_stats = [{:stat_name => "FG", :display_priority => 1, :display_type => "fraction", :percentage_string => "FG%", :stat_list_id => 1, :stat_kind => 1}, {:stat_name =>"3pt FG", :display_priority => 5, :display_type => "fraction", :percentage_string => "3pt%", :stat_list_id => 11, :stat_kind => 1}, {:stat_name =>"FT", :display_priority => 7, :display_type => "fraction", :percentage_string => "FT%" , :stat_list_id => 13, :stat_kind => 1}, {:stat_name =>"PTS", :display_priority => 15, :display_type => "standard", :stat_list_id => 15, :stat_kind => 1}, {:stat_name =>"Fouls", :display_priority => 16, :display_type => "standard", :stat_list_id => 17, :stat_kind => 2}, {:stat_name =>"Minutes", :display_priority => 17, :display_type => "minutes", :stat_list_id => 16, :stat_kind => 3}]
+			@display_stats = [{:stat_name => "FG", :display_priority => 1, :display_type => "fraction", :percentage_string => "FG%", :stat_list_id => 1, :stat_kind => 1}, {:stat_name =>"3pt FG", :display_priority => 5, :display_type => "fraction", :percentage_string => "3pt%", :stat_list_id => 11, :stat_kind => 1}, {:stat_name =>"FT", :display_priority => 7, :display_type => "fraction", :percentage_string => "FT%" , :stat_list_id => 13, :stat_kind => 1}, {:stat_name =>"PTS", :display_priority => 16, :display_type => "standard", :stat_list_id => 15, :stat_kind => 1}, {:stat_name =>"Fouls", :display_priority => 17, :display_type => "standard", :stat_list_id => 17, :stat_kind => 2}, {:stat_name =>"Minutes", :display_priority => 18, :display_type => "minutes", :stat_list_id => 16, :stat_kind => 3}]
 			@stats.each do |stat|
 				determine_display_name_basic(stat)
 			end
@@ -70,9 +70,11 @@ class Stats::StatTableColumnsService
 		when 6
 			@display_stats.push({:stat_name =>"STL", :display_priority => 12, :display_type => "standard", stat_list_id: stat.id, :stat_kind => stat.stat_kind})
 		when 7
-			@display_stats.push({:stat_name =>"TOV", :display_priority => 14, :display_type => "standard", stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:stat_name =>"TOV", :display_priority => 15, :display_type => "standard", stat_list_id: stat.id, :stat_kind => stat.stat_kind})
 		when 8
-			@display_stats.push({:stat_name =>"BLK", :display_priority => 13, :display_type => "standard", stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+			@display_stats.push({:stat_name =>"BLK", :display_priority => 14, :display_type => "standard", stat_list_id: stat.id, :stat_kind => stat.stat_kind})
+		when 51
+			@display_stats.push({:stat_name =>"DEFL", :display_priority => 13, :display_type => "standard", stat_list_id: stat.id, :stat_kind => stat.stat_kind})
 		end
 	end
 

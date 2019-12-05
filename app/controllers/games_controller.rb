@@ -125,6 +125,34 @@ class GamesController < ApplicationController
 		}).call
 	end
 
+	def scrimmage_mode
+		@team_id = params[:team_id]
+		@team = Team.find_by_id(@team_id)
+		@minutes_p_q = @team.minutes_p_q
+		@players = Assignment.joins(:role).joins(:member).select("roles.name as name, members.*").where("members.team_id" => @team_id, "roles.id" => 1)
+		collection_stat_list = []
+		@basic_stats = []
+		collection_team_stats = TeamStat.where(team_id: params[:team_id]).joins(:stat_list).where('stat_lists.collectable' => true);
+		basic_team_stats = TeamStat.where(team_id: params[:team_id]).joins(:stat_list).where('stat_lists.advanced' => false, 'stat_lists.team_stat' =>false, 'stat_lists.is_percent' => false);
+		collection_team_stats.each do |stat|
+			collection_stat_list.push(StatList.find_by_id(stat.stat_list_id))
+		end
+
+		@collection_stats = Stats::CollectableStatsService.new({
+			stats: collection_stat_list
+		}).call
+
+		basic_team_stats.each do |stat|
+			@basic_stats.push(StatList.find_by_id(stat.stat_list_id))
+		end
+
+		## return an array which has the fields that we will want to display in the stat table, and their corresponding ordering number.
+		@stat_table_columns = Stats::StatTableColumnsService.new({
+			stats: @basic_stats,
+			is_advanced: false
+		}).call
+	end
+
 	def game_mode
 		@game_id = params[:id]
 		game = Game.find_by_id(@game_id)

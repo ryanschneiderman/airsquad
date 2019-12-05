@@ -147,7 +147,6 @@
 		if(aspect_ratio <= 1.6 && aspect_ratio >=1){
 			var new_aspect_ratio = 1;
 			$(".in-game-players").css("grid-template-columns", "repeat(1, 12vw)")
-			//$("#player-buttons").css("width", "12vw")
 			if(curr_aspect_ratio!= new_aspect_ratio){
 				update_canvas = true;
 			}
@@ -156,7 +155,6 @@
 		else if (aspect_ratio >= 1.6){
 			var new_aspect_ratio = 2;
 			$(".in-game-players").css("grid-template-columns", "repeat(2, 8vw)")
-			//$("#player-buttons").css("width", "16vw")
 			if(curr_aspect_ratio!= new_aspect_ratio){
 				update_canvas = true;
 			}
@@ -166,7 +164,6 @@
 		else if (aspect_ratio < 1){
 			var new_aspect_ratio = 3;
 			$(".in-game-players").css("grid-template-columns", "repeat(2, 12vw)")
-			//$("#player-buttons").css("width", "16vw")
 			if(curr_aspect_ratio!= new_aspect_ratio){
 				update_canvas = true;
 			}
