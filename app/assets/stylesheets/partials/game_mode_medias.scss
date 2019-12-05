@@ -26,7 +26,7 @@ and (orientation : portrait) {
 	}
 
 	.in-game-players{
-		grid-template-columns: repeat(2, 100px);
+		grid-template-columns: repeat(2, 12vw);
 	}
 	.player-button{
 		height: 60px;
@@ -38,7 +38,7 @@ and (orientation : portrait) {
 	}
 
 	#bench-players{
-		grid-template-columns: repeat(2, 100px);
+		grid-template-columns: repeat(2, 12vw);
 	}
 
 	#bench{
@@ -47,8 +47,8 @@ and (orientation : portrait) {
 	}
 
 	.tb-elem{
-		margin-left: 30px;
-		padding-right: 30px;
+		margin-left: 15px;
+		padding-right: 15px;
 	}
 
 	.gm-submit{

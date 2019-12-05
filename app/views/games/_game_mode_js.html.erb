@@ -23,9 +23,22 @@
 
 	var make_selected = false
 	var miss_selected = false;
+	var horiz_offset;
+	var vert_offset;
+	$( window ).on("load", function() {
+		console.log($(".canvas-container").position().left)
+		horiz_offset = $(".canvas-container").position().left + parseInt($(".canvas-container").css("margin-left"));
+		vert_offset  = $(".canvas-container").position().top
+        console.log(horiz_offset)
+	});
+	
 
-	var horiz_offset = $("#gm-toolbar").width();
-	var vert_offset = $("#scoreboard-wrapper").height();
+	
+
+	$(window).resize(function(){
+		horiz_offset = $(".canvas-container").position().left + parseInt($(".canvas-container").css("margin-left"));
+		vert_offset  = $(".canvas-container").position().top
+	})
 
 	$("#bench").css("margin-left", $(".flex-margin-auto").css("margin-left"))
 
