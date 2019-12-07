@@ -1,0 +1,216 @@
+<div id = "game-mode-grid">
+	<div id = "scoreboard-wrapper">
+		<div id = "scoreboard">
+			<div id = "score-status">
+				<div id = "home-scoreboard" class = "squad-scoreboard">
+					<div class = "team-name">Team 1</div>
+					<div id = "home-score" class = "squad-score"> 0 </div>
+				</div>
+				<button id = "time" onclick = "toggleClock()">
+					<div id = "period">1Q</div>
+					<div class = "dash">
+						<svg style = "height: 1px; width: 20px;" class = "time-dash">
+					      <line x1="0" y1="0" x2="20" y2="1" style="stroke:#3E3E3E;stroke-width:2"/>
+					    </svg>
+					</div>
+					<div id = "timer"></div>
+				</button>
+				<div id = "opponent-scoreboard" class = "squad-scoreboard">
+					<div class = "team-name"> Team 2</div>
+					<div id = "opponent-score" class = "squad-score"> 0 </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id = "top-grid">
+		<div id = "gm-toolbar">
+			<div id = "players_w_stats">
+				<div id = "tb-first-level" class = "flex-horiz tb-container">
+					<div id = "player-buttons" class = "flex-margin-auto tb-elem">
+						<div class = "in-game">
+							<div class = "in-game-label" id = "team-1-label">Team 1</div>
+							<div class = "in-game-players" id = "team-1-players"></div>
+						</div>
+						<div class = "in-game">
+							<div class = "in-game-label" id = "team-2-label">Team 2</div>
+							<div class = "in-game-players" id = "team-2-players"></div>
+						</div>
+						<div id = "player-shot-chart-toggle">
+							<input id = "player-charts-button" type="checkbox" name="player-shot-charts" value="false"> Show Player Shot Charts
+						</div>
+					</div>
+					<div id = "stat-buttons" class = "flex-margin-auto tb-elem">
+						<% counter = 0 %>
+						<% @collection_stats.each do |stat|%>
+								<button class = "stat-button stat-button-<%=stat[:id]%>" id = "stat-button-<%=counter%>" type = "button" onclick = "stat_button('<%= stat[:id] %>', this)"> <%= stat[:display_name] %> </button>
+						<%counter+=1%>
+						<% end %>
+					</div>
+				</div>
+				<div id = "tb-second-level" class = "flex-horiz tb-container">
+					<div id = "bench" class = "tb-elem">
+						<div id = "bench-label">Bench</div>
+						<div id = "bench-players"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id = "gm-middle">
+			<div class = "stat-added-alert">
+				<div id = "stat-added-player-name" class = "stat-added-alert-elem"></div>
+				<div id = "stat-added-name" class = "stat-added-alert-elem"></div>
+				<div id = "stat-added-username"></div>
+				<div id = "stat-added-undo"></div>
+			</div>
+			<div id = "canvas-wrapper">
+				<canvas id ="c" class = "show-canvas gm-canvas"></canvas>
+				<div id = "canvas-label">Team 1</div>
+			</div>
+			<div id = "gm-stat-tables" style = "display: none;">
+				<table class = "gm-stats-table" id = "player-stats-table">
+				</table>
+				<table class = "gm-stats-table" id = "team-stats-table">	
+				</table>
+			</div>
+			<div id = "gm-toggle-buttons">
+				<button class ="gm-toggle-button" onclick = "to_stat_tables()">Show Stats</button>
+				<button class ="gm-toggle-button" onclick = "to_shot_chart()">Show Shot Chart</button>
+			</div>
+		</div>
+		
+	</div>	
+</div>
+
+<div class = "modal-overlay"></div>
+<div class = "GM-modal modal-overlay">
+	<div id = "GM-initializer" class = "modal-container">
+		<div id = "GM-init-wrapper" class = "GM-modal-wrapper">
+			<div id = "GM-init-header" class = "GM-modal-header">Welcome to Game Mode!</div>
+			<div id = "GM-init-body" class = "GM-modal-body">
+				
+				<div id = "personel-selection-wrapper">
+					<div id = "personel-selection-header" class = "GM-modal-content">Select Inactives</div>
+					<div id = "personel-selection-body">
+
+					</div>
+				</div>
+			</div>
+			<div id = "GM-init-footer" class = "GM-init">Next</div>
+		</div>
+	</div>
+</div>
+
+<%= render 'games/canvas_js' %>
+<%= render 'practice_mode_js' %>
+<%= render 'games/game_mode_js_objects' %>
+
+<script>
+	var canvas_vars;
+	function myFunction(max_w, min_w, portrait) {
+	  if (max_w.matches && min_w.matches && portrait) { // If media query matches
+	    canvas_vars = initialize_canvas(0.9, 0.635, 'c', 3)
+	  } else {
+	   canvas_vars = initialize_canvas(0.6, 0.635, 'c', 3)
+	  }
+	}
+
+	var max_w = window.matchMedia("(max-device-width : 1024px) ");
+	var min_w = window.matchMedia("(min-device-width : 768px)");
+	var orientation = window.matchMedia("(orientation: portrait)");
+	var portrait = false;
+
+	if(window.innerHeight > window.innerWidth){
+    	portrait = true;
+	}
+
+	myFunction(max_w, min_w, portrait) // Call listener function at run time
+	//x.addListener(myFunction) // Attach listener function on state changes
+
+	$(".navbar").hide()
+	
+	initialize_globals(canvas_vars.canvas, canvas_vars.canvas_width, canvas_vars.canvas_height)
+	var game_state = JSON.parse('<%= @game_state.to_json.html_safe%>')
+
+	$(".modal-overlay").css("display", "block");
+	$(".GM-modal").css("display", "flex");
+	
+	populate_players();
+	populate_inactive_selection(false);
+
+
+	plotBasket(canvas_vars.canvas_width/1.978, canvas_vars.canvas_width/16.43, 14, canvas_vars.canvas_width, canvas_vars.canvas);
+
+	$( window ).on("load", function() {
+         $("#gm-stat-tables").height($("#canvas-wrapper").height())
+	});
+	
+
+	canvas_vars.canvas.on('object:moving', function (e) {
+		var obj = e.target
+        var type = obj.get('type');
+        var point = canvas_vars.canvas.getPointer(e);
+        if(type == "MakeSymbol"){
+        	move_make(obj, point)
+        }
+        else if (type == "MissSymbol"){
+         move_miss(obj, point);
+        }
+    });
+
+    $(".show-canvas").on("click", function(e) {
+		if(make_selected && curr_player != null){
+			un_grey_out_stats()
+			make(e);
+		}
+		else if (miss_selected && curr_player != null){
+			un_grey_out_stats()
+			miss(e);
+		}
+	}); 	
+
+    $(window).resize(function(){
+        canvas_vars.canvas.getObjects().forEach(function(o){
+        	switch(o.type){
+        		case "MakeSymbol" :
+	        		old_canvas_width = o.canvas_width;
+	        		change_ratio = old_canvas_width/canvas_vars.canvas.width;
+
+	        		o.set({left: o.left/ change_ratio, top: o.top / change_ratio, canvas_width: canvas_vars.canvas.width});
+	        		o.setCoords();
+	        		canvas.calcOffset();
+	  				canvas.renderAll();
+        		break;
+        		case "Basket" :
+        			old_canvas_width = o.canvas_width;
+	        		change_ratio = old_canvas_width/canvas_vars.canvas.width;
+	        		basket_radius = o.radius /change_ratio
+
+	        		o.set({left: o.left/ change_ratio, top: o.top / change_ratio, canvas_width: canvas_vars.canvas.width, radius: basket_radius});
+	        		o.setCoords();
+	        		canvas.calcOffset();
+	  				canvas.renderAll();
+	  			break;
+        		case "MissSymbol" :
+        			old_canvas_width = o.canvas_width;
+	        		change_ratio = old_canvas_width/canvas_vars.canvas.width;
+	        		o.set({x1: o.x1 / change_ratio, y1: o.y1 / change_ratio, x2: o.x2 / change_ratio, y2: o.y2 / change_ratio, canvas_width: canvas_vars.canvas.width});
+	        		o.setCoords();
+	        		canvas.calcOffset();
+	        		canvas.renderAll();
+        		break
+        	}
+    	})
+    });
+
+    function to_shot_chart(){
+    	$("#canvas-wrapper").show()
+    	$("#gm-stat-tables").hide()
+    }
+
+    function to_stat_tables(){
+    	$("#canvas-wrapper").hide()
+    	$("#gm-stat-tables").show()
+    }
+
+	
+</script>
