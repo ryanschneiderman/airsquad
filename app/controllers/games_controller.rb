@@ -4,7 +4,10 @@ class GamesController < ApplicationController
 	def index
 		@team_id = params[:team_id]
 		@games = Game.where(team_id: @team_id)
-		@schedule_events = ScheduleEvent.joins(:game).select("games.id as game_id, games.played as played, schedule_events.*").where("schedule_events.team_id" => @team_id)
+		@game_events = ScheduleEvent.joins(:game).select("games.id as game_id, games.played as played, schedule_events.*").where("schedule_events.team_id" => @team_id)
+		@practice_events = ScheduleEvent.joins(:practice).select("practices.id as practice_id, practices.is_scrimmage as is_scrimmage, schedule_events.*").where("schedule_events.team_id" => @team_id)
+		@schedule_events = ScheduleEvent.where("schedule_events.team_id" => @team_id)
+		
 		members = Member.where(team_id: @team_id)
 	end 
 	
@@ -151,6 +154,35 @@ class GamesController < ApplicationController
 			stats: @basic_stats,
 			is_advanced: false
 		}).call
+	end
+
+	def scrimmage_mode_submit
+		player_stats = params[:player_stats]
+		team_stats = params[:team_stats]
+		opponent_stats = params[:opponent_stats]
+		team_id = params[:team_id]
+		today = Date.today
+
+		schedule_event = ScheduleEvent.create(
+			date: today,
+			team_id: team_id,
+		)
+
+		practice = Practice.create(
+			team_id: team_id,
+			schedule_event_id: schedule_event.id,
+			is_scrimmage: true,
+		)
+
+
+		SubmitPracticeModeService.new({
+			player_stats: player_stats,
+			team_stats: team_stats,
+			opponent_stas: opponent_stats,
+			practice_id: practice.id,
+		}).call
+
+		redirect_to team_practice_path(team_id, practice.id)
 	end
 
 	def game_mode

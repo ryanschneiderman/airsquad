@@ -7,6 +7,8 @@ class Team < ApplicationRecord
 	has_many :opponents
 	has_many :team_season_stats
 	has_many :sesaon_team_adv_stats
+	has_many :stat_totals
+	has_many :practice_stat_totals
 	has_many :lineups
 	has_many :schedule_events
 end

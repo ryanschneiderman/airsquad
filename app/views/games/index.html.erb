@@ -114,9 +114,23 @@
 
        
 
-        <% @schedule_events.each do |event|%>
-        	var time = parseTime("<%=event.time%>")
-        	event_arr.push({id : '<%=event.id%>', title: "Game vs <%=event.name%> @ <%=event.place%>, " + time , start: "<%=event.date%>", game_id: "<%=event.game_id%>"})
+        <% @game_events.each do |event|%>
+        		var time = parseTime("<%=event.time%>")
+        		event_arr.push({id : '<%=event.id%>', title: "Game vs <%=event.name%> @ <%=event.place%>, " + time , start: "<%=event.date%>", game_id: "<%=event.game_id%>"})
+        <%end%>
+
+        <%@practice_events.each do |event|%>
+        	console.log("practice event")
+        	if(<%=event.is_scrimmage%>){
+        		event_arr.push({id : '<%=event.id%>', title: "Scrimmage", start: "<%=event.date%>", practice_id: "<%=event.practice_id%>"})
+        	}
+        	else{
+        		event_arr.push({id : '<%=event.id%>', title: "Practice", start: "<%=event.date%>", practice_id: "<%=event.practice_id%>"})
+        	}
+        <%end%>
+
+        <%@schedule_events.each do |e|%>
+        	console.log(<%=e.id%>)
         <%end%>
 
 
@@ -152,12 +166,11 @@
 			},
 			events: event_arr,
 		    eventRender: function(info) {
-		    	if(info.event.id != "new"){
-		    		return $('<a href="/teams/' + <%= @team_id%> + '/games/'+ info.event.extendedProps.game_id +'">' +info.event.title + '</a>');
+		    	if(info.event.title == "Practice" || info.event.title == "Scrimmage"){
+		    		return $('<a href="/teams/' + <%= @team_id%> + '/practices/'+ info.event.extendedProps.practice_id +'">' +info.event.title + '</a>');
 		    	}
-		    	else{
-		    		//$(info.el).hide()
-		    		console.log(info.el)
+		    	else if (info.event.id != "new"){
+		    		return $('<a href="/teams/' + <%= @team_id%> + '/games/'+ info.event.extendedProps.game_id +'">' +info.event.title + '</a>');
 		    	}
 			  }
         });

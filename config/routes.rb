@@ -18,9 +18,11 @@ Rails.application.routes.draw do
 
   get '/teams/:team_id/games/:id/game_mode(.:format)' => 'games#game_mode'
 
-  get '/teams/:team_id/practice_mode(.:format)' => 'games#practice_mode', as: :practice_mode
+  get '/teams/:team_id/practice_mode(.:format)' => 'practices#practice_mode', as: :practice_mode
 
-  get '/teams/:team_id/scrimmage_mode(.:format)' => 'games#scrimmage_mode', as: :scrimmage_mode
+  get '/teams/:team_id/scrimmage_mode(.:format)' => 'practices#scrimmage_mode', as: :scrimmage_mode
+
+  post '/teams/:team_id/scrimmage_mode_submit' => 'practices#scrimmage_mode_submit'
 
   post '/teams/:team_id/games/:id/game_mode(.:format)' => 'games#game_mode_submit'
 
@@ -64,6 +66,8 @@ Rails.application.routes.draw do
   authenticate :user do
     resources :teams do 
       resources :team_stats do 
+      end
+      resources :practices do 
       end
       resources :stats do
       end

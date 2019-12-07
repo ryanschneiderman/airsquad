@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_06_174926) do
+ActiveRecord::Schema.define(version: 2019_12_06_153516) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -183,6 +183,54 @@ ActiveRecord::Schema.define(version: 2019_11_06_174926) do
     t.datetime "updated_at", null: false
     t.index ["member_id"], name: "index_posts_on_member_id"
     t.index ["team_id"], name: "index_posts_on_team_id"
+  end
+
+  create_table "practice_stat_granules", force: :cascade do |t|
+    t.json "metadata"
+    t.bigint "practice_id"
+    t.bigint "member_id"
+    t.bigint "stat_list_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["member_id"], name: "index_practice_stat_granules_on_member_id"
+    t.index ["practice_id"], name: "index_practice_stat_granules_on_practice_id"
+    t.index ["stat_list_id"], name: "index_practice_stat_granules_on_stat_list_id"
+  end
+
+  create_table "practice_stat_totals", force: :cascade do |t|
+    t.integer "value"
+    t.bigint "stat_list_id"
+    t.bigint "practice_id"
+    t.bigint "team_id"
+    t.boolean "is_opponent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["practice_id"], name: "index_practice_stat_totals_on_practice_id"
+    t.index ["stat_list_id"], name: "index_practice_stat_totals_on_stat_list_id"
+    t.index ["team_id"], name: "index_practice_stat_totals_on_team_id"
+  end
+
+  create_table "practice_stats", force: :cascade do |t|
+    t.integer "value"
+    t.bigint "stat_list_id"
+    t.bigint "practice_id"
+    t.bigint "member_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["member_id"], name: "index_practice_stats_on_member_id"
+    t.index ["practice_id"], name: "index_practice_stats_on_practice_id"
+    t.index ["stat_list_id"], name: "index_practice_stats_on_stat_list_id"
+  end
+
+  create_table "practices", force: :cascade do |t|
+    t.bigint "team_id"
+    t.bigint "schedule_event_id"
+    t.boolean "is_scrimmage"
+    t.json "game_state"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["schedule_event_id"], name: "index_practices_on_schedule_event_id"
+    t.index ["team_id"], name: "index_practices_on_team_id"
   end
 
   create_table "private_conversations", force: :cascade do |t|
