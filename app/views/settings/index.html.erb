@@ -196,5 +196,11 @@
 	    });
 	}
 </script>
-
+<%else%>
+	<div id = "no-games-played">
+		<%= image_tag("Court.jpg", :alt => "game-mode-preview", :class => "no-games-img") %>
+	</div>
+	<div class = "no-games-text">
+		<div class = "no-games-header">You do not have permission to view this page.</div>
+	</div>
 <%end%>

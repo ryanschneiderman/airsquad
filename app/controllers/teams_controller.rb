@@ -138,7 +138,6 @@ class TeamsController < ApplicationController
 
 		redirect_path = root_path
 
-
 		if team_id 
 			redirect_path = team_path(team_id, joined_team: true)
 		end
