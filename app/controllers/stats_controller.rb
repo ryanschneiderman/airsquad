@@ -1,7 +1,7 @@
 class StatsController < ApplicationController
 
 	def index
-		StatList.where(id: 14).limit(1).update_all(display_priority: 7)
+		#StatList.where(id: 14).limit(1).update_all(display_priority: 7)
 		#InsertStatListsService.new().call
 		#Stats::RollbackGameService.new({game_id: 37}).call
 		@team = Team.find_by_id(params[:team_id])
