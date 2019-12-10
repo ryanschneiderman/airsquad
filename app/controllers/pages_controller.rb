@@ -14,7 +14,6 @@ class PagesController < ApplicationController
 			if @teams.length == 1
 				redirect_to team_path(@teams[0].id)
 			end
-
 		end	
   end
 

@@ -25,13 +25,18 @@ class Advanced::AssistPctService
 	end
 
 	def call()
-		if (((@minutes_played / (@team_minutes_played / 5)) * @team_field_goals) - @field_goals) == 0
+		if @minutes_played || @team_minutes_played == 0
 			return 0.0
 		else
-			raw_ast = 100 * 100 * @assists / (((@minutes_played / (@team_minutes_played / 5)) * @team_field_goals) - @field_goals)
-			ast = raw_ast.round / 100.0
-			return ast
+			if (((@minutes_played / (@team_minutes_played / 5)) * @team_field_goals) - @field_goals) == 0
+				return 0.0
+			else
+				raw_ast = 100 * 100 * @assists / (((@minutes_played / (@team_minutes_played / 5)) * @team_field_goals) - @field_goals)
+				ast = raw_ast.round / 100.0
+				return ast
+			end
 		end
+
 	end
 end
 

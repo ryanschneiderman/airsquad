@@ -692,9 +692,14 @@
 				miss_selected = true;
 			} 
 			else {
-				stat_added_animation(button);
-				add_stat(stat_id, curr_player.player_obj);
-				deselect_player();
+				if(total_minutes > 0){
+					stat_added_animation(button);
+					add_stat(stat_id, curr_player.player_obj);
+					deselect_player();
+				}
+				else{
+					alert("Make sure to start the clock!")
+				}
 			}
 		}
 		else if (curr_player == null){
@@ -818,10 +823,16 @@
 		});
 
 		if (curr_stat != null && is_in_game(new_curr_player.player_obj)){
-			stat_added_animation(curr_stat_button)
-			curr_player_button = button;
-			curr_player = new_curr_player;
-			add_stat_to_player();
+			if(total_minutes > 0){
+				stat_added_animation(curr_stat_button)
+				curr_player_button = button;
+				curr_player = new_curr_player;
+				add_stat_to_player();
+			}
+			else {
+				alert("make sure you start the clock!")
+			}
+			
 		}
 
 		else if(curr_player && !curr_player_is_opponent && is_in_game(curr_player.player_obj)  ){

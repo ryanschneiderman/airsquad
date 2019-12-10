@@ -222,12 +222,23 @@
 
     $(".show-canvas").on("click", function(e) {
 		if(make_selected && curr_player != null){
-			un_grey_out_stats()
-			make(e);
+			if(total_minutes > 0){
+				un_grey_out_stats()
+				make(e);
+			}
+			else{
+				alert("Make sure you start the clock!")
+			}
+			
 		}
 		else if (miss_selected && curr_player != null){
-			un_grey_out_stats()
-			miss(e);
+			if (total_minutes > 0){
+				un_grey_out_stats()
+				miss(e);
+			}
+			else{
+				alert("Make sure you start the clock!")
+			}
 		}
 	}); 	
 
