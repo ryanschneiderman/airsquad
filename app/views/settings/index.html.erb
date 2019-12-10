@@ -9,6 +9,14 @@
 					<input type = "text" class = "new-team-input" id = "enter-team-name" value="<%=@team.name%>">
 				</div>
 				<div class = "team-info-input">
+					<label for="enter-unique-username">Edit unique username. This is what players and other team members will use to join the team.</label><br>
+						<input type = "text" class = "new-team-input" id = "enter-unique-username" value= "<%=@team.username%>">
+				</div>
+				<div class = "team-info-input">
+					<label for="choose-password">Edit password for others to join the team.</label><br>
+					<input  id = "choose-password"class = "new-team-input"  value="<%=@team.password%>" type = "password">
+				</div>
+				<div class = "team-info-input">
 					<label for="minutes-per-quarter">Edit length of quarters</label><br>
 					<input type = "number" class = "new-team-input" id = "minutes-per-quarter" value = "<%=@team.minutes_p_q%>">
 				</div>
