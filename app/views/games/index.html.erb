@@ -178,4 +178,8 @@
 
         calendar.render();
 
+        <%if !@gm_permission%>
+        	$(".fc-center").hide()
+        <%end%>
+
 </script>

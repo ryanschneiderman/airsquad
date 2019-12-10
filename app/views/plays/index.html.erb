@@ -40,7 +40,9 @@
 				</div>
 				<%counter+=1%>
 			<%end%>
-			<%=link_to "New halfcourt play", new_team_play_path(:team_id => @team_id, play_type: @play_types[0].play_type, is_offense: true), :class => "new-play-link"%>
+			<%if @is_admin%>
+				<%=link_to "New halfcourt play", new_team_play_path(:team_id => @team_id, play_type: @play_types[0].play_type, is_offense: true), :class => "new-play-link"%>
+			<%end%>
 			</div>
 			<div class = "play-type-header"><%=@play_types[1].play_type%></div>
 			<div class = "play-type-grid">
@@ -73,7 +75,9 @@
 				</div>
 				<% counter += 1 %>
 			<%end%>
+			<%if @is_admin%>
 			<%=link_to "New fullcourt play", new_team_play_path(:team_id => @team_id, play_type: @play_types[1].play_type, is_offense: true), :class => "new-play-link"%>
+			<%end%>
 			</div>
 		</div>
 	</div>
@@ -112,8 +116,10 @@
 				</div>
 				<% counter += 1 %>
 			<%end%>
-			<%=link_to "New halfcourt play", new_team_play_path(:team_id => @team_id, play_type: @play_types[0].play_type, is_offense: false), :class => "new-play-link"%>
-			</div>
+			<%if @is_admin%>
+				<%=link_to "New halfcourt play", new_team_play_path(:team_id => @team_id, play_type: @play_types[0].play_type, is_offense: false), :class => "new-play-link"%>
+				</div>
+			<%end%>
 			<div class = "play-type-header"><%=@play_types[1].play_type%></div>
 			<div class = "play-type-grid">
 				<%counter = 0%>
@@ -145,7 +151,9 @@
 					<div class = "play-link-text"><%=play.name%></div>
 				</div>
 			<%end%>
-			<%=link_to "New fullcourt play", new_team_play_path(:team_id => @team_id, play_type: @play_types[1].play_type, is_offense: false), :class => "new-play-link"%>
+			<%if @is_admin%>
+				<%=link_to "New fullcourt play", new_team_play_path(:team_id => @team_id, play_type: @play_types[1].play_type, is_offense: false), :class => "new-play-link"%>
+			<%end%>
 			</div>
 		</div>
 	</div>

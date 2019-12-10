@@ -1,5 +1,12 @@
 class SettingsController < ApplicationController
 	def index
+		@curr_member =  Assignment.joins(:role).joins(:member).select("roles.name as role_name, members.*").where("members.user_id" => current_user.id, "members.team_id" => params[:team_id])
+		@settings_permission = false
+		@curr_member.each do |member_obj|
+			if member_obj.role_name == "Admin" || member_obj.role_name == "Manager"
+				@settings_permission = true
+			end
+		end
 		@team_id = params[:team_id]
 
 		## all non_default collectable stats that don't belong to a team,, default_stat: false, collectable: true
