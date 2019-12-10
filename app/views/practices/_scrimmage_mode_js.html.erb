@@ -2034,7 +2034,7 @@
 
 		var url = "/teams/" + <%= @team_id%> +  "/scrimmage_mode_submit/"
 		console.log(opponent_obj)
-		var json_data = {"player_stats": stat_array, "team_stats": team_stat_totals, "opponent_stats": opponent_obj}
+		var json_data = {"player_stats": stat_array, "team_stats": team_stat_totals, "opponent_stats": opponent_obj, "is_scrimmage" : true}
 		console.log(json_data)
 		 $.ajax({
 			url: url,

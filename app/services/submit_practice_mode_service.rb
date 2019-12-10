@@ -13,8 +13,11 @@ class SubmitPracticeModeService
 		@game_id = params[:game_id]
 		@team_stats = params[:team_stats]
 		@opponent_obj = params[:opponent_stats]
-		puts @opponent_obj
-		@opponent_stats =  @opponent_obj["cumulative_arr"]
+		if @opponent_obj["cumulative_arr"] 
+			@opponent_stats =  @opponent_obj["cumulative_arr"]
+		else
+			@opponent_stats =  @opponent_obj
+		end
 		@team_id = params[:team_id]
 		@practice_id = params[:practice_id]
 	end

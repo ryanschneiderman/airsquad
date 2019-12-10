@@ -4,8 +4,7 @@
 
 	<div class = "content-page-landing">
 		<%= image_tag("scorebook_trimmed.png", :alt => "Game Review", :class => "content-page-landing-img") %>
-		<div class = "content-page-landing-title">Game Review</div>
-		<div class = "content-page-landing-subheader">vs. <%=@opponent.name%></div>
+		<div class = "content-page-landing-title"> <%=@page_title%> Review</div>
 	</div>
 	<div id = "game-review" >
 		<div id = "game-review-stats">
@@ -13,14 +12,11 @@
 			<div id = "table-toggle-buttons">
 				<button id = "per-game-stats-button" class = "table-toggle-button" onclick="toggle_player_table(1, this)">Game Stats</button>
 				<button id = "per-minute-stats-button" class = "table-toggle-button" onclick="toggle_player_table(3, this)">Per <%=@per_minutes%> Minutes Stats</button>
-				<button id = "advanced-stats-button" class = "table-toggle-button" onclick="toggle_player_table(2, this)">Advanced Stats</button>
 			</div>
 			<div id = "gr-player-stats">
 				<table class = "stats-table" id = "per-game-table">
 			
 				</table>
-
-				<table class = "stats-table" id = "adv-player-stats-table" style = "display: none;">
 								
 				</table>
 				<table class = "stats-table" id = "per-minute-table" style = "display: none;">
@@ -32,9 +28,6 @@
 				<table class = "stats-table" id = "team-stats-table"></table>
 			</div>
 
-			<div id = "advanced-stats-table">
-				<table class = "stats-table" id = "adv-team-stats-table"></table>
-			</div>
 			<div class = "stat-page-header">Shot Charts</div>
 			<div id = "gr-team-shot-charts">
 				<div class = "shot-distribution">
@@ -44,10 +37,10 @@
 		</div>
 	</div>
 
-<%= render 'canvas_js' %>
-<%= render 'game_mode_js_objects' %>
+<%= render 'games/canvas_js' %>
+<%= render 'games/game_mode_js_objects' %>
 <%= render 'stats/team_stat_tables_js' %>
-<%= render 'game_review_js' %>
+<%= render 'games/game_review_js' %>
 <script>
 	
 		var per_game_table = $("#per-game-table");
@@ -61,9 +54,9 @@
 		initialize_tables(per_game_table, per_minute_table, team_stats_table, adv_stats_player_table, adv_stats_team_table)
 		//initialize_tables(show_team_stats_table, show_adv_stats_team_table);
 		populate_display_stats_basic();
-		populate_display_stats_adv();
-		populate_team_display_stats_adv()
-		populate_team_advanced_stats();
+		//populate_display_stats_adv();
+		//populate_team_display_stats_adv()
+		//populate_team_advanced_stats();
 		populate_stat_array();
 		populate_team_stats();
 		populate_opponent_stats();

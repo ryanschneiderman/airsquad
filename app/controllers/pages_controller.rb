@@ -1,5 +1,6 @@
 
 class PagesController < ApplicationController
+	skip_before_action :authenticate_user!, only: [:index]
 	def index
 		if user_signed_in?
 			##dont use string sql
@@ -14,35 +15,6 @@ class PagesController < ApplicationController
 				redirect_to team_path(@teams[0].id)
 			end
 
-			## StatList.delete_all
-			## puts "************************ NEW ************************"
-			## StatList.find_each do |stat_list|
-			## 	puts stat_list.stat
-			## 	puts stat_list.id
-			## end
-			## InsertStatListsService.new().call
-			## StatList.find_each do |stat_list|
-			## 	puts stat_list.stat
-			## 	puts stat_list.id
-			## end
-			##if StatList.exists?(1)
-				
-			##else
-				##InsertStatListsService.new().call
-			##end
-			##DeleteTeamService.new().call
-
-			##ActiveRecord::Base.connection.execute("TRUNCATE play_types RESTART IDENTITY")
-			##InsertPlayTypesService.new().call
-			##InsertStatListsService.new().call
-			##StatList.find_each do |stat_list|
-			##puts stat_list.stat
-			##puts stat_list.id
-			##end
-
-			#TruncateStatsService.new().call
-			##InsertStatDescriptionsService.new().call
-			##InsertRolesService.new().call
 		end	
   end
 

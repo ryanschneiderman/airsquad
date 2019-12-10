@@ -54,6 +54,9 @@
 					</div>
 				</div>
 			</div>
+			<div id = "tb-third-level" class = "tb-container flex-vert">
+				<button class = "gm-submit" style = "" type = "button" onclick = "submit_practice_mode_button()"> SUBMIT </button>
+			</div>
 		</div>
 		<div id = "gm-middle">
 			<div class = "stat-added-alert">
@@ -77,7 +80,6 @@
 				<button class ="gm-toggle-button" onclick = "to_shot_chart()">Show Shot Chart</button>
 			</div>
 		</div>
-		
 	</div>	
 </div>
 
@@ -96,6 +98,19 @@
 				</div>
 			</div>
 			<div id = "GM-init-footer" class = "GM-init">Next</div>
+		</div>
+	</div>
+	<div id = "GM-submit" class = "modal-container">
+		<div id = "GM-submit-wrapper" class = "GM-modal-wrapper">
+			<div id = "GM-submit-header" class = "GM-modal-header"> Are you sure you want to submit? </div>
+			<div id = "GM-submit-body" class = "GM-modal-body">
+				<div id = "confirm-message" class = "GM-modal-content"> Once you submit, all data from this game will be final.</div>
+				<div id = "confirm-buttons">
+					<button id = "dont-submit" class = "confirm-buttons" onclick = "close_practice_mode()">I'm not finished</button>
+					<button id = "confirm-submit" class = "confirm-buttons" onclick = "submit_practice_mode()">Yes, Submit</button>
+				</div>
+			</div>
+			<div id = "loader-container"><span class="loader" style = "display:none;"><span class="loader-inner"></span></span></div>
 		</div>
 	</div>
 </div>

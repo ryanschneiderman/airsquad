@@ -1476,7 +1476,7 @@
 		insert_fg_in_table(player_i, index, "Make", obj);
 	}
 
-	function update_field_goals_miss(player_i, stat_i, index){
+	function update_field_goals_miss(player_i, stat_i, index, obj){
 		insert_fg_in_table(player_i, index, "Miss", obj);
 	}
 
@@ -1890,9 +1890,10 @@
 	}
 
 	function set_team_minutes(){
-		var team_stat_arr_len = team_stat_totals.length
+		//var team_stat_arr_len = team_stat_totals.length
 		var minutes_index = find_stat_in_player_arr(16);
-		team_stat_totals[minutes_index].total = total_minutes * 5;
+		team_1_totals[minutes_index].total = total_minutes * (players_in_game/2) ;
+		team_2_totals[minutes_index].total = total_minutes * (players_in_game/2) ;
 	}
 
 	function set_lineup_minutes(){
@@ -1918,7 +1919,7 @@
 		});
 	}
 
-	function submit_game_mode_button(){
+	function submit_practice_mode_button(){
 		$(".modal-overlay").css("display", "block");
 		$(".GM-modal").css("display", "flex");
 		$("#GM-submit").show();
@@ -1926,15 +1927,42 @@
 		set_lineup_minutes()
 		set_minutes_in_player_array();
 		set_team_minutes();
-		console.log(team_stat_totals)
-		console.log(lineups_arr)
 	}
 
-	function close_game_mode(){
+	function close_practice_mode(){
 		$(".modal-overlay").css("display", "none");
 		$(".GM-modal").css("display", "none");
 		$("#GM-submit").hide();
 	}
+
+	function submit_practice_mode(){
+		$("#GM-submit-body").hide()
+		$("#GM-submit-header").text("Submitting stats...")
+		$(".loader").show()
+
+		scoreboard_clock.stop_timer();
+
+		update_fg_locations();
+
+		var url = "/teams/" + <%= @team_id%> +  "/scrimmage_mode_submit/"
+		var json_data = {"player_stats": stat_array, "team_stats": team_1_totals, "opponent_stats": team_2_totals, "is_scrimmage" : false}
+		console.log(json_data)
+		 $.ajax({
+			url: url,
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			type: "post",
+			data_type: 'json',
+			data: json_data,
+		});
+
+		setTimeout( function() {
+			$("#GM-submit-header").text("Calculating advanced stats...")
+	    }, 6000);
+	    setTimeout( function() {
+			$("#GM-submit-header").text("This may take a moment..")
+	    }, 12000);
+	}
+	
 
 	
 	/**************************************************************/

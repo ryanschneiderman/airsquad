@@ -29,8 +29,10 @@
 		per_game_table = per_game[0];
 		per_minute_table = per_minute_table[0]
 		team_stats_table = team[0];
-		adv_stats_player_table = adv_player[0];
-		adv_stats_team_table = adv_team[0];
+		<%if @advanced_stats%>
+			adv_stats_player_table = adv_player[0];
+			adv_stats_team_table = adv_team[0];
+		<%end%>
 	}
 
 	function populate_display_stats_basic(){
@@ -40,16 +42,20 @@
 	}
 
 	function populate_display_stats_adv(){
-		<% @adv_stat_table_columns.each do |display_stat| %>
-			display_stats_adv.push({"stat": "<%= display_stat[:display_name] %>", "display_priority": "<%= display_stat[:display_priority] %>", "stat_name":  "<%= display_stat[:stat_name] %>", "stat_list_id" : "<%= display_stat[:stat_list_id] %>" , "stat_description" : "<%=display_stat[:stat_description]%>"})
+		<%if @adv_stat_table_columns%>
+			<% @adv_stat_table_columns.each do |display_stat| %>
+				display_stats_adv.push({"stat": "<%= display_stat[:display_name] %>", "display_priority": "<%= display_stat[:display_priority] %>", "stat_name":  "<%= display_stat[:stat_name] %>", "stat_list_id" : "<%= display_stat[:stat_list_id] %>" , "stat_description" : "<%=display_stat[:stat_description]%>"})
+			<% end %>
 		<% end %>
 
 		console.log(display_stats_adv)
 	}
 
 	function populate_team_display_stats_adv(){
-		<% @team_adv_stat_table_columns.each do |display_stat| %>
-			display_stats_team_adv.push({"stat": "<%= display_stat[:display_name] %>", "display_priority": "<%= display_stat[:display_priority] %>", "stat_name":  "<%= display_stat[:stat_name] %>", "stat_list_id" : "<%= display_stat[:stat_list_id] %>", "is_opponent" : "<%= display_stat[:is_opponent] %>"})
+		<%if @team_adv_stat_table_columns%>
+			<% @team_adv_stat_table_columns.each do |display_stat| %>
+				display_stats_team_adv.push({"stat": "<%= display_stat[:display_name] %>", "display_priority": "<%= display_stat[:display_priority] %>", "stat_name":  "<%= display_stat[:stat_name] %>", "stat_list_id" : "<%= display_stat[:stat_list_id] %>", "is_opponent" : "<%= display_stat[:is_opponent] %>"})
+			<% end %>
 		<% end %>
 	}
 	
@@ -67,14 +73,15 @@
 			player_stats[i-1].stat_arr.push({"value": parseInt("<%= stat.value%>"), "stat_list_id" : "<%= stat.stat_list_id%>", "stat" : "<%= stat.stat%>","display_priority" : "<%= stat.display_priority%>"})
 		<%end%>
 		var j = 0;
-
-		<% @advanced_stats.each do |stat|%>
-			if("<%= stat.member_id%>" != player_stats[j].id){
-				j++;
-			}
-			player_stats[j].adv_stat_arr.push({"value": parseFloat("<%= stat.value%>"),"stat_list_id" : "<%= stat.stat_list_id%>" ,"display_priority" : "<%= stat.display_priority%>", "stat" : "<%= stat.stat%>"})
+		<%if @advanced_stats%>
+			<% @advanced_stats.each do |stat|%>
+				if("<%= stat.member_id%>" != player_stats[j].id){
+					j++;
+				}
+				player_stats[j].adv_stat_arr.push({"value": parseFloat("<%= stat.value%>"),"stat_list_id" : "<%= stat.stat_list_id%>" ,"display_priority" : "<%= stat.display_priority%>", "stat" : "<%= stat.stat%>"})
+			<%end%>
 		<%end%>
-		console.log(player_stats)
+		//console.log(player_stats)
 	}
 
 	function populate_team_stats(){
@@ -90,9 +97,11 @@
 	}
 
 	function populate_team_advanced_stats(){
-		<% @team_advanced_stats.each do |stat| %>
-			team_advanced_stat_array.push({"value": parseFloat("<%= stat.value%>") , "stat": "<%= stat.stat%>", "stat_list_id" : "<%= stat.stat_list_id%>", "display_priority" : "<%= stat.display_priority%>", "name" : "<%= @team.name %>", "is_opponent" : "<%= stat.is_opponent%>"})
-		<%end %>
+		<%if @team_advanced_stats%>
+			<% @team_advanced_stats.each do |stat| %>
+				team_advanced_stat_array.push({"value": parseFloat("<%= stat.value%>") , "stat": "<%= stat.stat%>", "stat_list_id" : "<%= stat.stat_list_id%>", "display_priority" : "<%= stat.display_priority%>", "name" : "<%= @team.name %>", "is_opponent" : "<%= stat.is_opponent%>"})
+			<%end %>
+		<%end%>
 		console.log(team_advanced_stat_array)
 	}
 
@@ -103,35 +112,43 @@
 
 	function populate_team_stat_tables(opponent){
 		populate_basic_team_stat_header(team_stats_table);
-		populate_team_adv_stat_header(adv_stats_team_table);
+		<%if @advanced_stats%>
+			populate_team_adv_stat_header(adv_stats_team_table);
+			var team_advanced_row = adv_stats_team_table.insertRow(2)
+			populate_team_advanced_row(team_advanced_row, 2)
+		<%end%>
+		
 		var team_row = team_stats_table.insertRow(1);
 		if(opponent)var opponent_row = team_stats_table.insertRow(2);
 		populate_basic_row(team_row, 1, false, team_stat_array);
 		if(opponent) populate_basic_row(opponent_row, 2, false, opponent_stat_array);
-		var team_advanced_row = adv_stats_team_table.insertRow(2)
-		populate_team_advanced_row(team_advanced_row, 2)
+		
 	}
 
 	function populate_player_stat_tables(is_stat_index){
 
 		populate_basic_player_stat_header(per_game_table, true);	
 		populate_basic_player_stat_header(per_minute_table, false);
+		<%if @advanced_stats%>
+			populate_adv_stat_header(adv_stats_player_table, "adv_stats_player_table");
+		<%end%>
 
-		populate_adv_stat_header(adv_stats_player_table, "adv_stats_player_table");
 
 		var num_players = player_stats.length
 		var i = 1;
 		for(i; i < num_players +1; i++){
 			var per_game_row = per_game_table.insertRow(i);
 			var per_minute_row = per_minute_table.insertRow(i)
-			var advanced_row = adv_stats_player_table.insertRow(i)
+			<%if @advanced_stats%>
+				var advanced_row = adv_stats_player_table.insertRow(i)
+				populate_advanced_row(advanced_row, i);
+			<%end%>
 			// TODO: this is where we will add an extra boolean to account for extra case !!!
 			populate_basic_row(per_game_row, i, true, null, is_stat_index, false);	
 			populate_basic_row(per_minute_row, i, true, null, false, true);	
-			populate_advanced_row(advanced_row, i);
+			
 		}
 	}
-
 	
 
 	function populate_team_advanced_row(row, i){
