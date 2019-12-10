@@ -293,6 +293,10 @@
 		var make_miss = find_player_fraction_stat(display_priority, player, is_player);
 		var makes = parseInt(make_miss[0]);
 		var misses = parseInt(make_miss[1]);
+		console.log(display_priority)
+		console.log(player)
+		console.log("makes: " + makes)
+		console.log("misses: " + misses)
 		if(is_player){
 			if(is_per_game){
 				makes = makes / player.games
@@ -524,19 +528,20 @@
 		var makes = 0;
 		var misses = 0;
 		var return_arr = [];
+		console.log(stat_arr)
 		for(var i = 0; i < len; i++){
 			if(stat_arr[i].display_priority == display_priority){
 				//misses all have odd stat_list_ids, makes all have even stat_lsit_ids
 				if (parseInt(stat_arr[i].stat_list_id) % 2 == 0){
 					misses = stat_arr[i].value
 				}
-				else 
+				else {
 					makes = stat_arr[i].value
+				}
 			}
 		}
 		return_arr.push(makes);
 		return_arr.push(misses)
-
 		return return_arr;
 	}
 

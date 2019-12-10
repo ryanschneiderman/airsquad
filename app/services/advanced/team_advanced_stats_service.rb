@@ -724,7 +724,11 @@ class Advanced::TeamAdvancedStatsService
 
 		@season_ftr = SeasonTeamAdvStat.where(stat_list_id: 47, team_id: @team_id, is_opponent: false).take
 		if @season_ftr
-			@season_ftr.value = 100 * (100 * (@team_free_throw_makes + @season_ftr.constituent_stats["team_free_throw_makes"] / @team_field_goal_att + @season_ftr.constituent_stats["team_field_goal_att"])).round / 100.0
+			if  @team_field_goal_att + @season_ftr.constituent_stats["team_field_goal_att"] == 0
+				@season_ftr.value = 0.0 
+			else 
+				@season_ftr.value = 100 * (100 * (@team_free_throw_makes + @season_ftr.constituent_stats["team_free_throw_makes"] / @team_field_goal_att + @season_ftr.constituent_stats["team_field_goal_att"])).round / 100.0
+			end
 			@season_ftr.constituent_stats = {
 				"team_free_throw_makes" => @team_free_throw_makes + @season_ftr.constituent_stats["team_free_throw_makes"],
 				"team_field_goal_att" => @team_field_goal_att + @season_ftr.constituent_stats["team_field_goal_att"],
@@ -763,7 +767,11 @@ class Advanced::TeamAdvancedStatsService
 
 		season_ftr = SeasonTeamAdvStat.where(stat_list_id: 47, team_id: @team_id, is_opponent: true).take
 		if season_ftr
-			season_ftr.value = 100 * (100 * (@opp_free_throw_makes + season_ftr.constituent_stats["team_free_throw_makes"] / @opp_field_goal_att + season_ftr.constituent_stats["team_field_goal_att"])).round / 100.0
+			if @opp_field_goal_att + season_ftr.constituent_stats["team_field_goal_att"] == 0
+				season_ftr.value = 0.0
+			else
+				season_ftr.value = 100 * (100 * (@opp_free_throw_makes + season_ftr.constituent_stats["team_free_throw_makes"] / @opp_field_goal_att + season_ftr.constituent_stats["team_field_goal_att"])).round / 100.0
+			end
 			season_ftr.constituent_stats = {
 				"team_free_throw_makes" => @opp_free_throw_makes + season_ftr.constituent_stats["team_free_throw_makes"],
 				"team_field_goal_att" => @opp_field_goal_att + season_ftr.constituent_stats["team_field_goal_att"],
