@@ -22,6 +22,8 @@ Rails.application.routes.draw do
 
   get '/teams/:team_id/scrimmage_mode(.:format)' => 'practices#scrimmage_mode', as: :scrimmage_mode
 
+  post '/teams/:team_id/games/:id/game_state_update(.:format)' => 'games#game_state_update'
+
   post '/teams/:team_id/scrimmage_mode_submit' => 'practices#scrimmage_mode_submit'
 
   post '/teams/:team_id/games/:id/game_mode(.:format)' => 'games#game_mode_submit'

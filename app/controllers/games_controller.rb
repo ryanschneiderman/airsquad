@@ -227,6 +227,12 @@ class GamesController < ApplicationController
 		}).call
 	end
 
+	def game_state_update
+		game = Game.find_by_id(params[:id])
+	  	game.update_attributes(:game_state => params[:game_state])
+	  	game.save
+	end
+
 	## service
 	def game_mode_submit
 		player_stats = params[:player_stats]

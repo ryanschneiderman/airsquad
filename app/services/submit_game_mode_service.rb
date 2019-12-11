@@ -15,7 +15,7 @@ class SubmitGameModeService
 		@game_id = @game_id.to_i
 		game = Game.find_by_id(@game_id)
 		## TODO: CHECK TO MAKE SURE THIS WORKS!!!
-		game.game_state = nil;
+		#game.game_state = nil;
 		@team_stats = params[:team_stats]
 		@opponent_obj = params[:opponent_stats]
 		@opponent_stats =  @opponent_obj["cumulative_arr"]

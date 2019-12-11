@@ -351,8 +351,11 @@
 		setPlayerTimesInTable();
 		loadStatGranules(all_stat_granules)
 		to_team_shot_chart()
-
+		console.log("game_state lineups")
+		console.log(game_state.lineups_arr)
 		load_lineups_arr(game_state.lineups_arr)
+		console.log("curr_lineup")
+		console.log(curr_lineup)
 
 		minutes = game_state.clock.minutes;
 		seconds = game_state.clock.seconds;
@@ -391,6 +394,20 @@
 			populate_stat_arrays();
 			populate_stat_table();
 		}
+		window.setInterval(function(){ 
+			// console.log(active_players)
+			// var game_state =  {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr,  "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}
+			// $.ajax({
+			// 	url: "/teams/" + <%=@team_id%> + "/games/" + <%=@game_id%> + "/game_state_update/", 
+			// 	beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			//     type: "post",
+			//     data_type: 'json',
+			//     data: {"game_state": game_state},
+			// 	success: function(result){
+			//         console.log("updating game_state")
+			//     }
+			// });
+		}, 5000);
 		horiz_offset = $(".canvas-container").position().left + parseInt($(".canvas-container").css("margin-left"));
 		vert_offset  = $(".canvas-container").position().top
 	}
@@ -521,6 +538,7 @@
 
 	function load_lineups_arr(new_lineups_arr){
 		var len = new_lineups_arr.length;
+		console.log("len: " + len)
 		console.log("new_lineups_arr")
 		console.log(new_lineups_arr)
 		for(var i=0; i < len; i++){
@@ -534,6 +552,8 @@
 				lineup.timer.time_played = timer.time_played;
 				lineup.timer.is_in_game = timer.is_in_game;
 				lineup.cumulative_arr = new_lineups_arr[i].cumulative_arr;
+				console.log("timer is in game 2")
+				console.log(timer.is_in_game)
 				if(timer.is_in_game){
 					curr_lineup = lineup;
 				}
@@ -547,6 +567,8 @@
 				new_lineup_timer.time_played = timer.time_played;
 				console.log(new_lineup_timer.time_played)
 				new_lineups_arr[i].timer = new_lineup_timer;
+				console.log("timer is in game 1")
+				console.log(new_lineups_arr[i].timer.is_in_game)
 				if(new_lineups_arr[i].timer.is_in_game){
 					curr_lineup = new_lineups_arr[i]
 				}
@@ -1816,6 +1838,12 @@
 				active_players[i].timer.toggleClockMoving()
 			}
 			curr_lineup.timer.toggleClockMoving();
+			if(self.isRunning){
+				clock_moving_style();
+			}
+			else{
+				clock_stopped_style();
+			}
 		}
 		this.stop_timer = function(){
 			self.isRunning = false;
@@ -1850,18 +1878,19 @@
 			});
 		}
 		this.interval = setInterval(function() {
-
 		    if (self.isRunning == true) {
 		        seconds--;
 		        total_minutes++;
 		        if(seconds <0){
 		        	minutes--;
 		        	if(minutes < 0){
-		        		curr_period++;
-		        		if(curr_period > periods){
-		        			//PROMPT TO SUBMIT
+		        		if(curr_period == periods){
+		        			seconds = 0;
+		        			minutes = 0;
+		        			self.toggle_timer();
 		        		}
 		        		else {
+		        			curr_period++;
 		        			self.set_period();
 		        			minutes = minutes_per_period;
 		        			self.toggle_timer();

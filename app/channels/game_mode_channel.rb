@@ -4,6 +4,7 @@ class GameModeChannel < ApplicationCable::Channel
   end
 
   def receive(data)
+=begin
   	if data["new_stat"]
   		ActionCable.server.broadcast("game_mode_channel_#{params[:game_id]}", {new_stat: data["new_stat"], sent_by: data["sent_by"], lineups_arr: data["game_state"]["lineups_arr"]})
   		game = Game.find(params[:game_id])
@@ -32,7 +33,8 @@ class GameModeChannel < ApplicationCable::Channel
 	  	game = Game.find(params[:game_id])
 	  	game.update_attributes(:game_state => data["game_state"])
 	  	game.save
-	end
+	   end
+=end
   end
 
   def unsubscribed
