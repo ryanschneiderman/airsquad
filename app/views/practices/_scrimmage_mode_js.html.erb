@@ -1806,6 +1806,12 @@
 				active_players[i].timer.toggleClockMoving()
 			}
 			curr_lineup.timer.toggleClockMoving();
+			if(self.isRunning){
+				clock_moving_style();
+			}
+			else{
+				clock_stopped_style();
+			}
 		}
 		this.stop_timer = function(){
 			self.isRunning = false;
