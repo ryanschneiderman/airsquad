@@ -89,7 +89,7 @@
 
 <div class = "modal-overlay"></div>
 <div class = "GM-modal modal-overlay">
-	<div id = "GM-initializer" class = "modal-container">
+	<div id = "GM-initializer" style = "display: none;" class = "modal-container">
 		<div id = "GM-init-wrapper" class = "GM-modal-wrapper">
 			<div id = "GM-init-header" class = "GM-modal-header">Welcome to Game Mode!</div>
 			<div id = "GM-init-body" class = "GM-modal-body">
@@ -117,6 +117,18 @@
 			<div id = "loader-container"><span class="loader" style = "display:none;"><span class="loader-inner"></span></span></div>
 		</div>
 	</div>
+	<div id = "GM-load" style = "display: none;"class = "modal-container">
+		<div id = "GM-submit-wrapper" class = "GM-modal-wrapper">
+			<div id = "GM-submit-header" class = "GM-modal-header"> It appears you have unsubmitted data for this game, would you like to load this data? </div>
+			<div id = "GM-submit-body" class = "GM-modal-body">
+				<div id = "confirm-buttons">
+					<button id = "confirm-submit" class = "confirm-buttons" onclick = "load_game()">Yes, load</button>
+					<button id = "dont-submit" class = "confirm-buttons" onclick = "pre_game_mode()">No, start from scratch</button>
+					
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 <%= content_tag :div, class: "game-mode-id", data: {game_id: @game_id} do %>
@@ -132,45 +144,7 @@
 	var canvas_vars;
 	var curr_aspect_ratio = 0;
 	var update_canvas = false;
-	function myFunction(max_w, min_w, portrait) {
-	  if (max_w.matches && min_w.matches && portrait) { // If media query matches
-	    canvas_vars = initialize_canvas(0.6, 0.635, 'c', 3)
-	  } else {
-	   canvas_vars = initialize_canvas(0.6, 0.635, 'c', 3)
-	  }
-	}
-
-	function layout(){
-		var screen_height = window.innerHeight
-		var screen_width = window.innerWidth
-		var aspect_ratio = screen_width/screen_height;
-		if(aspect_ratio <= 1.6 && aspect_ratio >=1){
-			var new_aspect_ratio = 1;
-			$(".in-game-players").css("grid-template-columns", "repeat(1, 12vw)")
-			if(curr_aspect_ratio!= new_aspect_ratio){
-				update_canvas = true;
-			}
-			curr_aspect_ratio = 1;
-		}
-		else if (aspect_ratio >= 1.6){
-			var new_aspect_ratio = 2;
-			$(".in-game-players").css("grid-template-columns", "repeat(2, 8vw)")
-			if(curr_aspect_ratio!= new_aspect_ratio){
-				update_canvas = true;
-			}
-			curr_aspect_ratio = 2;
-
-		}
-		else if (aspect_ratio < 1){
-			var new_aspect_ratio = 3;
-			$(".in-game-players").css("grid-template-columns", "repeat(2, 12vw)")
-			if(curr_aspect_ratio!= new_aspect_ratio){
-				update_canvas = true;
-			}
-			curr_aspect_ratio = 3;
-		}
-	}
-
+	
 	var scoreboard_height = $("#scoreboard-wrapper").height()
 	$("#top-grid").css("min-height", $(window).height() - scoreboard_height);
 	var max_w = window.matchMedia("(max-device-width : 1024px) ");
@@ -186,13 +160,12 @@
 	$(".navbar").hide()
 	
 	initialize_globals(canvas_vars.canvas, canvas_vars.canvas_width, canvas_vars.canvas_height)
-	var game_state = JSON.parse('<%= @game_state.to_json.html_safe%>')
+	var game_state = JSON.parse(<%= @game_state.to_json.html_safe%>)
 	if ('<%= raw @game_state%>' != ''){
-		console.log(game_state)
-		load_game_state(game_state)
-		start_game_mode(true)
+		prompt_load_game_state()
 	}
 	else{
+		$("#GM-initializer").show();
 		$(".modal-overlay").css("display", "block");
 		$(".GM-modal").css("display", "flex");
 		
@@ -276,6 +249,67 @@
         	}
     	})
     });
+
+
+    function pre_game_mode(){
+
+    	$("#GM-load").hide();
+    	$("#GM-initializer").show();
+    	$(".modal-overlay").css("display", "block");
+		$(".GM-modal").css("display", "flex");
+		
+		populate_players();
+		populate_inactive_selection(false);
+    }
+
+    function prompt_load_game_state(){
+    	$("#GM-load").show();
+    }
+
+    function load_game(){
+    	$("#GM-load").hide();
+    	load_game_state(game_state)
+		start_game_mode(true)
+    }
+
+    function myFunction(max_w, min_w, portrait) {
+	  if (max_w.matches && min_w.matches && portrait) { // If media query matches
+	    canvas_vars = initialize_canvas(0.6, 0.635, 'c', 3)
+	  } else {
+	   canvas_vars = initialize_canvas(0.6, 0.635, 'c', 3)
+	  }
+	}
+
+	function layout(){
+		var screen_height = window.innerHeight
+		var screen_width = window.innerWidth
+		var aspect_ratio = screen_width/screen_height;
+		if(aspect_ratio <= 1.6 && aspect_ratio >=1){
+			var new_aspect_ratio = 1;
+			$(".in-game-players").css("grid-template-columns", "repeat(1, 12vw)")
+			if(curr_aspect_ratio!= new_aspect_ratio){
+				update_canvas = true;
+			}
+			curr_aspect_ratio = 1;
+		}
+		else if (aspect_ratio >= 1.6){
+			var new_aspect_ratio = 2;
+			$(".in-game-players").css("grid-template-columns", "repeat(2, 8vw)")
+			if(curr_aspect_ratio!= new_aspect_ratio){
+				update_canvas = true;
+			}
+			curr_aspect_ratio = 2;
+
+		}
+		else if (aspect_ratio < 1){
+			var new_aspect_ratio = 3;
+			$(".in-game-players").css("grid-template-columns", "repeat(2, 12vw)")
+			if(curr_aspect_ratio!= new_aspect_ratio){
+				update_canvas = true;
+			}
+			curr_aspect_ratio = 3;
+		}
+	}
 
     function to_shot_chart(){
     	$("#canvas-wrapper").show()

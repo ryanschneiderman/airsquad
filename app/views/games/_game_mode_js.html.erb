@@ -395,18 +395,18 @@
 			populate_stat_table();
 		}
 		window.setInterval(function(){ 
-			// console.log(active_players)
-			// var game_state =  {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr,  "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}
-			// $.ajax({
-			// 	url: "/teams/" + <%=@team_id%> + "/games/" + <%=@game_id%> + "/game_state_update/", 
-			// 	beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-			//     type: "post",
-			//     data_type: 'json',
-			//     data: {"game_state": game_state},
-			// 	success: function(result){
-			//         console.log("updating game_state")
-			//     }
-			// });
+			//console.log(active_players)
+			var game_state =  {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr,  "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}
+			$.ajax({
+				url: "/teams/" + <%=@team_id%> + "/games/" + <%=@game_id%> + "/game_state_update/", 
+				beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			    type: "post",
+			    data_type: 'json',
+			    data: {"game_state": JSON.stringify(game_state)},
+				success: function(result){
+			        console.log("updating game_state")
+			    }
+			});
 		}, 5000);
 		horiz_offset = $(".canvas-container").position().left + parseInt($(".canvas-container").css("margin-left"));
 		vert_offset  = $(".canvas-container").position().top

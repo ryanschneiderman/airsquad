@@ -36,8 +36,9 @@
 }
 
 .GM-modal-body{
-	display: inline-block;
-	margin: auto;
+	display: flex;
+    margin: auto;
+    justify-content: center;
 	margin-top: 20px;
 	margin-bottom: 20px;
 }
@@ -189,7 +190,13 @@
 
 
 /********************** <INITIALIZER> ***********************/
-
+#GM-load{
+	width: 50vw;
+    padding-top: 30px;
+    height: 75vh;
+    margin-top: 150px;
+    padding-bottom: 30px;
+}
 .GM-modal-header{
 	font-size: 25px;
     margin-bottom: 10px;
@@ -287,8 +294,8 @@
 }
 
 .confirm-buttons{
-	padding-left: 40px;
-	padding-right: 40px;
+	font-size: 17px;
+	width: 200px;
 	padding-top: 10px;
 	padding-bottom: 10px;
 	color: white;

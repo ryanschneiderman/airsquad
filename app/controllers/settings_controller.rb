@@ -68,7 +68,7 @@ class SettingsController < ApplicationController
 		remove_players = params[:remove_players]
 		team_id = params[:team_id]
 		team = Team.find_by_id(team_id)
-		team.update(name: params[:team_name], minutes_p_q: params[:minutes_p_q])
+		team.update(name: params[:team_name], minutes_p_q: params[:minutes_p_q], username: params[:username], password: params[:password])
 		if new_players
 			new_players.each do |player|
 				member = Member.create({

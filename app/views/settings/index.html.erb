@@ -186,13 +186,15 @@
 	function submit_edit_team(){
 		var team_name = $("#enter-team-name").val()
 		var minutes_p_q = $("#minutes-per-quarter").val()
+		var username = $("#enter-unique-username").val()
+		var password = $("#choose-password").val()
 		var url = "/teams/" + <%=@team_id%> + "/settings/"
 		$.ajax({
 	      url: url,
 	      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
 	      type: "post",
 	      data_type: 'json',
-	      data: {stats_to_add: stats_to_add, stats_to_remove: stats_to_remove, new_players: new_players, remove_players: remove_players, team_name: team_name, minutes_p_q: minutes_p_q}
+	      data: {stats_to_add: stats_to_add, stats_to_remove: stats_to_remove, new_players: new_players, remove_players: remove_players, team_name: team_name, minutes_p_q: minutes_p_q, username: username, password: password}
 	    });
 	}
 </script>
