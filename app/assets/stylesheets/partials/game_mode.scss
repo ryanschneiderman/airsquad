@@ -41,6 +41,7 @@
     justify-content: center;
 	margin-top: 20px;
 	margin-bottom: 20px;
+	flex-direction: column;
 }
 
 .GM-modal-content{
@@ -290,7 +291,9 @@
 }
 
 #confirm-buttons{
-	margin-top: 30px;
+	display: flex;
+    margin-top: 30px;
+    justify-content: center;
 }
 
 .confirm-buttons{
