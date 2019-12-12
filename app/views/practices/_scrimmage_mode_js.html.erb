@@ -1844,14 +1844,16 @@
 		    if (self.isRunning == true) {
 		        seconds--;
 		        total_minutes++;
-		        if(seconds <0){
+		        if(seconds <=0){
 		        	minutes--;
 		        	if(minutes < 0){
-		        		curr_period++;
-		        		if(curr_period > periods){
-		        			//PROMPT TO SUBMIT
+		        		if(curr_period == periods){
+		        			seconds = 0;
+		        			minutes = 0;
+		        			self.toggle_timer();
 		        		}
 		        		else {
+		        			curr_period++;
 		        			self.set_period();
 		        			minutes = minutes_per_period;
 		        			self.toggle_timer();
