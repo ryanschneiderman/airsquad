@@ -8,9 +8,9 @@ class Advanced::TeamDefensiveRebPctService
 		if @team_def_reb + @opp_off_reb == 0 
 			raw_dreb_pct = 0.0 
 		else
-			raw_dreb_pct = 100 * 100 * @team_def_reb / (@team_def_reb + @opp_off_reb)
+			raw_dreb_pct = 100 * 1000 * @team_def_reb / (@team_def_reb + @opp_off_reb)
 		end
-		dreb_pct = raw_dreb_pct.round / 100.0
+		dreb_pct = raw_dreb_pct.round / 1000.0
 		return dreb_pct
 	end
 end

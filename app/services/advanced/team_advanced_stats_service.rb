@@ -709,7 +709,7 @@ class Advanced::TeamAdvancedStatsService
 		if @team_field_goal_att == 0
 			free_throw_rate = 0.0
 		else 
-			free_throw_rate = 100 * (100 * @team_free_throw_makes / @team_field_goal_att).round / 100.0
+			free_throw_rate = 100 * (1000 * @team_free_throw_makes / @team_field_goal_att).round / 1000.0
 		end
 		TeamAdvancedStat.create({
 			stat_list_id: 47,
@@ -727,7 +727,7 @@ class Advanced::TeamAdvancedStatsService
 			if  @team_field_goal_att + @season_ftr.constituent_stats["team_field_goal_att"] == 0
 				@season_ftr.value = 0.0 
 			else 
-				@season_ftr.value = 100 * (100 * (@team_free_throw_makes + @season_ftr.constituent_stats["team_free_throw_makes"] / @team_field_goal_att + @season_ftr.constituent_stats["team_field_goal_att"])).round / 100.0
+				@season_ftr.value = 100 * (1000 * ((@team_free_throw_makes + @season_ftr.constituent_stats["team_free_throw_makes"]) / (@team_field_goal_att + @season_ftr.constituent_stats["team_field_goal_att"]))).round / 1000.0
 			end
 			@season_ftr.constituent_stats = {
 				"team_free_throw_makes" => @team_free_throw_makes + @season_ftr.constituent_stats["team_free_throw_makes"],
@@ -752,7 +752,7 @@ class Advanced::TeamAdvancedStatsService
 		if @opp_field_goal_att == 0 
 			free_throw_rate = 0.0
 		else 
-			free_throw_rate = 100 * (100 * @opp_free_throw_makes / @opp_field_goal_att).round / 100.0
+			free_throw_rate = 100 * (1000 * @opp_free_throw_makes / @opp_field_goal_att).round / 1000.0
 		end
 		TeamAdvancedStat.create({
 			stat_list_id: 47,
@@ -770,7 +770,7 @@ class Advanced::TeamAdvancedStatsService
 			if @opp_field_goal_att + season_ftr.constituent_stats["team_field_goal_att"] == 0
 				season_ftr.value = 0.0
 			else
-				season_ftr.value = 100 * (100 * (@opp_free_throw_makes + season_ftr.constituent_stats["team_free_throw_makes"] / @opp_field_goal_att + season_ftr.constituent_stats["team_field_goal_att"])).round / 100.0
+				season_ftr.value = 100 * (1000 * ((@opp_free_throw_makes + season_ftr.constituent_stats["team_free_throw_makes"]) / (@opp_field_goal_att + season_ftr.constituent_stats["team_field_goal_att"]))).round / 1000.0
 			end
 			season_ftr.constituent_stats = {
 				"team_free_throw_makes" => @opp_free_throw_makes + season_ftr.constituent_stats["team_free_throw_makes"],
