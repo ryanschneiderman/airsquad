@@ -48,7 +48,6 @@
 			<% end %>
 		<% end %>
 
-		console.log(display_stats_adv)
 	}
 
 	function populate_team_display_stats_adv(){
@@ -102,12 +101,11 @@
 				team_advanced_stat_array.push({"value": parseFloat("<%= stat.value%>") , "stat": "<%= stat.stat%>", "stat_list_id" : "<%= stat.stat_list_id%>", "display_priority" : "<%= stat.display_priority%>", "name" : "<%= @team.name %>", "is_opponent" : "<%= stat.is_opponent%>"})
 			<%end %>
 		<%end%>
-		console.log(team_advanced_stat_array)
 	}
 
-	function populate_stat_tables(is_stat_index){
+	function populate_stat_tables(is_stat_index, single_game){
 		populate_team_stat_tables(true);
-		populate_player_stat_tables(is_stat_index);
+		populate_player_stat_tables(is_stat_index, single_game);
 	}
 
 	function populate_team_stat_tables(opponent){
@@ -125,10 +123,16 @@
 		
 	}
 
-	function populate_player_stat_tables(is_stat_index){
-
-		populate_basic_player_stat_header(per_game_table, true);	
-		populate_basic_player_stat_header(per_minute_table, false);
+	function populate_player_stat_tables(is_stat_index, single_game){
+		if(single_game){
+			populate_basic_player_stat_header(per_game_table, false, false);	
+			populate_basic_player_stat_header(per_minute_table, false, true);
+		}
+		else{
+			populate_basic_player_stat_header(per_game_table, true, false);	
+			populate_basic_player_stat_header(per_minute_table, false, true);
+		}
+		
 		<%if @advanced_stats%>
 			populate_adv_stat_header(adv_stats_player_table, "adv_stats_player_table");
 		<%end%>
@@ -293,10 +297,6 @@
 		var make_miss = find_player_fraction_stat(display_priority, player, is_player);
 		var makes = parseInt(make_miss[0]);
 		var misses = parseInt(make_miss[1]);
-		console.log(display_priority)
-		console.log(player)
-		console.log("makes: " + makes)
-		console.log("misses: " + misses)
 		if(is_player){
 			if(is_per_game){
 				makes = makes / player.games
@@ -316,13 +316,14 @@
 
 
 	// TODO: minutes should only be per game in a per game case
-	function sort_basic_table(display_priority, is_per_game, table_name, is_per_minute){
+	function sort_basic_table(display_priority, is_per_game, is_per_minute){
+		console.log(is_per_minute)
 		var sort_index = find_player_stat_index(display_priority, player_stats[0].stat_arr)
 		if(is_per_game){
 			player_stats.sort(function(a, b){
 				return (b.stat_arr[sort_index].value/b.games) - (a.stat_arr[sort_index].value/a.games)
 			});
-			rerender_basic_table(per_game_table, is_per_game);
+			rerender_basic_table(per_game_table, is_per_game, is_per_minute);
 		}
 		else if (is_per_minute){
 			player_stats.sort(function(a, b){
@@ -333,13 +334,15 @@
 					return (b.stat_arr[sort_index].value / b.minutes) -  (a.stat_arr[sort_index].value / a.minutes)
 				}
 			});
-			rerender_basic_table(per_minute_table, is_per_game);
+			rerender_basic_table(per_minute_table, is_per_game, is_per_minute);
 		}
 		else {
 			player_stats.sort(function(a, b){
 				return (b.stat_arr[sort_index].value) -  (a.stat_arr[sort_index].value)
 			});
-			rerender_basic_table(per_minute_table, is_per_game);
+			console.log("printing sorted stats")
+			console.log(player_stats)
+			rerender_basic_table(per_game_table, is_per_game, is_per_minute);
 		}
 	}
 
@@ -351,13 +354,11 @@
 		rerender_adv_table(adv_stats_player_table);
 	}
 
-	function rerender_basic_table(table, is_per_game){
+	function rerender_basic_table(table, is_per_game, is_per_minute){
+		console.log("rerendering")
 		var num_rows = table.rows.length
 		for(var i = 1; i < num_rows; i++){
-			if (is_per_game) {
-				populate_basic_row(table.rows[i], i, true, null, true);
-			}
-			else populate_basic_row(table.rows[i], i, true, null, false);
+			populate_basic_row(table.rows[i], i, true, null, is_per_game, is_per_minute)
 		}
 	}
 
@@ -372,14 +373,14 @@
 
 
 
-	function populate_basic_player_stat_header(table, is_per_game){
+	function populate_basic_player_stat_header(table, is_per_game, is_per_minute){
 		var insert_index = 0;
 		var row = table.insertRow(0)
 		var num_stats = display_stats.length
 		for(i = 0; i < num_stats + 1; i++){
 			var col = row.insertCell(insert_index)
 			if (i > 0) {
-				col.innerHTML += "<button class = 'stat-table-button' onclick='sort_basic_table(" + display_stats[i-1].display_priority + "," + is_per_game + ")'>" + display_stats[i - 1].stat + "</button>";
+				col.innerHTML += "<button class = 'stat-table-button' onclick='sort_basic_table(" + display_stats[i-1].display_priority + "," + is_per_game +  "," + is_per_minute + ")'>" + display_stats[i - 1].stat + "</button>";
 				if(display_stats[i - 1].display_type == "fraction"){
 					insert_index++;
 					var pct_col = row.insertCell(insert_index);
@@ -528,7 +529,6 @@
 		var makes = 0;
 		var misses = 0;
 		var return_arr = [];
-		console.log(stat_arr)
 		for(var i = 0; i < len; i++){
 			if(stat_arr[i].display_priority == display_priority){
 				//misses all have odd stat_list_ids, makes all have even stat_lsit_ids
