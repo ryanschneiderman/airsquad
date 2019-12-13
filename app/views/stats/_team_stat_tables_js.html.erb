@@ -8,6 +8,7 @@
 	var display_stats_adv = []
 	var display_stats_team_adv = []
 	var minutes_factor = <%=@per_minutes%>;
+	console.log(minutes_factor)
 
 	var player_stats = [];
 	var per_game_stats = [];
@@ -58,16 +59,24 @@
 		<% end %>
 	}
 	
-	function populate_stat_array(){
+	function populate_stat_array(single_game){
 		var i = 0;
 		player_id_arr = [];
 		<% @player_stats.each do |stat|%>
+			var player_obj;
 			var len = player_id_arr.length
 			if(player_id_arr[len - 1] !=  "<%= stat.member_id%>"){
 				player_id_arr.push("<%= stat.member_id%>");
-				var player_obj = {"id" : "<%= stat.member_id%>", "name" : "<%= stat.nickname%>" , "stat_arr" : [], "adv_stat_arr" : [], "minutes": parseInt("<%= stat.season_minutes%>"), "games": parseInt("<%= stat.games_played%>")}
+					player_obj = {"id" : "<%= stat.member_id%>", "name" : "<%= stat.nickname%>" , "stat_arr" : [], "adv_stat_arr" : [], "minutes": parseInt("<%= stat.season_minutes%>"), "games": parseInt("<%= stat.games_played%>")}
 				player_stats.push(player_obj);
 				i++;
+			}
+			if(single_game == true && "<%= stat.stat_list_id%>" == "16"){
+				var player_minutes = parseInt("<%= stat.value%>")
+				if (player_minutes == 0){
+					player_minutes = 1
+				}
+				player_obj.minutes = player_minutes
 			}
 			player_stats[i-1].stat_arr.push({"value": parseInt("<%= stat.value%>"), "stat_list_id" : "<%= stat.stat_list_id%>", "stat" : "<%= stat.stat%>","display_priority" : "<%= stat.display_priority%>"})
 		<%end%>
