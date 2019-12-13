@@ -6,9 +6,8 @@ class TeamsController < ApplicationController
 	def show
 
 		##InsertStatDescriptionsService.new().call()
-		Stats::FixFtRateService.new(team_id: params[:id]).call
+		#Stats::FixFtRateService.new(team_id: params[:id]).call
 
-		#
 
 		@non_user_members = nil
 		@joined_team = params[:joined_team]
