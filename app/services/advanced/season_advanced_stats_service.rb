@@ -52,7 +52,7 @@ class Advanced::SeasonAdvancedStatsService
 		@opp_fouls = TeamSeasonStat.where(team_id: @team_id, stat_list_id: 17, is_opponent: true).take.value
 
 		@possessions = SeasonTeamAdvStat.where(team_id: @team_id, stat_list_id: 43).take.value
-		@opp_possessions = SeasonTeamAdvStat.where(team_id: @team_id, stat_list_id: 43).take.value
+		@opp_possessions = SeasonTeamAdvStat.where(team_id: @team_id, stat_list_id: 43, is_opponent: true).take.value
 
 		@total_reb = @off_reb + @def_reb
 		@team_total_reb = @team_off_reb + @team_def_reb
@@ -125,7 +125,7 @@ class Advanced::SeasonAdvancedStatsService
 			steals: @steals,
 			team_minutes: @team_minutes,
 			minutes: @minutes,
-			opp_poss: @opp_poss,
+			opp_poss: @opp_possessions,
 		}).call
 
 		season_stat.value = new_steal_pct
@@ -133,7 +133,7 @@ class Advanced::SeasonAdvancedStatsService
 			"steals" => @steals,
 			"team_minutes" => @team_minutes,
 			"minutes" => @minutes,
-			"opp_poss" => @opp_poss,
+			"opp_poss" => @opp_possessions,
 		}
 		season_stat.save
 	end
@@ -604,7 +604,7 @@ class Advanced::SeasonAdvancedStatsService
 			"opp_possessions" => @opp_possessions,
 		}
 		season_stat.save
-		@season_bpm = season_stat
+		@bpm = season_stat
 
 	end
 
@@ -679,7 +679,7 @@ class Advanced::SeasonAdvancedStatsService
 			"opp_possessions" => @opp_possessions,
 		}
 		season_stat.save
-		@season_obpm = season_stat
+		@obpm = season_stat
 	end
 
 	def def_box_plus_minus()

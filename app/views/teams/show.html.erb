@@ -42,20 +42,29 @@
 
 <div class = "modal-overlay" style= "display: none;"></div>
 <div class = "new-overlay modal-overlay" style= "display: none;">
-	<div class = "new-box" style= "display: none;">
+	<div class = "new-box player-join-box" style= "display: none;">
 		<div class = "join-team-header">
 			<div id = "new-play-header-text">Select Your Name</div>
 		</div>
 		<div id = "join-team-body">
 			<div id = "add-players-block">
-			<div id = "current-members">
-				<% if params[:joined_team] %>
-					<%@non_user_members.each do |member|%>
+			<% if params[:joined_team] %>
+				<div class = "add-players-header">Players</div>
+				<div class = "current-members">
+					<%@non_user_players.each do |member|%>
 						<button class = "new-player" onclick = "select_member(this, <%=member.id%>)"><%=member.nickname%></button>
 					<%end%>	
+				</div>
+				<%if @non_user_coaches.length > 0%>
+				<div class = "add-players-header">Coaches</div>
 				<%end%>
-			</div>
-			<button onclick = "submit_join_member()">Submit</button>
+				<div class = "current-members">
+					<%@non_user_coaches.each do |member|%>
+						<button class = "new-player" onclick = "select_member(this, <%=member.id%>)"><%=member.nickname%></button>
+					<%end%>	
+				</div>
+				<button class = "bar-button" style = "width: 100%;"onclick = "submit_join_member()">Submit</button>
+			<%end%>
 		</div>
 		</div>
 	</div>
@@ -97,13 +106,13 @@
 
 	function select_member(button, member_id){
 		member_to_join = member_id;
-		if (button.style.backgroundColor != "#21a0ed"){
-			button.style.backgroundColor = "#21a0ed";
+		if (button.style.backgroundColor != "#00c1ff"){
+			button.style.backgroundColor = "#00c1ff";
 			button.style.color = "white";
 		}
 		if(curr_button){
-			curr_button.style.backgroundColor = "white";
-			curr_button.style.color = "#21a0ed";
+			curr_button.style.backgroundColor = "transparent";
+			curr_button.style.color = "#00efff";
 		}
 		curr_button = button;
 	}

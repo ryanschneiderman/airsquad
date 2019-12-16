@@ -27,7 +27,17 @@
 					<input type = "text" class = "new-team-input" id = "add_player">
 					<button class="btn btn-primary" onclick = "add_player()">Add Player</button>	
 				</div>
-				<div id = "current-members">
+				<div id = "current-members" class = "member-group">
+								
+				</div>
+			</div>
+			<div id = "add-coaches-block">
+				<div class = "new-form new-team-secondary-color">
+					<label for="add_coach">Add/remove coaches</label><br>
+					<input type = "text" class = "new-team-input" id = "add_coach">
+					<button class="btn btn-primary" onclick = "add_coach()">Add Coach</button>	
+				</div>
+				<div id = "current-coaches" class = "member-group">
 								
 				</div>
 			</div>
@@ -124,13 +134,18 @@
 	var stats_to_remove = []
 	var non_default_adv_stats = []
 	var non_default_team_adv_stats = []
+	var curr_coaches = []
+	var curr_coach_ids = []
 	var curr_players = []
 	var curr_player_ids = []
 	var new_players = []
+	var new_coaches = []
 	var remove_players = []
+	var remove_coaches = []
 	initialize_adv_stats()
 	initialize_stats_kept()
 	initialize_players()
+	initialize_coaches()
 	
 
 
@@ -139,6 +154,14 @@
 			curr_players.push("<%=player.nickname%>")
 			curr_player_ids.push(<%=player.id%>)
 			$("#current-members").append("<button class = 'new-player' onclick = 'remove_player(this)'><div class = 'new-player-name'> <%=player.nickname%> </div><div class = 'remove-player-x'> x </div></button>")
+		<%end%>
+	}
+
+	function initialize_coaches(){
+		<%@coaches.each do |coach|%>
+			curr_coaches.push("<%=coach.nickname%>")
+			curr_coach_ids.push(<%=coach.id%>)
+			$("#current-coaches").append("<button class = 'new-player' onclick = 'remove_coach(this)'><div class = 'new-player-name'> <%=coach.nickname%> </div><div class = 'remove-player-x'> x </div></button>")
 		<%end%>
 	}
 
@@ -156,9 +179,22 @@
 		
 	}
 
+	function add_coach(){
+		var coach = $("#add_coach").val()
+		$("#add_coach").val("")
+		if(coach != ""){
+ 			new_coaches.push(coach);
+			$("#current-coaches").append("<button class = 'new-player' onclick = 'remove_coach(this)'><div class = 'new-player-name'>" + coach + "</div><div class = 'remove-player-x'> x </div></button>")
+		}
+		else {
+			alert("Enter coach name")
+		}
+		
+	}
+
 
 	function remove_player(button){
-		var r = confirm("Are you sure you want to remove this player? Once you do the action cannot be undone");
+		var r = confirm("Are you sure you want to remove this player? Once you submit the action cannot be undone");
 		if (r == true) {
 			  var player = button.childNodes[0].innerText
 			var index = curr_players.indexOf(player)
@@ -168,6 +204,22 @@
 			}
 			else{
 				new_players.splice(new_players.indexOf(player),1)
+				$(button).remove();
+			}
+		}
+	}
+
+	function remove_coach(button){
+		var r = confirm("Are you sure you want to remove this coach? Once you submit cannot be undone");
+		if (r == true) {
+			var coach = button.childNodes[0].innerText
+			var index = curr_coaches.indexOf(coach)
+			if(index >= 0){
+				remove_coaches.push(curr_coach_ids[index])
+				$(button).remove();
+			}
+			else{
+				new_coaches.splice(new_coaches.indexOf(coach),1)
 				$(button).remove();
 			}
 		}
@@ -194,7 +246,7 @@
 	      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
 	      type: "post",
 	      data_type: 'json',
-	      data: {stats_to_add: stats_to_add, stats_to_remove: stats_to_remove, new_players: new_players, remove_players: remove_players, team_name: team_name, minutes_p_q: minutes_p_q, username: username, password: password}
+	      data: {stats_to_add: stats_to_add, stats_to_remove: stats_to_remove, new_players: new_players, remove_players: remove_players, new_coaches: new_coaches, remove_coaches: remove_coaches, team_name: team_name, minutes_p_q: minutes_p_q, username: username, password: password}
 	    });
 	}
 </script>

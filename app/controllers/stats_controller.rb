@@ -2,7 +2,7 @@ class StatsController < ApplicationController
 
 	def index
 		#InsertStatListsService.new().call
-		#Stats::RollbackGameService.new({game_id: 37}).call
+		#Stats::RollbackGameService.new({game_id: 45}).call
 		@team = Team.find_by_id(params[:team_id])
 		@players = Assignment.joins(:role).joins(:member).select("roles.name as name, members.*").where("members.team_id" => @team.id, "roles.id" => 1)
 		@per_minutes = @team.minutes_p_q * 3

@@ -14,7 +14,8 @@ class TeamsController < ApplicationController
 		param_team = Team.find_by_id(params[:id])
 		user_members = Member.where(user_id: current_user.id) ## gets all members
 		if params[:joined_team]
-			@non_user_members = Member.where(team_id: params[:id], user_id: nil)
+			@non_user_players = Assignment.joins(:role).joins(:member).select("roles.name as name, members.*").where("members.team_id" => params[:id], "members.user_id" => nil, "roles.id" => 1)
+			@non_user_coaches = Assignment.joins(:role).joins(:member).select("roles.name as name, members.*").where("members.team_id" => params[:id], "members.user_id" => nil, "roles.id" => 2)
 			@team = param_team
 		else
 			user_teams = []

@@ -63,8 +63,21 @@
 	width: 45vw;
 	margin-top: 100px;
 	justify-content: center;
-	background-color: white;
 	padding: 20px;
+}
+
+.player-join-box{
+	background: #424d56;
+	color: white;
+}
+
+.add-players-header{
+	font-size: 18px;
+    margin-left: 10px;
+}
+
+.join-team-box{
+	background: white;
 }
 
 .new-header{
@@ -86,6 +99,14 @@
 }
 
 #current-members{
+	max-width: 50vw;
+	display: flex;
+	flex-wrap: wrap;
+	margin: 20px;
+	margin-bottom: 10px;
+}
+
+.current-members{
 	max-width: 50vw;
 	display: flex;
 	flex-wrap: wrap;
@@ -133,8 +154,9 @@
     padding-top: 8px;
     padding-bottom: 8px;
     border-radius: 10px;
-    font-size: 17PX;
+    font-size: 17px;
     font-weight: bold;
+    color: white
 }
 
 .bar-button-offset{

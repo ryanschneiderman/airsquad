@@ -58,7 +58,7 @@ class SettingsController < ApplicationController
 		@team = Team.find_by_id(@team_id)
 
 		@players = Assignment.joins(:role).joins(:member).select("roles.name as name, members.*").where("members.team_id" => @team_id, "roles.id" => 1)
-
+		@coaches = Assignment.joins(:role).joins(:member).select("roles.name as name, members.*").where("members.team_id" => @team_id, "roles.id" => 2)
 	end
 
 	def update
@@ -66,6 +66,8 @@ class SettingsController < ApplicationController
 		stats_to_remove = params[:stats_to_remove]
 		new_players = params[:new_players]
 		remove_players = params[:remove_players]
+		new_coaches = params[:new_coaches]
+		remove_coaches = params[:remove_coaches]
 		team_id = params[:team_id]
 		team = Team.find_by_id(team_id)
 		team.update(name: params[:team_name], minutes_p_q: params[:minutes_p_q], username: params[:username], password: params[:password])
@@ -83,6 +85,28 @@ class SettingsController < ApplicationController
 				})
 			end
 		end
+		if new_coaches
+			new_coaches.each do |coach|
+				member = Member.create({
+					nickname: coach,
+					team_id: team.id,
+					season_minutes: 0,
+					games_played: 0,
+				})
+				Assignment.create({
+					member_id: member.id,
+					role_id: 2
+				})
+			end
+		end
+		
+		if remove_coaches
+			remove_coaches.each do |coach|
+				assignment = Assignment.where(member_id: coach).take
+				assignment.destroy()
+			end
+		end
+
 		if remove_players
 			remove_players.each do |player|
 				assignment = Assignment.where(member_id: player).take

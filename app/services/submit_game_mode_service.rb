@@ -68,8 +68,6 @@ class SubmitGameModeService
 			instantiate_stat_variable(stat_total, true, false, false, false)
 			instantiate_stat_variable(season_total, true, false, false, true)
 		end
-		puts "@season_team_minutes_new"
-		puts @season_team_minutes
 	end
 
 	def create_opponent_stats()
@@ -143,6 +141,8 @@ class SubmitGameModeService
 			@season_team_rating = @season_offensive_efficiency - @season_defensive_efficiency
 			@team_rating = @offensive_efficiency - @defensive_efficiency
 		end
+		puts "TEAM RATING"
+		puts @team_rating
 	end
 
 	def create_lineup_stats()
@@ -370,6 +370,8 @@ class SubmitGameModeService
 				## TODO: RETHINK HOW THIS WORKS -- come back to later
 				if(bpms["obpm"] && bpms["obpm"].value != nil)
 					@bpm_sums[0] += bpms["obpm"].value * (@minutes / (@team_minutes / 5))
+					puts "adding_bpm"
+					puts bpms["bpm"].value * (@minutes / (@team_minutes / 5))
 					@bpm_sums[1] += bpms["bpm"].value * (@minutes / (@team_minutes / 5))
 
 					@season_bpm_sums[0] += bpms["new_obpm"].value * (@season_minutes / (@season_team_minutes / 5))
@@ -384,6 +386,8 @@ class SubmitGameModeService
 	def adjust_bpm()
 		@all_bpms.each do |bpm|
 			bpm_team_adjustment = (@team_rating * 1.2 - @bpm_sums[1])/5
+			puts "bpm_team_adjustment"
+			puts bpm_team_adjustment
 			new_bpm = bpm["bpm"].value + bpm_team_adjustment
 			new_bpm = new_bpm * 100 
 			new_bpm = new_bpm.round / 100.0

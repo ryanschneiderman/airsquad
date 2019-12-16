@@ -214,7 +214,7 @@ class Advanced::BoxPlusMinusService
 		puts team_three_point_att_rate
 
 
-		raw_bpm = 100 * @a * 48 * (@minutes / (@team_minutes/5)) + @b*off_reb_pct  + @c*def_reb_pct + @d*steal_pct + @e*block_pct + @f*ast_pct - @g*usage_rate *turnover_pct + @h*usage_rate *(1- turnover_pct) * (2*(true_shooting - team_true_shooting) + @i*ast_pct  + @j*(three_point_att_rate - team_three_point_att_rate) - @k) + @l * Math.sqrt(ast_pct * total_rebound_pct)
+		raw_bpm = 100 * (@a * 48 * (@minutes / (@team_minutes/5)) + @b*off_reb_pct  + @c*def_reb_pct + @d*steal_pct + @e*block_pct + @f*ast_pct - @g*usage_rate *turnover_pct + @h*usage_rate *(1- turnover_pct) * (2*(true_shooting - team_true_shooting) + @i*ast_pct  + @j*(three_point_att_rate - team_three_point_att_rate) - @k) + @l * Math.sqrt(ast_pct * total_rebound_pct))
 		puts "********************************************** RAW BPM ****************************************************"
 		puts "********************************************** RAW BPM ****************************************************"
 		puts "********************************************** RAW BPM ****************************************************"
