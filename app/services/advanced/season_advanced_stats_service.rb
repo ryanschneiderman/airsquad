@@ -48,7 +48,7 @@ class Advanced::SeasonAdvancedStatsService
 		@opp_points =  TeamSeasonStat.where(team_id: @team_id, stat_list_id: 15, is_opponent: true).take.value
 		@minutes = SeasonStat.where(member_id: @member_id, stat_list_id: 16).take.value / 60.0
 		@team_minutes =  TeamSeasonStat.where(team_id: @team_id, stat_list_id: 16, is_opponent: false).take.value / 60.0
-		@opp_minutes = TeamSeasonStat.where(team_id: @team_id, stat_list_id: 16, is_opponent: true).take.value 
+		@opp_minutes = @team_minutes
 		@fouls = SeasonStat.where(member_id: @member_id, stat_list_id: 17).take.value
 		@team_fouls = TeamSeasonStat.where(team_id: @team_id, stat_list_id: 17, is_opponent: false).take.value
 		@opp_fouls = TeamSeasonStat.where(team_id: @team_id, stat_list_id: 17, is_opponent: true).take.value
