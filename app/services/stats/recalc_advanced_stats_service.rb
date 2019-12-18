@@ -14,6 +14,9 @@ class Stats::RecalcAdvancedStatsService
 		@bpm_sums = [0, 0]
 		@season_bpm_sums = [0, 0]
 		@all_bpms = []
+		@offensive_efficiency = SeasonTeamAdvStat.where(stat_list_id: 30, team_id: @team_id, is_opponent: false).take.value
+		@defensive_efficiency = SeasonTeamAdvStat.where(stat_list_id: 31, team_id: @team_id, is_opponent: false).take.value
+		@team_rating = @offensive_efficiency - @defensive_efficiency
 	end
 
 	def call
