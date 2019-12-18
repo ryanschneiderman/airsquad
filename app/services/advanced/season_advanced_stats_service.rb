@@ -4,6 +4,8 @@ class Advanced::SeasonAdvancedStatsService
 	def initialize(params)
 		@member_id = params[:member_id]
 		@team_id = params[:team_id]
+		@team = Team.find_by_id(@team_id)
+		@member = Member.find_by_id(@member_id)
 
 		@field_goals = SeasonStat.where(member_id: @member_id, stat_list_id: 1).take.value
 		@team_field_goals = TeamSeasonStat.where(team_id: @team_id, stat_list_id: 1, is_opponent: false).take.value
@@ -44,8 +46,8 @@ class Advanced::SeasonAdvancedStatsService
 		@points = SeasonStat.where(member_id: @member_id, stat_list_id: 15).take.value
 		@team_points = TeamSeasonStat.where(team_id: @team_id, stat_list_id: 15, is_opponent: false).take.value
 		@opp_points =  TeamSeasonStat.where(team_id: @team_id, stat_list_id: 15, is_opponent: true).take.value
-		@minutes = SeasonStat.where(member_id: @member_id, stat_list_id: 16).take.value
-		@team_minutes = TeamSeasonStat.where(team_id: @team_id, stat_list_id: 16, is_opponent: false).take.value
+		@minutes = SeasonStat.where(member_id: @member_id, stat_list_id: 16).take.value / 60.0
+		@team_minutes =  TeamSeasonStat.where(team_id: @team_id, stat_list_id: 16, is_opponent: false).take.value / 60.0
 		@opp_minutes = TeamSeasonStat.where(team_id: @team_id, stat_list_id: 16, is_opponent: true).take.value 
 		@fouls = SeasonStat.where(member_id: @member_id, stat_list_id: 17).take.value
 		@team_fouls = TeamSeasonStat.where(team_id: @team_id, stat_list_id: 17, is_opponent: false).take.value

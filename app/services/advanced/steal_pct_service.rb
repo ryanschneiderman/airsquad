@@ -10,18 +10,13 @@ class Advanced::StealPctService
 		@team_minutes_played = params[:team_minutes]
 		@minutes_played = params[:minutes]
 		@opp_poss = params[:opp_poss]
-		puts "@opp_poss"
-		puts @opp_poss
-
-		puts "@minutes_played"
-		puts @minutes_played
 	end
 
 	def call()
 		if (@minutes_played * @opp_poss) == 0
 			return 0.0
 		else
-			raw_stl = 100 * (@steals * (20 / 5)) / (@minutes_played * @opp_poss) * 100
+			raw_stl = 100 * (@steals * (@team_minutes_played / 5)) / (@minutes_played * @opp_poss) * 100
 			stl = raw_stl.round / 100.0
 			return stl
 		end

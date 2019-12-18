@@ -8,7 +8,6 @@ class TeamsController < ApplicationController
 		##InsertStatDescriptionsService.new().call()
 		#Stats::FixFtRateService.new(team_id: params[:id]).call
 
-
 		@non_user_members = nil
 		@joined_team = params[:joined_team]
 		param_team = Team.find_by_id(params[:id])

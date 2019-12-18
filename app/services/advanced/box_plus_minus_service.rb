@@ -186,6 +186,7 @@ class Advanced::BoxPlusMinusService
 			team_total_reb: @team_total_reb,
 			opp_total_reb: @opp_total_reb
 		}).call
+=begin
 		puts "minutes"
 		puts @minutes
 		puts "team_minutes"
@@ -213,7 +214,27 @@ class Advanced::BoxPlusMinusService
 		puts "three_point_att_rate"
 		puts team_three_point_att_rate
 
+		puts "(@a * 48 * (@minutes / (@team_minutes/5))"
+		puts @a * 48 * (@minutes / (@team_minutes/5))
 
+		puts "@b*off_reb_pct"
+		puts @b*off_reb_pct
+		puts "@c*def_reb_pct"
+		puts @c*def_reb_pct
+		puts "@d*steal_pct"
+		puts @d*steal_pct
+		puts "@e*block_pct"
+		puts @e*block_pct
+		puts "@f*ast_pct"
+		puts @f*ast_pct
+		puts "@g*usage_rate *turnover_pct"
+		puts @g*usage_rate *turnover_pct
+		puts "@h*usage_rate *(1- turnover_pct) * (2*(true_shooting - team_true_shooting) + @i*ast_pct  + @j*(three_point_att_rate - team_three_point_att_rate) - @k)"
+		puts @h*usage_rate *(1- turnover_pct) * (2*(true_shooting - team_true_shooting) + @i*ast_pct  + @j*(three_point_att_rate - team_three_point_att_rate) - @k)
+		puts "@l * Math.sqrt(ast_pct * total_rebound_pct))"
+		puts @l * Math.sqrt(ast_pct * total_rebound_pct)
+
+=end
 		raw_bpm = 100 * (@a * 48 * (@minutes / (@team_minutes/5)) + @b*off_reb_pct  + @c*def_reb_pct + @d*steal_pct + @e*block_pct + @f*ast_pct - @g*usage_rate *turnover_pct + @h*usage_rate *(1- turnover_pct) * (2*(true_shooting - team_true_shooting) + @i*ast_pct  + @j*(three_point_att_rate - team_three_point_att_rate) - @k) + @l * Math.sqrt(ast_pct * total_rebound_pct))
 		puts "********************************************** RAW BPM ****************************************************"
 		puts "********************************************** RAW BPM ****************************************************"

@@ -6,6 +6,7 @@ NOTE: final value is muliplied by 100 and then rounded and divided by 100.0 to r
 
 class Advanced::AssistPctService
 	def initialize(params)
+		puts "IN ASSIST PERCENTAGE"
 		@assists = params[:assists]
 		puts "assists"
 		puts @assists
@@ -25,7 +26,7 @@ class Advanced::AssistPctService
 	end
 
 	def call()
-		if @minutes_played || @team_minutes_played == 0
+		if @minutes_played == 0 || @team_minutes_played == 0
 			return 0.0
 		else
 			if (((@minutes_played / (@team_minutes_played / 5)) * @team_field_goals) - @field_goals) == 0

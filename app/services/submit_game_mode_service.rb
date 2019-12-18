@@ -368,6 +368,8 @@ class SubmitGameModeService
 				}).call
 
 				## TODO: RETHINK HOW THIS WORKS -- come back to later
+				puts "TEAM_MINUTES_NEW"
+				puts @team_minutes
 				if(bpms["obpm"] && bpms["obpm"].value != nil)
 					@bpm_sums[0] += bpms["obpm"].value * (@minutes / (@team_minutes / 5))
 					puts "adding_bpm"

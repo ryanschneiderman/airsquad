@@ -25,6 +25,8 @@
 	var miss_selected = false;
 	var horiz_offset;
 	var vert_offset;
+
+	var submitted = false;
 	
 
 	
@@ -360,7 +362,7 @@
 		minutes = game_state.clock.minutes;
 		seconds = game_state.clock.seconds;
 		curr_period = game_state.clock.period;
-		total_minutes = (minutes_per_period - game_state.clock.minutes -1) * 60 + (minutes_per_period * (curr_period -1)) + game_state.clock.seconds;
+		total_minutes = (minutes_per_period - game_state.clock.minutes -1) * 60 + (minutes_per_period * (curr_period -1)) + (60 - game_state.clock.seconds);
 		scoreboard_clock.set_timer()
 		scoreboard_clock.set_period()
 		if(game_state.clock.clock_moving){
@@ -396,18 +398,22 @@
 		}
 		window.setInterval(function(){ 
 			//console.log(active_players)
-			var game_state =  {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr,  "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}
-			$.ajax({
-				url: "/teams/" + <%=@team_id%> + "/games/" + <%=@game_id%> + "/game_state_update/", 
-				beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-			    type: "post",
-			    data_type: 'json',
-			    data: {"game_state": JSON.stringify(game_state)},
-				success: function(result){
-			        console.log("updating game_state")
-			    }
-			});
+			if(!submitted){
+				var game_state =  {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr,  "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}
+				$.ajax({
+					url: "/teams/" + <%=@team_id%> + "/games/" + <%=@game_id%> + "/game_state_update/", 
+					beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+				    type: "post",
+				    data_type: 'json',
+				    data: {"game_state": JSON.stringify(game_state)},
+					success: function(result){
+				        console.log("updating game_state")
+				    }
+				});
+			}
 		}, 5000);
+		console.log("team_stat_totals")
+		console.log(team_stat_totals)
 		horiz_offset = $(".canvas-container").position().left + parseInt($(".canvas-container").css("margin-left"));
 		vert_offset  = $(".canvas-container").position().top
 	}
@@ -2065,6 +2071,7 @@
 	}
 
 	function submit_game_mode(){
+		submitted = true;
 		$("#GM-submit-body").hide()
 		$("#GM-submit-header").text("Submitting stats...")
 		$(".loader").show()
