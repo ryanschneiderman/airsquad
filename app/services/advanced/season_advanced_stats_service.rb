@@ -53,7 +53,7 @@ class Advanced::SeasonAdvancedStatsService
 		@team_fouls = TeamSeasonStat.where(team_id: @team_id, stat_list_id: 17, is_opponent: false).take.value
 		@opp_fouls = TeamSeasonStat.where(team_id: @team_id, stat_list_id: 17, is_opponent: true).take.value
 
-		@possessions = SeasonTeamAdvStat.where(team_id: @team_id, stat_list_id: 43).take.value
+		@possessions = SeasonTeamAdvStat.where(team_id: @team_id, stat_list_id: 43, is_opponent: false).take.value
 		@opp_possessions = SeasonTeamAdvStat.where(team_id: @team_id, stat_list_id: 43, is_opponent: true).take.value
 
 		@total_reb = @off_reb + @def_reb
