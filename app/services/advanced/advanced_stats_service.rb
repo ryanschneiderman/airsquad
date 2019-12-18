@@ -940,7 +940,7 @@ class Advanced::AdvancedStatsService
 			game_id: @game_id,
 			constituent_stats: {
 				"steals" => @steals, 
-				"team_steals" => @steals, 
+				"team_steals" => @team_steals, 
 				"blocks" => @blocks, 
 				"team_blocks" => @team_blocks, 
 				"def_reb" => @def_reb, 
@@ -990,7 +990,7 @@ class Advanced::AdvancedStatsService
 			season_stat.value = @new_def_rtg
 			season_stat.constituent_stats = {
 				"steals" => @steals + season_stat.constituent_stats["steals"],
-				"team_steals" => @steals + season_stat.constituent_stats["team_steals"],
+				"team_steals" => @team_steals + season_stat.constituent_stats["team_steals"],
 				"blocks" => @blocks + season_stat.constituent_stats["blocks"],
 				"team_blocks" => @team_blocks + season_stat.constituent_stats["team_blocks"],
 				"def_reb" => @def_reb + season_stat.constituent_stats["def_reb"],
@@ -1016,7 +1016,7 @@ class Advanced::AdvancedStatsService
 				member_id: @member_id,
 				constituent_stats: {
 					"steals" => @steals, 
-					"team_steals" => @steals, 
+					"team_steals" => @team_steals, 
 					"blocks" => @blocks, 
 					"team_blocks" => @team_blocks, 
 					"def_reb" => @def_reb, 

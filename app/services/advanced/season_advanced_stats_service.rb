@@ -441,7 +441,7 @@ class Advanced::SeasonAdvancedStatsService
 		season_stat.value = @defensive_rating
 		season_stat.constituent_stats = {
 			"steals" => @steals,
-			"team_steals" => @steals,
+			"team_steals" => @team_steals,
 			"blocks" => @blocks,
 			"team_blocks" => @team_blocks,
 			"def_reb" => @def_reb,
