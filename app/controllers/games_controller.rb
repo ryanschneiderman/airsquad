@@ -246,7 +246,7 @@ class GamesController < ApplicationController
 		team = Team.find_by_id(team_id)
 		game = Game.find_by_id(game_id)
 		if game.played
-			Stats::RollbackGameService.new({game_id: game_id, submit: true}).call
+			Stats::RollbackGameService.new({game_id: game_id, submit: true, team_id: team_id}).call
 		end
 
 		SubmitGameModeService.new({
