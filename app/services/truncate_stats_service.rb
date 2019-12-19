@@ -1,20 +1,27 @@
 class TruncateStatsService
-	def initialize()
+	def initialize(params)
+		@team_id = params[:team_id]
+		@members = Member.where(team_id: @team_id)
+		@games = Game.where(team_id: @team_id)
 	end
 
 	def call()
-		ActiveRecord::Base.connection.execute("delete from season_team_adv_stats * where team_id = 3")
-		ActiveRecord::Base.connection.execute("delete from stat_totals * where team_id = 3")
-		ActiveRecord::Base.connection.execute("delete from team_season_stats * where team_id = 3")
-		ActiveRecord::Base.connection.execute("delete from team_advanced_stats A using games B where B.id = A.game_id AND B.team_id = 3")
-		ActiveRecord::Base.connection.execute("delete from advanced_stats A using members B where B.id = A.member_id AND B.team_id = 3")
-		ActiveRecord::Base.connection.execute("delete from season_advanced_stats A using members B where B.id = A.member_id AND B.team_id = 3")
-		ActiveRecord::Base.connection.execute("delete from season_stats A using members B where B.id = A.member_id AND B.team_id = 3")
-		ActiveRecord::Base.connection.execute("delete from stat_granules A using members B where B.id = A.member_id AND B.team_id = 3")
-		ActiveRecord::Base.connection.execute("delete from stats A using members B where B.id = A.member_id AND B.team_id = 3")
-		ActiveRecord::Base.connection.execute("update games set played = false where team_id = 3")
-		ActiveRecord::Base.connection.execute("update members set games_played = 0 where team_id = 3")
-		ActiveRecord::Base.connection.execute("update members set season_minutes = 0 where team_id = 3")
+		SeasonTeamAdvStat.where(:team_id => @team_id).destroy_all
+		StatTotal.where(:team_id => @team_id).destroy_all
+		TeamSeasonStat.where(:team_id => @team_id).destroy_all
+		@members.each do |member|
+			SeasonAdvancedStat.where(member_id: member.id).destroy_all
+			SeasonStat.where(member_id: member.id).destroy_all
+		end
+		@games.each do |game|
+			TeamAdvancedStat.where(game_id: game.id).destroy_all
+			AdvancedStat.where(game_id: game.id).destroy_all
+			StatGranule.where(game_id: game.id).destroy_all
+			Stat.where(game_id: game.id).destroy_all
+		end
+
+		Member.where(:team_id => @team_id).update_all(games_played: 0)
+		Member.where(:team_id => @team_id).update_all(season_minutes: 0)
 	end
 end
 

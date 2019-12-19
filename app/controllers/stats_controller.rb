@@ -9,6 +9,8 @@ class StatsController < ApplicationController
 		@players = Assignment.joins(:role).joins(:member).select("roles.name as name, members.*").where("members.team_id" => @team.id, "roles.id" => 1)
 		@per_minutes = @team.minutes_p_q * 3
 		@num_games = Game.where(team_id: params[:team_id], played: true).count
+		puts "STAT GAMES"
+		puts @num_games
 		@opponent_name = "Opponents"
 
 		@stat_table_columns = Stats::BasicStatService.new({

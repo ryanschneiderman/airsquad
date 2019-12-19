@@ -12,23 +12,38 @@ class Stats::RollbackGameService
 		@stat_granules = StatGranule.where(game_id: @game_id)
 		@member_id = nil
 		game = Game.find_by_id(@game_id)
+		@num_games = Game.where(team_id: params[:team_id], played: true).count
+		puts "NUM GAMES"
+		puts @num_games
+		@team_id = game.team_id
+		@truncate = false;
 		if params[:submit] != true
 			game.update(played: false)
 			game.save
+		else
+			if @num_games == 0
+				@truncate = true
+			end
 		end
-		@team_id = game.team_id
+
+		
 		@bpm_sums = [0, 0]
 		@season_bpm_sums = [0, 0]
 		@all_bpms = []
-		@num_games = Game.where(team_id: params[:team_id], played: true).count
+		
+
 	end
 
 	def call
-		rollback_team_stats
-		create_advanced_team_stats
-		rollback_stat_granules
-		rollback_player_stats
-		adjust_bpm
+		if @truncate 
+			TruncateStatsService.new(team_id: @team_id).call
+		else
+			rollback_team_stats
+			create_advanced_team_stats
+			rollback_stat_granules
+			rollback_player_stats
+			adjust_bpm
+		end
 	end
 
 	private
