@@ -94,7 +94,7 @@
 
 	function populate_team_stats(){
 		<% @team_stats.each do |stat| %>
-			team_stat_array.push({"value": parseInt("<%= stat.value%>"), "stat_list_id" : "<%= stat.stat_list_id%>", "display_priority" : "<%= stat.display_priority%>", "name" : "<%= @team.name %>"})
+			team_stat_array.push({"value": parseInt("<%= stat.value%>"), "stat_list_id" : "<%= stat.stat_list_id%>", "display_priority" : "<%= stat.display_priority%>", "name" : "<%= @team_name %>"})
 		<%end %>
 	}
 
@@ -107,7 +107,7 @@
 	function populate_team_advanced_stats(){
 		<%if @team_advanced_stats%>
 			<% @team_advanced_stats.each do |stat| %>
-				team_advanced_stat_array.push({"value": parseFloat("<%= stat.value%>") , "stat": "<%= stat.stat%>", "stat_list_id" : "<%= stat.stat_list_id%>", "display_priority" : "<%= stat.display_priority%>", "name" : "<%= @team.name %>", "is_opponent" : "<%= stat.is_opponent%>"})
+				team_advanced_stat_array.push({"value": parseFloat("<%= stat.value%>") , "stat": "<%= stat.stat%>", "stat_list_id" : "<%= stat.stat_list_id%>", "display_priority" : "<%= stat.display_priority%>", "name" : "<%= @team_name %>", "is_opponent" : "<%= stat.is_opponent%>"})
 			<%end %>
 		<%end%>
 	}
@@ -169,7 +169,7 @@
 		for(j = 0 ;j < num_stats + 1; j++){
 			var col = row.insertCell(j);
 			if (j == 0 && i > 0){
-				column_header = "<%= @team.name %>";
+				column_header = "<%= @team_name %>";
 				col.innerHTML += "<div>" + column_header + "</div>";
 			}
 			else if (i > 0 && j > 0){

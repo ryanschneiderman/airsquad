@@ -56,6 +56,8 @@ class GamesController < ApplicationController
 		@game = Game.find_by_id(params[:id])
 		@played = @game.played
 
+		@team_name = @team.name
+
 		@curr_member =  Assignment.joins(:role).joins(:member).select("roles.name as role_name, members.*").where("members.user_id" => current_user.id, "members.team_id" => params[:team_id])
 		@gm_permission = false
 		@curr_member.each do |member_obj|
@@ -243,7 +245,10 @@ class GamesController < ApplicationController
 		team_id = params[:team_id]
 		team = Team.find_by_id(team_id)
 		game = Game.find_by_id(game_id)
-		
+		if game.played
+			Stats::RollbackGameService.new({game_id: game_id, submit: true}).call
+		end
+
 		SubmitGameModeService.new({
 			player_stats: player_stats,
 			team_stats: team_stats,
@@ -263,9 +268,10 @@ class GamesController < ApplicationController
 			team_id: team_id,
 			is_lineup: true,
 		}).call
-=end
 
+=end
 		game.update(played: true)
+		game.save
 
 		redirect_to team_game_path(team_id, game_id)
 	end

@@ -1336,14 +1336,14 @@
 			case 1 :
 				update_field_goals_make(player_i, stat_i, fg_index, obj);
 				++obj.cumulative_arr[stat_i].total;
-				(obj.player_obj.team == 1) ? ++team_1_totals[stat_i].total : ++team_1_totals[stat_i].total;
+				(obj.player_obj.team == 1) ? ++team_1_totals[stat_i].total : ++team_2_totals[stat_i].total;
 				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
 				break;
 			// FG Miss
 			case 2 :
 				update_field_goals_miss(player_i, stat_i, fg_index, obj);
 				++obj.cumulative_arr[stat_i].total;
-				(obj.player_obj.team == 1) ? ++team_1_totals[stat_i].total : ++team_1_totals[stat_i].total;
+				(obj.player_obj.team == 1) ? ++team_1_totals[stat_i].total : ++team_2_totals[stat_i].total;
 				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
 				break;
 			// 2 point make
@@ -1351,14 +1351,14 @@
 				//update_field_goals_make(player_i, stat_i, two_pt_fg_index);
 				increment_points(player_i, 2, obj);
 				++obj.cumulative_arr[stat_i].total;
-				(obj.player_obj.team == 1) ? ++team_1_totals[stat_i].total : ++team_1_totals[stat_i].total;
+				(obj.player_obj.team == 1) ? ++team_1_totals[stat_i].total : ++team_2_totals[stat_i].total;
 				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
 				break;
 			// 2 point miss
 			case 10 :
 				//update_field_goals_miss(player_i, stat_i, two_pt_fg_index);
 				++obj.cumulative_arr[stat_i].total;
-				(obj.player_obj.team == 1) ? ++team_1_totals[stat_i].total : ++team_1_totals[stat_i].total;
+				(obj.player_obj.team == 1) ? ++team_1_totals[stat_i].total : ++team_2_totals[stat_i].total;
 				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
 				break;
 			// 3 point make
@@ -1366,7 +1366,7 @@
 				update_field_goals_make(player_i, stat_i, three_pt_fg_index, obj);
 				increment_points(player_i, 3, obj);
 				++obj.cumulative_arr[stat_i].total;
-				(obj.player_obj.team == 1) ? ++team_1_totals[stat_i].total : ++team_1_totals[stat_i].total;
+				(obj.player_obj.team == 1) ? ++team_1_totals[stat_i].total : ++team_2_totals[stat_i].total;
 				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
 				break;
 			// 3 point miss
@@ -1374,7 +1374,7 @@
 				
 				update_field_goals_miss(player_i, stat_i, three_pt_fg_index, obj);
 				++obj.cumulative_arr[stat_i].total;
-				(obj.player_obj.team == 1) ? ++team_1_totals[stat_i].total : ++team_1_totals[stat_i].total;
+				(obj.player_obj.team == 1) ? ++team_1_totals[stat_i].total : ++team_2_totals[stat_i].total;
 				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
 				break;
 			// Ft make
@@ -1383,20 +1383,20 @@
 				increment_points(player_i, 1, obj);
 				update_score(1, obj.player_obj.team);
 				++obj.cumulative_arr[stat_i].total;
-				(obj.player_obj.team == 1) ? ++team_1_totals[stat_i].total : ++team_1_totals[stat_i].total;
+				(obj.player_obj.team == 1) ? ++team_1_totals[stat_i].total : ++team_2_totals[stat_i].total;
 				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
 				break;
 			// Ft miss
 			case 14 :
 				insert_fg_in_table(player_i, ft_index, "Miss", obj);
 				++obj.cumulative_arr[stat_i].total;
-				(obj.player_obj.team == 1) ? ++team_1_totals[stat_i].total : ++team_1_totals[stat_i].total;
+				(obj.player_obj.team == 1) ? ++team_1_totals[stat_i].total : ++team_2_totals[stat_i].total;
 				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
 				break;
 			default :
 				var index = find_stat_index(obj.cumulative_arr[stat_i]);
 				update_stat_table(index, player_i, ++obj.cumulative_arr[stat_i].total, obj);
-				(obj.player_obj.team == 1) ? ++team_1_totals[stat_i].total : ++team_1_totals[stat_i].total;
+				(obj.player_obj.team == 1) ? ++team_1_totals[stat_i].total : ++team_2_totals[stat_i].total;
 				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
 		}
 	}
@@ -1927,6 +1927,8 @@
 		set_lineup_minutes()
 		set_minutes_in_player_array();
 		set_team_minutes();
+		console.log(team_1_totals)
+		console.log(team_2_totals)
 	}
 
 	function close_practice_mode(){
@@ -1944,7 +1946,7 @@
 
 		update_fg_locations();
 
-		var url = "/teams/" + <%= @team_id%> +  "/scrimmage_mode_submit/"
+		var url = "/teams/" + <%= @team_id%> + "/practices/" + <%= @practice_id%> + "/scrimmage_mode_submit/"
 		var json_data = {"player_stats": stat_array, "team_stats": team_1_totals, "opponent_stats": team_2_totals, "is_scrimmage" : false}
 		console.log(json_data)
 		 $.ajax({

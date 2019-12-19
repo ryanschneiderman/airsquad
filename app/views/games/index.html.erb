@@ -31,17 +31,23 @@
 	</div>
 	<div class = "new-game-box" id = "practice-box" style= "display: none;">
 		<div class = "new-game-header">
-			<button class = "close-button" onclick="hide_practice_mode()">x</button>
-			<div id = "practice-mode-header">Is it a practice or a scrimmage?</div>
-			<div id = "practice-mode-subheader">(a scrimmage is against another team)</div>
-			<div id = "practice-mode-buttons">
-				<%=link_to practice_mode_path(@team_id) do %>
-					<button id = "confirm-submit" class = "confirm-buttons">Practice Mode</button>
-				<%end%>
-				<%=link_to scrimmage_mode_path(@team_id) do %>
-					<button id = "confirm-submit" class = "confirm-buttons">Scrimmage Mode</button>
-				<%end%>
+			<button class = "close-button" onclick="hide_new_game_form()">x</button>
+			<div id = "new-play-header-text">New Practice</div>
+		</div>
+		<div class = "new-game-form">
+			<div class="form-group">
+				<label for="new-practice-location">Location?</label>
+				<input type="text" name="location" id = "new-practice-location" >
 			</div>
+			<div class="form-group">
+				<label for="new-practice-date">Date of practice:</label>
+				<input type="date" name="date" id = "new-practice-date">
+			</div>
+			<div class="form-group">
+				<label for="new-practice-time">Time of practice:</label>
+				<input type="time" name="time" id = "new-practice-time">
+			</div>
+			<button onclick = "newPractice()" class="btn btn-primary">Submit</button>
 		</div>
 	</div>
 </div>
@@ -76,6 +82,22 @@
 	        type: "POST",
 	        data_type: 'json',
 	        data: {opponent: opponent, date: date, time: time, location: location}
+	    });
+	}
+
+	function newPractice(){
+		var location = document.getElementById('new-practice-location').value
+		var date = document.getElementById('new-practice-date').value
+		var time = document.getElementById('new-practice-time').value
+
+
+		var url =  "/teams/" + <%= @team_id %> + "/practices/" 
+		$.ajax({
+	        url: url,
+	        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+	        type: "POST",
+	        data_type: 'json',
+	        data: {date: date, time: time, location: location}
 	    });
 	}
 
@@ -116,16 +138,18 @@
 
         <% @game_events.each do |event|%>
         		var time = parseTime("<%=event.time%>")
-        		event_arr.push({id : '<%=event.id%>', title: "Game vs <%=event.name%> @ <%=event.place%>, " + time , start: "<%=event.date%>", game_id: "<%=event.game_id%>"})
+        		event_arr.push({id : '<%=event.id%>', kind: "game", title: "Game vs <%=event.name%> @ <%=event.place%>, " + time , start: "<%=event.date%>", game_id: "<%=event.game_id%>"})
         <%end%>
 
         <%@practice_events.each do |event|%>
         	console.log("practice event")
         	if(<%=event.is_scrimmage%>){
-        		event_arr.push({id : '<%=event.id%>', title: "Scrimmage", start: "<%=event.date%>", practice_id: "<%=event.practice_id%>"})
+        		event_arr.push({id : '<%=event.id%>', kind: "scrimmage", title: "Scrimmage", start: "<%=event.date%>", practice_id: "<%=event.practice_id%>"})
         	}
         	else{
-        		event_arr.push({id : '<%=event.id%>', title: "Practice", start: "<%=event.date%>", practice_id: "<%=event.practice_id%>"})
+        		var time = parseTime("<%=event.time%>")
+        		console.log("<%=event.place%>")
+        		event_arr.push({id : '<%=event.id%>', kind: "practice",  title: "Practice @ <%=event.place%>, " + time , start: "<%=event.date%>", practice_id: "<%=event.practice_id%>"})
         	}
         <%end%>
 
@@ -152,8 +176,8 @@
 					$("#new-game-box").show()
 			      }
 			    },
-			    practiceMode: {
-			      text: "Practice Mode",
+			    newPractice: {
+			      text: "New Practice",
 			      click: function() {
 			        practice_mode()
 			      }
@@ -161,12 +185,12 @@
 			},
 			header: {
 			    left: 'title',
-			    center: 'newGame, practiceMode',
+			    center: 'newGame, newPractice',
 			    right: 'today prev,next'
 			},
 			events: event_arr,
 		    eventRender: function(info) {
-		    	if(info.event.title == "Practice" || info.event.title == "Scrimmage"){
+		    	if(info.event.extendedProps.kind == "practice" || info.event.title == "scrimmage"){
 		    		return $('<a href="/teams/' + <%= @team_id%> + '/practices/'+ info.event.extendedProps.practice_id +'">' +info.event.title + '</a>');
 		    	}
 		    	else if (info.event.id != "new"){

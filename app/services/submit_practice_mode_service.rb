@@ -22,7 +22,6 @@ class SubmitPracticeModeService
 		@practice_id = params[:practice_id]
 	end
 
-
 	def call
 		create_team_stats()
 		create_opponent_stats()

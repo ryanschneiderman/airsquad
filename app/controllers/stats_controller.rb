@@ -5,6 +5,7 @@ class StatsController < ApplicationController
 		#Stats::RecalcAdvancedStatsService.new({team_id: 4}).call
 		#Stats::RollbackGameService.new({game_id: 57}).call
 		@team = Team.find_by_id(params[:team_id])
+		@team_name = @team.name
 		@players = Assignment.joins(:role).joins(:member).select("roles.name as name, members.*").where("members.team_id" => @team.id, "roles.id" => 1)
 		@per_minutes = @team.minutes_p_q * 3
 		@num_games = Game.where(team_id: params[:team_id], played: true).count

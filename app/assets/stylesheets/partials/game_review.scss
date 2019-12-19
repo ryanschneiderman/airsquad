@@ -18,3 +18,19 @@
 	cursor: pointer;
 	outline: inherit;
 }
+
+
+#re-enter-game-mode{
+	text-align: center;
+    width: 50vw;
+    height: 50px;
+    border-radius: 100px;
+    color: black;
+    background-color: #2bff89;
+}
+
+#re-enter-stats-container{
+	display: flex;
+	justify-content: center;
+	margin-bottom: 50px;
+}

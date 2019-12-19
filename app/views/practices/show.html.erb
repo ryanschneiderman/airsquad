@@ -1,7 +1,7 @@
 <% content_for(:body_attributes) do %>
     data-turbolinks="false"
  <% end %>
-
+<%if @played%>
 	<div class = "content-page-landing">
 		<%= image_tag("scorebook_trimmed.png", :alt => "Game Review", :class => "content-page-landing-img") %>
 		<div class = "content-page-landing-title"> <%=@page_title%> Review</div>
@@ -24,16 +24,10 @@
 				</table>
 			</div>
 			<div class = "stat-page-header">Team Stats</div>
-			<div id = "basic-stats-table">
+			<div id = "basic-stats-table" style = "margin-bottom: 50px;">
 				<table class = "stats-table" id = "team-stats-table"></table>
 			</div>
 
-			<div class = "stat-page-header">Shot Charts</div>
-			<div id = "gr-team-shot-charts">
-				<div class = "shot-distribution">
-					<canvas id ="gr-canvas" class = "gm-canvas"></canvas>
-				</div>
-			</div>
 		</div>
 	</div>
 
@@ -51,12 +45,8 @@
 
 
 
-		initialize_tables(per_game_table, per_minute_table, team_stats_table, adv_stats_player_table, adv_stats_team_table)
-		//initialize_tables(show_team_stats_table, show_adv_stats_team_table);
+		initialize_tables(per_game_table, per_minute_table, team_stats_table)
 		populate_display_stats_basic();
-		//populate_display_stats_adv();
-		//populate_team_display_stats_adv()
-		//populate_team_advanced_stats();
 		populate_stat_array();
 		populate_team_stats();
 		populate_opponent_stats();
@@ -65,7 +55,7 @@
 		populate_stat_tables(false);
 
 		
-
+/*
 		var canvas_vars = initialize_canvas(0.5, 0.7, "gr-canvas", 3);
 		plotBasket(canvas_vars.canvas_width/1.978, canvas_vars.canvas_height/11.5, 14, canvas_vars.canvas_width, canvas_vars.canvas)
 		populate_shot_chart(canvas_vars.canvas, canvas_vars.canvas_width);
@@ -103,10 +93,12 @@
 	        	}
 	    	})
 	    })
-	
+*/	
 
 </script>
 
 
-
+<%else%>
+<%= render 'practice_preview' %>
+<%end%>
 

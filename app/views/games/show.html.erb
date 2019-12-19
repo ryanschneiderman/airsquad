@@ -43,6 +43,12 @@
 				</div>
 			</div>
 		</div>
+		<%if @gm_permission%>
+		<div id = "re-enter-stats-container">
+			<%= link_to :controller => :games, :action => :game_mode do %>
+				<button id = "re-enter-game-mode" class = "bar-button">Re-enter Stats</button></div>
+			<%end%>
+		<%end%>
 	</div>
 
 <%= render 'canvas_js' %>

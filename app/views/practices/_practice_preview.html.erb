@@ -1,0 +1,35 @@
+
+
+<%if @gm_permission%>
+	<%=link_to practice_mode_path(@team_id, @practice_id) do %>
+		<div id = "game-preview-banner">
+			<%= image_tag("game-mode-preview.JPG", :alt => "game-mode-preview", :class => "game-mode-preview") %>
+		</div>
+		<div class = "game-preview-text">Enter Practice Mode</div>
+	<%end%>
+<%else %>
+<div id = "game-preview-banner">
+	<%= image_tag("game-mode-preview.JPG", :alt => "game-mode-preview", :class => "game-mode-preview") %>
+</div>
+<div class = "game-preview-text"></div>
+
+<%end%>
+
+
+<script>
+	var time_string = parseTime("<%=@schedule_event.time%>")
+
+	$(".game-preview-text").html("Practice " + "@ <%=@schedule_event.place%> , " +  time_string)
+
+	function parseTime(str){
+		var substring = str.substr(str.indexOf(' ')+1); // "tocirah sneab"
+		var military_time = substring.substr(0,substring.indexOf(' '));
+		var length = military_time.length;
+		var seconds_stripped = military_time.substr(0,length - 3);
+		var military_hours = seconds_stripped.substr(0,seconds_stripped.indexOf(":"))
+		var minutes = seconds_stripped.substr(seconds_stripped.indexOf(":")+1)
+		var hours = military_hours % 12;
+		var suffix = (military_hours > 12) ? " PM" : " AM";
+		return hours + ":" + minutes + suffix
+	}
+</script>

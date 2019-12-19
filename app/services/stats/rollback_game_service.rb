@@ -12,12 +12,15 @@ class Stats::RollbackGameService
 		@stat_granules = StatGranule.where(game_id: @game_id)
 		@member_id = nil
 		game = Game.find_by_id(@game_id)
-		game.played = false
-		game.save
+		if params[:submit] != true
+			game.update(played: false)
+			game.save
+		end
 		@team_id = game.team_id
 		@bpm_sums = [0, 0]
 		@season_bpm_sums = [0, 0]
 		@all_bpms = []
+		@num_games = Game.where(team_id: params[:team_id], played: true).count
 	end
 
 	def call
