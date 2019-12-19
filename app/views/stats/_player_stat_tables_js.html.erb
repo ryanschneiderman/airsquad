@@ -82,7 +82,7 @@
 					var return_value = stat_arr[i].value * (per_minute_factor/(minutes/60));
 					return return_value.toFixed(2);
 				}
-				else return stat_arr[i].value;
+				else return stat_arr[i].value/games_played.toFixed(1);
 			}
 		}
 	}
