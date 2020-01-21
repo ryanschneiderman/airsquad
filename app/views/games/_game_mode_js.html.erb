@@ -118,8 +118,8 @@
 	
 
 	$(window).resize(function(){
-		horiz_offset = $(".canvas-container").position().left + parseInt($(".canvas-container").css("margin-left"));
-		vert_offset  = $(".canvas-container").position().top;
+		horiz_offset = $(".canvas-container").offset().left + parseInt($(".canvas-container").css("margin-left"));
+		vert_offset  = $(".canvas-container").offset().top;
 	})
 
 	$("#bench").css("margin-left", $(".flex-margin-auto").css("margin-left"))
@@ -527,8 +527,8 @@
 		}, 5000);
 		//console.log("team_stat_totals")
 		//console.log(team_stat_totals)
-		horiz_offset = $(".canvas-container").position().left + parseInt($(".canvas-container").css("margin-left"));
-		vert_offset  = $(".canvas-container").position().top
+		horiz_offset = $(".canvas-container").offset().left + parseInt($(".canvas-container").css("margin-left"));
+		vert_offset  = $(".canvas-container").offset().top;
 	}
 
 	/**************************************************************/
