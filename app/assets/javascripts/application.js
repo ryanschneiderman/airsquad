@@ -16,11 +16,12 @@
 //= require react_ujs
 //= require components
 //= require turbolinks
-//= require_tree .
 //= require jquery
 //= require bootstrap-sprockets
+//= require_tree .
 
 
+/*
 $(document).on('turbolinks:load', function(){
   $("table[role='datatable']").each(function(){
     $(this).DataTable({
@@ -29,4 +30,4 @@ $(document).on('turbolinks:load', function(){
       ajax: $(this).data('url')
     });
   });  
-})
+})*/
