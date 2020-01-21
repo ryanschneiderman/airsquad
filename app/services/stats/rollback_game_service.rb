@@ -13,8 +13,6 @@ class Stats::RollbackGameService
 		@member_id = nil
 		game = Game.find_by_id(@game_id)
 		@num_games = Game.where(team_id: params[:team_id], played: true).count
-		puts "NEW NUM GAMES"
-		puts @num_games
 		@team_id = game.team_id
 		@truncate = false;
 		if params[:submit] != true

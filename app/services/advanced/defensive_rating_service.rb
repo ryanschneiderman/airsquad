@@ -69,7 +69,11 @@ class Advanced::DefensiveRatingService
 		puts "dfg_pct"
 		puts dfg_pct
 
-		fm_wt = (dfg_pct * (1 - dor_pct)) / (dfg_pct * (1 - dor_pct) + (1 - dfg_pct) * dor_pct)
+		if dfg_pct == 0 && dor_pct == 0
+			fm_wt = 1
+		else
+			fm_wt = (dfg_pct * (1 - dor_pct)) / (dfg_pct * (1 - dor_pct) + (1 - dfg_pct) * dor_pct)
+		end
 
 		stops_a = @steals + @blocks * fm_wt * (1 - 1.07 * dor_pct) + @def_reb * (1 - fm_wt)
 

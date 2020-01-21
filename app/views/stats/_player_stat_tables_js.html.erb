@@ -82,6 +82,10 @@
 					var return_value = stat_arr[i].value * (per_minute_factor/(minutes/60));
 					return return_value.toFixed(2);
 				}
+				else if (is_advanced){
+					var return_value = stat_arr[i].value * 1;
+					return return_value.toFixed(1);
+				}
 				else return (stat_arr[i].value/games_played).toFixed(1);
 			}
 		}
@@ -171,10 +175,8 @@
 
 	function show_info(button){
 		var parent = $(button).parent()
-		console.log(parent)
 		var description = parent.find(".stat-info")
 		var position = parent.offset()
-		console.log(position)
 		description.offset({top: position.top -55, left: position.left -8})
 	}
 

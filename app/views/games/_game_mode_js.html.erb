@@ -19,6 +19,14 @@
 
 	var player_stats_table = document.getElementById("player-stats-table");
 	var team_stats_table = document.getElementById("team-stats-table");
+	var first_half_table = document.getElementById("half-1-table");
+	var second_half_table = document.getElementById("half-2-table");
+	var first_quarter_table = document.getElementById("quarter-1-table");
+	var second_quarter_table = document.getElementById("quarter-2-table");
+	var third_quarter_table = document.getElementById("quarter-3-table");
+	var fourth_quarter_table = document.getElementById("quarter-4-table");
+
+	var game_log = document.getElementById("gm-log");
 	var make_radius = 7;
 
 	var make_selected = false
@@ -27,6 +35,84 @@
 	var vert_offset;
 
 	var submitted = false;
+	/*
+	window.SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+	const recognition = new window.SpeechRecognition();
+	recognition.onresult = (event) => {
+	  console.log("WE HERE")
+	  const speechToText = event.results[0][0].transcript;
+	  console.log(speechToText)
+	}
+	recognition.interimResults = true;
+    recognition.maxAlternatives = 10;
+    recognition.continuous = true;
+	recognition.start();*/
+
+
+/*
+	var ctrl = new anycontrol()
+ 
+
+    ctrl.addCommand("make", function() {
+	   	var make_button = find_stat_button("Make")
+	    stat_button(1, make_button)
+    });
+
+    ctrl.addCommand("miss", function() {
+    	var miss_button = find_stat_button("Miss")
+	    stat_button(1, miss_button)
+    });
+
+
+    ctrl.addCommand("assist", function(){
+    	var assist_button = find_stat_button("Assist")
+	    stat_button(1, assist_button)
+    })
+
+    ctrl.addCommand("turnover", function(){
+    	console.log("turnover")
+    	var turnover_button = find_stat_button("Turnover")
+	    stat_button(1, turnover_button)
+    })
+
+    ctrl.addCommand("free throw make", function(){
+      alert("free throw make")
+    })
+
+    ctrl.addCommand("free throw miss", function(){
+      alert("free throw miss")
+    })
+
+    ctrl.addCommand("offensive rebound", function(){
+      alert("off REBOUND")
+    })
+
+    ctrl.addCommand("defensive rebound", function(){
+      alert("def REBOUND")
+    })
+
+    ctrl.addCommand("steal", function(){
+      alert("steal")
+    })
+   
+    ctrl.addCommand("block", function () {
+      alert("block")
+    });
+
+    ctrl.addCommand("foul", function () {
+      alert("foul")
+    });
+
+
+*/
+	function voice_rec_toggle(){
+		if(ctrl.recognizing){
+			ctrl.stop()
+		}
+		else{
+			ctrl.start()
+		}
+    }
 	
 
 	
@@ -77,6 +163,15 @@
 
 	var team_stat_totals = [];
 
+	var quarter_1_totals = [];
+	var quarter_2_totals = [];
+	var quarter_3_totals = [];
+	var quarter_4_totals = [];
+
+	var half_1_totals = [];
+	var half_2_totals = [];
+
+
 	var player_charts_toggle = false;
 
 	var periods = 4;
@@ -96,6 +191,17 @@
 
 	var game_mode_initialized = false;
 
+	var collectable_stats = [];
+
+	<% @collection_stats.each do |stat|%>
+		if(<%=stat[:id]%> == 1 || <%=stat[:id]%> == 2){
+			collectable_stats.push({"stat_id" : <%=stat[:id]%>, "stat_name" : "FG <%=stat[:display_name]%>"})
+		}
+		else{
+			collectable_stats.push({"stat_id" : <%=stat[:id]%>, "stat_name" : "<%=stat[:display_name]%>"})
+		}
+	<%end%>
+
 	Element.prototype.remove = function() {
     	this.parentElement.removeChild(this);
 	}	
@@ -108,8 +214,8 @@
 	})
 
 	$(document).click(function(event) {
-		horiz_offset = $(".canvas-container").position().left + parseInt($(".canvas-container").css("margin-left"));
-		vert_offset  = $(".canvas-container").position().top;
+		horiz_offset = $(".canvas-container").offset().left + parseInt($(".canvas-container").css("margin-left"));
+		vert_offset  = $(".canvas-container").offset().top;
 		var classname = $(event.target).attr('class')
 		var is_button = false
 		if($(event.target).hasClass("player-button") || $(event.target).hasClass("stat-button") || $(event.target).hasClass("gm-canvas")){
@@ -124,7 +230,6 @@
 				}
 				curr_player = null;
 				curr_player_button = null;
-				
 			}
 			else{
 				deselect_stat();
@@ -212,6 +317,16 @@
 		<% @basic_stats.each do |stat| %>
 			opponent_obj.cumulative_arr.push({"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>", "display_priority" : "<%= stat.display_priority %>"})
 			team_stat_totals.push({"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>", "display_priority" : "<%= stat.display_priority %>"})
+
+			quarter_1_totals.push({"team_total" : {"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>", "display_priority" : "<%= stat.display_priority %>"}, "opponent_total" : {"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>", "display_priority" : "<%= stat.display_priority %>"}})
+
+			quarter_2_totals.push({"team_total" : {"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>", "display_priority" : "<%= stat.display_priority %>"}, "opponent_total" : {"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>", "display_priority" : "<%= stat.display_priority %>"}})
+			quarter_3_totals.push({"team_total" : {"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>", "display_priority" : "<%= stat.display_priority %>"}, "opponent_total" : {"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>", "display_priority" : "<%= stat.display_priority %>"}})
+			quarter_4_totals.push({"team_total" : {"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>", "display_priority" : "<%= stat.display_priority %>"}, "opponent_total" : {"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>", "display_priority" : "<%= stat.display_priority %>"}})
+			
+			half_1_totals.push({"team_total" : {"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>", "display_priority" : "<%= stat.display_priority %>"}, "opponent_total" : {"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>", "display_priority" : "<%= stat.display_priority %>"}})
+			half_2_totals.push({"team_total" : {"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>", "display_priority" : "<%= stat.display_priority %>"}, "opponent_total" : {"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>", "display_priority" : "<%= stat.display_priority %>"}})
+
 		<% end %>
 	}
 
@@ -271,7 +386,6 @@
 		}
 	}
 
-	// TODO: Problem could still be here.
 	function update_lineup(lineup_data){
 		if(!playerIsInGame(lineup_data.player_to_game.id)){
 			swap_players(lineup_data.player_to_game, lineup_data.player_to_bench)
@@ -279,18 +393,14 @@
 	}
 
 	function granule_exists(granule){
-		console.log(granule)
-		console.log(all_stat_granules)
 		var index = all_stat_granules.length -1;
 		if(granule.stat == 1 || granule.stat == 2){
 			index = index -1;
 		}
 		if(all_stat_granules[index] && all_stat_granules[index].granule_id == granule.granule_id){
-			console.log("granule exists")
 			return true;
 		}
 		else{
-			console.log("granule doesnt exist")
 			return false;
 		}
 	}
@@ -300,7 +410,6 @@
 		for(var i = 0; i < len; i++){
 			loadStatGranule(granules[i], true)
 		}
-		console.log(stat_array);
 	}
 
 	function loadStatGranule(stat_granule, is_loading){
@@ -308,7 +417,7 @@
 		var index = find_stat_index(stat_array[0].cumulative_arr[stat_i]);
 		
 		if(stat_granule.is_opponent){
-			var stat_object = {"player": opponent_obj.player_obj, "stat": stat_granule.stat, "metadata" : stat_granule.metadata, "is_opponent": true, "index": stat_granule.index, "sent_by": stat_granule.sent_by, "granule_id" : stat_granule.granule_id};
+			var stat_object = {"player": opponent_obj.player_obj, "stat": stat_granule.stat, "metadata" : stat_granule.metadata, "is_opponent": true, "index": stat_granule.index, "sent_by": stat_granule.sent_by, "granule_id" : stat_granule.granule_id, "lineup_index" : stat_granule.lineup_index};
 			var stat_i = find_stat_in_player_arr(stat_object.stat)
 			add_stat_to_obj(opponent_obj, -1, stat_object, true, true, stat_i);
 			if(!is_loading){
@@ -316,7 +425,7 @@
 			}
 		}
 		else{
-			var stat_object = {"player": stat_array[stat_granule.player.stat_index -1].player_obj, "stat": stat_granule.stat, "metadata" : stat_granule.metadata, "is_opponent": false, "index": stat_granule.index, "sent_by": stat_granule.sent_by, "granule_id" : stat_granule.granule_id};
+			var stat_object = {"player": stat_array[stat_granule.player.stat_index -1].player_obj, "stat": stat_granule.stat, "metadata" : stat_granule.metadata, "is_opponent": false, "index": stat_granule.index, "sent_by": stat_granule.sent_by, "granule_id" : stat_granule.granule_id, "lineup_index" : stat_granule.lineup_index};
 			var stat_i = find_stat_in_player_arr(stat_object.stat)
 			add_stat_to_obj(stat_array[stat_granule.player.stat_index -1],  stat_granule.player.stat_index -1, stat_object, false, true, stat_i)
 			
@@ -341,9 +450,13 @@
 	function load_game_state(game_state){
 		populate_display_stats();
 		all_stat_granules = game_state.all_stat_granules;
-		console.log(game_state)
+		//console.log(game_state)
 		active_players = game_state.active_players;
-		console.log(active_players)
+		//console.log(active_players)
+
+		minutes = game_state.clock.minutes;
+		seconds = game_state.clock.seconds;
+		curr_period = game_state.clock.period;
 
 		populate_stat_arrays();
 
@@ -351,17 +464,17 @@
 
 		populate_stat_table();
 		setPlayerTimesInTable();
+		load_lineups_arr(game_state.lineups_arr)
+		console.log(lineups_arr)
 		loadStatGranules(all_stat_granules)
 		to_team_shot_chart()
-		console.log("game_state lineups")
-		console.log(game_state.lineups_arr)
-		load_lineups_arr(game_state.lineups_arr)
-		console.log("curr_lineup")
-		console.log(curr_lineup)
-
-		minutes = game_state.clock.minutes;
-		seconds = game_state.clock.seconds;
-		curr_period = game_state.clock.period;
+		//console.log("game_state lineups")
+		//console.log(game_state.lineups_arr)
+		
+		//console.log("curr_lineup")
+		//console.log(curr_lineup)
+		
+		
 		total_minutes = (minutes_per_period - game_state.clock.minutes -1) * 60 + (minutes_per_period * (curr_period -1)) + (60 - game_state.clock.seconds);
 		scoreboard_clock.set_timer()
 		scoreboard_clock.set_period()
@@ -397,8 +510,8 @@
 			populate_stat_table();
 		}
 		window.setInterval(function(){ 
-			//console.log(active_players)
 			if(!submitted){
+				update_fg_locations()
 				var game_state =  {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr,  "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}
 				$.ajax({
 					url: "/teams/" + <%=@team_id%> + "/games/" + <%=@game_id%> + "/game_state_update/", 
@@ -412,8 +525,8 @@
 				});
 			}
 		}, 5000);
-		console.log("team_stat_totals")
-		console.log(team_stat_totals)
+		//console.log("team_stat_totals")
+		//console.log(team_stat_totals)
 		horiz_offset = $(".canvas-container").position().left + parseInt($(".canvas-container").css("margin-left"));
 		vert_offset  = $(".canvas-container").position().top
 	}
@@ -544,9 +657,6 @@
 
 	function load_lineups_arr(new_lineups_arr){
 		var len = new_lineups_arr.length;
-		console.log("len: " + len)
-		console.log("new_lineups_arr")
-		console.log(new_lineups_arr)
 		for(var i=0; i < len; i++){
 
 			var lineup = lineup_exists(new_lineups_arr[i].ids)
@@ -558,8 +668,6 @@
 				lineup.timer.time_played = timer.time_played;
 				lineup.timer.is_in_game = timer.is_in_game;
 				lineup.cumulative_arr = new_lineups_arr[i].cumulative_arr;
-				console.log("timer is in game 2")
-				console.log(timer.is_in_game)
 				if(timer.is_in_game){
 					curr_lineup = lineup;
 				}
@@ -571,10 +679,7 @@
 				new_lineup_timer.interval = timer.interval;
 				new_lineup_timer.stat_index = timer.stat_index;
 				new_lineup_timer.time_played = timer.time_played;
-				console.log(new_lineup_timer.time_played)
 				new_lineups_arr[i].timer = new_lineup_timer;
-				console.log("timer is in game 1")
-				console.log(new_lineups_arr[i].timer.is_in_game)
 				if(new_lineups_arr[i].timer.is_in_game){
 					curr_lineup = new_lineups_arr[i]
 				}
@@ -585,7 +690,7 @@
 
 	function create_new_lineup(id_arr, index){
 		var lineup_timer = new LineupTimer(true, index, scoreboard_clock.isRunning);
-		var lineup_object = {"ids": id_arr, "timer" : lineup_timer, "cumulative_arr" : [], "opponent_stats" : []}
+		var lineup_object = {"ids": id_arr, "timer" : lineup_timer, "cumulative_arr" : [], "opponent_stats" : [], "index": lineups_arr.length}
 
 		<% @basic_stats.each do |stat| %>
 			lineup_object.cumulative_arr.push({"stat": "<%= stat.stat %>", "total" : 0, "id": "<%= stat.id %>"})
@@ -603,7 +708,6 @@
 		return true;
 	}
 
-	// TODO: PROBLEM COULD BE HERE
 	function lineup_exists(id_arr){
 		var len = lineups_arr.length;
 		var exists = false;
@@ -629,14 +733,49 @@
 			lineup = create_new_lineup(in_game_ids, lineups_arr.length)
 		}
 		if(curr_lineup && !init){
-			console.log("curr_lineup")
-			console.log(curr_lineup)
 			curr_lineup.timer.setInGame(false)
 		}
 		curr_lineup = lineup;
 		curr_lineup.timer.setInGame(true)
-		console.log(curr_lineup)
-		console.log(lineups_arr)
+	}
+
+	function update_lineup_in_granule(new_player_id, granule){
+		var old_player_id = granule.player.id 
+		var lineup_ids = lineups_arr[granule.lineup_index].ids 
+		var new_lineup_ids = lineup_ids.slice()
+		var len = new_lineup_ids.length 
+		for(var i = 0; i < len; i++){
+			if(new_lineup_ids[i] == old_player_id){
+				new_lineup_ids[i] = new_player_id;
+			}
+		}
+		//see if lineup exists
+		var lineup = lineup_exists(new_lineup_ids)
+		if(!lineup){
+			lineup = create_new_lineup(new_lineup_ids, lineups_arr.length)
+		}
+		return lineup.index
+	}
+
+	function player_in_lineup(lineup_index, player_id){
+		var lineup_ids = lineups_arr[lineup_index].ids;
+		var len = lineup_ids.length;
+		for(var i = 0; i < len; i++){
+			if(lineup_ids[i] == player_id){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function increment_lineup_fgs(stat_index, result_index, lineup_index){
+		lineups_arr[lineup_index].cumulative_arr[stat_index].total++
+		lineups_arr[lineup_index].cumulative_arr[result_index].total++
+	}
+
+	function increment_opponent_lineup_fgs(stat_index, result_index, lineup_index){
+		lineups_arr[lineup_index].opponent_stats[stat_index].total++
+		lineups_arr[lineup_index].opponent_stats[result_index].total++
 	}
 
 
@@ -695,6 +834,17 @@
 		})
 	}
 
+	function find_stat_button(stat_text){
+		var return_button;
+		$(".stat-button").each(function(){
+			if($(this).text().trim() == stat_text){
+				return_button = this;
+				return;
+			}
+		})
+		return return_button;
+	}
+
 	function stat_button(stat_id, button){
 		stat_id = parseInt(stat_id)
 		if(curr_player != null && (is_in_game(curr_player.player_obj) || curr_player_is_opponent )){
@@ -708,7 +858,6 @@
 				grey_out_stats(0)
 				to_shot_chart()
 				$(button).addClass("stat-button-highlight")
-				//select_button(button);
 				make_selected = true;
 
 			}
@@ -716,13 +865,12 @@
 				grey_out_stats(1)
 				to_shot_chart()
 				$(button).addClass("stat-button-highlight")
-				//select_button(button);
 				miss_selected = true;
 			} 
 			else {
 				if(total_minutes > 0){
 					stat_added_animation(button);
-					add_stat(stat_id, curr_player.player_obj);
+					add_stat(stat_id, curr_player.player_obj, {"period" : curr_period, "minute": minutes, "second" : seconds});
 					deselect_player();
 				}
 				else{
@@ -734,7 +882,6 @@
 
 			deselect_stat();
 			$(button).addClass("stat-button-highlight")
-			//select_button(button);
 			curr_stat_button = button;
 			curr_stat = stat_id;
 		}
@@ -826,7 +973,6 @@
 	}
 
 	function add_stat_to_player(){
-		console.log(curr_stat)
 		if(curr_stat == 1){
 			select_button(curr_player_button);
 			make_selected = true;
@@ -838,7 +984,7 @@
 			grey_out_stats(1)
 		}
 		else{
-			add_stat(curr_stat, curr_player.player_obj);
+			add_stat(curr_stat, curr_player.player_obj, {"period" : curr_period, "minute": minutes, "second" : seconds});
 			deselect_player();
 			deselect_stat();
 		}
@@ -865,7 +1011,6 @@
 
 		else if(curr_player && !curr_player_is_opponent && is_in_game(curr_player.player_obj)  ){
 			if(!is_in_game(new_curr_player.player_obj)) {
-				console.log("front end swap")
 				var player_to_game = Object.assign({}, new_curr_player.player_obj);
 				var player_to_bench = Object.assign({},curr_player.player_obj);
 				swap_players(new_curr_player.player_obj, curr_player.player_obj)
@@ -882,7 +1027,6 @@
 
 		else if (curr_player && !curr_player_is_opponent) {
 			if (is_in_game(new_curr_player.player_obj)) {
-				console.log("front end swap")
 				var player_to_game = Object.assign({}, curr_player.player_obj);
 				var player_to_bench = Object.assign({},new_curr_player.player_obj);
 				swap_players(curr_player.player_obj, new_curr_player.player_obj)
@@ -959,11 +1103,11 @@
 
 		plot_make(y_loc, x_loc, make_radius, curr_player.player_obj.id, curr_player.player_obj.player, point_val, fg_counter + 1, curr_player.player_obj.stat_index, gm_canvas_width, canvas);
 
-		add_stat(1, curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width, "shot_value" : point_val}, fg_counter + 1);
+		add_stat(1, curr_player.player_obj, {"period" : curr_period, "minute": minutes, "second" : seconds, "x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width, "shot_value" : point_val}, fg_counter + 1);
 
-		if(point_val == 3)  add_stat(11,  curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width}, fg_counter + 1);
+		if(point_val == 3)  add_stat(11,  curr_player.player_obj, {"period" : curr_period, "minute": minutes, "second" : seconds, "x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width}, fg_counter + 1);
 		else{
-			add_stat(9,  curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width}, fg_counter + 1);
+			add_stat(9,  curr_player.player_obj, {"period" : curr_period, "minute": minutes, "second" : seconds, "x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width}, fg_counter + 1);
 		}
 		update_score(point_val, curr_player_is_opponent);
 		if (curr_player_is_opponent)  to_opponent_shot_chart();
@@ -980,11 +1124,11 @@
 		var fg_counter = stat_array_counter;
 		var point_val = determine_3_or_2(x_loc, y_loc);
 		plot_miss([x_loc, y_loc, x_loc , y_loc ], curr_player.player_obj.id, curr_player.player_obj.player, point_val, fg_counter + 1, curr_player.player_obj.stat_index, gm_canvas_width, canvas) ;
-		add_stat(2, curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width, "shot_value" : point_val}, fg_counter + 1);
+		add_stat(2, curr_player.player_obj, {"period" : curr_period, "minute": minutes, "second" : seconds, "x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width, "shot_value" : point_val}, fg_counter + 1);
 
-		if(point_val == 3) add_stat(12,  curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width}, fg_counter + 1);
+		if(point_val == 3) add_stat(12,  curr_player.player_obj, {"period" : curr_period, "minute": minutes, "second" : seconds, "x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width}, fg_counter + 1);
 		else {
-			add_stat(10,  curr_player.player_obj, {"x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width}, fg_counter + 1);
+			add_stat(10,  curr_player.player_obj, {"period" : curr_period, "minute": minutes, "second" : seconds, "x_loc" : x_loc/gm_canvas_width, "y_loc": y_loc/gm_canvas_width}, fg_counter + 1);
 		}
 
 		if (curr_player_is_opponent)  to_opponent_shot_chart();
@@ -1012,16 +1156,7 @@
     }
 
 
-
-    /*****************************************************************/
-    /*****************************************************************/
-    /*****************************************************************/
-    /*****************************************************************/
-    /*****************************************************************/
-    /*****************************************************************/
-    /*****************************************************************/
-
-    function find_stat_granule(player, counter){
+    function find_shot_granule(player, counter){
     	granule_return_array = []
     	var granule_array_len = player.gran_stat_arr.length
     	for(var i = 0; i < granule_array_len; i++){
@@ -1034,6 +1169,7 @@
     }
 
     function update_make_data(obj, player, result, result_w_point, point_value){
+    	var point_index = find_stat_in_player_arr(15)
     	if(point_value == 3){
     		// 2 point make
     		var new_stat_id = 9;
@@ -1042,7 +1178,8 @@
     		result.metadata.shot_value = "2";
     		result_w_point.stat= new_stat_id;
     		update_score(-1, !obj.player);
-    		increment_points(player.player_obj.stat_index -1, -1, stat_array[player.player_obj.stat_index -1])
+    		increment_points(player.player_obj.stat_index -1, -1, stat_array[player.player_obj.stat_index -1], result)
+    		//lineups_arr[result_w_point.lineup_index].cumulative_arr[point_index].total--;
     	}
     	else if (point_value == 2){
     		var old_stat_id = 9;
@@ -1050,7 +1187,8 @@
     		result.metadata.shot_value = "3";
     		result_w_point.stat = new_stat_id;
     		update_score(1, !obj.player);
-    		increment_points(player.player_obj.stat_index -1, 1, stat_array[player.player_obj.stat_index -1])
+    		increment_points(player.player_obj.stat_index -1, 1, stat_array[player.player_obj.stat_index -1], result)
+    		//lineups_arr[result_w_point.lineup_index].cumulative_arr[point_index].total++;
     	}
     	return [new_stat_id, old_stat_id];
     }
@@ -1075,7 +1213,8 @@
 
     function update_shot_data(obj, point_value, shot_result){
     	var player = find_player(obj)
-    	var granule_array = find_stat_granule(player, obj.index);
+    	
+    	var granule_array = find_shot_granule(player, obj.index);
     	var result = granule_array[0];
     	var result_w_point = granule_array[1];
 
@@ -1085,8 +1224,8 @@
     	var new_stat_id = stat_id_array[0];
     	var old_stat_id = stat_id_array[1];
 
-    	var player_row = (obj.player) ? player_stats_table.rows[player.player_obj.stat_index] : team_stats_table.rows[2];
     	var team_row = team_stats_table.rows[1];
+    	var opponent_row = team_stats_table.rows[2]
     	
     	var old_player_stat_index = find_stat_in_player_arr(old_stat_id);
     	
@@ -1094,30 +1233,48 @@
 
     	var new_player_stat_index = find_stat_in_player_arr(new_stat_id);
     	var new_index = find_stat_index(stat_array[0].cumulative_arr[new_player_stat_index]) + 1;
+    	toggle_fg_in_log(result_w_point)
 
-    	//3 point make
-    	if(new_stat_id == 11 || new_stat_id == 12){
-    		fg_in_table(new_index, shot_result, player_row);
-    	}
-    	else {
-    		undo_table_cell(old_index, result.stat, player_row);
-    	}
-    	
+    	var period_rows = determine_period_rows(result.metadata.period, result.is_opponent)
     	if(obj.player){
+    		var player_row = (obj.player) ? player_stats_table.rows[player.player_obj.stat_index] : team_stats_table.rows[2];
     		if(new_stat_id == 11 || new_stat_id == 12){
+    			fg_in_table(new_index, shot_result, player_row);
     			fg_in_table(new_index, shot_result, team_row);
+    			
+    			fg_in_table(new_index, shot_result, period_rows.period_row)
+    			fg_in_table(new_index, shot_result, period_rows.half_row)
 	    	}
 	    	else {
-	    		undo_table_cell(old_index, result.stat, team_row);
+	    		undo_table_cell(old_index, shot_result, team_row);
+	    		undo_table_cell(old_index, shot_result, period_rows.period_row)
+	    		undo_table_cell(old_index, shot_result, period_rows.half_row)
+	    		undo_table_cell(old_index, shot_result, player_row);
 	    	}
     		player.cumulative_arr[old_player_stat_index].total--;
     		player.cumulative_arr[new_player_stat_index].total++;
+
+    		lineups_arr[result_w_point.lineup_index].cumulative_arr[old_player_stat_index].total--
+    		lineups_arr[result_w_point.lineup_index].cumulative_arr[new_player_stat_index].total++
 
     	}
     	else {
     		opponent_obj.cumulative_arr[old_player_stat_index].total--;
     		opponent_obj.cumulative_arr[new_player_stat_index].total++;
+    		lineups_arr[result_w_point.lineup_index].opponent_stats[old_player_stat_index].total--
+    		lineups_arr[result_w_point.lineup_index].opponent_stats[new_player_stat_index].total++
+    		if(new_stat_id == 11 || new_stat_id == 12){
+    			fg_in_table(new_index, shot_result, opponent_row);
+    			fg_in_table(new_index, shot_result, period_rows.period_row)
+    			fg_in_table(new_index, shot_result, period_rows.half_row)
+	    	}
+	    	else {
+	    		undo_table_cell(old_index, shot_result, opponent_row);
+	    		undo_table_cell(old_index, shot_result, period_rows.period_row)
+	    		undo_table_cell(old_index, shot_result, period_rows.half_row)
+	    	}
     	}
+    	console.log(lineups_arr)
     }
 
 
@@ -1201,9 +1358,1396 @@
 	/**************************************************************/
 
 
+	/**************************************************************/
+	/************************ <GAME LOG> **************************/
+	/**************************************************************/
+
+	function save_granule_player(granule_row, player){
+		var player_col = $(granule_row).find(".stat-granule-player")
+		var player_id = player_col.attr("player-id")
+		if(player_id > 0){
+			player_col.html(player.player_name)
+			player_col.attr("player-id", player.player_id)
+		}
+	}
+
+	function edit_granule_player(granule_row){
+		var player_col = $(granule_row).find(".stat-granule-player")
+		var player_id = player_col.attr("player-id")
+		if(player_id > 0){
+			var sel = $('<select>')
+			$(active_players).each(function() {
+				if(player_col.attr("player-id") == this.id){
+					sel.append($("<option selected = 'selected'>").attr('value',this.id).text(this.name));
+				}
+				else {
+					sel.append($("<option>").attr('value',this.id).text(this.name));
+				}
+			 	
+			});
+			player_col.html(sel)
+		}	
+	}
+
+	function get_stat_name(stat){
+		var any_player_stat_arr = stat_array[0].cumulative_arr
+		var len = any_player_stat_arr.length;
+		for(var i = 0; i < len; i++){
+			if(stat == any_player_stat_arr[i].id){
+				return any_player_stat_arr[i].stat
+			}
+		}
+	}
+
+	function save_granule_stat(granule_row, stat){
+		var stat_col = $(granule_row).find(".stat-granule-stat")
+		var stat_name = get_stat_name(stat)
+		stat_col.html(stat_name + " +1")
+		stat_col.attr("stat-id", stat)
+	}
+
+	function isFGStat(stat_id){
+		if(stat_id == "9" || stat_id == "10" || stat_id == "11" || stat_id == "12" || stat_id == "13" || stat_id == "14"){
+			return true;
+		}
+	}
+
+	function fg_log_html(stat_col){
+		var sel = $('<select>');
+		if(stat_col.attr("stat-id") == "9"){
+			sel.append($("<option selected = 'selected'>").attr('value', "9").text("2 Point Make"));
+			sel.append($("<option>").attr('value', "10").text("2 Point Miss"));
+		}
+		else if (stat_col.attr("stat-id") == "10"){
+			sel.append($("<option selected = 'selected'>").attr('value', "10").text("2 Point Miss"));
+			sel.append($("<option>").attr('value', "9").text("2 Point Make"));
+		}
+		else if (stat_col.attr("stat-id") == "11"){
+			sel.append($("<option selected = 'selected'>").attr('value', "11").text("3 Point Make"));
+			sel.append($("<option>").attr('value', "12").text("3 Point Miss"));
+		}
+		else if (stat_col.attr("stat-id") == "12"){
+			sel.append($("<option selected = 'selected'>").attr('value', "12").text("3 Point Miss"));
+			sel.append($("<option>").attr('value', "11").text("3 Point Make"));
+		}
+		else if (stat_col.attr("stat-id") == "13"){
+			sel.append($("<option selected = 'selected'>").attr('value', "13").text("FT Make"));
+			sel.append($("<option>").attr('value', "14").text("FT Miss"));
+		}
+		else if (stat_col.attr("stat-id") == "14"){
+			sel.append($("<option selected = 'selected'>").attr('value', "14").text("FT Miss"));
+			sel.append($("<option>").attr('value', "13").text("FT Make"));
+		}
+		return sel;
+	}
+
+	function edit_granule_stat(granule_row){
+		var stat_col = $(granule_row).find(".stat-granule-stat")
+		var sel = $('<select>');
+
+		var normal_stats = collectable_stats.slice()
+		normal_stats.splice(0, 2)
+		removeIndex = normal_stats.map(function(item) { return item.stat_id; }).indexOf(13);
+        ~removeIndex && normal_stats.splice(removeIndex, 2);
+
+		if(isFGStat(stat_col.attr("stat-id"))){
+			sel = fg_log_html(stat_col)
+		}
+		else{
+			$(normal_stats).each(function() {
+				if(stat_col.attr("stat-id") == this.stat_id){
+					sel.append($("<option selected = 'selected'>").attr('value',this.stat_id).text(this.stat_name));
+				}
+			 	else {
+			 		sel.append($("<option>").attr('value',this.stat_id).text(this.stat_name));
+			 	}
+			});
+		}
+		stat_col.html(sel)
+	}
+
+	function save_granule_timestamp(granule_row, timestamp){
+		var timestamp_col = $(granule_row).find(".stat-granule-timestamp")
+		var time_string = "Q" + timestamp.quarter + "-" + timestamp.minutes + ":" + timestamp.seconds;
+		timestamp_col.html(time_string)
+	}
+
+	function edit_granule_timestamp(granule_row, granule_id){
+		var timestamp_col = $(granule_row).find(".stat-granule-timestamp")
+		var timestamp_str = timestamp_col.html()
+		var timestamp_splice = timestamp_str.split("-")
+		var time_splice = timestamp_splice[1].split(":")
+		var minutes = parseInt(time_splice[0])
+		var seconds = parseInt(time_splice[1])
+		var max_minutes = minutes_per_period -1
 
 
+		var sel = $('<select>')
+		var quarter_str_arr = ["Q1", "Q2", "Q3", "Q4"]
+		$(quarter_str_arr).each(function(){
+			if(this == timestamp_splice[0]){
+				sel.append($("<option selected = 'selected'>").attr('value', this).text(this))
+			}
+			else{
+				sel.append($("<option>").attr('value', this).text(this))
+			}
+		})
 
+		var minutes_sel = '<input type="number" class = "minutes" id="minutes-sel"'+ granule_id + ' min="0" max="'+ max_minutes + '" value="'+ minutes+'">'
+		var seconds_sel = '<input type="number" class = "seconds" id="seconds-sel"'+ granule_id + ' min="0" max="59" value="'+ seconds+'">'
+		
+
+		var time = '<select>' + sel.html() + '</select>' + minutes_sel + ":" +  seconds_sel
+		timestamp_col.html(time);
+		
+	}
+
+	function find_stat_granule(granule_id){
+		var length = all_stat_granules.length;
+		for(var i = 0; i < length; i++){
+			if(all_stat_granules[i].granule_id == granule_id){
+				return all_stat_granules[i];
+			}
+		}
+	}
+
+	function get_player_from_row(granule_row){
+		var player_col = $(granule_row).find(".stat-granule-player")
+		var selected_player_id = player_col.find(":selected").val();
+		var selected_player_name = player_col.find(":selected").text();
+		return {"player_name" : selected_player_name, "player_id" : selected_player_id}
+	}
+
+	function get_stat_from_row(granule_row){
+		var stat_col = $(granule_row).find(".stat-granule-stat")
+		var selected_stat_id = stat_col.find(":selected").val();
+		return parseInt(selected_stat_id);
+	}
+
+	function get_timestamp_from_row(granule_row){
+		var timestamp_col = $(granule_row).find(".stat-granule-timestamp")
+		var quarter_col = timestamp_col.find("select")
+		var selected_quarter = quarter_col.find(":selected").val().split("Q");
+		var minutes = timestamp_col.find(".minutes").val()
+		var seconds = timestamp_col.find(".seconds").val()
+
+		return {"quarter" : parseInt(selected_quarter[1]), "minutes" : minutes, "seconds" : seconds}
+
+	}
+
+	function get_info_from_row(granule_row){
+		var player = get_player_from_row(granule_row)
+		var stat = get_stat_from_row(granule_row)
+		var timestamp = get_timestamp_from_row(granule_row)
+		return {"player" : player, "stat": stat, "timestamp" : timestamp};
+	}
+
+	function remove_granule_from_player(granule_id, player){
+		var length = player.gran_stat_arr.length;
+		var remove_i;
+		for(var i = 0; i < length; i++){
+			if(granule_id == player.gran_stat_arr[i].granule_id){
+				remove_i = i;
+			}
+		}
+		player.gran_stat_arr.splice(remove_i, 1)
+	}
+
+	function remove_granule_from_all_granules(granule_id){
+		var length = all_stat_granules.length;
+		var remove_i;
+		for(var i = 0; i < length; i++){
+			if(granule_id == all_stat_granules[i].granule_id){
+				remove_i = i;
+			}
+		}
+		all_stat_granules.splice(remove_i, 1)
+	}
+
+	function rollback_stat_for_player(granule, old_player){
+		var stat_id = granule.stat;
+		var point_index = find_stat_in_player_arr(15)
+		var player_stat_index = find_stat_in_player_arr(granule.stat);
+	    	switch(stat_id){
+	    		// 3 point make
+	    		case 11:
+	    			undo_player_fg_from_table(granule, three_pt_fg_index, "Make", fg_index)
+	    			increment_player_points(old_player, granule.player.stat_index -1, -3, point_index)
+	    			remove_granule_from_player(granule.granule_id, old_player)
+	    			remove_granule_from_player(granule.granule_id - 1, old_player)
+	    			decrement_from_player_cumulative_array(old_player, stat_id)
+	    			decrement_from_player_cumulative_array(old_player, 1)
+	    			var result_stat_index = find_stat_in_player_arr(1)
+	    			undo_fg_from_lineup_obj(player_stat_index, result_stat_index, granule.lineup_index)
+	    			lineups_arr[granule.lineup_index].cumulative_arr[point_index].total-=3
+	    			break;
+	    		// 2 point make
+	    		case 9:
+	    			undo_player_fg_from_table(granule, two_pt_fg_index, "Make", fg_index)
+	    			increment_player_points(old_player, granule.player.stat_index -1, -2, point_index)
+	    			remove_granule_from_player(granule.granule_id, old_player)
+	    			remove_granule_from_player(granule.granule_id - 1, old_player)
+	    			decrement_from_player_cumulative_array(old_player, stat_id)
+	    			decrement_from_player_cumulative_array(old_player, 1)
+	    			var result_stat_index = find_stat_in_player_arr(1)
+	    			undo_fg_from_lineup_obj(player_stat_index, result_stat_index, granule.lineup_index)
+	    			lineups_arr[granule.lineup_index].cumulative_arr[point_index].total-=2
+	    			break;
+	    		// 3 point miss
+	    		case 12 :
+	    			undo_player_fg_from_table(granule, three_pt_fg_index, "Miss", fg_index)
+	    			remove_granule_from_player(granule.granule_id, old_player)
+	    			remove_granule_from_player(granule.granule_id - 1, old_player)
+	    			decrement_from_player_cumulative_array(old_player, stat_id)
+	    			decrement_from_player_cumulative_array(old_player, 2)
+	    			var result_stat_index = find_stat_in_player_arr(2)
+	    			undo_fg_from_lineup_obj(player_stat_index, result_stat_index, granule.lineup_index)
+	    			break;
+	    		// 2 point miss
+	    		case 10 :
+	    			undo_player_fg_from_table(granule, two_pt_fg_index, "Miss", fg_index)
+	    			remove_granule_from_player(granule.granule_id, old_player)
+	    			remove_granule_from_player(granule.granule_id - 1, old_player)
+	    			decrement_from_player_cumulative_array(old_player, stat_id)
+	    			decrement_from_player_cumulative_array(old_player, 2)
+	    			var result_stat_index = find_stat_in_player_arr(2)
+	    			undo_fg_from_lineup_obj(player_stat_index, result_stat_index, granule.lineup_index)
+	    			break;
+	    		
+	    		// free throw make
+	    		case 13 :
+	    			undo_player_fg_from_table(granule, null,  "Make", ft_index);
+	    			increment_player_points(old_player, granule.player.stat_index -1, -1, point_index)
+	    			remove_granule_from_player(granule.granule_id, old_player)
+	    			decrement_from_player_cumulative_array(old_player, stat_id)
+	    			lineups_arr[granule.lineup_index].cumulative_arr[player_stat_index].total--
+	    			lineups_arr[granule.lineup_index].cumulative_arr[point_index].total-=1
+	    			break;
+	    		// free throw miss
+	    		case 14:
+	    			undo_player_fg_from_table(granule, null,  "Miss", ft_index);
+	    			remove_granule_from_player(granule.granule_id, old_player)
+	    			decrement_from_player_cumulative_array(old_player, stat_id)
+	    			lineups_arr[granule.lineup_index].cumulative_arr[player_stat_index].total--
+	    			break;
+	    			
+	    		default : 
+					var stat_index = find_stat_index(stat_array[old_player.player_obj.stat_index -1].cumulative_arr[player_stat_index]);
+					var new_val = --stat_array[old_player.player_obj.stat_index -1].cumulative_arr[player_stat_index].total;
+					remove_granule_from_player(granule.granule_id, old_player)
+					undo_player_stat_in_table(old_player.player_obj.stat_index, stat_index, new_val)
+	    			lineups_arr[granule.lineup_index].cumulative_arr[player_stat_index].total--
+	    			break; 
+	    			
+	    	}		
+	}
+
+	function update_shot_player(granule_id, old_player, new_player){
+		canvas.getObjects().forEach(function(o){
+			if(o.index == granule_id -1){
+				if(old_player.id == o.id){
+					o.id = new_player.id
+					o.player_index = new_player.stat_index
+				}
+			}
+		});
+	}
+
+	function add_stat_for_player(granule, new_player, new_lineup_index){
+		var stat_id = granule.stat;
+		var point_index = find_stat_in_player_arr(15)
+		var player_stat_index = find_stat_in_player_arr(granule.stat);
+	    	switch(stat_id){
+	    		// 3 point make
+	    		case 11:
+	    			var fg_granule = find_stat_granule(granule.granule_id - 1);
+	    			update_shot_player(granule.granule_id, fg_granule.player, new_player.player_obj)
+	    			fg_granule.player = new_player.player_obj;
+	    			fg_granule.lineup_index = new_lineup_index
+	    			new_player.gran_stat_arr.push(fg_granule)
+	    			insert_player_fg_in_table(granule, three_pt_fg_index, "Make", fg_index)
+	    			increment_player_points(new_player, granule.player.stat_index -1, 3, point_index)
+	    			increment_from_player_cumulative_array(new_player, stat_id)
+	    			increment_from_player_cumulative_array(new_player, 1)
+	    			var result_stat_index = find_stat_in_player_arr(1)
+	    			increment_lineup_fgs(player_stat_index, result_stat_index, granule.lineup_index)
+	    			lineups_arr[granule.lineup_index].cumulative_arr[point_index].total+=3
+	    			break;
+	    		// 2 point make
+	    		case 9:
+	    			var fg_granule = find_stat_granule(granule.granule_id - 1);
+	    			update_shot_player(granule.granule_id, fg_granule.player, new_player.player_obj)
+	    			fg_granule.player = new_player.player_obj;
+	    			fg_granule.lineup_index = new_lineup_index
+	    			new_player.gran_stat_arr.push(fg_granule)
+	    			insert_player_fg_in_table(granule, two_pt_fg_index, "Make", fg_index)
+	    			increment_player_points(new_player, granule.player.stat_index -1, 2, point_index)
+	    			increment_from_player_cumulative_array(new_player, stat_id)
+	    			increment_from_player_cumulative_array(new_player, 1)
+	    			var result_stat_index = find_stat_in_player_arr(1)
+	    			increment_lineup_fgs(player_stat_index, result_stat_index, granule.lineup_index)
+	    			lineups_arr[granule.lineup_index].cumulative_arr[point_index].total+=2
+	    			break;
+	    		// 3 point miss
+	    		case 12 :
+	    			var fg_granule = find_stat_granule(granule.granule_id - 1);
+	    			update_shot_player(granule.granule_id, fg_granule.player, new_player.player_obj)
+	    			fg_granule.player = new_player.player_obj;
+	    			fg_granule.lineup_index = new_lineup_index
+	    			new_player.gran_stat_arr.push(fg_granule)
+	    			insert_player_fg_in_table(granule, three_pt_fg_index, "Miss", fg_index)
+	    			increment_from_player_cumulative_array(new_player, stat_id)
+	    			increment_from_player_cumulative_array(new_player, 2)
+	    			var result_stat_index = find_stat_in_player_arr(2)
+	    			increment_lineup_fgs(player_stat_index, result_stat_index, granule.lineup_index)
+	    			break;
+	    		// 2 point miss
+	    		case 10 :
+	    			var fg_granule = find_stat_granule(granule.granule_id - 1);
+	    			update_shot_player(granule.granule_id, fg_granule.player, new_player.player_obj)
+	    			fg_granule.player = new_player.player_obj;
+	    			fg_granule.lineup_index = new_lineup_index
+	    			new_player.gran_stat_arr.push(fg_granule)
+	    			insert_player_fg_in_table(granule, two_pt_fg_index, "Miss",fg_index)
+	    			increment_from_player_cumulative_array(new_player, stat_id)
+	    			increment_from_player_cumulative_array(new_player, 2)
+	    			var result_stat_index = find_stat_in_player_arr(2)
+	    			increment_lineup_fgs(player_stat_index, result_stat_index, granule.lineup_index)
+	    			break;
+	    		
+	    		// free throw make
+	    		case 13 :
+	    			insert_player_fg_in_table(granule, ft_index, "Make", ft_index)
+	    			increment_from_player_cumulative_array(new_player, stat_id)
+	    			increment_player_points(new_player, granule.player.stat_index -1, 1, point_index)
+	    			lineups_arr[granule.lineup_index].cumulative_arr[player_stat_index].total++
+	    			lineups_arr[granule.lineup_index].cumulative_arr[point_index].total+=1
+	    			break;
+	    		// free throw miss
+	    		case 14:
+	    			insert_player_fg_in_table(granule, ft_index, "Miss", ft_index)
+	    			increment_from_player_cumulative_array(new_player, stat_id)
+	    			lineups_arr[granule.lineup_index].cumulative_arr[player_stat_index].total++
+	    			break;
+	    			
+	    		default : 
+					var stat_index = find_stat_index(stat_array[new_player.player_obj.stat_index -1].cumulative_arr[player_stat_index]);
+					var new_val = ++stat_array[new_player.player_obj.stat_index -1].cumulative_arr[player_stat_index].total;
+					update_player_col(stat_index, new_player.player_obj.stat_index-1, new_val)
+					lineups_arr[granule.lineup_index].cumulative_arr[player_stat_index].total++
+	    			break; 
+	    	}	
+	    	new_player.gran_stat_arr.push(granule)
+	}
+
+	function find_player_by_id(player_id){
+		var length = stat_array.length
+    	for(var i = 0; i < length; i++){
+    		if (player_id == parseInt(stat_array[i].player_obj.id)){
+    			return stat_array[i];
+    		}
+    	}
+	}
+
+	function is_stat_fg(stat_id){
+		if(stat_id == 11 || stat_id == 12 || stat_id == 9 || stat_id == 10){
+			return true;
+		}
+		else{
+			return false
+		}
+	}
+
+	function change_lineup_index_in_all_granules(new_lineup_index, granule_id){
+		var length = all_stat_granules.length;
+		for(var i = 0; i < length; i++){
+			if(all_stat_granules[i].granule_id == granule_id){
+				if(is_stat_fg(all_stat_granules[i].stat)){
+					all_stat_granules[i-1].lineup_index = new_lineup_index;
+				}
+				all_stat_granules[i].lineup_index = new_lineup_index;
+			}
+		}
+	}
+
+	function change_stat_in_all_granules(new_stat_id, granule_id){
+		var length = all_stat_granules.length;
+		for(var i = 0; i < length; i++){
+			if(all_stat_granules[i].granule_id == granule_id){
+				all_stat_granules[i].stat = new_stat_id;
+			}
+		}
+	}
+
+	function change_stat_in_player_granules(player, new_stat_id, granule_id){
+		var length = player.gran_stat_arr.length;
+		for(var i = 0; i < length; i++){
+			if(player.gran_stat_arr[i].granule_id == granule_id){
+				player.gran_stat_arr[i].stat = new_stat_id;
+			}
+		}
+	}
+
+	function decrement_from_team_stat_array(stat_id){
+		var length = team_stat_totals.length;
+		for(var i = 0; i < length; i++){
+			if(team_stat_totals[i].id == stat_id){
+				var new_val = --team_stat_totals[i].total;
+			}
+		}
+		return new_val;
+	}
+
+	function decrement_from_team_stat_tables(stat_id, new_val){
+		var player_stat_index = find_stat_in_player_arr(stat_id);
+		var stat_index = find_stat_index(team_stat_totals[player_stat_index]);
+		undo_team_stat_in_table(stat_index, new_val)
+	}
+
+	function increment_from_team_stat_array(stat_id){
+		var length = team_stat_totals.length;
+		for(var i = 0; i < length; i++){
+			if(team_stat_totals[i].id == stat_id){
+				var new_val = ++team_stat_totals[i].total;
+			}
+		}
+		return new_val;
+	}
+
+	function increment_from_team_stat_tables(stat_id){
+		var player_stat_index = find_stat_in_player_arr(stat_id);
+		var stat_index = find_stat_index(team_stat_totals[player_stat_index]);
+		update_team_col(stat_index)
+	}
+
+	function increment_from_player_cumulative_array(player, stat_id){
+		var player_stat_index = find_stat_in_player_arr(stat_id);
+		var new_val = ++stat_array[player.player_obj.stat_index -1].cumulative_arr[player_stat_index].total;
+		return new_val;
+	}
+
+	function decrement_from_opponent_array(stat_id){
+		var stat_index = find_stat_in_player_arr(stat_id);
+		return --opponent_obj.cumulative_arr[stat_index].total;
+	}
+
+	function increment_from_opponent_array(stat_id){
+		var stat_index = find_stat_in_player_arr(stat_id);
+		return ++opponent_obj.cumulative_arr[stat_index].total;
+	}
+
+	function decrement_from_opponent_stat_tables(stat_id, new_val){
+		var stat_index = find_stat_in_player_arr(stat_id);
+		var table_index =  find_stat_index(opponent_obj.cumulative_arr[stat_index]);
+		undo_opponent_stat_in_table(table_index, new_val)
+	}
+
+	function increment_from_opponent_stat_tables(stat_id, new_val){
+		var stat_index = find_stat_in_player_arr(stat_id);
+		var table_stat_index = find_stat_index(opponent_obj.cumulative_arr[stat_index]);
+		update_opponent_col(table_stat_index, new_val)
+	}
+
+	function decrement_from_player_cumulative_array(player, stat_id){
+		var player_stat_index = find_stat_in_player_arr(stat_id);
+		var new_val = --stat_array[player.player_obj.stat_index -1].cumulative_arr[player_stat_index].total;
+		return new_val;
+	}
+
+	function decrement_from_player_stat_tables(player, stat_id, new_val){
+		var player_stat_index = find_stat_in_player_arr(stat_id);
+		var stat_index = find_stat_index(stat_array[player.player_obj.stat_index -1].cumulative_arr[player_stat_index]);
+		undo_player_stat_in_table(player.player_obj.stat_index, stat_index, new_val)
+	}
+
+	function increment_from_player_stat_tables(player, stat_id, new_val){
+		var player_stat_index = find_stat_in_player_arr(stat_id);
+		var stat_index = find_stat_index(stat_array[player.player_obj.stat_index -1].cumulative_arr[player_stat_index]);
+		update_player_col(stat_index, player.player_obj.stat_index-1, new_val)
+	}
+
+	function print_log_info(){
+		// console.log(team_stat_totals)
+		 console.log(stat_array)
+		// console.log(all_stat_granules)
+		// console.log(opponent_obj)
+		// console.log(quarter_1_totals)
+		// console.log(quarter_2_totals)
+		//console.log(half_1_totals)
+		console.log(lineups_arr)
+	}
+
+	function compare_timestamps(row_time, granule_time){
+		if(parseInt(row_time.minutes) != granule_time.minute || parseInt(row_time.seconds) != granule_time.second || row_time.quarter != granule_time.period){
+			return true;
+		}
+		else return false;
+	}
+
+	function change_timestamp_in_player_granules(player, row_time, granule_id){
+		var length = player.gran_stat_arr.length;
+		for(var i = 0; i < length; i++){
+			if(player.gran_stat_arr[i].granule_id == granule_id){
+				player.gran_stat_arr[i].metadata.period = row_time.quarter;
+				player.gran_stat_arr[i].metadata.minute = parseInt(row_time.minutes)
+				player.gran_stat_arr[i].metadata.second = parseInt(row_time.seconds)
+			}
+		}
+	}
+
+	function change_timestamp_in_all_granules(row_time, granule_id){
+		var length = all_stat_granules.length;
+		for(var i = 0; i < length; i++){
+			if(all_stat_granules[i].granule_id == granule_id){
+				all_stat_granules[i].metadata.period = row_time.quarter;
+				all_stat_granules[i].metadata.minute = parseInt(row_time.minutes)
+				all_stat_granules[i].metadata.second = parseInt(row_time.seconds)
+			}
+		}
+		
+	}
+
+	function toggle_make_miss(granule, new_result_id, point_val){
+		canvas.getObjects().forEach(function(o){
+			if(o.index == granule.granule_id -1){
+				var y_loc = granule.metadata.y_loc;
+				var x_loc = granule.metadata.x_loc;
+				
+				if(new_result_id==1){
+					plot_make(y_loc*gm_canvas_width, x_loc*gm_canvas_width, make_radius, granule.player.id, granule.player.player, Math.abs(point_val), o.index, granule.player.stat_index, gm_canvas_width, canvas);
+				}
+				else{
+					plot_miss([x_loc*gm_canvas_width, y_loc*gm_canvas_width, x_loc *gm_canvas_width, y_loc*gm_canvas_width ], granule.player.id, granule.player.player, Math.abs(point_val), o.index, granule.player.stat_index, gm_canvas_width, canvas);
+				}
+				canvas.remove(o);
+			}
+		});
+
+	}
+
+	function handle_team_fg_stat_change(granule, pt_fg_index, old_stat_id, new_stat_id, new_result, old_result, new_result_id, old_result_id, point_val){
+		var point_index = find_stat_in_player_arr(15)
+		undo_team_fg_from_table(granule, pt_fg_index, old_result, fg_index)
+		decrement_from_team_stat_array(old_stat_id)
+	    decrement_from_team_stat_array(old_result_id)
+
+	    increment_team_points(point_val, point_index)
+
+	    insert_team_fg_in_table(granule, pt_fg_index, new_result, fg_index)
+
+	    increment_from_team_stat_array(new_stat_id)
+	    increment_from_team_stat_array(new_result_id)
+    	
+    	toggle_make_miss(granule, new_result_id, point_val)
+
+	    change_stat_in_all_granules(new_stat_id, granule.granule_id)
+		change_stat_in_all_granules(new_result_id, granule.granule_id -1)
+
+		update_score(point_val, granule.is_opponent);
+	}
+
+	function handle_opponent_fg_stat_change(granule, pt_fg_index, old_stat_id, new_stat_id, new_result, old_result, new_result_id, old_result_id, point_val){
+		var point_index = find_stat_in_player_arr(15)
+		undo_opponent_fg_from_table(granule, pt_fg_index, old_result, fg_index)
+		decrement_from_opponent_array(old_stat_id)
+	    decrement_from_opponent_array(old_result_id)
+
+	   	var old_player_stat_index = find_stat_in_player_arr(old_stat_id)
+		var old_result_stat_index = find_stat_in_player_arr(old_result_id)
+		var new_player_stat_index = find_stat_in_player_arr(new_stat_id)
+		var new_result_stat_index = find_stat_in_player_arr(new_result_id)
+
+		undo_fg_from_lineup_opponent(old_player_stat_index, old_result_stat_index, granule.lineup_index)
+		increment_opponent_lineup_fgs(new_player_stat_index, new_result_stat_index, granule.lineup_index)
+		lineups_arr[granule.lineup_index].opponent_stats[point_index].total+=point_val
+
+	    increment_opponent_points(point_val, point_index)
+	    insert_opponent_fg_in_table(granule, pt_fg_index, new_result, fg_index)
+
+	    increment_from_opponent_array(new_stat_id)
+	    increment_from_opponent_array(new_result_id)
+    	
+    	toggle_make_miss(granule, new_result_id, point_val)
+
+	    change_stat_in_all_granules(new_stat_id, granule.granule_id)
+		change_stat_in_all_granules(new_result_id, granule.granule_id -1)
+
+		update_score(point_val, granule.is_opponent);
+	}
+
+	function handle_team_ft_stat_change(granule, old_stat_id, new_stat_id, new_result, old_result, new_result_id, old_result_id, point_val){
+		var point_index = find_stat_in_player_arr(15)
+		undo_team_fg_from_table(granule, null, old_result, ft_index)
+		decrement_from_team_stat_array(old_stat_id)
+		increment_team_points(point_val, point_index)
+		insert_team_fg_in_table(granule, ft_index, new_result, ft_index)
+		increment_from_team_stat_array(new_stat_id)
+		update_score(point_val, granule.is_opponent);
+		change_stat_in_all_granules(new_stat_id, granule.granule_id) 
+	}
+
+	function handle_opponent_ft_stat_change(granule,  old_stat_id, new_stat_id, new_result, old_result, new_result_id, old_result_id, point_val){
+		var point_index = find_stat_in_player_arr(15)
+		var old_player_stat_index = find_stat_in_player_arr(old_stat_id)
+		var new_player_stat_index = find_stat_in_player_arr(new_stat_id)
+		lineups_arr[granule.lineup_index].opponent_stats[old_player_stat_index].total--
+		lineups_arr[granule.lineup_index].opponent_stats[new_player_stat_index].total++
+		lineups_arr[granule.lineup_index].opponent_stats[point_index].total+=point_val
+		undo_opponent_fg_from_table(granule, null, old_result, ft_index)
+		decrement_from_opponent_array(old_stat_id)
+		increment_opponent_points(point_val, point_index)
+		insert_opponent_fg_in_table(granule, ft_index, new_result, ft_index)
+		increment_from_opponent_array(new_stat_id)
+		update_score(point_val, granule.is_opponent);
+		change_stat_in_all_granules(new_stat_id, granule.granule_id) 
+	}
+
+
+	function handle_team_fg_stat_changes(granule, row_info){
+		switch(granule.stat){
+    		// 3 point make -> 3 point miss
+    		case 11:
+				handle_team_fg_stat_change(granule, three_pt_fg_index, granule.stat, row_info.stat, "Miss", "Make", 2, 1, -3)
+    			break;
+    		// 2 point make -> 2 point miss
+    		case 9:
+				handle_team_fg_stat_change(granule, two_pt_fg_index, granule.stat, row_info.stat, "Miss", "Make", 2, 1, -2)    				
+    			break;
+    		// 3 point miss -> 3 point make
+    		case 12 :
+				handle_team_fg_stat_change(granule, three_pt_fg_index, granule.stat, row_info.stat, "Make", "Miss", 1, 2, 3)    				
+    			break;
+    		// 2 point miss -> 2 point make
+    		case 10 :
+				handle_team_fg_stat_change(granule, two_pt_fg_index, granule.stat, row_info.stat, "Make", "Miss", 1, 2, 2)    				
+    			break;
+    		
+    		// free throw make
+    		case 13 :
+				handle_team_ft_stat_change(granule, granule.stat, row_info.stat, "Miss", "Make", 2, 1, -1)    				
+    			break;
+    		// free throw miss
+    		case 14:
+				handle_team_ft_stat_change(granule, granule.stat, row_info.stat, "Make", "Miss", 1, 2, 1)    				
+    			break;
+	    }
+	}
+
+	function handle_fg_stat_change(granule, player, pt_fg_index, old_stat_id, new_stat_id, new_result, old_result, new_result_id, old_result_id, point_val){
+		var point_index = find_stat_in_player_arr(15)
+		var old_player_stat_index = find_stat_in_player_arr(old_stat_id)
+		var old_result_stat_index = find_stat_in_player_arr(old_result_id)
+		var new_player_stat_index = find_stat_in_player_arr(new_stat_id)
+		var new_result_stat_index = find_stat_in_player_arr(new_result_id)
+		undo_player_fg_from_table(granule, pt_fg_index, old_result, fg_index)
+		undo_team_fg_from_table(granule, pt_fg_index, old_result, fg_index)
+    	increment_player_points(player, granule.player.stat_index -1, point_val, point_index)
+    	lineups_arr[granule.lineup_index].cumulative_arr[point_index].total+=point_val
+
+    	decrement_from_player_cumulative_array(player, old_stat_id)
+    	decrement_from_player_cumulative_array(player, old_result_id)
+    	decrement_from_team_stat_array(old_stat_id)
+	    decrement_from_team_stat_array(old_result_id)
+
+	    undo_fg_from_lineup_obj(old_player_stat_index, old_result_stat_index, granule.lineup_index)
+
+	    increment_team_points(point_val, point_index)
+	    toggle_make_miss(granule, new_result_id, point_val)
+
+    	//insert_player_fg_in_table(player.player_obj.stat_index -1, pt_fg_index, new_result)
+	    insert_player_fg_in_table(granule, pt_fg_index, new_result, fg_index)
+
+	    insert_team_fg_in_table(granule, pt_fg_index, new_result, fg_index)
+
+	    increment_from_team_stat_array(new_stat_id)
+	    increment_from_team_stat_array(new_result_id)
+
+	    increment_lineup_fgs(new_player_stat_index, new_result_stat_index, granule.lineup_index)
+
+	    increment_from_player_cumulative_array(player, new_stat_id)
+	    increment_from_player_cumulative_array(player, new_result_id)
+	    update_score(point_val, granule.is_opponent);
+
+	    change_stat_in_player_granules(player, new_stat_id, granule.granule_id)
+	    change_stat_in_player_granules(player, new_result_id, granule.granule_id -1)
+		change_stat_in_all_granules(new_stat_id, granule.granule_id)
+		change_stat_in_all_granules(new_result_id, granule.granule_id -1)
+	}
+
+	function handle_ft_stat_change(granule, player, old_stat_id, new_stat_id, new_result, old_result, new_result_id, old_result_id, point_val){
+		var point_index = find_stat_in_player_arr(15)
+		var old_player_stat_index = find_stat_in_player_arr(old_stat_id)
+		var new_player_stat_index = find_stat_in_player_arr(new_stat_id)
+
+		undo_player_fg_from_table(granule, null,  old_result, ft_index);
+		undo_team_fg_from_table(granule, null, old_result, ft_index)
+	    increment_player_points(player, granule.player.stat_index -1, point_val, point_index)
+	    lineups_arr[granule.lineup_index].cumulative_arr[point_index].total+=point_val
+
+	    decrement_from_player_cumulative_array(player, old_stat_id)
+	    decrement_from_team_stat_array(old_stat_id)
+
+	    lineups_arr[granule.lineup_index].cumulative_arr[old_player_stat_index].total--;
+	    lineups_arr[granule.lineup_index].cumulative_arr[new_player_stat_index].total++;
+
+	    increment_team_points(point_val, point_index)
+
+	    insert_player_fg_in_table(granule, ft_index, new_result, ft_index)
+	    insert_team_fg_in_table(granule, ft_index, new_result, ft_index)
+
+	    increment_from_team_stat_array(new_stat_id)
+
+	    increment_from_player_cumulative_array(player, new_stat_id)
+
+	    
+	    update_score(point_val, granule.is_opponent);
+
+	    change_stat_in_player_granules(player, new_stat_id, granule.granule_id)
+		change_stat_in_all_granules(new_stat_id, granule.granule_id) 
+	}
+
+	function handle_fg_stat_changes(player, granule, row_info, period_change){
+		switch(granule.stat){
+    		// 3 point make -> 3 point miss
+    		case 11:
+	    		if(granule.is_opponent){
+					handle_opponent_fg_stat_change(granule, three_pt_fg_index, granule.stat, row_info.stat, "Miss", "Make" , 2, 1, -3)   	
+    			}
+	    		else{
+	    			handle_fg_stat_change(granule, player, three_pt_fg_index, granule.stat, row_info.stat, "Miss", "Make" , 2, 1, -3)
+	    		}
+    			break;
+    		// 2 point make -> 2 point miss
+    		case 9:
+    			if(granule.is_opponent){
+					handle_opponent_fg_stat_change(granule, two_pt_fg_index, granule.stat, row_info.stat, "Miss", "Make" , 2, 1, -2)
+    			}
+    			else{
+    				handle_fg_stat_change(granule, player, two_pt_fg_index, granule.stat, row_info.stat, "Miss", "Make" , 2, 1, -2)
+    			}
+    			break;
+    		// 3 point miss -> 3 point make
+    		case 12 :
+    			if(granule.is_opponent){
+					handle_opponent_fg_stat_change(granule, three_pt_fg_index, granule.stat, row_info.stat, "Make", "Miss", 1, 2, 3)
+    			}
+    			else{
+    				handle_fg_stat_change(granule, player, three_pt_fg_index, granule.stat, row_info.stat, "Make", "Miss", 1, 2, 3)	
+    			}
+    			break;
+    		// 2 point miss -> 2 point make
+    		case 10 :
+    			if(granule.is_opponent){
+					handle_opponent_fg_stat_change(granule, two_pt_fg_index, granule.stat, row_info.stat, "Make", "Miss", 1, 2, 2)
+    			}
+    			else{
+    				handle_fg_stat_change(granule, player, two_pt_fg_index, granule.stat, row_info.stat, "Make", "Miss", 1, 2, 2)	
+    			}
+    			break;
+    		
+    		// free throw make
+    		case 13 :
+    			if(granule.is_opponent){
+					handle_opponent_ft_stat_change(granule, granule.stat, row_info.stat, "Miss", "Make" , 2, 1, -1)
+    			}
+    			else{
+    				handle_ft_stat_change(granule, player, granule.stat, row_info.stat, "Miss", "Make" , 2, 1, -1)	
+    			}
+    			break;
+    		// free throw miss
+    		case 14:
+    			if(granule.is_opponent){
+					handle_opponent_ft_stat_change(granule, granule.stat, row_info.stat, "Make", "Miss", 1, 2, 1)
+    			}
+    			else{
+    				handle_ft_stat_change(granule, player, granule.stat, row_info.stat, "Make", "Miss", 1, 2, 1)	
+    			}
+    			break;
+	    }
+	}
+
+	// not sure if necessary
+	function is_same_half(old_period, new_period){
+		if((old_period == 1 && new_period == 2) || (old_period == 2 && new_period == 1) || (old_period == 3 && new_period == 4) || (old_period == 4 && new_period == 3)){
+			return true
+		}
+		else{
+			return false
+		}
+	}
+
+	function rollback_period_stat(stat, is_opponent, old_quarter){
+		var stat_i = find_stat_in_player_arr(stat)
+		var table_i = find_stat_index(stat_array[0].cumulative_arr[stat_i])
+		period_stats(is_opponent, stat_i, -1, old_quarter)
+		update_period_table(is_opponent, old_quarter, table_i, -1)
+	}
+
+	function add_period_stat(stat, is_opponent, new_quarter){
+		var stat_i = find_stat_in_player_arr(stat)
+		var table_i = find_stat_index(stat_array[0].cumulative_arr[stat_i])
+		period_stats(is_opponent, stat_i, 1, new_quarter)
+		update_period_table(is_opponent, new_quarter, table_i, 1)
+	}
+
+
+	function rollback_period_fg(stat, is_opponent, old_quarter, rollback_points){
+		var stat_i = find_stat_in_player_arr(stat)
+		switch(stat){
+    		case 11:
+    			if(rollback_points) period_points(is_opponent, -3, old_quarter)
+				period_stats(is_opponent, 0, -1, old_quarter)
+				period_fg_in_table(stat, is_opponent, three_pt_fg_index, fg_index, "Make", old_quarter, true)
+    			break;
+    		case 9:
+    			if(rollback_points) period_points(is_opponent, -2, old_quarter)
+				period_stats(is_opponent, 0, -1, old_quarter)
+				period_fg_in_table(stat, is_opponent, null, fg_index, "Make", old_quarter, true)
+    			break;
+    		case 12 :
+				period_stats(is_opponent, 1, -1, old_quarter)
+				period_fg_in_table(stat, is_opponent, three_pt_fg_index, fg_index, "Miss", old_quarter, true)
+    			break;
+    		case 10 :
+				period_stats(is_opponent, 1, -1, old_quarter)
+				period_fg_in_table(stat, is_opponent, null, fg_index, "Miss", old_quarter, true)		
+    			break;
+    		case 13 :
+    			if(rollback_points) period_points(is_opponent, -1, old_quarter)
+				period_fg_in_table(stat, is_opponent, null, ft_index, "Make", old_quarter, true)
+    			break;
+    		case 14:
+				period_fg_in_table(stat, is_opponent, null, ft_index, "Miss", old_quarter, true)				
+    			break;
+	    }
+	    period_stats(is_opponent, stat_i, -1, old_quarter)
+	}
+
+	function add_period_fg(stat, is_opponent, new_quarter){
+		var stat_i = find_stat_in_player_arr(stat)
+		switch(stat){
+    		case 11:
+    			period_points(is_opponent, 3, new_quarter)
+				period_stats(is_opponent, 0, 1, new_quarter)
+				period_fg_in_table(stat, is_opponent, three_pt_fg_index, fg_index, "Make", new_quarter, false)
+    			break;
+    		case 9:
+    			period_points(is_opponent, 2, new_quarter)
+				period_stats(is_opponent, 0, 1, new_quarter) 
+				period_fg_in_table(stat, is_opponent, null, fg_index, "Make", new_quarter, false)	
+    			break;
+    		case 12 :
+				period_stats(is_opponent, 1, 1, new_quarter) 
+				period_fg_in_table(stat, is_opponent, three_pt_fg_index, fg_index, "Miss", new_quarter, false)
+    			break;
+    		case 10 :
+				period_stats(is_opponent, 1, 1, new_quarter) 	
+				period_fg_in_table(stat, is_opponent, null, fg_index, "Miss", new_quarter, false)		
+    			break;
+    		case 13 :
+    			period_points(is_opponent, 1, new_quarter)
+				period_fg_in_table(stat, is_opponent, null, ft_index, "Make", new_quarter, false)	
+    			break;
+    		case 14:
+				period_fg_in_table(stat, is_opponent, null, ft_index, "Miss", new_quarter, false)  				
+    			break;
+	    }
+		period_stats(is_opponent, stat_i, 1, new_quarter)
+	}
+
+	function handle_standard_stat_changes(player, granule, row_info, granule_id, period_change){
+		var old_player_stat_index = find_stat_in_player_arr(granule.stat)
+		var new_player_stat_index = find_stat_in_player_arr(row_info.stat)
+
+		var old_player_val = decrement_from_player_cumulative_array(player, granule.stat)
+		var new_player_val = increment_from_player_cumulative_array(player, row_info.stat)
+
+		lineups_arr[granule.lineup_index].cumulative_arr[old_player_stat_index].total--
+		lineups_arr[granule.lineup_index].cumulative_arr[new_player_stat_index].total++
+
+		decrement_from_player_stat_tables(player, granule.stat, old_player_val)
+		increment_from_player_stat_tables(player, row_info.stat, new_player_val)
+
+		var old_team_val = decrement_from_team_stat_array(granule.stat)
+		decrement_from_team_stat_tables(granule.stat, old_team_val)
+
+		increment_from_team_stat_array(row_info.stat)
+		increment_from_team_stat_tables(row_info.stat)
+
+		change_stat_in_player_granules(player, row_info.stat, granule_id)
+		change_stat_in_all_granules(row_info.stat, granule_id)
+	}
+
+	function handle_opponent_stat_changes(granule, row_info, granule_id, period_change){
+		var old_player_stat_index = find_stat_in_player_arr(granule.stat)
+		var new_player_stat_index = find_stat_in_player_arr(row_info.stat)
+		var old_val = decrement_from_opponent_array(granule.stat)
+		var new_val = increment_from_opponent_array(row_info.stat)
+
+		lineups_arr[granule.lineup_index].opponent_stats[old_player_stat_index].total--
+		lineups_arr[granule.lineup_index].opponent_stats[new_player_stat_index].total++
+
+		decrement_from_opponent_stat_tables(granule.stat, old_val)
+		increment_from_opponent_stat_tables(row_info.stat, new_val)
+
+		change_stat_in_all_granules(row_info.stat, granule_id)
+	}
+
+
+	function save_granule(granule_id, button){
+		update_fg_locations()
+		var granule_row = button.parentElement.parentElement.parentElement
+		var granule = find_stat_granule(granule_id)
+
+		var old_player = find_player(granule.player)
+
+		var row_info = get_info_from_row(granule_row)
+		var new_player = find_player_by_id(row_info.player.player_id)
+		var change_period = false;
+		var old_period = parseInt(granule.metadata.period);
+		var new_period = parseInt(row_info.timestamp.quarter);
+		var old_stat = granule.stat
+		if(new_period != old_period){
+			change_period = true;
+		}
+
+		if(row_info.player.player_id != old_player.player_obj.id && !granule.is_opponent){
+			rollback_stat_for_player(granule, old_player)
+			if(!player_in_lineup(granule.lineup_index, row_info.player.player_id)){
+				var new_lineup_index = update_lineup_in_granule(row_info.player.player_id, granule);
+				granule.lineup_index = new_lineup_index;
+				change_lineup_index_in_all_granules(new_lineup_index, granule_id)
+			}
+
+			if(parseInt(row_info.stat) != granule.stat){
+				if(row_info.stat == 9 || row_info.stat == 10 || row_info.stat == 11 || row_info.stat == 12 || row_info.stat == 13 || row_info.stat == 14){
+					handle_team_fg_stat_changes(granule, row_info)
+				}
+				else{
+					var old_team_val = decrement_from_team_stat_array(granule.stat)
+					decrement_from_team_stat_tables(granule.stat, old_team_val)
+
+					increment_from_team_stat_array(row_info.stat)
+					increment_from_team_stat_tables(row_info.stat)
+
+					change_stat_in_all_granules(row_info.stat, granule_id)
+					granule.stat = row_info.stat;
+				}
+
+			}
+			granule.player = new_player.player_obj;
+			// in add stat for player, make sure that we change the lineup index if need be.
+			add_stat_for_player(granule, new_player, new_lineup_index);
+		}
+
+		//if new_stat != old_stat
+		else if(parseInt(row_info.stat) != granule.stat){
+			if(row_info.stat == 9 || row_info.stat == 10 || row_info.stat == 11 || row_info.stat == 12 || row_info.stat == 13 || row_info.stat == 14){
+				handle_fg_stat_changes(old_player, granule, row_info)
+			}
+			else{
+				if(granule.is_opponent){
+					handle_opponent_stat_changes(granule, row_info, granule_id)
+				}
+				else{
+					handle_standard_stat_changes(old_player, granule, row_info, granule_id)
+				}
+				
+			}
+		}
+
+		// if new_timestamp != old_timestamp
+		if(compare_timestamps(row_info.timestamp, granule.metadata)){
+			change_timestamp_in_player_granules(old_player, row_info.timestamp, granule_id)
+			change_timestamp_in_all_granules(row_info.timestamp, granule_id)
+		}
+
+		if(row_info.stat == 9 || row_info.stat == 10 || row_info.stat == 11 || row_info.stat == 12 || row_info.stat == 13 || row_info.stat == 14){
+			rollback_period_fg(old_stat, granule.is_opponent, old_period, true)
+			add_period_fg(row_info.stat, granule.is_opponent, new_period)
+		}
+		else{
+			rollback_period_stat(old_stat, granule.is_opponent, old_period)
+			add_period_stat(row_info.stat, granule.is_opponent, new_period)
+		}
+
+		save_granule_player(granule_row, row_info.player)
+		save_granule_stat(granule_row, row_info.stat)
+		save_granule_timestamp(granule_row, row_info.timestamp)
+		edit_granule_button(granule_row, granule_id)
+		print_log_info()
+	}
+
+	function edit_granule_button(granule_row, granule_id, stat_id){
+		var edit_col = $(granule_row).find(".edit-delete-granule")
+		var edit_button = "<button class = 'edit-stat-granule' id = 'edit-stat-" + granule_id + "' onclick = 'edit_stat_granule(this, " + granule_id +")'>Edit</button> / <button class = 'edit-stat-granule' id = 'delete-stat-" + granule_id + "' onclick = 'delete_stat_prompt(this, " + granule_id +")'>Delete</button>"
+		edit_col.html(edit_button)
+	}
+
+	function save_granule_button(granule_row, granule_id){
+		var edit_col = $(granule_row).find(".edit-delete-granule")
+		var save_button = "<button onclick = 'save_granule(" + granule_id + ", this  )'>Save</button>"
+		edit_col.html(save_button)
+	}
+
+	function edit_stat_granule(button, granule_id){
+		update_fg_locations()
+		var granule_row = button.parentElement.parentElement.parentElement
+		edit_granule_player(granule_row)
+		edit_granule_stat(granule_row)
+		edit_granule_timestamp(granule_row, granule_id)
+		save_granule_button(granule_row, granule_id)
+	}
+
+	function remove_granule(granule){
+		removeIndex = all_stat_granules.map(function(item) { return item.granule_id; }).indexOf(granule.granule_id);
+        ~removeIndex && all_stat_granules.splice(removeIndex, 1);
+	}
+
+	function delete_stat_granule(button, granule_id){
+		var granule_row = button.parentElement.parentElement.parentElement
+		var granule = find_stat_granule(granule_id)
+		undo_player_array_stat(granule)
+		remove_granule(granule)
+		print_log_info()
+		while (granule_row.firstChild) {
+		    granule_row.removeChild(granule_row.firstChild);
+		}
+		granule_row.remove()
+	}
+
+	function delete_stat_prompt(button, granule_id){
+		var r = confirm("Are you sure you want to delete this stat?");
+		if (r == true) {
+			delete_stat_granule(button, granule_id)
+		} else {
+		  
+		}
+	}
+
+	function find_row_in_log(granule_id){
+		return $(game_log).find(".stat-granule-" + granule_id)
+	}
+
+	function toggle_fg_in_log(granule){
+		var stat_name = getStatName(granule.stat)
+		var row = find_row_in_log(granule.granule_id)
+		var stat_col = $(row).find(".stat-granule-stat")
+		stat_col.html(stat_name + " &nbsp; +1") 
+		stat_col.attr('stat-id', granule.stat)
+	}
+
+	function logStat(stat_name, player, stat_object){
+		var new_row = game_log.insertRow()
+		$(new_row).addClass("stat-granule-"+stat_object.granule_id)
+		var player_col = new_row.insertCell()
+		player_col.innerHTML = player.name
+		if(stat_object.is_opponent){
+			player_col.setAttribute('player-id', -1)
+		}
+		else{
+			player_col.setAttribute('player-id', player.id)
+		}
+		$(player_col).addClass("stat-granule-player")
+		var stat_col = new_row.insertCell()
+		$(stat_col).addClass("stat-granule-stat")
+		stat_col.innerHTML = stat_name + " &nbsp; +1"
+		stat_col.setAttribute('stat-id', stat_object.stat)
+		/*
+		var added_by_col = new_row.insertCell()
+		added_by_col.innerHTML = stat_object.sent_by
+		$(added_by_col).addClass("stat-granule-addedby")*/
+
+		var time_stamp_col = new_row.insertCell()
+		$(time_stamp_col).addClass("stat-granule-timestamp")
+
+		var edit_col = new_row.insertCell()
+		$(edit_col).addClass("stat-granule-edit")
+		edit_col.innerHTML = "<div class = 'edit-delete-granule'><button class = 'edit-stat-granule' id = 'edit-stat-" + stat_object.granule_id + "' onclick = 'edit_stat_granule(this, "+ stat_object.granule_id +")'>Edit</button> / <button class = 'edit-stat-granule' id = 'delete-stat-" + stat_object.granule_id + "' onclick = 'delete_stat_prompt(this, "+ stat_object.granule_id +")'>Delete</button></div>"
+		console.log(stat_object.metadata)
+
+		if(stat_object.metadata.minute != null){
+			var second = stat_object.metadata.second 
+			var minute = stat_object.metadata.minute 
+			var period = stat_object.metadata.period
+			var seconds_str;
+			var minutes_str;
+			(second < 10) ? seconds_str = "0" + second.toString() : seconds_str = second.toString();
+			var minutes_str = minute.toString();
+			var time_string = minutes_str + ":" + seconds_str
+			var period_string =  "Q"+ period.toString()
+
+			time_stamp_col.innerHTML = period_string + "-" + time_string 
+		}
+		else{
+			var seconds_str;
+			var minutes_str
+			(seconds < 10) ? seconds_str = "0" + seconds.toString() : seconds_str = seconds.toString();
+			(minutes < 10) ? minutes_str = "0" + minutes.toString() : minutes_str = minutes.toString();
+			var time_string = minutes.toString() + ":" + seconds_str
+			var period_string = "Q" + curr_period.toString()
+
+			time_stamp_col.innerHTML = period_string + "-" + time_string 
+		}
+		updateScroll()
+	}
+
+	function updateScroll(){
+	    var element = document.getElementById("gm-log-wrapper");
+	    element.scrollTop = element.scrollHeight;
+	}
+
+
+	/**************************************************************/
+	/************************ </GAME LOG> **************************/
+	/**************************************************************/
+
+
+	/**************************************************************/
+	/************************ <PERIOD TABLES> *********************/
+	/**************************************************************/
+
+	function get_period_table(i){
+		switch(i){
+			case 1:
+				return first_half_table;
+			case 2:
+				return second_half_table;
+			case 3:
+				return first_quarter_table;
+			case 4:
+				return second_quarter_table;
+			case 5:
+				return third_quarter_table;
+			case 6:
+				return fourth_quarter_table;
+		}
+	}
+
+	function populate_period_tables(){
+		for (var i = 1; i <= 6; i++){
+			var table = get_period_table(i)
+			var stats_row = table.insertRow(0);
+			var team_row = table.insertRow(1);
+			var opponent_row = table.insertRow(2);
+
+			populate_row(stats_row, 0, false);
+			populate_row(team_row, 1, false, "<%= @team.name %>");
+			populate_row(opponent_row, 2, false, opponent_obj.player_obj.name);
+		}
+	}
+
+	function update_period_col(table, stat_index, is_opponent, increment_value){
+		var row = (is_opponent) ? table.rows[2] : table.rows[1];
+		var col = row.cells[stat_index +1];
+		col.innerHTML = parseInt(col.innerHTML) + increment_value;
+	}
+
+
+	function update_period_table(is_opponent, period, index, increment_value){
+		if(period <=2 ){
+			if (period == 1) {
+				update_period_col(first_quarter_table, index, is_opponent, increment_value)
+			}
+			else {
+				update_period_col(second_quarter_table, index, is_opponent, increment_value)
+			} 
+			update_period_col(first_half_table, index, is_opponent, increment_value)
+		}
+		else{
+			if (period == 3) {
+				update_period_col(third_quarter_table, index, is_opponent, increment_value)
+			}
+			else {
+				update_period_col(fourth_quarter_table, index, is_opponent, increment_value)
+			} 
+			update_period_col(second_half_table, index, is_opponent, increment_value)
+		}
+	}
+
+	// works for undo -- set increment_value negative 
+	function period_stats(is_opponent, stat_i, increment_value, period){
+		if(period <=2 ){
+			if (period == 1) {
+				(is_opponent) ? quarter_1_totals[stat_i].opponent_total.total+= increment_value : quarter_1_totals[stat_i].team_total.total+= increment_value;
+			}
+			else {
+				(is_opponent) ? quarter_2_totals[stat_i].opponent_total.total+= increment_value : quarter_2_totals[stat_i].team_total.total+= increment_value;
+			} 
+			(is_opponent) ? half_1_totals[stat_i].opponent_total.total+= increment_value : half_1_totals[stat_i].team_total.total+= increment_value;
+		}
+		else{
+			if (period == 3) {
+				(is_opponent) ? quarter_3_totals[stat_i].opponent_total.total+= increment_value : quarter_3_totals[stat_i].team_total.total+= increment_value;
+			}
+			else {
+				(is_opponent) ? quarter_4_totals[stat_i].opponent_total.total+= increment_value : quarter_4_totals[stat_i].team_total.total+= increment_value;
+			} 
+			(is_opponent) ? half_2_totals[stat_i].opponent_total.total+= increment_value : half_2_totals[stat_i].team_total.total+= increment_value;
+		}
+	}
+
+	function determine_period_rows(period, is_opponent){
+		var period_row;
+		var half_row;
+		if(period <=2 ){
+			if (period == 1) {
+				(is_opponent) ?  period_row = first_quarter_table.rows[2]: period_row = first_quarter_table.rows[1];
+			}
+			else {
+				(is_opponent) ?  period_row = second_quarter_table.rows[2]: period_row = second_quarter_table.rows[1];
+			} 
+			(is_opponent) ? half_row = first_half_table.rows[2]: half_row = first_half_table.rows[1];
+		}
+		else{
+			if (period == 3) {
+				(is_opponent) ?  period_row = third_quarter_table.rows[2]: period_row = third_quarter_table.rows[1];
+			}
+			else {
+				(is_opponent) ?  period_row = fourth_quarter_table.rows[2]: period_row = fourth_quarter_table.rows[1];
+			} 
+			(is_opponent) ? half_row = second_half_table.rows[2]: half_row = second_half_table.rows[1];
+		}
+		return {"period_row": period_row, "half_row" : half_row}
+	}
+
+	function period_fg_in_table(stat, is_opponent, index, result_index, shot_result, period, undo){
+		var period_rows = determine_period_rows(period, is_opponent)
+		
+		if(undo){
+			if(stat == 11 || stat ==12){
+				undo_table_cell(index, shot_result, period_rows.period_row)
+				undo_table_cell(index, shot_result, period_rows.half_row)
+			}
+			undo_table_cell(result_index, shot_result, period_rows.period_row)
+			undo_table_cell(result_index, shot_result, period_rows.half_row)
+		}
+		else{
+			if(stat == 11 || stat ==12){
+				fg_in_table(index, shot_result, period_rows.period_row)
+				fg_in_table(index, shot_result, period_rows.half_row)
+			}
+			fg_in_table(result_index, shot_result, period_rows.period_row);
+			fg_in_table(result_index, shot_result, period_rows.half_row);
+		}
+	}
+
+	function period_points(is_opponent, shot_value, period){
+		var period_row;
+		var half_row;
+		var period_array;
+		var half_array;
+		var point_index = find_stat_in_player_arr(15);
+		if(period <=2 ){
+			if (period == 1) {
+				(is_opponent) ?  period_row = first_quarter_table.rows[2]: period_row = first_quarter_table.rows[1];
+				period_array = quarter_1_totals;
+			}
+			else {
+				(is_opponent) ?  period_row = second_quarter_table.rows[2]: period_row = second_quarter_table.rows[1];
+				period_array = quarter_2_totals;
+			} 
+			(is_opponent) ? half_row = first_half_table.rows[2]: half_row = first_half_table.rows[1];
+			half_array = half_1_totals;
+		}
+		else{
+			if (period == 3) {
+				(is_opponent) ?  period_row = third_quarter_table.rows[2]: period_row = third_quarter_table.rows[1];
+				period_array = quarter_3_totals;
+			}
+			else {
+				(is_opponent) ?  period_row = fourth_quarter_table.rows[2]: period_row = fourth_quarter_table.rows[1];
+				period_array = quarter_4_totals;
+			} 
+			(is_opponent) ? half_row = second_half_table.rows[2]: half_row = second_half_table.rows[1];
+			half_array = half_2_totals
+		}
+		points_in_table(period_row, shot_value);
+		points_in_table(half_row, shot_value);
+		if(is_opponent){
+			period_array[point_index].opponent_total.total += shot_value
+			half_array[point_index].opponent_total.total += shot_value
+		}
+		else{
+			period_array[point_index].team_total.total += shot_value
+			half_array[point_index].team_total.total += shot_value
+		}
+	}
+
+	function toggle_table(table_case, button){
+		$(".active-table").removeClass("active-table")
+		$(".gm-table-button").addClass("inactive-table")
+		$(button).removeClass("inactive-table")
+		$(button).addClass("active-table")
+		switch(table_case){
+			case 0 :
+				$("#team-stats-table").show()
+				$("#half-1-table").hide()
+				$("#half-2-table").hide()
+				$("#quarter-1-table").hide()
+				$("#quarter-2-table").hide()
+				$("#quarter-3-table").hide()
+				$("#quarter-4-table").hide()
+				break;
+			case 1 :
+				$("#team-stats-table").hide()
+				$("#half-1-table").show()
+				$("#half-2-table").hide()
+				$("#quarter-1-table").hide()
+				$("#quarter-2-table").hide()
+				$("#quarter-3-table").hide()
+				$("#quarter-4-table").hide()
+				break;
+			case 2 :
+				$("#team-stats-table").hide()
+				$("#half-1-table").hide()
+				$("#half-2-table").show()
+				$("#quarter-1-table").hide()
+				$("#quarter-2-table").hide()
+				$("#quarter-3-table").hide()
+				$("#quarter-4-table").hide()
+				break;
+			case 3 :
+				$("#team-stats-table").hide()
+				$("#half-1-table").hide()
+				$("#half-2-table").hide()
+				$("#quarter-1-table").show()
+				$("#quarter-2-table").hide()
+				$("#quarter-3-table").hide()
+				$("#quarter-4-table").hide()
+				break;
+			case 4 :
+				$("#team-stats-table").hide()
+				$("#half-1-table").hide()
+				$("#half-2-table").hide()
+				$("#quarter-1-table").hide()
+				$("#quarter-2-table").show()
+				$("#quarter-3-table").hide()
+				$("#quarter-4-table").hide()
+				break;
+			case 5 :
+				$("#team-stats-table").hide()
+				$("#half-1-table").hide()
+				$("#half-2-table").hide()
+				$("#quarter-1-table").hide()
+				$("#quarter-2-table").hide()
+				$("#quarter-3-table").show()
+				$("#quarter-4-table").hide()
+				break;
+			case 6 :
+				$("#team-stats-table").hide()
+				$("#half-1-table").hide()
+				$("#half-2-table").hide()
+				$("#quarter-1-table").hide()
+				$("#quarter-2-table").hide()
+				$("#quarter-3-table").hide()
+				$("#quarter-4-table").show()
+				break;
+		}
+	}
+	/**************************************************************/
+	/*********************** </PERIOD TABLES> *********************/
+	/**************************************************************/
 
 
 
@@ -1220,6 +2764,9 @@
 		populate_row(stats_row, 0, false);
 		populate_row(team_row, 1, false, "<%= @team.name %>");
 		populate_row(opponent_row, 2, false, opponent_obj.player_obj.name);
+
+		populate_period_tables()
+
 		var cumulative_array_len = stat_array.length
 		var i = 0;
 		for(i; i < cumulative_array_len + 1; i++){
@@ -1278,23 +2825,35 @@
 		var player_minutes = Math.floor(new_val / 60)
 		var player_seconds = new_val - player_minutes * 60;
 		(player_seconds < 10) ? seconds_str = "0" + player_seconds.toString() : seconds_str = player_seconds.toString();
-		col.innerHTML = player_minutes.toString() + ":" + seconds_str
+		col.innerHTML = player_minutes.toString() + ":" + seconds_str;
+	}
+
+
+	function update_player_col(stat_index, player_i, new_val){
+		var player_row = player_stats_table.rows[player_i+1];
+		var player_col = player_row.cells[stat_index+1];
+		player_col.innerHTML = new_val;
+	}
+
+	function update_team_col(stat_i){
+		var team_row = team_stats_table.rows[1];
+		var team_col = team_row.cells[stat_i + 1]
+		team_col.innerHTML = parseInt(team_col.innerHTML) + 1;
+	}
+
+	function update_opponent_col(stat_i, new_val){
+		var opponent_row = team_stats_table.rows[2];
+		var opponent_col = opponent_row.cells[stat_i+1];
+		opponent_col.innerHTML = new_val;
 	}
 
 	function update_stat_table(stat_i, player_i, new_val){
 		if(player_i >= 0){
-			var player_row = player_stats_table.rows[player_i+1];
-			var player_col = player_row.cells[stat_i + 1];
-			var team_row = team_stats_table.rows[1];
-			var team_col = team_row.cells[stat_i + 1]
-
-			player_col.innerHTML = new_val;
-			team_col.innerHTML = parseInt(team_col.innerHTML) + 1;
+			update_player_col(stat_i, player_i, new_val)
+			update_team_col(stat_i)
 		}
 		else {
-			var row = team_stats_table.rows[2];
-			var col = row.cells[stat_i+1];
-			col.innerHTML = new_val;
+			update_opponent_col(stat_i, new_val)
 		}
 	}	
 
@@ -1352,14 +2911,7 @@
 	    $("#stat-added-username").html("Reversed by: " + " &nbsp; " + stat_object.sent_by );
 	}
 
-	function statAdded(stat_name, player, stat_object, is_loading){
-		if(!is_loading){
-			console.log("updating stat ADDED")
-			update_fg_locations();
-			gameModeChannel.send({sent_by: <%=current_user.id%>, game_state: {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr, "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}, new_stat: stat_object})
-			game_mode_initialized = true;
-		}
-
+	function statBanner(stat_name, player, stat_object){
 		$(".stat-added-alert").show()
 		$("#stat-added-player-name").html(player.name + ": &nbsp;");
 		$("#stat-added-name").html(stat_name + " &nbsp; +1");
@@ -1367,7 +2919,6 @@
 		$("#stat-added-undo").html("<button onclick='undo_stat()'>Undo Stat</button>")
 		$(".stat-added-alert").css("opacity", "1")
 
-		
 		
 		setTimeout( function() {
 			$(".stat-added-alert").css("transition", ".5s");
@@ -1378,80 +2929,99 @@
 	        $(".stat-added-alert").hide()
 	    }, 2200);
 	    $("#stat-added-username").html("Added by: " + " &nbsp; " + stat_object.sent_by );
+	}
 
+
+	function statAdded(stat_name, player, stat_object, is_loading){
+		if(!is_loading){
+			update_fg_locations();
+			gameModeChannel.send({sent_by: <%=current_user.id%>, game_state: {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr, "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}, new_stat: stat_object})
+			game_mode_initialized = true;
+		}
+
+		statBanner(stat_name, player, stat_object)
+		logStat(stat_name, player, stat_object)
 	}
 
 	function add_stat_to_obj(obj, player_i, stat_object, is_opponent, is_loading, stat_i){
 		var stat_name = getStatName(stat_object.stat)
+		//console.log(stat_object)
 		//var stat_i = find_stat_in_player_arr(stat_object.stat)
 		obj.gran_stat_arr.push(stat_object);
 		switch(stat_object.stat){
 			//FG Make
 			case 1 :
-				update_field_goals_make(player_i, stat_i, fg_index);
 				++obj.cumulative_arr[stat_i].total;
 				if (!is_opponent) ++team_stat_totals[stat_i].total;
-				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
+				//statAdded(stat_name, obj.player_obj, stat_object, is_loading)
+				period_stats(is_opponent, stat_i, 1, stat_object.metadata.period)
 				break;
 			// FG Miss
 			case 2 :
-				update_field_goals_miss(player_i, stat_i, fg_index);
 				++obj.cumulative_arr[stat_i].total;
 				if (!is_opponent) ++team_stat_totals[stat_i].total;
-				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
+				//statAdded(stat_name, obj.player_obj, stat_object, is_loading)
+				period_stats(is_opponent, stat_i, 1, stat_object.metadata.period)
 				break;
 			// 2 point make
 			case 9 :
-				//update_field_goals_make(player_i, stat_i, two_pt_fg_index);
-				increment_points(player_i, 2, obj);
+				insert_fg_in_table(player_i, two_pt_fg_index, "Make", stat_object, fg_index);
+				increment_points(player_i, 2, obj, stat_object, is_loading);
 				++obj.cumulative_arr[stat_i].total;
 				if (!is_opponent) ++team_stat_totals[stat_i].total;
 				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
+				period_stats(is_opponent, stat_i, 1, stat_object.metadata.period)
 				break;
 			// 2 point miss
 			case 10 :
-				//update_field_goals_miss(player_i, stat_i, two_pt_fg_index);
+				insert_fg_in_table(player_i, two_pt_fg_index, "Make", stat_object, fg_index);
 				++obj.cumulative_arr[stat_i].total;
 				if (!is_opponent) ++team_stat_totals[stat_i].total;
 				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
+				period_stats(is_opponent, stat_i, 1, stat_object.metadata.period)
 				break;
 			// 3 point make
 			case 11 :
-				update_field_goals_make(player_i, stat_i, three_pt_fg_index);
-				increment_points(player_i, 3, obj);
+				insert_fg_in_table(player_i, three_pt_fg_index, "Make", stat_object, fg_index);
+				increment_points(player_i, 3, obj, stat_object, is_loading);
 				++obj.cumulative_arr[stat_i].total;
 				if (!is_opponent) ++team_stat_totals[stat_i].total;
 				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
+				period_stats(is_opponent, stat_i, 1, stat_object.metadata.period)
 				break;
 			// 3 point miss
 			case 12 :
-				
-				update_field_goals_miss(player_i, stat_i, three_pt_fg_index);
+				insert_fg_in_table(player_i, three_pt_fg_index, "Miss", stat_object, fg_index);
 				++obj.cumulative_arr[stat_i].total;
 				if (!is_opponent) ++team_stat_totals[stat_i].total;
 				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
+				period_stats(is_opponent, stat_i, 1, stat_object.metadata.period)
 				break;
 			// Ft make
 			case 13 :
-				insert_fg_in_table(player_i, ft_index, "Make", obj);
-				increment_points(player_i, 1, obj);
+				insert_fg_in_table(player_i, ft_index, "Make", stat_object, ft_index);
+				increment_points(player_i, 1, obj, stat_object, is_loading);
 				update_score(1, is_opponent);
 				++obj.cumulative_arr[stat_i].total;
 				if (!is_opponent) ++team_stat_totals[stat_i].total
 				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
+				period_stats(is_opponent, stat_i, 1, stat_object.metadata.period)
 				break;
 			// Ft miss
 			case 14 :
-				insert_fg_in_table(player_i, ft_index, "Miss", obj);
+				insert_fg_in_table(player_i, ft_index, "Miss", stat_object, ft_index);
 				++obj.cumulative_arr[stat_i].total;
 				if (!is_opponent) ++team_stat_totals[stat_i].total
 				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
+				period_stats(is_opponent, stat_i, 1, stat_object.metadata.period)
 				break;
 			default :
 				var index = find_stat_index(obj.cumulative_arr[stat_i]);
 				update_stat_table(index, player_i, ++obj.cumulative_arr[stat_i].total);
 				if (!is_opponent) team_stat_totals[stat_i].total++;
 				statAdded(stat_name, obj.player_obj, stat_object, is_loading)
+				period_stats(is_opponent, stat_i, 1, stat_object.metadata.period);
+				update_period_table(is_opponent, stat_object.metadata.period, index, 1)
 		}
 	}
 
@@ -1461,7 +3031,7 @@
 		var stat_object;
 		stat_array_counter++;
 		if(curr_player_is_opponent){
-			stat_object = {"player": opponent_obj.player_obj, "stat": stat, "metadata" : metadata, "is_opponent": true, "index": index, "sent_by": "<%=current_user.name%>", "granule_id" : stat_array_counter};
+			stat_object = {"player": opponent_obj.player_obj, "stat": stat, "metadata" : metadata, "is_opponent": true, "index": index, "sent_by": "<%=current_user.name%>", "granule_id" : all_stat_granules.length +1, "lineup_index": curr_lineup.index};
 			all_stat_granules.push(stat_object);
 			var stat_i = find_stat_in_player_arr(stat_object.stat)
 			++curr_lineup.opponent_stats[stat_i].total
@@ -1472,7 +3042,7 @@
 			while(!player_found){
 				var curr_player_obj = stat_array[player_i];
 				if(curr_player_obj.player_obj.id == player.id){
-					stat_object = {"player": player, "stat": stat, "metadata" : metadata, "is_opponent": false, "index": index, "sent_by": "<%=current_user.name%>", "granule_id":stat_array_counter};
+					stat_object = {"player": player, "stat": stat, "metadata" : metadata, "is_opponent": false, "index": index, "sent_by": "<%=current_user.name%>", "granule_id":all_stat_granules.length + 1,  "lineup_index": curr_lineup.index};
 					all_stat_granules.push(stat_object);
 					var stat_i = find_stat_in_player_arr(stat_object.stat)
 					++curr_lineup.cumulative_arr[stat_i].total;
@@ -1481,8 +3051,9 @@
 				}
 				player_i++;
 			}
-
 		}
+		console.log(all_stat_granules)
+		console.log(lineups_arr)
 	}
 
 	function fg_in_table(index, shot_result, row){
@@ -1499,21 +3070,53 @@
 		pct_col.innerHTML = Math.round(numerator / denomenator * 100) + "%"
 	}
 
-	function insert_fg_in_table(player_i, index, shot_result){
+	function increment_lineup_fg(stat_object, stat_index, result_index){
+		lineups_arr[stat_object.lineup_index].cumulative_arr[stat_index].total++
+		lineups_arr[stat_object.lineup_index].cumulative_arr[result_index].total++
+	}
+
+	function insert_player_fg_in_table(stat_object, stat_index, result, result_index){
+		var player_row = player_stats_table.rows[stat_object.player.stat_index];
+		// only undo for 3pt granules because we don't have a separate column for 2pt shots in table
+		if(stat_object.stat== 11 || stat_object.stat == 12) {
+		    fg_in_table(stat_index, result, player_row);
+		}
+		fg_in_table(result_index, result, player_row);
+	}
+
+	function insert_team_fg_in_table(stat_object, stat_index, result, result_index){
+		var team_row = team_stats_table.rows[1];
+		if(stat_object.stat== 11 || stat_object.stat == 12) {
+		    fg_in_table(stat_index, result, team_row);
+		}
+		fg_in_table(result_index, result, team_row);
+	}
+
+	function insert_opponent_fg_in_table(stat_object, stat_index, result, result_index){
+		var opponent_row = team_stats_table.rows[2];
+		if(stat_object.stat== 11 || stat_object.stat == 12) {
+		    fg_in_table(stat_index, result, opponent_row);
+		}
+		fg_in_table(result_index, result, opponent_row);
+	}
+
+	function insert_fg_in_table(player_i, index, shot_result, stat_object, result_index){
+		var period = stat_object.metadata.period
 		// if player is a player (not the opponent)
+		// (stat_object, stat_index, result, result_index)
 		if(player_i >= 0 ){
-			player_row = player_stats_table.rows[player_i+1];
-			team_row = team_stats_table.rows[1];
-			fg_in_table(index, shot_result, player_row);
-			fg_in_table(index, shot_result, team_row);
+			insert_player_fg_in_table(stat_object, index, shot_result, result_index)
+			insert_team_fg_in_table(stat_object, index, shot_result, result_index)
+			period_fg_in_table(stat_object.stat, false, index, result_index, shot_result, period, false)
 		}
 		// if player is the oppoenent (team)
 		else {
-			opponent_row = team_stats_table.rows[2];
-			fg_in_table(index, shot_result, opponent_row);
+			insert_opponent_fg_in_table(stat_object, index, shot_result, result_index)
+			period_fg_in_table(stat_object.stat, true, index, result_index, shot_result, period, false)
 		}
 
 	}
+
 
 	function points_in_table (row, shot_value){
 		var col = row.cells[points_index];
@@ -1522,30 +3125,46 @@
 		col.innerHTML = curr_points.toString();
 	}
 
-	function increment_points(player_i, shot_value, player_obj){
+	function increment_player_points(player_obj, player_i, shot_value, stat_i){
+		var player_row = player_stats_table.rows[player_i+1];
+		points_in_table(player_row, shot_value);
+		player_obj.cumulative_arr[stat_i].total += shot_value;
+	}
+
+	function increment_team_points(shot_value, stat_i){
+		var team_row = team_stats_table.rows[1];
+		points_in_table(team_row, shot_value);
+		team_stat_totals[stat_i].total += shot_value;
+	}
+
+	function increment_opponent_points(shot_value, stat_i){
+		var opponent_row = team_stats_table.rows[2];
+		points_in_table(opponent_row, shot_value);
+		opponent_obj.cumulative_arr[stat_i].total+= shot_value
+	}
+
+
+	function increment_points(player_i, shot_value, player_obj, stat_object, is_loading){
+		var period = stat_object.metadata.period
 		var stat_i = find_stat_in_player_arr(15)
 		// if player is a player (not the opponent)
 		if(player_i >= 0 ){
-			var player_row = player_stats_table.rows[player_i+1];
-			var team_row = team_stats_table.rows[1];
-			points_in_table(player_row, shot_value);
-			points_in_table(team_row, shot_value);
-			
-			team_stat_totals[stat_i].total += shot_value;
-			player_obj.cumulative_arr[stat_i].total += shot_value;
-			if(curr_lineup){
-				curr_lineup.cumulative_arr[stat_i].total += shot_value;
-			}
+			increment_player_points(player_obj,player_i, shot_value, stat_i)
+			increment_team_points(shot_value, stat_i)
+			period_points(false, shot_value, period)
+			var lineup = lineups_arr[stat_object.lineup_index]
+
+			console.log("lineup_index: " + stat_object.lineup_index)
+			if(!is_loading)lineup.cumulative_arr[stat_i].total+= shot_value
 		}
 		else {
 			var opponent_row = team_stats_table.rows[2];
 			points_in_table(opponent_row, shot_value);
+			period_points(true, shot_value, period)
 			opponent_obj.cumulative_arr[stat_i].total += shot_value;
-			if(curr_lineup){
-				curr_lineup.opponent_stats[stat_i].total += shot_value;
-			}
+			var lineup = lineups_arr[stat_object.lineup_index]
+			if(!is_loading)lineup.opponent_stats[stat_i].total+= shot_value
 		}
-		
 	}
 
 	function update_field_goals_make(player_i, stat_i, index){
@@ -1557,7 +3176,6 @@
 	}
 
 	function undo_table_cell(index, shot_result, row){
-		console.log("undo table cell result: " + shot_result)
 		var col = row.cells[index];
 		var pct_col = row.cells[index+1];
 		contents = col.innerHTML;
@@ -1565,7 +3183,7 @@
 		numerator = parseInt(split_contents[0]);
 		denomenator = parseInt(split_contents[1]);
 		denomenator--;
-		if(shot_result == 1) numerator--;
+		if(shot_result == "Make") numerator--;
 		col.innerHTML = numerator + "/" + denomenator;
 		if(denomenator == 0){
 			pct_col.innerHTML = "0%"
@@ -1586,130 +3204,211 @@
 		    undo_table_cell(stat_index, result, player_row);
 		    undo_table_cell(stat_index, result, team_row);
 		    stat_array[stat_object.player.stat_index -1].cumulative_arr[player_stat_index].total--;
+		    lineups_arr[stat_object.lineup_index].cumulative_arr[player_stat_index].total--
 	    }
 	    else{
 	    	undo_table_cell(stat_index, result, opponent_row);
 	    	opponent_obj.cumulative_arr[player_result_index].total--;
+	    	lineups_arr[stat_object.lineup_index].cumulative_arr[player_stat_index].total--
 	    } 
 	}
 
-	function undo_fg(stat_object, result, stat_id, stat_index, result_index){
-		//find shot chart object
+
+	function remove_fg_from_canvas(index){
 		canvas.getObjects().forEach(function(o){
-			if (o.index == stat_object.index){
+			if (o.index == index){
 				canvas.remove(o);
 			}
 		});
-		// eliminate double counting for field goals
-		all_stat_granules.pop()
+	}
 
-	    var player_row = player_stats_table.rows[stat_object.player.stat_index];
-	    var team_row = team_stats_table.rows[1];
-	    var opponent_row = team_stats_table.rows[2];
+	function undo_player_fg_from_table(stat_object, stat_index, result, result_index){
+		var player_row = player_stats_table.rows[stat_object.player.stat_index];
+		// only undo for 3pt granules because we don't have a separate column for 2pt shots in table
+		if(stat_object.stat== 11 || stat_object.stat == 12) {
+		    undo_table_cell(stat_index, result, player_row);
+		}
+		undo_table_cell(result_index, result, player_row);
+	}
 
-		var player_stat_index = find_stat_in_player_arr(stat_id)
-	    var player_result_index = find_stat_in_player_arr(result)
-	    
+	function undo_team_fg_from_table(stat_object, stat_index, result, result_index){
+		var team_row = team_stats_table.rows[1];
+		if(stat_object.stat== 11 || stat_object.stat == 12) {
+		    undo_table_cell(stat_index, result, team_row);
+		}
+		undo_table_cell(result_index, result, team_row);
+	}
+
+	function undo_opponent_fg_from_table(stat_object, stat_index, result, result_index){
+		var opponent_row = team_stats_table.rows[2];
+		if(stat_object.stat == 11 || stat_object.stat == 12) {
+    		undo_table_cell(stat_index, result, opponent_row);
+    	}
+    	undo_table_cell(result_index, result, opponent_row);
+	}
+
+	function undo_fg_from_table(stat_object, stat_index, result, result_index){  
 	    if(!stat_object.is_opponent){
-	    	// only undo for 3pt granules because we don't have a separate column for 2pt shots in table
-		    if(stat_id== 11 || stat_id == 12) {
-		    	undo_table_cell(stat_index, result, player_row);
-		    	undo_table_cell(stat_index, result, team_row);
-		    }
-		    undo_table_cell(result_index, result, player_row);
-		    undo_table_cell(result_index, result, team_row);
-		    stat_array[stat_object.player.stat_index -1].cumulative_arr[player_stat_index].total--;
-	    	stat_array[stat_object.player.stat_index -1].cumulative_arr[player_result_index].total--;
-	    	curr_lineup.cumulative_arr[player_stat_index].total--;
-	    	curr_lineup.cumulative_arr[player_result_index].total--;
-	    	team_stat_totals[player_stat_index].total--;
-	    	team_stat_totals[player_result_index].total--;
-	    	stat_array[stat_object.player.stat_index -1].gran_stat_arr.pop();
+		    undo_player_fg_from_table(stat_object, stat_index, result, result_index)
+		    undo_team_fg_from_table(stat_object, stat_index, result, result_index)
 	    }
 	    else{
-	    	if(stat_id == 11 || stat_id == 12) {
-	    		undo_table_cell(stat_index, result, opponent_row);
-	    	}
-	    	undo_table_cell(result_index, result, opponent_row);
-	    	opponent_obj.cumulative_arr[player_result_index].total--;
-	    	opponent_obj.cumulative_arr[player_stat_index].total--;
-	    	opponent_obj.gran_stat_arr.pop();
-	    	curr_lineup.opponent_stats[player_stat_index].total--;
-	    	curr_lineup.opponent_stats[player_result_index].total--;
+	    	undo_opponent_fg_from_table(stat_object, stat_index, result, result_index)
 	    }  
 	}
 
-	function undo_stat_in_table(stat_object, stat_i, new_val ){
-		var player_row = player_stats_table.rows[stat_object.player.stat_index];
+	function undo_fg_from_player_array(stat_index, player_stat_index, player_result_index){
+		stat_array[stat_index].cumulative_arr[player_stat_index].total--;
+	    stat_array[stat_index].cumulative_arr[player_result_index].total--;
+	}
+
+	function undo_fg_from_lineup_obj(player_stat_index, player_result_index, lineup_index){
+		lineups_arr[lineup_index].cumulative_arr[player_stat_index].total--
+		lineups_arr[lineup_index].cumulative_arr[player_result_index].total--
+	}
+
+	function undo_ft_from_lineup_obj(stat_index, lineup_index){
+		lineups_arr[lineup_index].cumulative_arr[stat_index].total--
+	}
+
+	function undo_fg_from_team_array(player_stat_index, player_result_index){
+		team_stat_totals[player_stat_index].total--;
+	    team_stat_totals[player_result_index].total--;
+	}
+
+	function undo_fg_from_opponent_array(player_stat_index, player_result_index){
+		opponent_obj.cumulative_arr[player_result_index].total--;
+	    opponent_obj.cumulative_arr[player_stat_index].total--;
+	}
+
+	function undo_fg_from_lineup_opponent(player_stat_index, player_result_index, lineup_index){
+		lineups_arr[lineup_index].opponent_stats[player_stat_index].total--
+		lineups_arr[lineup_index].opponent_stats[player_result_index].total--
+	}
+
+	function undo_fg(stat_object, result, stat_id, stat_index, result_index, result_id){
+		remove_fg_from_canvas(stat_object.index)
+
+		undo_fg_from_table(stat_object, stat_index, result, result_index)
+
+		var player_stat_index = find_stat_in_player_arr(stat_id)
+	    var player_result_index = find_stat_in_player_arr(result_id)
+	    
+	    if(!stat_object.is_opponent){
+	    	undo_fg_from_player_array(stat_object.player.stat_index -1, player_stat_index, player_result_index)
+	    	undo_fg_from_lineup_obj(player_stat_index, player_result_index, stat_object.lineup_index)
+	    	undo_fg_from_team_array(player_stat_index, player_result_index)
+	    }
+	    else{
+	    	undo_fg_from_opponent_array(player_stat_index, player_result_index)
+	    	undo_fg_from_lineup_opponent(player_stat_index, player_result_index, stat_object.lineup_index)
+	    	
+	    }  
+	}
+
+	function undo_player_stat_in_table(player_stat_index, stat_i, new_val){
+		var player_row = player_stats_table.rows[player_stat_index];
 		var player_col = player_row.cells[stat_i + 1];
+		player_col.innerHTML = new_val;
+	}
+	function undo_team_stat_in_table(stat_i, new_val){
 		var team_row = team_stats_table.rows[1];
 		var team_col = team_row.cells[stat_i + 1]
-
-		player_col.innerHTML = new_val;
 		team_col.innerHTML = new_val;
+	}
+
+	function undo_opponent_stat_in_table(stat_i, new_val){
+		var opponent_row = team_stats_table.rows[2];
+		var opponent_col = opponent_row.cells[stat_i + 1]
+		opponent_col.innerHTML = new_val;
+	}
+
+	function undo_stat_in_table(stat_object, stat_i, new_val){
+		if(stat_object.is_opponent){
+			undo_opponent_stat_in_table(stat_i, new_val)
+		}
+		else{
+			undo_player_stat_in_table(stat_object.player.stat_index, stat_i, new_val)
+			undo_team_stat_in_table(stat_i, new_val)
+		}
 	}
 
 	function undo_player_array_stat(stat_object){
 		var stat_id = stat_object.stat;
+		var player = (stat_object.is_opponent) ? opponent_obj : stat_array[stat_object.player.stat_index -1]
+		var stat_i = find_stat_in_player_arr(stat_object.stat)
 	    	switch(stat_id){
 	    		// 3 point make
 	    		case 11:
-	    			undo_fg(stat_object, 1, stat_id, three_pt_fg_index, fg_index);
-	    			increment_points(stat_object.player.stat_index -1, -3, stat_array[stat_object.player.stat_index -1])
+	    			undo_fg(stat_object, "Make", stat_id, three_pt_fg_index, fg_index, 1);
+	    			increment_points(stat_object.player.stat_index -1, -3, stat_array[stat_object.player.stat_index -1], stat_object)
 	    			update_score(-3, stat_object.is_opponent);
+	    			remove_granule_from_player(stat_object.granule_id -1, player)
+	    			remove_granule_from_all_granules(stat_object.granule_id - 1)
+	    			rollback_period_fg(stat_object.stat, stat_object.is_opponent, stat_object.metadata.period, false)
+	    			//period_stats(is_opponent, stat_i, increment_value, period)
 	    			break;
 	    		// 2 point make
 	    		case 9:
-	    			undo_fg(stat_object, 1, stat_id, two_pt_fg_index, fg_index);
-	    			increment_points(stat_object.player.stat_index -1, -2, stat_array[stat_object.player.stat_index -1])
+	    			undo_fg(stat_object, "Make", stat_id, two_pt_fg_index, fg_index, 1);
+	    			increment_points(stat_object.player.stat_index -1, -2, stat_array[stat_object.player.stat_index -1], stat_object)
 	    			update_score(-2, stat_object.is_opponent);
+	    			remove_granule_from_player(stat_object.granule_id -1, player)
+	    			remove_granule_from_all_granules(stat_object.granule_id - 1)
+	    			rollback_period_fg(stat_object.stat, stat_object.is_opponent, stat_object.metadata.period, false)
 	    			break;
 	    		// 3 point miss
 	    		case 12 :
-	    			undo_fg(stat_object, 2, stat_id, three_pt_fg_index, fg_index);
+	    			undo_fg(stat_object, "Miss", stat_id, three_pt_fg_index, fg_index, 2);
+	    			remove_granule_from_player(stat_object.granule_id -1, player)
+	    			remove_granule_from_all_granules(stat_object.granule_id - 1)
+	    			rollback_period_fg(stat_object.stat, stat_object.is_opponent, stat_object.metadata.period, false)
 	    			break;
 	    		// 2 point miss
 	    		case 10 :
-	    			undo_fg(stat_object, 2, stat_id, two_pt_fg_index, fg_index);
+	    			undo_fg(stat_object, "Miss", stat_id, two_pt_fg_index, fg_index, 2);
+	    			remove_granule_from_player(stat_object.granule_id -1, player)
+	    			remove_granule_from_all_granules(stat_object.granule_id - 1)
+	    			rollback_period_fg(stat_object.stat, stat_object.is_opponent, stat_object.metadata.period, false)
 	    			break;
 	    		// free throw make
 	    		case 13 :
-	    			undo_ft(stat_object, 1, stat_id, ft_index);
-	    			increment_points(stat_object.player.stat_index -1, -1, stat_array[stat_object.player.stat_index -1])
+	    			undo_ft(stat_object, "Make", stat_id, ft_index);
+	    			increment_points(stat_object.player.stat_index -1, -1, stat_array[stat_object.player.stat_index -1], stat_object)
 	    			update_score(-1, stat_object.is_opponent);
+	    			rollback_period_fg(stat_object.stat, stat_object.is_opponent, stat_object.metadata.period, false)
 	    			break;
 	    		// free throw miss
 	    		case 14:
-	    			undo_ft(stat_object, 2, stat_id, ft_index);
+	    			undo_ft(stat_object, "Miss", stat_id, ft_index);
+	    			rollback_period_fg(stat_object.stat, stat_object.is_opponent, stat_object.metadata.period, false)
 	    			break;
 	    		default : 
 	    			var player_stat_index = find_stat_in_player_arr(stat_id);
 	    			if(stat_object.is_opponent){
 	    				var stat_index = find_stat_index(opponent_obj.cumulative_arr[player_stat_index]);
 	    				undo_stat_in_table(stat_object, stat_index, --opponent_obj.cumulative_arr[player_stat_index].total);
-	    				curr_lineup.opponent_stats[player_stat_index].total--;
+	    				lineups_arr[stat_object.lineup_id].opponent_stats[player_stat_index].total--
 	    			}
 	    			else {
 	    				var stat_index = find_stat_index(stat_array[stat_object.player.stat_index -1].cumulative_arr[player_stat_index]);
 	    				team_stat_totals[player_stat_index].total--
 	    				undo_stat_in_table(stat_object, stat_index, --stat_array[stat_object.player.stat_index -1].cumulative_arr[player_stat_index].total);
-	    				curr_lineup.cumulative_arr[player_stat_index].total--;
+	    				lineups_arr[stat_object.lineup_id].cumulative_arr[player_stat_index].total--
 	    			}
+	    			rollback_period_stat(stat_object.stat, stat_object.is_opponent, stat_object.metadata.period)
 	    			
 	    			break; 
 	    	}
-	    	if(stat_object.is_opponent){
-	    		opponent_obj.gran_stat_arr.pop()
-	    	}
-	    	else{
-	    		stat_array[stat_object.player.stat_index -1].gran_stat_arr.pop();
-	    	} 
+	    	remove_granule_from_player(stat_object.granule_id, player)
+	    	remove_granule_from_all_granules(stat_object.granule_id)
 	}
 
-	// TODO: CURR LINEUP MIGHT NOT BE THE LINEUP ASSOCIATED WITH THE STAT TO BE UNDONE. NOT A CRITICAL FLAW BUT ADDRESS LATER
 	function undo_stat(){
-		stat_object = all_stat_granules.pop();
-		console.log(stat_object)
+		var top_index = all_stat_granules.length-1
+		stat_object = all_stat_granules[top_index];
+
+		//console.log(stat_object)
 	    undo_player_array_stat(stat_object);
 	    gameModeChannel.send({sent_by: <%=current_user.id%>, game_state: {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr, "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}, undo_stat: stat_object})
 	    statRemoved(stat_object)
@@ -1880,7 +3579,7 @@
 		}
 		this.set_period = function(){
 			$("#period").text(function(){
-				return curr_period.toString() + "Q"
+				return  "Q" + curr_period.toString()
 			});
 		}
 		this.interval = setInterval(function() {
@@ -2040,10 +3739,15 @@
 	function update_fg_locations(){
 		canvas.getObjects().forEach(function(o){
 			if (o.player != null){
-				player = (o.player) ? stat_array[o.player_index-1] : opponent_obj;
+				if(o.player){
+					var player = stat_array[o.player_index-1]
+				}
+				else{
+					var player = opponent_obj
+				}
 				granule_array_len = player.gran_stat_arr.length
 				for(var i = 0; i < granule_array_len; i++){
-					if(player.gran_stat_arr[i].index == o.index){	
+					if(player.gran_stat_arr[i].index == o.index){
 						player.gran_stat_arr[i].metadata.x_loc = o.left/gm_canvas_width;
 						player.gran_stat_arr[i].metadata.y_loc = o.top/gm_canvas_width;
 					}
@@ -2060,8 +3764,8 @@
 		set_lineup_minutes()
 		set_minutes_in_player_array();
 		set_team_minutes();
-		console.log(team_stat_totals)
-		console.log(lineups_arr)
+		//console.log(team_stat_totals)
+		//console.log(lineups_arr)
 	}
 
 	function close_game_mode(){
@@ -2083,7 +3787,7 @@
 		var url = "/teams/" + <%= @team_id%> +  "/games/"+ <%=@game_id%> + "/game_mode"
 		
 		var json_data = {"player_stats": stat_array, "team_stats": team_stat_totals, "opponent_stats": opponent_obj, "lineup_stats": lineups_arr}
-		console.log(json_data)
+		//console.log(json_data)
 		 $.ajax({
 			url: url,
 			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
