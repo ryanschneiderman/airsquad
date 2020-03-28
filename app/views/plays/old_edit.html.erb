@@ -1,0 +1,343 @@
+
+<div id = "edit-grid" style = "margin-top: 60px;">
+	<div style= "text-align: center;"><button class = "left change-progression" type = "button" onclick="indexJsonArray(-1)"></button></div>
+	<div id = "tool-bar">
+        <div id = "play-header">
+            <div id = "play-progression">
+                <div id = "play-name" contenteditable="true"> <%= @play.name %></div>
+                <div>-</div>
+                <div id = "progression_index">1</div>
+            </div>
+            <div class = "settings-dropdown" style = "display: none;">
+                <button onclick = "show_actions()"><%= image_tag("settings-icon.png", :alt => "settings", :class => "settings-icon") %></button>
+                <div id="play-dropdown" class="dropdown-content">
+                    <%= link_to 'Delete Play',  team_play_path(@team_id, @play.id),
+                                data: { confirm: 'Are you sure you want to delete this play' }, method: :delete %>
+                </div>
+            </div>
+        </div>
+        <div id = "drawing-buttons">
+          <button id = "run" class = "drawing-button" type = "button" onclick="lineToRun(event)">
+            <div class = "drawing-button-name">RUN</div>
+            <div class = "drawing-button-arrow">
+              <div class="line"></div>
+              <div class="triangle-point"></div>
+            </div>
+          </button>
+          
+          <button id = "pass" class = "drawing-button" type = "button" onclick="lineToPass(event)">
+            <div class = "drawing-button-name">PASS</div>
+            <div class = "drawing-button-arrow">
+              <div class="dotted-line"></div>
+              <div class="triangle-point"></div>
+            </div>
+          </button>
+          
+          <button id = "drive" class = "drawing-button" type = "button" onclick="lineToDribble(event)">
+            <div class = "drawing-button-name">DRIBBLE</div>
+            <div class = "drawing-button-arrow">
+              <div class="zigzag"></div>
+              <div class="triangle-point"></div>
+            </div>
+          </button>
+          
+          <button id = "screen" class = "drawing-button" type = "button" onclick="lineToScreen(event)">
+            <div class = "drawing-button-name">SCREEN</div>
+            <div class = "drawing-button-arrow">
+               <div class="line"></div>
+               <div class="vert-line"></div>
+            </div>
+          </button> 
+          <button id = "has-ball" class = "drawing-button" type = "button" onclick="hasBall()">
+            <div class = "drawing-button-name">Has Ball</div>
+               <%= image_tag("basketball-icon.png", :alt => "basketball", :class => "basketball-icon") %>
+          </button>         
+        </div>
+        <div id = "save-block">
+          <button class = "save-button" type ="button" onclick="update_progression()"> SAVE AND FINISH </button>
+        </div>
+    </div>
+    <% @progressions.each do |pro| %>
+        <canvas id ="c-<%=pro.id%>" class = "show-canvas"></canvas>
+    <%end%>
+	<canvas id ="c" class = "show-canvas"></canvas>
+	<div id = "progression-notes">
+		<div class = "progression-notes-header">Notes</div>
+		<div class = "progression-notes-text" contenteditable="true" data-text="Enter play description..."></div>
+	</div>
+	<div style= "text-align: center;"><button class = "right change-progression" type = "button" onclick="indexJsonArray(1)"></button></div>
+</div>
+<div id = "play-scrollbar">
+	<%= render @progressions %>
+</div>
+
+<%= render 'progressions/js_objects' %>
+<%= render 'progressions/javascript' %>
+
+<script>
+    activate_header();
+    $(".navbar").addClass("navbar-active");
+    $(".navbar-default a").addClass("navbar-text-active");
+    $(".home-link").css("border-color", "black");
+
+    $(window).on("scroll", function() {
+        $(".navbar").addClass("navbar-active");
+        $(".navbar-default a").addClass("navbar-text-active");
+        $(".home-link").css("border-color", "black")
+
+    });
+
+        var convert = function(convert){
+            return $("<span />", { html: convert }).text();
+            //return document.createElement("span").innerText;
+        };
+
+        var index = 0
+        var line_type;
+    
+		var line, isDown, evented;
+		var anchorRadius = 3;
+		var anchorOffset = anchorRadius - .5;
+
+        var progressions_arr = []
+        var i = 0;
+        <% @progressions.each do |progression| %>
+        	if("<%=progression.notes%>" != ""){
+        		progressions_arr.push({"json": "<%=progression.json_diagram%>" , "canvas_width" : parseFloat("<%=progression.canvas_width%>"), "id" : parseInt("<%=progression.id%>"), "notes" : convert("<%=progression.notes%>")});
+        	}
+        	else{
+        		progressions_arr.push({"json": "<%=progression.json_diagram%>" , "canvas_width" : parseFloat("<%=progression.canvas_width%>"), "id" : parseInt("<%=progression.id%>"), "notes" : ""})
+        	}
+            createCanvasForProgression(progressions_arr[0])
+            i++;
+            
+        <%end%>
+
+        function createCanvasForProgression(){
+            
+        }
+
+        //canvas.requestRenderAll.bind(canvas);
+        
+        var canvas = new fabric.Canvas("c",{
+            targetFindTolerance: 15,
+             perPixelTargetFind: true,
+             preserveObjectStacking: true,
+        }); 
+
+        var canvas_width;
+        var canvas_height;
+        var playerRadius;
+
+        if("<%=@play_type.play_type%>" == "fullcourt" || "<%=@play_type.play_type%>" == "Fullcourt"){
+          var canvas_width = window.innerWidth * .55;
+          var canvas_height = canvas_width * .6;
+          var playerRadius = canvas.height * .025;
+        }
+        else{
+          var canvas_width = window.innerWidth * .5;
+          var canvas_height = canvas_width * .7;
+          var playerRadius = canvas.height * .03;
+        }
+
+        canvas.setHeight(canvas_height);
+        canvas.setWidth(canvas_width);
+
+
+        canvas.on('object:added', function(e) {
+        	var object = e.target;
+        	object.added = true;
+  		});
+
+        function indexJsonArray(change){
+            var max_depth = 0;
+            if(change > 0){
+                animatePlayerActions()
+            }
+             
+        	index = index + change;
+            max_depth = getAnimationTime()
+            setTimeout(function(){ 
+                if(index > progressions_arr.length -1){
+                    loadCanvasFromJson(0)
+                }
+                else if (index < 0){
+                    loadCanvasFromJson(progressions_arr.length -1)
+                }
+                else{
+                    loadCanvasFromJson(index);
+                }
+            }, 1300 *  max_depth);  
+        }
+
+
+        function show_actions(){
+            console.log("test")
+            $(".dropdown-content").show()
+        }
+        function hide_actions(){
+            $(".dropdown-content").hide()
+        }
+
+        window.onclick = function(event) {
+          if (!event.target.matches('.settings-icon')) {
+            var dropdowns = $(".dropdown-content");
+            dropdowns.hide()
+          }
+        }
+
+  		loadCanvasFromJson(index);
+
+        function loadCanvasFromJson(new_index){
+            var progressions_arr_len = progressions_arr.length;
+            $(".progression-notes-text").html(progressions_arr[new_index].notes)
+            index = new_index;
+           
+            if(new_index > progressions_arr_len -1){
+                index = 0;
+            }
+            else if (new_index < 0 ){
+                index = progressions_arr_len -1;
+            }
+
+            var old_canvas_width = progressions_arr[index].canvas_width;
+            var width_ratio = old_canvas_width/canvas.width;
+
+            var json_data = progressions_arr[index].json.replace(/&quot;/g,'"');
+            canvas.loadFromJSON(json_data, function() {
+            	var ball;
+            	var player_with_ball;
+                var objs = canvas.getObjects().map(function(o) {
+                	o.set({ left: o.left / width_ratio, top: o.top/width_ratio})
+                	if(o.type == "circle"){
+                		o.set({lockMovementX: true, lockMovementY: true, selectable: false, evented: false, radius: o.radius / width_ratio})
+                        o.moveTo(102)
+                	}
+                	else if (o.type == "rect"){
+                		o.set({lockMovementX: true, lockMovementY: true, selectable: false, evented: false, width: o.width / width_ratio, height: o.height / width_ratio})
+                	}
+                	else if (o.type == "text"){
+                		o.set({lockMovementX: true, lockMovementY: true, selectable: false, evented: false, fontSize: o.fontSize / width_ratio})
+                        o.moveTo(101);
+                	}
+                	else if (o.type == "basketball"){
+                		ball = o;
+                	}
+                	else if (o.type == "PlayerCircle"){
+                		canvas.getObjects().forEach(function(obj) {
+					        if(obj.id == o.id && obj.type == "text") {
+					            o.text = obj;
+					            obj.moveTo(20)
+					        }
+					    });
+					    if(o.has_ball == true){
+					    	player_with_ball = o;
+					    }
+                		o.toAnchorPoint.x = o.toAnchorPoint.x / width_ratio
+                		o.toAnchorPoint.y = o.toAnchorPoint.y / width_ratio
+                        o.strokeWidth = o.strokeWidth/width_ratio;
+                		o.set({radius: o.radius / width_ratio})
+                        o.moveTo(104)
+                		o.setCoords()
+                        populateLines(o)
+                	}
+                	else if (o.type == "LineWithArrow" || o.type == "DribbleLine" || o.type == "PassLine" || o.type == "ScreenLine"){
+                		o.toAnchorPoint.x = o.toAnchorPoint.x / width_ratio
+                		o.toAnchorPoint.y = o.toAnchorPoint.y / width_ratio
+                		o.set({x1: o.x1 / width_ratio, x2: o.x2 / width_ratio, y1: o.y1 / width_ratio, y2: o.y2 / width_ratio})
+                        o.moveTo(103)
+                		o.setCoords()
+                        
+                	}
+                	o.setCoords()
+                    return o;
+                });
+                if(player_with_ball){
+                    player_with_ball.ball = ball;
+                    setBallPos(player_with_ball);
+                }
+                canvas.renderAll();
+            }); 
+            $("#progression_index").html(index+1);
+        }
+
+        canvas.on('object:moving', function (e) {
+            var obj = e.target;
+            if(obj.get("anchorable") == true && obj.added){
+              anchorPositioning(e);
+            }
+	    });
+
+	    canvas.on('selection:created', function() {
+	        canvas.getActiveObjects().forEach(function(o) {
+	            var type = o.get('type');
+	            if(type == "PlayerCircle"){
+	                o.lockMovementY = false;
+	                o.lockMovementX = false;
+	                o.set({stroke: "#91ff30"});
+	            }
+	            if(validateLine(o)){
+	              if(!o.toAnchor){
+	                getToAnchor(o.toAnchorId, o);
+	              }
+	              o.toAnchor.animate('opacity', '1', {
+	                duration: 50,
+	                onChange: canvas.requestRenderAll.bind(canvas),
+	              });
+	            } 
+	        });
+	    });
+
+	    canvas.on('before:selection:cleared', function() {
+	         canvas.getActiveObjects().forEach(function(o) {
+	            var type = o.get('type');
+	            if(type == "PlayerCircle"){
+	                o.set({stroke: o.color});
+	            } 
+	            if(validateLine(o)){
+	              if(!o.toAnchor){
+	                getToAnchor(o.toAnchorId, o);
+	              }
+	              o.toAnchor.animate('opacity', '0', {
+	                duration: 50,
+	                onChange: canvas.requestRenderAll.bind(canvas),
+	              });
+	            }       
+	        });
+	    });
+
+	    canvas.on('selection:updated', function() {
+	        canvas.getActiveObjects().forEach(function(o) {
+	            var type = o.get('type');
+	            if(type == "PlayerCircle"){
+	                o.lockMovementY = false;
+	                o.lockMovementX = false;
+	            }   
+	        });
+	    });
+
+
+
+        function update_progression(){
+	      deselect_all_active()
+	      /* get values from elements on the page: */
+	        var json_data = JSON.stringify(canvas.toJSON(['id']));
+	        var patch_url = "/plays/" + <%= @play.id %> + "/progressions/" + progressions_arr[index].id
+	        var new_notes = $(".progression-notes-text").html()
+            var play_image = canvas.toDataURL('png')
+            var play_name = $("#play-name").html()
+
+	      /* Send the data using post and put the results in a div */
+	      
+	        $.ajax({
+	          url: patch_url,
+	          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+	          type: "PATCH",
+	          data_type: 'json',
+	          data: {progression: {json_diagram: json_data , progression_id: progressions_arr[index].id, play_id: <%= @play.id %>, team_id: <%=@team_id%>, canvas_width: canvas_width, notes: new_notes, play_image: play_image}, play_name: play_name}
+	        });
+	    }
+</script>
+
+
+

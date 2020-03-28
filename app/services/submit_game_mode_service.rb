@@ -148,6 +148,7 @@ class SubmitGameModeService
 	def create_lineup_stats()
 		@lineups.each do |lineup|
 			lineup_stats = lineup[1]["cumulative_arr"]
+			lineup_opponent_stats = lineup[1]["opponent_stats"]
 			lineup_player_ids = lineup[1]["ids"]
 			lineup_obj = FindLineupService.new(ids: lineup_player_ids).call()
 			if(lineup_obj == nil)
@@ -160,11 +161,20 @@ class SubmitGameModeService
 			lineup_stats.each do |stat|
 				stat_id = stat[1]["id"]
 
+
 				stat_total = stat[1]["total"]
 				stat_id = stat_id.to_i
 				stat_total = stat_total.to_i
 
-				season_stat = LineupStat.where(lineup_id: lineup_obj.id, stat_list_id: stat_id).take
+				LineupGameStat.create({
+					value: stat_total,
+					stat_list_id: stat_id,
+					lineup_id: lineup_obj.id,
+					is_opponent: false,
+					game_id: @game_id
+				})
+
+				season_stat = LineupStat.where(lineup_id: lineup_obj.id, stat_list_id: stat_id, is_opponent: false).take
 
 				if season_stat 
 					season_stat.value += stat_total
@@ -179,12 +189,14 @@ class SubmitGameModeService
 							value: stat_total + 1,
 							stat_list_id: stat_id,
 							lineup_id: lineup_obj.id,
+							is_opponent: false,
 						})
 					else 
 						season_stat = LineupStat.create({
 							value: stat_total,
 							stat_list_id: stat_id,
 							lineup_id: lineup_obj.id,
+							is_opponent: false,
 						})
 					end
 				end
@@ -196,7 +208,72 @@ class SubmitGameModeService
 				instantiate_stat_variable(season_stat, false, false, true, false)
 			end
 
-			
+			lineup_opponent_stats.each do |stat|
+				stat_id = stat[1]["id"]
+
+				stat_total = stat[1]["total"]
+				stat_id = stat_id.to_i
+				stat_total = stat_total.to_i
+
+				LineupGameStat.create({
+					value: stat_total,
+					stat_list_id: stat_id,
+					lineup_id: lineup_obj.id,
+					is_opponent: true,
+					game_id: @game_id
+				})
+
+				season_stat = LineupStat.where(lineup_id: lineup_obj.id, stat_list_id: stat_id, is_opponent: true).take
+
+				if season_stat 
+					season_stat.value += stat_total
+					season_stat.save
+				else 
+					if stat_id == 16
+						## solves divide by 0 bug in ranking service for when minutes played is 0.
+						## doesnt affect ranking because if player has no minutes played his stats will be 0,
+						## thus ranking below all those with minutes. Later minutes won't be affected in a meaningful way
+						## because the +1 is seconds
+						season_stat = LineupStat.create({
+							value: stat_total + 1,
+							stat_list_id: stat_id,
+							lineup_id: lineup_obj.id,
+							is_opponent: true
+						})
+					else 
+						season_stat = LineupStat.create({
+							value: stat_total,
+							stat_list_id: stat_id,
+							lineup_id: lineup_obj.id,
+							is_opponent: true
+						})
+					end
+				end
+				instantiate_stat_variable(season_stat, false, true, true, false)
+			end
+
+			Stats::LineupAdvancedService.new({
+				field_goal_att: @lineup_field_goals + @lineup_field_goal_misses,
+				free_throw_att: @lineup_free_throw_makes + @lineup_free_throw_misses,
+				turnovers: @lineup_turnovers,
+				off_reb: @lineup_off_reb,
+				def_reb: @lineup_def_reb,
+				field_goals: @lineup_field_goals,
+				points: @lineup_points,
+				three_point_fg: @lineup_three_point_fg,
+				assists: @lineup_assists,
+
+
+				opp_field_goal_att:  @lineup_opp_field_goals + @lineup_opp_field_goal_misses,
+				opp_free_throw_att:  @lineup_opp_free_throw_makes + @lineup_opp_free_throw_misses,
+				opp_turnovers:  @lineup_opp_turnovers,
+				opp_off_reb:  @lineup_opp_off_reb,
+				opp_def_reb:  @lineup_opp_def_reb,
+				opp_points:  @lineup_opp_points,
+				lineup_id: lineup_obj.id,
+				team_id: @team_id,
+				game_id: @game_id
+			}).call
 
 			Stats::LineupShootingStatsService.new({
 				field_goals: @lineup_field_goals,
@@ -476,14 +553,17 @@ class SubmitGameModeService
 	end
 
 
-
 	def instantiate_stat_variable(stat, is_team, is_opponent, is_lineup, is_season)
 		case stat.stat_list_id
 
 		when 1
 			if !is_team
 				if is_lineup
-					@lineup_field_goals = stat.value
+					if is_opponent
+						@lineup_opp_field_goals = stat.value
+					else
+						@lineup_field_goals = stat.value
+					end
 				else
 					@field_goals = stat.value
 				end
@@ -505,7 +585,11 @@ class SubmitGameModeService
 		when 2
 			if !is_team
 				if is_lineup
-					@lineup_field_goal_misses = stat.value
+					if is_opponent
+						@lineup_opp_field_goal_misses = stat.value
+					else
+						@lineup_field_goal_misses = stat.value
+					end
 				else
 					@field_goal_misses = stat.value
 				end
@@ -527,7 +611,11 @@ class SubmitGameModeService
 		when 3
 			if !is_team
 				if is_lineup
-					@lineup_assists = stat.value
+					if is_opponent
+						@lineup_opp_assists = stat.value
+					else
+						@lineup_assists = stat.value
+					end
 				else
 					@assists = stat.value
 				end
@@ -549,7 +637,11 @@ class SubmitGameModeService
 		when 4
 			if !is_team
 				if is_lineup
-					@lineup_off_reb = stat.value
+					if is_opponent
+						@lineup_opp_off_reb = stat.value
+					else
+						@lineup_off_reb = stat.value
+					end
 				else
 					@off_reb = stat.value
 				end
@@ -571,7 +663,11 @@ class SubmitGameModeService
 		when 5
 			if !is_team
 				if is_lineup
-					@lineup_def_reb = stat.value
+					if is_opponent
+						@lineup_opp_def_reb = stat.value
+					else
+						@lineup_def_reb = stat.value
+					end
 				else
 					@def_reb = stat.value
 				end
@@ -593,7 +689,11 @@ class SubmitGameModeService
 		when 6
 			if !is_team
 				if is_lineup
-					@lineup_steals = stat.value
+					if is_opponent
+						@lineup_opp_steals = stat.value
+					else
+						@lineup_steals = stat.value
+					end
 				else
 					@steals = stat.value
 				end
@@ -615,7 +715,11 @@ class SubmitGameModeService
 		when 7
 			if !is_team
 				if is_lineup
-					@lineup_turnovers = stat.value
+					if is_opponent
+						@lineup_opp_turnovers = stat.value
+					else
+						@lineup_turnovers = stat.value
+					end
 				else
 					@turnovers = stat.value
 				end
@@ -637,7 +741,11 @@ class SubmitGameModeService
 		when 8
 			if !is_team
 				if is_lineup
-					@lineup_blocks = stat.value
+					if is_opponent
+						@lineup_opp_blocks = stat.value
+					else
+						@lineup_blocks = stat.value
+					end
 				else
 					@blocks = stat.value
 				end
@@ -659,7 +767,11 @@ class SubmitGameModeService
 		when 11
 			if !is_team
 				if is_lineup
-					@lineup_three_point_fg = stat.value
+					if is_opponent
+						@lineup_opp_three_point_fg = stat.value
+					else
+						@lineup_three_point_fg = stat.value
+					end
 				else
 					@three_point_fg = stat.value
 				end
@@ -681,7 +793,11 @@ class SubmitGameModeService
 		when 12
 			if !is_team
 				if is_lineup
-					@lineup_three_point_miss = stat.value
+					if is_opponent
+						@lineup_opp_three_point_miss = stat.value
+					else
+						@lineup_three_point_miss = stat.value
+					end
 				else
 					@three_point_miss = stat.value
 				end
@@ -703,7 +819,11 @@ class SubmitGameModeService
 		when 13
 			if !is_team
 				if is_lineup
-					@lineup_free_throw_makes = stat.value
+					if is_opponent
+						@lineup_opp_free_throw_makes = stat.value
+					else
+						@lineup_free_throw_makes = stat.value
+					end
 				else
 					@free_throw_makes = stat.value
 				end
@@ -725,7 +845,11 @@ class SubmitGameModeService
 		when 14
 			if !is_team
 				if is_lineup
-					@lineup_free_throw_misses = stat.value
+					if is_opponent
+						@lineup_opp_free_throw_misses = stat.value
+					else
+						@lineup_free_throw_misses = stat.value
+					end
 				else
 					@free_throw_misses = stat.value
 				end
@@ -747,7 +871,11 @@ class SubmitGameModeService
 		when 15
 			if !is_team
 				if is_lineup
-					@lineup_points = stat.value
+					if is_opponent
+						@lineup_opp_points = stat.value
+					else
+						@lineup_points = stat.value
+					end
 				else
 					@points = stat.value
 				end
@@ -776,9 +904,7 @@ class SubmitGameModeService
 			else
 				if !is_opponent
 					if is_season
-						puts "resetting season_team_minutes"
 						@season_team_minutes = stat.value / 60.0
-						puts @season_team_minutes
 					else
 						@team_minutes = stat.value / 60.0
 					end
@@ -787,7 +913,11 @@ class SubmitGameModeService
 		when 17
 			if !is_team
 				if is_lineup
-					@lineup_fouls = stat.value
+					if is_opponent 
+						@lineup_opp_fouls = stat.value
+					else
+						@lineup_fouls = stat.value
+					end
 				else
 					@fouls = stat.value
 				end

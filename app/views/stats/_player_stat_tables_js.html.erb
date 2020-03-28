@@ -1,55 +1,35 @@
 <script>
 
-	var display_stats = [];
-	var display_stats_adv = [];
-	var basic_stats = [];
-	var advanced_stats = [];
-	var minutes = "<%=@member.season_minutes%>";
-	var per_minute_factor = parseInt("<%=@minutes_factor%>");
-	var games_played = parseInt("<%=@member.games_played%>")
-
-	function populate_player_stats(){
-		<%@basic_stats.each do |stat|%>
-			basic_stats.push({"value": "<%= stat.value%>", "stat_list_id" : "<%= stat.stat_list_id%>", "stat" : "<%= stat.stat%>", "display_priority" : "<%= stat.display_priority%>"})
-		<%end%>
-
-		<%@advanced_stats.each do |stat|%>
-			advanced_stats.push({"value": "<%= stat.value%>","stat_list_id" : "<%= stat.stat_list_id%>" , "stat" : "<%= stat.stat%>" , "description" : "<%=stat.stat_description%>"})
-		<%end%>
-		console.log(basic_stats)
-	}
-
-	function populate_display_stats(){
-		<% @stat_table_columns.each do |display_stat| %>
-			display_stats.push({"stat": "<%= display_stat[:stat_name] %>", "display_priority": "<%= display_stat[:display_priority] %>", "display_type" : "<%= display_stat[:display_type] %>", "percentage_string":  "<%= display_stat[:percentage_string] %>", "stat_list_id" : "<%= display_stat[:stat_list_id] %>"})
-		<% end %>
-		console.log(display_stats)
-
-		<% @adv_stat_table_columns.each do |display_stat| %>
-			display_stats_adv.push({"stat": "<%= display_stat[:display_name] %>", "display_priority": "<%= display_stat[:display_priority] %>", "stat_name":  "<%= display_stat[:stat_name] %>", "stat_list_id" : "<%= display_stat[:stat_list_id] %>" , "stat_description" : "<%= display_stat[:stat_description] %>"})
-		<% end %>
-	}
 
 
-
-	function insert_table_data(){
+	function insert_basic_table(){
 		var basic_table = $("#per-game-table")[0]
 		basic_table.appendChild(document.createElement('tbody'))
 		var row = basic_table.insertRow(0);
 		insert_basic_data(row, false);
 		insert_basic_player_stat_header(basic_table)
+	}
 
+	function insert_advanced_table(){
 		var advanced_table = $("#advanced-table")[0];
 		advanced_table.appendChild(document.createElement('tbody'))
 		var row = advanced_table.insertRow(0);
 		insert_adv_data(row, advanced_stats);
 		insert_adv_stat_header(advanced_table);
+	}
 
+	function insert_per_minute_table(){
 		var per_minute_table = $("#per-minute-table")[0];
 		per_minute_table.appendChild(document.createElement('tbody'))
 		var row = per_minute_table.insertRow(0)
 		insert_basic_data(row, basic_stats, true)
 		insert_basic_player_stat_header(per_minute_table)
+	}
+
+	function insert_table_data(){
+		insert_basic_table()
+		insert_advanced_table()
+		insert_per_minute_table()
 	}
 
 	function insert_basic_player_stat_header(table){
@@ -79,6 +59,7 @@
 		for(var i = 0; i < len; i++){
 			if(stat_arr[i].stat_list_id == stat_list_id){
 				if(is_per_minute) { 
+					// initialize minutes and per minute factor in parent file
 					var return_value = stat_arr[i].value * (per_minute_factor/(minutes/60));
 					return return_value.toFixed(2);
 				}
@@ -195,7 +176,6 @@
 
 
 	function insert_adv_stat_header(table){
-		console.log(display_stats_adv)
 		var header = table.createTHead();
 		var row = header.insertRow(0);
 		var num_stats = display_stats_adv.length

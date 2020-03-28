@@ -1,5 +1,4 @@
 class LineupsController < ApplicationController	
-	## TODO: Rethink ordering of statswith OFFENSE/DEFENSE distinction
 	def index
 		@team_id = params[:team_id]
 
@@ -11,71 +10,52 @@ class LineupsController < ApplicationController
 			end
 		end
 
-		@lineup_stats = LineupStat.joins(:stat_list, :lineup).select("stat_lists.stat as stat, lineup_stats.*, lineups.team_id as team_id, lineups.id as lineup_id").where("lineups.team_id" => @team_id).sort_by{|e| [e.lineup_id, e.stat_list_id]}
-		
-		## need season stats for each player
-		@def_season_stats = SeasonStat.joins(:stat_list, :member).select("members.games_played as games_played, members.season_minutes as season_minutes, stat_lists.stat as stat, stat_lists.stat_kind as stat_kind, members.nickname as nickname, stat_lists.display_priority as display_priority, stat_lists.is_percent as is_percent, season_stats.*").where('members.team_id' => @team_id, 'stat_lists.stat_kind' => 2).sort_by{|e| [e.member_id, e.stat_list_id]}
-		@off_season_stats = SeasonStat.joins(:stat_list, :member).select("members.games_played as games_played, members.season_minutes as season_minutes, stat_lists.stat as stat, stat_lists.stat_kind as stat_kind, members.nickname as nickname, stat_lists.display_priority as display_priority, stat_lists.is_percent as is_percent, season_stats.*").where('members.team_id' => @team_id, 'stat_lists.stat_kind' => 1).sort_by{|e| [e.member_id, e.stat_list_id]}
-		@shooting_stats = SeasonStat.joins(:stat_list, :member).select("members.games_played as games_played, members.season_minutes as season_minutes, stat_lists.stat as stat, stat_lists.stat_kind as stat_kind, members.nickname as nickname, stat_lists.display_priority as display_priority, stat_lists.is_percent as is_percent, season_stats.*").where('members.team_id' => @team_id, 'season_stats.stat_list_id' => [1,2, 11, 12, 13,14,15]).sort_by{|e| [e.member_id, e.stat_list_id]}
-		## need advanced stats for each player
-		@off_advanced_stats = SeasonAdvancedStat.joins(:stat_list, :member).select("stat_lists.stat as stat, members.nickname as nickname, stat_lists.stat_kind as stat_kind, stat_lists.display_priority as display_priority, season_advanced_stats.*").where('members.team_id' => @team_id, 'stat_lists.stat_kind' => 1).sort_by{|e| [e.member_id, e.stat_list_id]}
-		@def_advanced_stats = SeasonAdvancedStat.joins(:stat_list, :member).select("stat_lists.stat as stat, members.nickname as nickname, stat_lists.stat_kind as stat_kind, stat_lists.display_priority as display_priority, season_advanced_stats.*").where('members.team_id' => @team_id, 'stat_lists.stat_kind' => 2).sort_by{|e| [e.member_id, e.stat_list_id]}
-		@neut_advanced_stats = SeasonAdvancedStat.joins(:stat_list, :member).select("stat_lists.stat as stat, members.nickname as nickname, stat_lists.stat_kind as stat_kind, stat_lists.display_priority as display_priority, season_advanced_stats.*").where('members.team_id' => @team_id, 'stat_lists.stat_kind' => 3).sort_by{|e| [e.member_id, e.stat_list_id]}
-		
+		minutes_p_q = Team.find_by_id(@team_id).minutes_p_q
+		@minutes_factor = minutes_p_q * 4
+
+		@lineup_stats_off = LineupStat.joins(:stat_list, :lineup).select("stat_lists.stat as stat, stat_lists.rankable as rankable, stat_lists.stat_kind as stat_kind, stat_lists.display_priority as display_priority, lineup_stats.*, lineups.team_id as team_id, lineups.id as lineup_id").where("lineups.team_id" => @team_id, "lineup_stats.is_opponent" => false, "stat_lists.stat_kind" => 1, "stat_lists.rankable" => true).sort_by{|e| [e.lineup_id, e.stat_list_id]}
+		@lineup_stats_def = LineupStat.joins(:stat_list, :lineup).select("stat_lists.stat as stat, stat_lists.rankable as rankable, stat_lists.stat_kind as stat_kind, stat_lists.display_priority as display_priority, lineup_stats.*, lineups.team_id as team_id, lineups.id as lineup_id").where("lineups.team_id" => @team_id, "lineup_stats.is_opponent" => false, "stat_lists.stat_kind" => 2, "stat_lists.rankable" => true).sort_by{|e| [e.lineup_id, e.stat_list_id]}
+		@lineup_stats = LineupStat.joins(:stat_list, :lineup).select("stat_lists.stat as stat, stat_lists.stat_kind as stat_kind, stat_lists.display_priority as display_priority, lineup_stats.*, lineups.team_id as team_id, lineups.id as lineup_id").where("lineups.team_id" => @team_id, "lineup_stats.is_opponent" => false,).sort_by{|e| [e.lineup_id, e.stat_list_id]}	
+		@lineup_opponent_stats = LineupStat.joins(:stat_list, :lineup).select("stat_lists.stat as stat, stat_lists.display_priority as display_priority, lineup_stats.*, lineups.team_id as team_id, lineups.id as lineup_id").where("lineups.team_id" => @team_id, "lineup_stats.is_opponent" => true).sort_by{|e| [e.lineup_id, e.stat_list_id]}
+		@lineup_adv_stats = LineupAdvStat.joins(:stat_list, :lineup).select("stat_lists.stat as stat, stat_lists.display_priority as display_priority, lineup_adv_stats.*, lineups.team_id as team_id, lineups.id as lineup_id").where("lineups.team_id" => @team_id).sort_by{|e| [e.lineup_id, e.stat_list_id]}
+		@lineup_objs = []
+		@lineup_stats.group_by(&:lineup_id).each do |lineups|
+			lineup_members = LineupsMember.joins(:member).select("members.nickname as name, lineups_members.*").where("lineups_members.lineup_id" => lineups[1][0].lineup_id)
+			lineup_members.each do |mem|
+				puts mem
+			end
+			@lineup_objs.push({:lineup_stats => lineups[1], :lineup_members => lineup_members, :opponent_stats => nil, :advanced_stats => nil, :off_stats => nil, :def_stats => nil})
+		end
+		counter = 0
+		@lineup_opponent_stats.group_by(&:lineup_id).each do |lineups|
+			@lineup_objs[counter][:opponent_stats] = lineups[1]
+			counter+= 1
+		end
+		counter = 0
+		@lineup_adv_stats.group_by(&:lineup_id).each do |lineups|
+			@lineup_objs[counter][:advanced_stats] = lineups[1]
+			counter+=1
+		end
+		counter = 0
+		@lineup_stats_off.group_by(&:lineup_id).each do |lineups|
+			@lineup_objs[counter][:off_stats] = lineups[1]
+			counter+=1
+		end
+		counter = 0
+		@lineup_stats_def.group_by(&:lineup_id).each do |lineups|
+			@lineup_objs[counter][:def_stats] = lineups[1]
+			counter+=1
+		end
+
 		## stat table columns
 		@stat_table_columns = Stats::BasicStatService.new({
 			team_id: params[:team_id]
 		}).call
 
-		@stat_table_columns = @stat_table_columns.sort_by{|e| [e[:stat_kind], e[:stat_list_id]]}
-
-		@adv_stat_table_columns = Stats::AdvancedStatListService.new({
-			team_id: params[:team_id]
-		}).call
+		@stat_table_columns = @stat_table_columns.sort_by{|e| [e[:stat_kind], e[:display_priority]]}
 
 		@lineups = Lineup.where(team_id: @team_id)
 		
 		@members = Assignment.joins(:role).joins(:member).select("roles.name as name, members.*").where("members.team_id" => @team_id, "roles.id" => 1)
 	end
-
-	def create
-		members = params[:members]
-		lineup_name = params[:name]
-		lineup = Lineup.create(
-			team_id: params[:team_id],
-			name: lineup_name
-		)
-
-		members.each do |member_id|
-			member = Member.find_by_id(member_id)
-			lineup.members << member
-		end
-
-		redirect_to team_lineups_path(params[:team_id])
-	end
-
-	def update
-		lineup_id = params[:id]
-		new_members = params[:members]
-		lineup_name = params[:name]
-		lineup = Lineup.find_by_id(lineup_id)
-		lineup.update(name: lineup_name)
-		lineup.members.clear
-		
-		new_members.each do |member_id|
-			member = Member.find_by_id(member_id)
-			lineup.members << member
-		end
-		lineup.save
-		redirect_to team_lineups_path(params[:team_id])
-	end
-
-	def destroy
-		lineup_id = params[:id]
-		lineup = Lineup.find_by_id(lineup_id)
-		lineup.members.clear
-		lineup.destroy
-		redirect_to team_lineups_path(params[:team_id])
-	end
-
 end

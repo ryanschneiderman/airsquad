@@ -93,7 +93,9 @@
 </div>
 
 <%= render 'stats/radar/radar_js' %>
+
 <%= render 'stats/player_stat_tables_js' %>
+
 <%= render 'stats/radar/radar_controller_js' %>
 <%= render 'stats/trends/trends_js' %>
 <%= render 'stats/trends/trends_controller_js' %>
@@ -102,6 +104,15 @@
 
 
 <script>
+	var display_stats = [];
+	var display_stats_adv = [];
+	var basic_stats = [];
+	var advanced_stats = [];
+
+	var minutes = "<%=@member.season_minutes%>";
+	var per_minute_factor = parseInt("<%=@minutes_factor%>");
+	var games_played = parseInt("<%=@member.games_played%>")
+
 	populate_player_stats()
 	populate_display_stats()
 	insert_table_data()
@@ -127,6 +138,39 @@
 	select_basic_trend_stat(0, $('.trend-button-0')[ 0 ])
 	console.log(basic_trend_array)
 
+function populate_basic_stats(){
+	<%@basic_stats.each do |stat|%>
+		basic_stats.push({"value": "<%= stat.value%>", "stat_list_id" : "<%= stat.stat_list_id%>", "stat" : "<%= stat.stat%>", "display_priority" : "<%= stat.display_priority%>"})
+	<%end%>
+}
+
+function populate_advanced_stats(){
+	<%@advanced_stats.each do |stat|%>
+		advanced_stats.push({"value": "<%= stat.value%>","stat_list_id" : "<%= stat.stat_list_id%>" , "stat" : "<%= stat.stat%>" , "description" : "<%=stat.stat_description%>"})
+	<%end%>
+}
+
+function populate_player_stats(){
+	populate_basic_stats()
+	populate_advanced_stats()
+}
+
+function populate_adv_stat_table_columns(){
+	<% @adv_stat_table_columns.each do |display_stat| %>
+		display_stats_adv.push({"stat": "<%= display_stat[:display_name] %>", "display_priority": "<%= display_stat[:display_priority] %>", "stat_name":  "<%= display_stat[:stat_name] %>", "stat_list_id" : "<%= display_stat[:stat_list_id] %>" , "stat_description" : "<%= display_stat[:stat_description] %>"})
+	<% end %>
+}
+
+function populate_basic_stat_table_columns(){
+	<% @stat_table_columns.each do |display_stat| %>
+		display_stats.push({"stat": "<%= display_stat[:stat_name] %>", "display_priority": "<%= display_stat[:display_priority] %>", "display_type" : "<%= display_stat[:display_type] %>", "percentage_string":  "<%= display_stat[:percentage_string] %>", "stat_list_id" : "<%= display_stat[:stat_list_id] %>"})
+	<% end %>
+}
+
+function populate_display_stats(){
+	populate_basic_stat_table_columns()
+	populate_adv_stat_table_columns()
+}
 
 function initialize_basic_trend_stat_arrays(){
 	<%@minutes.each do |minutes|%>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_18_184520) do
+ActiveRecord::Schema.define(version: 2020_03_24_211302) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -58,6 +58,16 @@ ActiveRecord::Schema.define(version: 2019_12_18_184520) do
     t.index ["role_id"], name: "index_assignments_on_role_id"
   end
 
+  create_table "comments", force: :cascade do |t|
+    t.bigint "posts_id"
+    t.bigint "members_id"
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["members_id"], name: "index_comments_on_members_id"
+    t.index ["posts_id"], name: "index_comments_on_posts_id"
+  end
+
   create_table "games", force: :cascade do |t|
     t.bigint "team_id"
     t.datetime "created_at", null: false
@@ -103,8 +113,36 @@ ActiveRecord::Schema.define(version: 2019_12_18_184520) do
     t.float "value"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_opponent"
     t.index ["lineup_id"], name: "index_lineup_adv_stats_on_lineup_id"
     t.index ["stat_list_id"], name: "index_lineup_adv_stats_on_stat_list_id"
+  end
+
+  create_table "lineup_game_advanced_stats", force: :cascade do |t|
+    t.float "value"
+    t.bigint "lineup_id"
+    t.bigint "stat_list_id"
+    t.bigint "game_id"
+    t.json "constituent_stats"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "is_opponent"
+    t.index ["game_id"], name: "index_lineup_game_advanced_stats_on_game_id"
+    t.index ["lineup_id"], name: "index_lineup_game_advanced_stats_on_lineup_id"
+    t.index ["stat_list_id"], name: "index_lineup_game_advanced_stats_on_stat_list_id"
+  end
+
+  create_table "lineup_game_stats", force: :cascade do |t|
+    t.integer "value"
+    t.bigint "lineup_id"
+    t.bigint "stat_list_id"
+    t.bigint "game_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "is_opponent"
+    t.index ["game_id"], name: "index_lineup_game_stats_on_game_id"
+    t.index ["lineup_id"], name: "index_lineup_game_stats_on_lineup_id"
+    t.index ["stat_list_id"], name: "index_lineup_game_stats_on_stat_list_id"
   end
 
   create_table "lineup_stats", force: :cascade do |t|
@@ -114,6 +152,7 @@ ActiveRecord::Schema.define(version: 2019_12_18_184520) do
     t.integer "rank"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_opponent"
     t.index ["lineup_id"], name: "index_lineup_stats_on_lineup_id"
     t.index ["stat_list_id"], name: "index_lineup_stats_on_stat_list_id"
   end
@@ -134,6 +173,18 @@ ActiveRecord::Schema.define(version: 2019_12_18_184520) do
     t.index ["member_id", "lineup_id"], name: "index_lineups_members_on_member_id_and_lineup_id"
   end
 
+  create_table "member_notifs", force: :cascade do |t|
+    t.bigint "member_id"
+    t.boolean "viewed"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "notification_id"
+    t.boolean "read"
+    t.jsonb "data", default: "{}"
+    t.index ["member_id"], name: "index_member_notifs_on_member_id"
+    t.index ["notification_id"], name: "index_member_notifs_on_notification_id"
+  end
+
   create_table "members", force: :cascade do |t|
     t.string "nickname"
     t.datetime "created_at", null: false
@@ -144,6 +195,19 @@ ActiveRecord::Schema.define(version: 2019_12_18_184520) do
     t.integer "games_played"
     t.index ["team_id"], name: "index_members_on_team_id"
     t.index ["user_id"], name: "index_members_on_user_id"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.string "content"
+    t.bigint "team_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "notif_type_type"
+    t.bigint "notif_type_id"
+    t.jsonb "data", default: "{}"
+    t.string "notif_kind"
+    t.index ["notif_type_type", "notif_type_id"], name: "index_notifications_on_notif_type_type_and_notif_type_id"
+    t.index ["team_id"], name: "index_notifications_on_team_id"
   end
 
   create_table "opponents", force: :cascade do |t|
@@ -181,7 +245,10 @@ ActiveRecord::Schema.define(version: 2019_12_18_184520) do
     t.bigint "member_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "post_type_type"
+    t.bigint "post_type_id"
     t.index ["member_id"], name: "index_posts_on_member_id"
+    t.index ["post_type_type", "post_type_id"], name: "index_posts_on_post_type_type_and_post_type_id"
     t.index ["team_id"], name: "index_posts_on_team_id"
   end
 

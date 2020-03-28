@@ -524,6 +524,7 @@ function InitialRadarChart(id, options, shift) {
 }//RadarChart
 	
 function RadarChart(id, data, options, shift) {
+	console.log("in radar chart!")
 	var cfg = {
 	 w: 600,				//Width of the circle
 	 h: 600,				//Height of the circle
@@ -658,11 +659,11 @@ function RadarChart(id, data, options, shift) {
 	//Append the labels at each axis
 	axis.append("text")
 		.attr("class", "legend")
-		.style("font-size", "11px")
+		.style("font-size", "10px")
 		.attr("text-anchor", "middle")
 		.attr("dy", "0.35em")
-		.attr("x", function(d, i){ return rScale(maxValue * cfg.labelFactor) * Math.cos(angleSlice*i - dot_shift); })
-		.attr("y", function(d, i){ return rScale(maxValue * cfg.labelFactor) * Math.sin(angleSlice*i - dot_shift); })
+		.attr("x", function(d, i){ return rScale(maxValue * 1.2 * cfg.labelFactor) * Math.cos(angleSlice*i - dot_shift); })
+		.attr("y", function(d, i){ return rScale(maxValue * 1.1 * cfg.labelFactor) * Math.sin(angleSlice*i - dot_shift); })
 		.text(function(d){return d})
 		.call(wrap, cfg.wrapWidth);
 

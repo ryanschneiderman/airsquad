@@ -1,4 +1,4 @@
-<h1> <%= post.title %> </h1>
-
-<div> <%= post.content %></div>
-<div> <%= link_to "delete post", team_post_path(@team.id, post.id), method: :delete %> </div>
+<div class = "post">
+	<div class = "post-name"> <%= post.name %> </div>
+	<div class = "post-content"> <%= post.content %></div>
+</div>

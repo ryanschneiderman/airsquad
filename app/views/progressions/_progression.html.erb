@@ -1,6 +1,6 @@
-<div id = "progression-block">
-	<div id = "progression-img">
-		<button onclick = "loadCanvasFromJson(<%=progression.index%> - 1)">
+<div class = "progression-block">
+	<div class = "progression-img-wrapper">
+		<button onclick = "jumpToProgression(<%=progression.index%> -1)">
 			<%= image_tag(url_for(progression.play_image), :alt => "progression", :class => "progression-img") %>
 			<div class = "progression-num"><%=progression.index%></div>
 		</button>

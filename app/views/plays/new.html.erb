@@ -76,16 +76,7 @@
 <%= render 'progressions/javascript' %>
 
 <script>
-    $(".navbar").addClass("navbar-active");
-    $(".navbar-default a").addClass("navbar-text-active");
-    $(".home-link").css("border-color", "black");
-
-    $(window).on("scroll", function() {
-        $(".navbar").addClass("navbar-active");
-        $(".navbar-default a").addClass("navbar-text-active");
-        $(".home-link").css("border-color", "black")
-
-    });
+    activate_header();
    
     var anchorRadius = 3;
     var anchorOffset = anchorRadius - .5;
@@ -124,6 +115,8 @@
             }
 
     });
+
+  
 
   canvas.on('selection:created', function() {
         canvas.getActiveObjects().forEach(function(o) {

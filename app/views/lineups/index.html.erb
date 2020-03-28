@@ -8,107 +8,81 @@
 </div>
 
 <div id = "lineup-explorer">
-	<div id = "saved-lineups">
-		<div id = "lineups-scroll-wrapper">
-			<div id = "saved-lineup-scroll">
-				<% lineup_counter = 0 %>
-				<% @lineups.each do |lineup| %>
-					<button class = "lineup-chart-wrapper" onclick="expand_lineup(<%=lineup.id%>, <%=lineup_counter%>, this)">
-						<div class = "lineup-button-name"><%=lineup.name%></div>
-						<div class = "lineup-icon" id = "lineup-button-<%=lineup_counter%>"></div>
-					</button>
-					
-					<% lineup_counter +=1 %>
-				<%end%>
-			</div>
-			<button class = "lineup-chart-wrapper" onclick="new_lineup()">
-				<div class = "lineup-button-name">New Lineup</div>
-				<div id = "lineup-button-new"></div>
-			</button>
-		</div>
-		<%lineup_counter = 0%>
-		<% @lineups.each do |lineup|%>
-			<div class = "lineup-content" id = "lineup-content-<%=lineup_counter%>">
-				<div id = "toggle-buttons">
-					<button class = "basic-chart-toggle" id = "to-per-game-button" onclick = "toggle_radar_chart(1, this, '<%=lineup_counter%>')">Per Game</button>
-					<button class = "basic-chart-toggle" id = "to-per-minute-button" onclick = "toggle_radar_chart(2, this, '<%=lineup_counter%>')">Per Minute</button>
-					<button class = "basic-chart-toggle" id = "advanced-button" onclick = "toggle_radar_chart(3, this, '<%=lineup_counter%>')">Advanced</button>
+	<div class = "lineups-grid">
+		<div id = "ordering-column">
+			<div class = "lineup-order-header">Sort Lineups</div>
+			<div id = "lineup-order-links">
+				<div id = "basketball-selector"><%= image_tag("basketball-bullet.png", :alt => "bball-icon", :class => "basketball-bullet") %></div>
+				<div class = "lineup-order-links">
+					<button id = "stat-link-16" class = "stat-link stat-link-selected" onclick = "sort_lineups(this, 16, false)">Minutes</button>
 				</div>
-				<div id = "lineup-chart-<%=lineup_counter%>"></div>
-				<div id = "lineup-basic-stats-headers">
-					<button class = "lineup-basic-stats-headers">Per Game</button>
-					<button class = "lineup-basic-stats-headers">Per Minute</button>
-				</div>
-				<table id = "per-game-table-<%=lineup_counter%>"></table>
-				<table id = "lineup-basic-stats-<%=lineup_counter%>"></table>
-				<table id = "lineup-adv-stats-<%=lineup_counter%>"></table>
-			</div>
-			<%lineup_counter +=1%>
-		<%end%>
-	</div>
-	<div id = "new-lineup">
-		<div id = "new-lineup-grid">
-			
-			<div id = "lineup-display-container">
-				<div id = "lineup-toolbar">
-					<div id = "lineup-name" contenteditable="true" >New Lineup (click to edit)</div>
-					<div id = "select-players-lineup">
-						<% counter = 0 %>
-						<%@members.each do |member|%>
-							<button class = "btn lineup-member-button" id = "lineup-member-button-<%=counter%>" data-member-id = "<%=member.id%>" onclick="select_player(this, <%=member.id%>)"><%=member.nickname%></button>
-							<% counter +=1 %>
-						<%end%>
-					</div>
-					<%if @is_admin%>
-						<div id = "save-delete">
-							<button id = "save-lineup" class = "lineup-tool-button" style = "display: none;" onclick = "saveLineup()" >Save Lineup</button>
-							<button id = "delete-lineup" class = "lineup-tool-button" style="display:none" onclick = "deleteLineup()">Delete Lineup</button>
-						</div>
-					<% end %>
-				</div>
-				<div id = "radar-charts-toggle">
-					<div id = "toggle-buttons">
-						<button class = "basic-chart-toggle" id = "to-per-game-button" onclick = "toggle_new_chart(1, this)">Per Game</button>
-						<button class = "basic-chart-toggle" id = "to-per-minute-button" onclick = "toggle_new_chart(2, this)">Per Minute</button>
-						<button class = "basic-chart-toggle chart-toggle-active" id = "advanced-button" onclick = "toggle_new_chart(3, this)">Advanced</button>
-					</div>
-					<div id = "radar-charts-container">
-						<div class = "lineup-chart">
-							<div class = "aggr-chart-header">Defense</div>
-							<div class = "overlaid-chart"></div>
-						</div>
-						<div class = "lineup-chart">
-							<div class = "aggr-chart-header">Offense</div>
-							<div class = "aggregate-chart"></div>
-						</div>
-					</div>
-				</div>
+
 			</div>
 		</div>
-		
+		<div id = "lineups-wrapper">
+			<div id = "lineups-container">
+				
+			</div>
+		</div>
 	</div>
-	
 </div>
-
 <%= render 'stats/radar/radar_js' %>
-<%= render 'stats/radar/lineup_radar_controller_js' %>
-
+<%= render 'lineup_js' %>
 <script>
+	var display_stats = [];
+	var lineup_stats = [];
+	var desired_off_stats = [15, 27, 7, 3, 29, 28]
+	var per_minute_factor = <%=@minutes_factor%>
+	console.log(per_minute_factor)
+	populate_basic_stat_table_columns()
+	initialize_stat_array()
+	insert_lineup_modules()
+
+	var basketball_icon = $('<%= image_tag("basketball-bullet.png", :alt => "bball-icon", :class => "basketball-bullet") %>')
 	
-	var options = getOptions(["#8c0a0a"], getWidth() * .15, 10)
-	EmptyRadarChart("#lineup-button-new", options, true);
-	instantiate_lineups()
+	insert_order_links()
+	sort_lineups("#stat-link-16", 16, false)
 
+	function establish_hover_rules(){
+		$( ".expand-container" ).hover(
+		  function() {
+		  	console.log("hovering")
+		    $( this ).find(".more-text").css("color", "black") ;
+		    $( this ).find(".more-circle").css("stroke", "black") ;
+		    $( this ).find(".more-arrow").css("fill", "black") ;
+		  }, function() {
+		    $( this ).find(".more-text").css("color", "#868696") ;
+		    $( this ).find(".more-circle").css("stroke", "#868696") ;
+		    $( this ).find(".more-arrow").css("fill", "#868696") ;
+		  }
+		);
 
-	function getWidth() {
-	  return Math.max(
-	    document.body.scrollWidth,
-	    document.documentElement.scrollWidth,
-	    document.body.offsetWidth,
-	    document.documentElement.offsetWidth,
-	    document.documentElement.clientWidth
-	  );
+		$( ".expand-container").click(function(){
+			var parent = $(this).parents(".lineup-module")
+			 if(parent.find(".non-default-stat").hasClass("lineup-stat-inactive")){
+			 	parent.find(".non-default-stat").removeClass("lineup-stat-inactive")
+			 	parent.find(".lineup-table-container").removeClass("lineup-stat-inactive")
+			 	parent.find(".flex-end-container").hide()
+				parent.find(".radar-w-minutes").css("height", "inherit")
+				parent.find(".less-link-container").removeClass("lineup-stat-inactive")
+			 }
+			 else{
+			 	parent.find(".non-default-stat").addClass("lineup-stat-inactive")
+			 	parent.find(".lineup-table-container").addClass("lineup-stat-inactive")
+			 	parent.find(".flex-end-container").show()
+				parent.find(".radar-w-minutes").css("height", "100%")
+				parent.find(".less-link-container").addClass("lineup-stat-inactive")
+			 }
+
+		});
 	}
+	
+
+	
+
+
+
+
 
 </script>
 

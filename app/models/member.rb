@@ -10,4 +10,7 @@ class Member < ApplicationRecord
 	has_and_belongs_to_many :lineups
 	has_many :assignments  
 	has_many :roles, through: :assignments  
+	has_many :member_notifs
+	has_many :notifications, through: :member_notifs
+	has_many :comments
 end

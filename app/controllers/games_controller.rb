@@ -21,7 +21,6 @@ class GamesController < ApplicationController
 	def new
 		@game = Game.new
 		@team_id = params[:team_id]
-		puts @new_game
 	end
 
 	def create
@@ -31,6 +30,8 @@ class GamesController < ApplicationController
 		date = params[:date]
 		time = params[:time]
 		place = params[:location]
+
+		member = Member.where(user_id: current_user.id, team_id: team_id).take
 
 		schedule_event = ScheduleEvent.create(
 			date: date,
@@ -48,6 +49,34 @@ class GamesController < ApplicationController
 		game.opponent_id = opponent.id
 		game.save
 		redirect_to team_games_path(team_id)
+
+		notif = Notification.create(
+			content: "Game scheduled against " + opponent.name + " @ " + place,
+			team_id: team_id,
+			notif_type_type: "Game",
+			notif_type_id: game.id,
+			notif_kind: "created"
+		)
+
+		members = Member.where(team_id: team_id)
+		members.each do |team_member|
+			if team_member.id != member.id
+				MemberNotif.create(
+					member_id: team_member.id,
+					notification_id: notif.id,
+					viewed: false,
+					read: false,
+				)
+			else
+				MemberNotif.create(
+					member_id: team_member.id,
+					notification_id: notif.id,
+					viewed: true,
+					read: true,
+				)
+			end
+		end
+
 	end
 
 	def show
@@ -235,6 +264,9 @@ class GamesController < ApplicationController
 	  	game.save
 	end
 
+	def bezier
+	end
+
 	## service
 	def game_mode_submit
 		player_stats = params[:player_stats]
@@ -245,6 +277,9 @@ class GamesController < ApplicationController
 		team_id = params[:team_id]
 		team = Team.find_by_id(team_id)
 		game = Game.find_by_id(game_id)
+		schedule_event = ScheduleEvent.find_by_id(game.schedule_event_id)
+		opponent = Opponent.find_by_id(game.opponent_id)
+		member = Member.where(user_id: current_user.id).take
 		if game.played
 			Stats::RollbackGameService.new({game_id: game_id, submit: true, team_id: team_id}).call
 		end
@@ -259,19 +294,51 @@ class GamesController < ApplicationController
 			minutes_p_q: team.minutes_p_q
 		}).call
 
+		post = Post.create(
+			title: "Game data vs " + opponent.name + " available",
+			team_id: team_id,
+			member_id: member.id,
+			post_type_type: "Game",
+			post_type_id: game_id,
+		)
+
 		Stats::StatRankingsService.new({
 			team_id: team_id,
-			is_lineup: false,
-		}).call
-=begin
-		Stats::StatRankingsService.new({
-			team_id: team_id,
-			is_lineup: true,
 		}).call
 
-=end
+		Stats::LineupStatRankingService.new({
+			team_id: team_id,
+		}).call
+
 		game.update(played: true)
 		game.save
+
+		notif = Notification.create(
+			content: "Stats added for game vs. " + opponent.name + " @ " + schedule_event.place,
+			team_id: team_id,
+			notif_type_type: "Game",
+			notif_type_id: game.id,
+			notif_kind: "added"
+		)
+
+		members = Member.where(team_id: team_id)
+		members.each do |team_member|
+			if team_member.id != member.id
+				MemberNotif.create(
+					member_id: team_member.id,
+					notification_id: notif.id,
+					viewed: false,
+					read: false,
+				)
+			else
+				MemberNotif.create(
+					member_id: team_member.id,
+					notification_id: notif.id,
+					viewed: true,
+					read: true,
+				)
+			end
+		end
 
 		redirect_to team_game_path(team_id, game_id)
 	end

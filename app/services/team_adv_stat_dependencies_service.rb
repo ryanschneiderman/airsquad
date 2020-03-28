@@ -31,6 +31,9 @@ class TeamAdvStatDependenciesService
 		##pace
 		when 48
 			return [stat_id, [7, 4], [1,2, 13, 14, 16], stat_name]
+		##assist ratio
+		when 52 
+			return [stat_id, [7, 4, 3], [1,2, 13, 14], stat_name]
 		end
 	end
 end

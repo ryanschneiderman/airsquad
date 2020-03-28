@@ -62,10 +62,10 @@
 </div>
 <div id = "play-scrollbar">
 	<%@progressions.each do |progression|%>
-	<div id = "progression-block">
-		<div id = "progression-img">
+	<div class = "progression-block" >
+		<div class = "progression-img-wrapper" id = "progression-<%=progression.id%>">
             
-			<button onclick = "loadCanvasFromJson(<%=progression.index%> -1)">
+			<button onclick = "switch_progression(<%=progression.index%> -1, <%=progression.id%>)">
 				<%= image_tag(url_for(progression.play_image), :alt => "progression", :class => "progression-img") %>
 				<div class = "progression-num"><%=progression.index%></div>
 			</button>
@@ -79,22 +79,14 @@
 <%= render 'progressions/js_objects' %>
 <%= render 'progressions/javascript' %>
 <script>
-         $(".navbar").addClass("navbar-active");
-    $(".navbar-default a").addClass("navbar-text-active");
-    $(".home-link").css("border-color", "black");
-
-    $(window).on("scroll", function() {
-        $(".navbar").addClass("navbar-active");
-        $(".navbar-default a").addClass("navbar-text-active");
-        $(".home-link").css("border-color", "black")
-
-    });
+        activate_header()
         var index = 0
         var line_type;
     
         var line, isDown, evented;
         var anchorRadius = 3;
         var anchorOffset = anchorRadius - .5;
+        var animate_time = 1000;
 
         var convert = function(convert){
             return $("<span />", { html: convert }).text();
@@ -102,7 +94,7 @@
         };
         var json_diagrams = []
         <% @progressions.each do |progression| %>
-            json_diagrams.push({"json": "<%=progression.json_diagram%>" , "canvas_width" : parseFloat("<%=progression.canvas_width%>"), "notes" : convert("<%=progression.notes%>")});
+            json_diagrams.push({"json": "<%=progression.json_diagram%>" , "canvas_width" : parseFloat("<%=progression.canvas_width%>"), "notes" : convert("<%=progression.notes%>"), "progression_id" : "<%=progression.id%>"});
         <%end%>
 
         //canvas.requestRenderAll.bind(canvas);
@@ -117,42 +109,80 @@
         canvas.setHeight(canvas_height);
         canvas.setWidth(canvas_width);
 
-        loadCanvasFromJson(index);
+
+        var progression_notifications = []
+        insert_progression_change_style()
+        switch_progression(index, json_diagrams[0].progression_id);
+
+        
+
+        
+
+        function insert_progression_change_style(){
+            <%@progression_notifications.each do |notif|%>
+                <%notif.member_data["progression_ids"].each do |progr|%>
+                    progression_notifications.push({"progression_id": <%=progr%>, "member_notif_id" : <%=notif.member_notif_id%>})
+                    $("#progression-<%=progr%>").addClass("progression-change")
+                <%end%>
+            <%end%>
+        }
+
+       
 
         function change_progression(change){
             var max_depth = 0;
             if(change > 0){
-                canvas.getObjects().forEach(function(o) {
-                  if (o.type == "PlayerCircle"){
-                    o.lines = [];
-                    populateLines(o)
-                    var depth = recurseLines(o)
-                    //console.log("DEPTH: " + depth)
-                    if(depth > max_depth) max_depth = depth;
-                    animateMovement(o, o)
-                  }
-                });
-                hideLines()
+                startAnimation()
             }
-            else max_depth = 0;
+
+            max_depth = getAnimationTime()
             console.log("max_depth: " + max_depth)
 
         	index = index + change;
             setTimeout(function(){ 
                 if(index > json_diagrams.length -1){
-                    loadCanvasFromJson(0)
+                    switch_progression(0)
                 }
                 else if (index < 0){
-                    loadCanvasFromJson(json_diagrams.length -1)
+                    switch_progression(json_diagrams.length -1)
                 }
                 else{
-                    loadCanvasFromJson(index);
+                    switch_progression(index);
                 }
-            }, 1300 *  max_depth);  
+            }, animate_time *  max_depth);  
         }
 
-        function loadCanvasFromJson(new_index){
-        	$(".progression-notes-text").html(json_diagrams[new_index].notes)
+
+
+        function switch_progression(new_index, progression_id){
+            $(".progression-notes-text").html(json_diagrams[new_index].notes)
+            remove_progression_notification(progression_id)
+            load_JSON_canvas(new_index)
+        }
+
+        function remove_progression_notification(progression_id){
+            // Send ajax request with the progression that has been clicked on
+            var url = "/plays/"+ <%=@play.id%> +"/progressions/remove_progression_notification"
+            var array_sub = progression_notifications.filter(item => {
+              if (item.progression_id == progression_id) {
+                return item;
+              }
+            });
+            var data = {member_notif_array : array_sub}
+            $("#progression-"+progression_id).removeClass("progression-change")
+            $.ajax({
+                url: url,
+                beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+                type: "post",
+                data_type: 'json',
+                data: data,
+                success: function(result){
+                     
+                }
+            });
+        }
+
+        function load_JSON_canvas(new_index){
             var json_diagrams_len = json_diagrams.length;
             index = new_index;
            
@@ -167,6 +197,11 @@
             var width_ratio = old_canvas_width/canvas.width;
 
             var json_data = json_diagrams[index].json.replace(/&quot;/g,'"');
+            insertJSONinCanvas(json_data, old_canvas_width, width_ratio)
+            $("#progression_index").html(index+1);
+        }
+
+        function insertJSONinCanvas(json_data, old_canvas_width, width_ratio){
             canvas.loadFromJSON(json_data, function() {
                 var ball;
                 var player_with_ball;
@@ -200,14 +235,15 @@
                         o.toAnchorPoint.y = o.toAnchorPoint.y / width_ratio
                         o.strokeWidth = o.strokeWidth/width_ratio;
                         o.set({radius: o.radius / width_ratio})
-                        o.moveTo(100)
+                        o.moveTo(104)
                         o.setCoords()
+                        populateLines(o)
                     }
                     else if (o.type == "LineWithArrow" || o.type == "DribbleLine" || o.type == "PassLine" || o.type == "ScreenLine"){
                         o.toAnchorPoint.x = o.toAnchorPoint.x / width_ratio
                         o.toAnchorPoint.y = o.toAnchorPoint.y / width_ratio
                         o.set({x1: o.x1 / width_ratio, x2: o.x2 / width_ratio, y1: o.y1 / width_ratio, y2: o.y2 / width_ratio})
-                        o.moveTo(99)
+                        o.moveTo(103)
                         o.setCoords()
                         
                     }
@@ -220,8 +256,9 @@
                 }
                 canvas.renderAll();
             }); 
-            $("#progression_index").html(index+1);
         }
+
+        
 </script>
 
 

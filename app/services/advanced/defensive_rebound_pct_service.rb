@@ -12,17 +12,6 @@ class Advanced::DefensiveReboundPctService
 		@team_minutes = params[:team_minutes]
 		@minutes = params[:minutes]
 		@team_def_reb = params[:team_def_reb]
-		puts "DEFENSIVE REBOUND SERVICE"
-		puts "@def_reb "
-		puts @def_reb 
-		puts "@opp_off_reb"
-		puts @opp_off_reb
-		puts "@team_minutes"
-		puts @team_minutes
-		puts "@minutes"
-		puts @minutes
-		puts "@team_def_reb"
-		puts @team_def_reb
 	end
 
 	def call()

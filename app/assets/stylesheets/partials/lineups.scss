@@ -1,0 +1,238 @@
+.lineups-grid{
+	display: grid;
+	grid-template-columns: 1fr 5fr;
+}
+
+.lineup-module{
+	display: grid;
+    grid-template-columns: 1fr 2.5fr;
+    padding: 0 0 0 30px;
+    background: #e5e5e5;
+    border-radius: .625rem;
+    min-height: 250px;
+    width: 100%;
+}
+
+.lineup-stat-inactive{
+	display: none !important;
+}
+
+.inactive-table{
+	display: none !important;
+}
+
+
+.lineup-table-headers{
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.lineup-table-link{
+	margin-left: 10px;
+	margin-right: 10px;
+	font-size: 14px;
+}
+
+.lineup-adv-row{
+	display: flex;
+}
+
+#lineups-container{
+	display: grid;
+    grid-row-gap: 40px;
+}
+
+#lineup-explorer{
+	padding: 30px 30px;
+}
+
+.lineup-member{
+	display: inline-block;
+	font-family: eurostile, sans-serif;
+    font-weight: bold;
+    font-size: 25px;
+}
+
+.lineup-members{
+	margin-top: 20px;
+	margin-bottom: 40px;
+}
+
+.lineup-def-rtg{
+	border-bottom: 3px solid #CD3D48 !important;
+}
+
+.lineup-off-rtg{
+	border-bottom: 3px solid #0095B1 !important;
+}
+
+.lineup-members{
+
+}
+
+.lineup-module-left{
+
+}
+
+.lineup-module-right{
+	display: flex;
+    flex-direction: column;
+}
+
+.advanced-link{
+	
+}
+
+.stat-link{
+	margin-top: 3px;
+	margin-bottom: 3px;
+	color: #9e9e9e;
+	display: block;
+}
+
+.lineup-stat{
+	display: inline-block;
+	background-color: white;
+    border-radius: 5px;
+    font-family: eurostile, sans-serif;
+    font-size: 17px;
+    font-weight: bold;
+    margin-left: 7px;
+    margin-right: 7px;
+    min-width: 85px;
+    height: 70px;
+}
+
+.stat-link-selected{
+	color: black;
+}
+
+.lineup-stats{
+	display: grid;
+    grid-row-gap: 15px;
+    margin-bottom: 20px;
+}
+
+.far-right-column{
+	display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.more-link{
+}
+
+.less-link-container{
+
+}
+
+.more-circle{
+	transition: stroke .3s ease;
+}
+
+.more-arrow{
+	transition: fill .3s ease;
+}
+
+.expand-container{
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 10px;
+	align-self: flex-end;
+	margin-right: 15px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.more-text{
+	font-family: 'Raleway', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    margin-top: 3px;
+    transition: color .3s ease;
+    color: #868696;
+}
+
+
+
+.lineup-minutes{
+	color: #1D9601;
+	margin-top: 10px;
+    margin-right: 10px;
+}
+
+.minutes-container{
+	display: grid;
+}
+
+.flex-end-container{
+	justify-content: flex-end;
+    display: flex;
+}
+
+.lineup-stat-label{
+	border-bottom: 3px solid #e5e5e5;
+	padding: 5px;
+	text-align: center;
+}
+
+.lineup-stat-value{
+	padding: 5px;
+	text-align: center;
+}
+
+.lineup-order-header{
+	font-size: 25px;
+	margin-bottom: 20px;
+}
+
+.lineup-order-subheader{
+	font-size: 17px;
+}
+
+.lineup-order-links{
+	margin-left: 20px;
+}
+
+.radar-charts{
+	display: flex;
+	justify-content: center;
+}
+
+.basketball-bullet{
+	width: 12px;
+	height: 12px;
+	position: absolute;
+	transition: all .3s ease 0s;
+	top: 58px;
+}
+
+.radar-w-minutes{
+	display: flex;
+	justify-content: flex-end;
+	height: 100%;
+}
+.lineup-radar{
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+.lineup-stat-table{
+	font-size: 10px;
+    background-color: white;
+    white-space: nowrap;
+    text-align: center;
+    width: 90%;
+    margin: auto;
+    margin-bottom: 15px;
+}
+
+.per-minute-link{
+	font-weight: bold;
+}
+
+#ordering-column{
+	position: sticky;
+    top: 60px;
+    height: 600px;
+}

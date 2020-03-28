@@ -9,8 +9,37 @@
 		<%end%>
 	}
 
+	function initialize_adv_belongs(){
+		<%@non_default_team_advanced_belongs.each do |stat|%>
+			non_default_team_adv_belongs.push(<%=stat.stat_list_id%>)	
+		<%end%>
 
-	// WHAT IS GOING ON HERE
+		<%@non_default_advanced_belongs.each do |stat|%>
+			non_default_adv_belongs.push(<%=stat.stat_list_id%>)	
+		<%end%>
+	}
+
+	function team_adv_stat_belongs(stat_id){
+		var len = non_default_team_adv_belongs.length;
+		for(var i = 0; i < len; i++){
+			if(stat_id == non_default_team_adv_belongs[i]){
+				return true
+			}
+		}
+		return false;
+	}
+
+	function adv_stat_belongs(stat_id){
+		var len = non_default_adv_belongs.length;
+		for(var i = 0; i < len; i++){
+			if(stat_id == non_default_adv_belongs[i]){
+				return true
+			}
+		}
+		return false;
+	}
+
+
 	function adv_stat_add_check(stat_id, init){
 		var len = non_default_adv_stats.length
 		// iterate over non default advanced stats
@@ -27,7 +56,7 @@
 						// add to satisfied array
 						non_default_adv_stats[i].stats_satisfied.push(stat_id)
 						// if no more stats are needed to satisfy adv stat
-						if(non_default_adv_stats[i].stats_needed.length == 0 && !init){
+						if(non_default_adv_stats[i].stats_needed.length == 0 && !adv_stat_belongs(non_default_adv_stats[i].id)){
 							if(stats_to_remove.includes(non_default_adv_stats[i].id)){
 								var removeIndex = stats_to_remove.map(function(item) { return item;}).indexOf(non_default_adv_stats[i].id);
 	        					~removeIndex && stats_to_remove.splice(removeIndex, 1);
@@ -83,7 +112,7 @@
 					if (non_default_team_adv_stats[i].stats_needed[j] == stat_id){
 						non_default_team_adv_stats[i].stats_needed.splice(j, 1);
 						non_default_team_adv_stats[i].stats_satisfied.push(stat_id)
-						if(non_default_team_adv_stats[i].stats_needed.length == 0 && !init){
+						if(non_default_team_adv_stats[i].stats_needed.length == 0 && !team_adv_stat_belongs(non_default_team_adv_stats[i].id)){
 							if(stats_to_remove.includes(non_default_team_adv_stats[i].id)){
 								var removeIndex = stats_to_remove.map(function(item) { return item;}).indexOf(non_default_team_adv_stats[i].id);
 	        					~removeIndex && stats_to_remove.splice(removeIndex, 1);
@@ -135,7 +164,6 @@
 		<%@team_advanced_stats.each do |stat|%>
 			non_default_team_adv_stats.push( {"id" : <%=stat[0]%>, "stats_needed" : <%=stat[1]%>, "stats_satisfied" : <%=stat[2]%>, "name" : "<%=stat[3]%>"})
 		<%end%>
-		console.log(non_default_team_adv_stats)
 	}
 
 

@@ -30,6 +30,8 @@ class ProgressionsController < ApplicationController
 		team_id = params[:progression][:team_id]
 		play.num_progressions = play.num_progressions + 1
 		play.save
+		play_name = play.name
+		member = Member.where(user_id: current_user.id, team_id: team_id).take
 
 		progression = Progression.new(
 			json_diagram: params[:progression][:json_diagram], 
@@ -38,8 +40,6 @@ class ProgressionsController < ApplicationController
 			canvas_width: params[:progression][:canvas_width], 
 			notes: params[:progression][:notes],
 		)
-		
-
 		progression_str = play.name + params[:progression][:index] + ".png"
 		param_data = params[:progression][:play_image]
 		image_data = Base64.decode64(param_data['data:image/png;base64,'.length .. -1])
@@ -49,12 +49,59 @@ class ProgressionsController < ApplicationController
 		progression.play_image.attach(io: StringIO.new(image.to_blob), filename: progression_str, content_type: "image/jpeg")
 		progression.save
 
+		notification = Notification.where("notif_type_id = ? AND created_at >= ? AND notif_kind = ?", play.id, Date.today - 1, 'added').take 
+		if !notification.nil?
+			notification.update(content: (notification.data["count"] + 1).to_s + " progressions added for " + play_name, data: {"count" => notification.data["count"] + 1})
+			MemberNotif.where(notification_id: notification.id).each do |notif|
+				if notif.member_id != member.id
+					notif.update(viewed: false, read: false)
+					notif.data["progression_ids"].append(progression.id)
+					notif.save
+				end
+			end 
+		else
+			notif = Notification.create(
+				content: "1 progression added for " + play_name,
+				team_id: team_id,
+				notif_type_type: "Play",
+				notif_type_id: play.id,
+				data: {"count" => 1},
+				notif_kind: "added"
+			)
+			members = Member.where(team_id: team_id)
+			members.each do |team_member|
+				if team_member.id != member.id
+					MemberNotif.create(
+						member_id: team_member.id,
+						notification_id: notif.id,
+						viewed: false,
+						read: false,
+						data: {"progression_ids" => [progression.id]}
+					)
+				else
+					MemberNotif.create(
+						member_id: team_member.id,
+						notification_id: notif.id,
+						viewed: true,
+						read: true,
+						data: {"progression_ids" => []}
+					)
+				end
+			end
+		end
+		
+
+		
+
 		redirect_to team_plays_path(team_id)
 	end
 
 	def create_next
 		play = Play.find_by_id(params[:progression][:play_id])
 		team_id = params[:progression][:team_id]
+		play_name = play.name
+		member = Member.where(user_id: current_user.id, team_id: team_id).take
+
 		play.num_progressions = play.num_progressions + 1
 		play.save
 		progression = Progression.new(
@@ -65,7 +112,6 @@ class ProgressionsController < ApplicationController
 			notes: params[:progression][:notes],
 		)
 		
-
 		progression_str = play.name + params[:progression][:index] + ".png"
 		param_data = params[:progression][:play_image]
 		image_data = Base64.decode64(param_data['data:image/png;base64,'.length .. -1])
@@ -74,6 +120,50 @@ class ProgressionsController < ApplicationController
 
 		progression.play_image.attach(io: StringIO.new(image.to_blob), filename: progression_str, content_type: "image/jpeg")
 		progression.save
+		
+
+		notification = Notification.where("notif_type_id = ? AND notif_type_type = ? AND created_at >= ? AND notif_kind = ?", play.id, "Play", Date.today - 1, 'added').take 
+
+		if !notification.nil? 
+			MemberNotif.where(notification_id: notification.id).each do |notif|
+				if notif.member_id != member.id
+					notif.update(viewed: false, read: false)
+					notif.data["progression_ids"].append(progression.id)
+					notif.save
+				end
+			end
+		else
+			notif = Notification.create(
+				content: "1 progression added for " + play_name,
+				team_id: team_id,
+				notif_type_type: "Play",
+				notif_type_id: play.id,
+				data: {"count" => 1},
+				notif_kind: "added"
+			)
+			members = Member.where(team_id: team_id)
+			members.each do |team_member|
+				if team_member.id != member.id
+					MemberNotif.create(
+						member_id: team_member.id,
+						notification_id: notif.id,
+						viewed: false,
+						read: false,
+						data: {"progression_ids" => [progression.id]}
+					)
+				else
+					MemberNotif.create(
+						member_id: team_member.id,
+						notification_id: notif.id,
+						viewed: true,
+						read: true,
+						data: {"progression_ids" => []}
+					)
+				end
+			end
+		end
+
+		
 
 
 
@@ -103,6 +193,52 @@ class ProgressionsController < ApplicationController
 		team_id = params[:progression][:team_id]
 		play_name = params[:play_name]
 		play = Play.find_by_id(play_id)
+		member = Member.where(user_id: current_user.id, team_id: team_id).take
+
+		notification = Notification.where("notif_type_id = ? AND created_at >= ? AND notif_kind = ?", play.id, Date.today - 1, 'edited').take 
+		
+		if !notification.nil? 
+			notification.update( data: {"count" => notification.data["count"] + 1})
+			MemberNotif.where(notification_id: notification.id).each do |notif|
+				if notif.member_id != member.id
+					notif.update(viewed: false, read: false)
+					if !notif.data["progression_ids"].include? progression_id
+						notif.data["progression_ids"].append(progression_id)
+					end
+				end
+			end
+		else
+			notif = Notification.create(
+				content: "Play: " + play_name + " edited",
+				team_id: team_id,
+				notif_type_type: "Play",
+				notif_type_id: play.id,
+				data: {"count" => 1},
+				notif_kind: "edited"
+			)
+			members = Member.where(team_id: team_id)
+			members.each do |team_member|
+				if team_member.id != member.id
+					MemberNotif.create(
+						member_id: team_member.id,
+						notification_id: notif.id,
+						viewed: false,
+						read: false,
+						data: {"progression_ids" => [progression_id]}
+					)
+				else
+					MemberNotif.create(
+						member_id: team_member.id,
+						notification_id: notif.id,
+						viewed: true,
+						read: true,
+						data: {"progression_ids" => []}
+					)
+				end
+			end
+		end
+
+		
 		play.update(name: play_name)
 		play.save
 		progression = Progression.find(params[:progression][:progression_id])
@@ -121,6 +257,23 @@ class ProgressionsController < ApplicationController
 		progression.update(json_diagram: json_diagram, canvas_width: params[:progression][:canvas_width], notes: params[:progression][:notes])
 		progression.save
 		redirect_to edit_team_play_path(team_id, play_id)
+	end
+
+	def remove_progression_notification
+		member_notif_array = params[:member_notif_array]
+		if !member_notif_array.nil?
+			member_notif_array.each do |notif|
+				member_notif_id = notif[1]["member_notif_id"].to_i
+				progression_id = notif[1]["progression_id"].to_i
+				member_notif = MemberNotif.find_by_id(member_notif_id)
+				member_notif.data["progression_ids"] = member_notif.data["progression_ids"].reject{|progr| progr.to_i == progression_id}
+				member_notif.save
+				if member_notif.data["progression_ids"].length == 0
+					member_notif.update(viewed: true, read: true)
+				end
+			end
+		end
+
 	end
 
 	## NEED TO UPDATE

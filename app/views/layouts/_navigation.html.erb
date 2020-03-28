@@ -24,42 +24,40 @@
 
 
 <script>
-  /*var lastScrollTop = 0; 
-$(window).on("scroll", function() {
-        var st = window.pageYOffset || document.documentElement.scrollTop; 
-        if (st > lastScrollTop){
-            $(".navbar").addClass("navbar-inactive");
-            $(".navbar").addClass("navbar-active");
-            $(".navbar").removeClass("navbar-active");
-        } else {
-          
-          if(st > 40){
-            if(st %10 == 0){
-               $(".navbar").addClass("navbar-active");
-               $(".navbar-default a").addClass("navbar-text-active");
-               $(".home-link").css("border-color", "black")
-               $(".navbar").removeClass("navbar-inactive")
-            }
-          }
-          else{
-            $(".navbar").removeClass("navbar-active");
-            $(".navbar-default a").removeClass("navbar-text-active");
-            $(".home-link").css("border-color", "white")
-          }
-        }
-        lastScrollTop = st <= 0 ? 0 : st; // For Mobile or negative scrolling
-
-});*/
-  $(window).on("scroll", function() {
-    if($(window).scrollTop() > 25) {
+  standard_header()
+  function standard_header(){
+    $(window).unbind('scroll');
+    $(window).on("scroll", function() {
+      if($(window).scrollTop() > 25) {
+          $(".navbar").addClass("navbar-active");
+          $(".navbar-default a").addClass("navbar-text-active");
+          $(".home-link").css("border-color", "black")
+          $(".notif-bell").addClass("notif-bell-scroll")
+          $(".notif-circle").addClass("notif-circle-scroll")
+      } else {
+         $(".navbar").removeClass("navbar-active");
+         $(".navbar-default a").removeClass("navbar-text-active");
+         $(".home-link").css("border-color", "white")
+         $(".notif-bell").removeClass("notif-bell-scroll")
+         $(".notif-circle").removeClass("notif-circle-scroll")
+      }
+    });
+  }
+  function activate_header(){
+    $(window).unbind('scroll');
+    $(".navbar").addClass("navbar-active");
+    $(".navbar-default a").addClass("navbar-text-active");
+    $(".home-link").css("border-color", "black");
+    $(".notif-bell").addClass("notif-bell-scroll")
+    $(".notif-circle").addClass("notif-circle-scroll")
+    $(window).on("scroll", function() {
         $(".navbar").addClass("navbar-active");
         $(".navbar-default a").addClass("navbar-text-active");
         $(".home-link").css("border-color", "black")
-    } else {
-       $(".navbar").removeClass("navbar-active");
-       $(".navbar-default a").removeClass("navbar-text-active");
-       $(".home-link").css("border-color", "white")
-    }
-});
+        $(".notif-bell").addClass("notif-bell-scroll")
+        $(".notif-circle").addClass("notif-circle-scroll")
+
+    });
+  }
 </script>
 

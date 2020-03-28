@@ -34,6 +34,14 @@ Rails.application.routes.draw do
 
   post '/teams/:team_id/settings(.:format)' => "settings#update"
 
+  get '/bezier' => "games#bezier" 
+
+  post '/notifications' => "notifications#viewed"
+  post '/notification_read' => "notifications#read"
+  get '/notifications' => "notifications#get", as: :get_notifications
+  
+  post '/plays/:play_id/progressions/remove_progression_notification(.:format)' => 'progressions#remove_progression_notification'
+
   get 'messenger', to: 'messengers#index'
   get 'get_private_conversation', to: 'messengers#get_private_conversation'
   get 'get_group_conversation', to: 'messengers#get_group_conversation'

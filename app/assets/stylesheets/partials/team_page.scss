@@ -1,3 +1,11 @@
+a {
+	color: inherit;
+}
+
+a:hover{
+	color: inherit;
+}
+
 
 .team-page-link {
 	color: white;
@@ -5,6 +13,237 @@
 	position: relative;
 	font-weight: 300;
     top: 40%;
+}
+.post-placeholder{
+	position: absolute;
+	z-index: 1;
+	color: grey;
+}
+#schedule-info{
+	display: grid;
+    grid-template-columns: 2fr 3fr;
+    color: #dafff8;
+    border-radius: 10px;
+    text-align: left;
+    box-shadow: 0px 0px 8px #57d5bd;
+    border: 1px solid #57d5bd;
+    margin-top: 10px;
+    margin-bottom: 25px;
+}
+
+.send-post{
+	padding: 5px;
+	padding-right: 20px;
+	padding-left: 20px;
+	background-color: #2e9dea;
+	border-radius: 20px;
+}
+
+.send-post-inactive{
+	opacity: .7;
+}
+
+.new-post-toolbar{
+	display: flex;
+	justify-content: flex-end;
+}
+
+.new-post{
+	position: relative;
+	outline: none;
+    user-select: text;
+    overflow-wrap: break-word;
+    text-align: left;
+    color: white;
+    z-index: 5;
+    width: 300px;
+}
+
+.new-post-author{
+	float: left;
+}
+
+.post-author{
+	float: left;
+}
+
+.post-content{
+	display: inline-block;
+	margin-left: 10px;
+}
+
+.new-post-content{
+	display: inline-block;
+	margin-left: 10px;
+}
+
+#feed{
+    color: white;
+    text-align: left;
+}
+
+.new-post-wrapper{
+	margin-bottom: 10px;
+	border: 1px solid #bbb9b9;
+    border-radius: 10px;
+    box-shadow: 0px 0px 8px #bbb9b9;
+}
+
+.posts{
+	padding-top: 5px;
+	margin-top: 10px;
+	border-top: 1px solid grey;
+	height: 450px;
+	overflow: scroll;
+	margin-right: -8px;
+    padding-right: 8px;
+    margin-left: -8px;
+    padding-left: 8px;
+}
+
+
+.post-wrapper{
+	margin-bottom: 20px;
+	margin-top: 20px;
+    border-radius: 10px;
+}
+
+.coach-post{
+	border: 1px solid #2e9dea;;
+	box-shadow: 0px 0px 8px #2e9dea;;
+}
+
+.player-post{
+	border: 1px solid #bbb9b9;
+	box-shadow: 0px 0px 8px #bbb9b9;
+}
+
+.post-play{
+	width: 200px;
+	box-shadow: none !important;
+	text-align: center;
+}
+
+.post-data{
+	text-align: center;
+}
+
+.post{
+	border-radius: 10px;
+    padding: 15px;
+}
+
+.post-name{
+	position: absolute;
+    margin-left: 10px;
+}
+
+
+.post:hover{
+
+}
+
+.post-title{
+	margin: auto;
+    font-size: 20px;
+}
+
+.post-footer{
+	text-align: right;
+	padding: 5px;
+}
+
+.post-header{
+	display: flex;
+}
+
+.location-time{
+	display: flex;
+	margin-top: 10px;
+}
+
+.play-post{
+	box-shadow: 0px 0px 8px #f99c80 !important;
+    border: 1px solid #f99c80 !important;
+}
+
+#date-info{
+	display: flex;
+	flex-direction: column;
+	padding-left: 15px;
+	padding-top: 10px;
+	padding-bottom: 15px;
+	border-top-left-radius: 8px;
+	border-bottom-left-radius: 8px;
+}
+
+.schedule-info:hover{
+	background-color: #303550;
+}
+
+.schedule-event-wrapper{
+	border-top-right-radius: 8px;
+	border-bottom-right-radius: 8px;
+}
+
+
+#date-toggle-wrapper{
+	margin-bottom: 30px;
+}
+
+#date-wrapper{
+	display: flex;
+	flex-direction: column;
+}
+
+#schedule-event-wrapper{
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+    border-left: 1px solid #5e637d;
+}
+
+#schedule-event-info{
+	display: flex;
+	flex-direction: column;
+	margin-left: 10px;
+    margin-top: 10px;
+}
+
+#schedule-event{
+	display: flex;
+	flex-direction: column;
+	margin-top: 10px;
+    padding-bottom: 10px;
+}
+
+
+.schedule-event-info{
+	margin: auto;
+}
+
+.schedule-event-title{
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+}
+
+.game-title{
+	font-size: 35px;
+}
+.game-opponent{
+	font-size: 20px;
+}
+.day-week{
+	font-size: 17px;
+}
+
+.day-date{
+	font-size: 40px;
+}
+
+.month-year{
+	font-size: 20px;
 }
 
 #main{
@@ -20,19 +259,18 @@
 }
 
 #col2{
-	display: grid;
-	grid-template-rows: 1fr 1fr;
+
 }
 
 #col3{
-	display: grid;
-	grid-template-rows: 1fr 1fr;
+
 }
 
 #col1{
 	border-radius: 3px;
 	margin-top: 5px;
-	margin-left: 5px;
+	margin-left: 20px;
+    margin-right: 20px;
 }
 
 .big-box{
@@ -41,11 +279,11 @@
 }
 
 #schedule{
-	background-color: #de457d;
+	background-color: #57d6bd;
 }
 
 #schedule:hover{
-	background-color:#f385ad;
+	background-color:#93e8d8;
 }
 
 #plays{
@@ -56,12 +294,14 @@
 	background-color: #fbb099;
 }
 
-#roster{
-	background-color: #57d6bd;
+#lineups{
+	background-color: #de457d;
+	
 }
 
-#roster:hover{
-	background-color: #8ae0cf;
+#lineups:hover{
+	background-color:#f385ad;
+	
 }
 
 #stats{

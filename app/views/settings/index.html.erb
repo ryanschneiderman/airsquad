@@ -107,7 +107,7 @@
 								<%end%>
 								
 								<%@non_default_team_advanced_add.each do |stat|%>
-									<button class = "stat-choice stat-choice-inactive" id = "stat-<%=stat.stat_list_id%>"> <%= stat.stat %> </button>
+									<button class = "stat-choice stat-choice-inactive" id = "stat-<%=stat.id%>"> <%= stat.stat %> </button>
 								<%end%>
 							</div>
 						</div>
@@ -134,6 +134,8 @@
 	var stats_to_remove = []
 	var non_default_adv_stats = []
 	var non_default_team_adv_stats = []
+	var non_default_team_adv_belongs = []
+	var non_default_adv_belongs = []
 	var curr_coaches = []
 	var curr_coach_ids = []
 	var curr_players = []
@@ -143,6 +145,7 @@
 	var remove_players = []
 	var remove_coaches = []
 	initialize_adv_stats()
+	initialize_adv_belongs()
 	initialize_stats_kept()
 	initialize_players()
 	initialize_coaches()

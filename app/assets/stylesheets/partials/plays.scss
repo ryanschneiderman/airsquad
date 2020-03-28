@@ -1,4 +1,8 @@
 
+.unread-play{
+	border: 1px solid #fd7d6b;
+	box-shadow: 0px 0px 10px #fd7d6b !important;
+}
 
 #play-initializer{
 	height: 30vh;
@@ -195,6 +199,7 @@
 }
 
 .delete-play-link{
+	border: none !important;
 	position: absolute;
     top: 0;
     right: 0;
@@ -326,9 +331,10 @@
 }
 
 #play-scrollbar{
-	border: 2px solid #e6e6e6;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-left: 5px;
 	display: flex;
-	flex-direction: horizontal;
 	overflow: scroll;
 	background-color: #e6e6e6;
 }

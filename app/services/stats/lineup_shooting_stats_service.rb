@@ -30,7 +30,8 @@ class Stats::LineupShootingStatsService
 		LineupStat.create({
 			value: field_goal_pct,
 			stat_list_id: 27,
-			lineup_id: @lineup_id
+			lineup_id: @lineup_id,
+			is_opponent: false
 		})
 	end
 
@@ -45,6 +46,7 @@ class Stats::LineupShootingStatsService
 			value: free_throw_pct,
 			stat_list_id: 29,
 			lineup_id: @lineup_id,
+			is_opponent: false
 		})
 	end
 
@@ -60,6 +62,7 @@ class Stats::LineupShootingStatsService
 			value: three_point_pct,
 			stat_list_id: 28,
 			lineup_id: @lineup_id,
+			is_opponent: false
 		})
 	end
 
@@ -67,16 +70,18 @@ class Stats::LineupShootingStatsService
 	def three_point_att()
 		LineupStat.create({
 			value: @three_point_att,
-			stat_list_id: 53,
+			stat_list_id: 49,
 			lineup_id: @lineup_id,
+			is_opponent: false
 		})
 	end
 
 	def field_goal_att()
 		LineupStat.create({
 			value: @field_goal_att,
-			stat_list_id: 52,
+			stat_list_id: 48,
 			lineup_id: @lineup_id,
+			is_opponent: false
 		})
 	end
 
@@ -84,8 +89,9 @@ class Stats::LineupShootingStatsService
 	def free_throw_att()
 		LineupStat.create({
 			value: @free_throw_att,
-			stat_list_id: 54,
+			stat_list_id: 50,
 			lineup_id: @lineup_id,
+			is_opponent: false
 		})
 	end
 

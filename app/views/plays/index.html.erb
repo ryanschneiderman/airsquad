@@ -13,15 +13,13 @@
 			<div class = "play-type-grid">
 			<% counter = 0 %>
 			<%@half_offensive_plays.each do |play| %>
-				<div class ="play-block">
-					<div class= "play-image">
+				<div class ="play-block" id = "<%=play.id%>">
+					<div class= "play-image" id = "play-image-<%=play.id%>">
 						<%= link_to team_play_path(@team_id, play.id), :class => "play-link" do %>
 							<%= image_tag(@half_offensive_progressions[counter].first.play_image, :alt => "play", :class => "play-img half-off", :id => counter) %>
 						<%end%>
 						<% if @is_admin %>
-								<%= link_to 'x',  team_play_path(@team_id, play.id),
-                                data: { confirm: 'Are you sure you want to delete this play' }, method: :delete ,
-                                 :class=>"delete-play-link"%>
+								<button class = "delete-play-link" onclick = "delete_play(<%=@team_id%>, <%=play.id%>)">x</button>
 							<div id = "play-links">
 								<%= link_to team_play_path(@team_id, play.id), :class => "progression-link" do %>
 									<div class = "show-link-block">
@@ -48,8 +46,8 @@
 			<div class = "play-type-grid">
 				<% counter = 0 %>
 				<%@full_offensive_plays.each do |play| %>
-				<div class ="play-block">
-					<div class= "play-image">
+				<div class ="play-block" id = "<%=play.id%>">
+					<div class= "play-image" id = "play-image-<%=play.id%>">
 						<%= link_to team_play_path(@team_id, play.id), :class => "play-link" do %>
 							<%= image_tag(@full_offensive_progressions[counter].first.play_image, :alt => "play", :class => "play-img full-off", :id => counter) %>
 						<%end%>
@@ -89,8 +87,8 @@
 			<div class = "play-type-grid">
 			<% counter = 0 %>
 			<%@half_defensive_plays.each do |play| %>
-				<div class ="play-block">
-					<div class= "play-image">
+				<div class ="play-block" id = "<%=play.id%>">
+					<div class= "play-image" id = "play-image-<%=play.id%>">
 						<%= link_to team_play_path(@team_id, play.id), :class => "play-link" do %>
 							<%= image_tag(@half_defensive_progressions[counter].first.play_image, :alt => "play", :class => "play-img half-def", :id => counter) %>
 						<%end%>
@@ -124,8 +122,8 @@
 			<div class = "play-type-grid">
 				<%counter = 0%>
 				<%@full_defensive_plays.each do |play| %>
-				<div class ="play-block">
-					<div class= "play-image">
+				<div class ="play-block" id = "<%=play.id%>">
+					<div class= "play-image" id = "play-image-<%=play.id%>">
 						<%= link_to team_play_path(@team_id, play.id), :class => "play-link" do %>
 							<%= image_tag(@full_defensive_progressions[counter].first.play_image, :alt => "play", :class => "play-img full-def", :id => counter) %>
 						<%end%>
@@ -366,6 +364,28 @@
 	  	clearInterval(interval)
 	  }
 	);
+
+	highlight_unread_plays()
+
+	function highlight_unread_plays(){
+		<%@play_notifications.each do |notif|%>
+			$("#play-image-<%=notif.notif_type_id%>").addClass("unread-play")
+		<%end%>
+	}
+
+	function delete_play(team_id, play_id){
+		var url = "/teams/"+team_id+"/plays/" + play_id
+		$.ajax({
+			url: url,
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			type: "delete",
+			success: function(result){
+				var play_dom = $("#" +play_id);
+				play_dom.remove();
+				splice_notifications(play_id)
+			}
+		});
+	}
 
 
 	function toOffense(){

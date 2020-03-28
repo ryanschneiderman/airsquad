@@ -4,12 +4,18 @@ class InsertStatListsService
 
 	def call()
 
-		update_display_priorities = StatList.where("display_priority >= ? AND advanced = ?", 13, false)
-		update_display_priorities.each do |stat|
-			stat = stat.increment(:display_priority, by = 1)
-			stat.save
-		end
+		StatList.create(
+			stat: "Assist Ratio",
+			default_stat: false,
+			collectable: false,
+			team_stat: true,
+			display_priority: 5,
+			advanced: true,
+			is_percent: true,
+			stat_kind: 1
+		)
 
+=begin
 		StatList.create(
 			stat: "Deflections",
 			default_stat: false,
@@ -21,7 +27,7 @@ class InsertStatListsService
 			is_percent: false,
 			stat_kind: 2
 		)
-=begin
+
 
 		puts "********************INSERTING STAT LISTS*******************"
 		StatList.create(

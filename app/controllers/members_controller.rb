@@ -8,6 +8,8 @@ class MembersController < ApplicationController
 		@member = Member.find_by_id(member_id)
 		minutes_p_q = Team.find_by_id(team_id).minutes_p_q
 		@minutes_factor = minutes_p_q * 3
+		@players = Assignment.joins(:role).joins(:member).select("roles.name as role_name, members.*").where( "members.team_id" => team_id, "roles.id" => 1)
+		@num_players = @players.length
 
 		## TODO: THINK OF A WAY TO ORDER THESE STATS BETTER
 		@basic_stats = SeasonStat.joins(:stat_list).select("stat_lists.stat as stat, stat_lists.display_priority as display_priority, season_stats.*").where("season_stats.member_id" => member_id)

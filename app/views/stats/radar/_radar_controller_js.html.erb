@@ -8,6 +8,7 @@
 	//var advanced_stat_arr = [];
 	var off_advanced_stat_arr = [];
 	var def_advanced_stat_arr = [];
+	var num_players = <%=@num_players%>
 
 	// TODO: CHANGE TO OFFENSE/DEFENSE
 	var curr_radar_stat = "per game"
@@ -64,10 +65,10 @@
 	var off_per_minute_data = [[]]
 	for(var i = 0; i < off_len; i++){
 		var per_game_rank = parseInt(off_season_stat_arr[i].per_game_rank);
-		off_per_game_data[0].push({axis: off_season_stat_arr[i].stat, value: ((13-per_game_rank)/13).toFixed(2)})
+		off_per_game_data[0].push({axis: off_season_stat_arr[i].stat, value: ((num_players-per_game_rank)/num_players).toFixed(2)})
 
 		var per_minute_rank = parseInt(off_season_stat_arr[i].per_minute_rank);
-		off_per_minute_data[0].push({axis: off_season_stat_arr[i].stat, value: ((13-per_minute_rank)/13).toFixed(2)})
+		off_per_minute_data[0].push({axis: off_season_stat_arr[i].stat, value: ((num_players-per_minute_rank)/num_players).toFixed(2)})
 	}
 
 	var def_len = def_season_stat_arr.length
@@ -75,10 +76,10 @@
 	var def_per_minute_data = [[]]
 	for(var i = 0; i < def_len; i++){
 		var per_game_rank = parseInt(def_season_stat_arr[i].per_game_rank);
-		def_per_game_data[0].push({axis: def_season_stat_arr[i].stat, value: ((13-per_game_rank)/13).toFixed(2)})
+		def_per_game_data[0].push({axis: def_season_stat_arr[i].stat, value: ((num_players-per_game_rank)/num_players).toFixed(2)})
 
 		var per_minute_rank = parseInt(def_season_stat_arr[i].per_minute_rank);
-		def_per_minute_data[0].push({axis: def_season_stat_arr[i].stat, value: ((13-per_minute_rank)/13).toFixed(2)})
+		def_per_minute_data[0].push({axis: def_season_stat_arr[i].stat, value: ((num_players-per_minute_rank)/num_players).toFixed(2)})
 	}
 
 
@@ -86,14 +87,14 @@
 	var off_adv_len = off_advanced_stat_arr.length
 	for(var i = 0; i < off_adv_len; i++){
 		var adv_rank = parseInt(off_advanced_stat_arr[i].team_rank);
-		off_advanced_data[0].push({axis: off_advanced_stat_arr[i].stat, value: ((13-adv_rank)/13).toFixed(2)});
+		off_advanced_data[0].push({axis: off_advanced_stat_arr[i].stat, value: ((num_players-adv_rank)/num_players).toFixed(2)});
 	}
 
 	var def_advanced_data = [[]]
 	var def_adv_len = def_advanced_stat_arr.length
 	for(var i = 0; i < def_adv_len; i++){
 		var adv_rank = parseInt(def_advanced_stat_arr[i].team_rank);
-		def_advanced_data[0].push({axis: def_advanced_stat_arr[i].stat, value: ((13-adv_rank)/13).toFixed(2)});
+		def_advanced_data[0].push({axis: def_advanced_stat_arr[i].stat, value: ((num_players-adv_rank)/num_players).toFixed(2)});
 	}
 
 

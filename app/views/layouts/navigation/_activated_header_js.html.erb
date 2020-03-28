@@ -1,0 +1,25 @@
+<script>
+	function activate_header(active){
+		if(active){
+				$(".navbar").addClass("navbar-active");
+			    $(".navbar-default a").addClass("navbar-text-active");
+			    $(".home-link").css("border-color", "black");
+			    $(".notif-bell").addClass("notif-bell-scroll")
+			    $(".notif-circle").addClass("notif-circle-scroll")
+			    $(window).on("scroll", function() {
+			        $(".navbar").addClass("navbar-active");
+			        $(".navbar-default a").addClass("navbar-text-active");
+			        $(".home-link").css("border-color", "black")
+			        $(".notif-bell").addClass("notif-bell-scroll")
+			        $(".notif-circle").addClass("notif-circle-scroll")
+
+			    });
+		}
+		else{
+			
+		}
+	}
+
+
+    
+</script>

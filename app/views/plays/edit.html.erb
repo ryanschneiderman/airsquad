@@ -57,7 +57,9 @@
           <button class = "save-button" type ="button" onclick="update_progression()"> SAVE AND FINISH </button>
         </div>
     </div>
-	<canvas id ="c" class = "show-canvas"></canvas>
+    <% @progressions.each do |pro| %>
+        <canvas id ="c-<%=pro.id%>" class = "show-canvas"></canvas>
+    <%end%>
 	<div id = "progression-notes">
 		<div class = "progression-notes-header">Notes</div>
 		<div class = "progression-notes-text" contenteditable="true" data-text="Enter play description..."></div>
@@ -70,7 +72,9 @@
 
 <%= render 'progressions/js_objects' %>
 <%= render 'progressions/javascript' %>
+
 <script>
+    activate_header();
     $(".navbar").addClass("navbar-active");
     $(".navbar-default a").addClass("navbar-text-active");
     $(".home-link").css("border-color", "black");
@@ -93,78 +97,296 @@
 		var line, isDown, evented;
 		var anchorRadius = 3;
 		var anchorOffset = anchorRadius - .5;
-
-        var progressions_arr = []
-        <% @progressions.each do |progression| %>
-        	if("<%=progression.notes%>" != ""){
-        		progressions_arr.push({"json": "<%=progression.json_diagram%>" , "canvas_width" : parseFloat("<%=progression.canvas_width%>"), "id" : parseInt("<%=progression.id%>"), "notes" : convert("<%=progression.notes%>")});
-        	}
-        	else{
-        		progressions_arr.push({"json": "<%=progression.json_diagram%>" , "canvas_width" : parseFloat("<%=progression.canvas_width%>"), "id" : parseInt("<%=progression.id%>"), "notes" : ""})
-        	}
-            
-        <%end%>
-
-        //canvas.requestRenderAll.bind(canvas);
-        
-        var canvas = new fabric.Canvas("c",{
-            targetFindTolerance: 15,
-             perPixelTargetFind: true,
-             preserveObjectStacking: true,
-        }); 
         var canvas_width;
         var canvas_height;
         var playerRadius;
 
-        if("<%=@play_type.play_type%>" == "fullcourt" || "<%=@play_type.play_type%>" == "Fullcourt"){
-          var canvas_width = window.innerWidth * .55;
-          var canvas_height = canvas_width * .6;
-          var playerRadius = canvas.height * .025;
+        var animate_time = 1000;
+
+        var progressions_arr = []
+        var endpoint_moves = []
+        var root_moves = []
+        var i = 0;
+        var canvas;
+        <% @progressions.each do |progression| %>
+        	if("<%=progression.notes%>" != ""){
+        		progressions_arr.push({"json": "<%=progression.json_diagram%>" , "canvas_width" : parseFloat("<%=progression.canvas_width%>"), "id" : parseInt("<%=progression.id%>"), "notes" : convert("<%=progression.notes%>"), "visited" : false, "edited" : false, "play_image":null});
+        	}
+        	else{
+        		progressions_arr.push({"json": "<%=progression.json_diagram%>" , "canvas_width" : parseFloat("<%=progression.canvas_width%>"), "id" : parseInt("<%=progression.id%>"), "notes" : "", "visited" : false, "edited" : false, "play_image":null})
+        	}
+            progressions_arr[i].canvas = createCanvasForProgression(progressions_arr[i])
+            i++;  
+        <%end%>
+       // console.log(progressions_arr)
+
+        $(".canvas-container").hide()
+        $("#c-"+progressions_arr[0].id).parent().show()
+        canvas = progressions_arr[0].canvas
+        global_canvas_directions(progressions_arr[0])
+        progressions_arr[0].visited = true;
+
+
+        function createCanvasForProgression(progr){
+
+            var new_canvas = new fabric.Canvas("c-"+progr.id,{
+                targetFindTolerance: 15,
+                 perPixelTargetFind: true,
+                 preserveObjectStacking: true,
+            }); 
+
+            if("<%=@play_type.play_type%>" == "fullcourt" || "<%=@play_type.play_type%>" == "Fullcourt"){
+              var canvas_width = window.innerWidth * .55;
+              var canvas_height = canvas_width * .6;
+              var playerRadius = canvas_height * .025;
+            }
+            else{
+              var canvas_width = window.innerWidth * .55;
+              var canvas_height = canvas_width * .7;
+              var playerRadius = canvas_height * .03;
+            }
+
+            new_canvas.setHeight(canvas_height);
+            new_canvas.setWidth(canvas_width);
+            new_canvas = loadCanvasFromJson(new_canvas, progr)
+            return new_canvas;
         }
-        else{
-          var canvas_width = window.innerWidth * .5;
-          var canvas_height = canvas_width * .7;
-          var playerRadius = canvas.height * .03;
+
+
+        function initializeObjects(progr){
+            canvas.getObjects().map(function(o) {
+                o.set({ left: o.left , top: o.top})
+                if(o.type == "circle"){
+                    o.set({lockMovementX: true, lockMovementY: true, selectable: false, evented: false, radius: o.radius })
+                    o.moveTo(102)
+                }
+                else if (o.type == "rect"){
+                    o.set({lockMovementX: true, lockMovementY: true, selectable: false, evented: false, width: o.width , height: o.height })
+                }
+                else if (o.type == "text"){
+                    o.set({lockMovementX: true, lockMovementY: true, selectable: false, evented: false, fontSize: o.fontSize })
+                    o.moveTo(101);
+                }
+                else if (o.type == "basketball"){
+                    ball = o;
+                }
+                else if (o.type == "PlayerCircle"){
+                    canvas.getObjects().forEach(function(obj) {
+                        if(obj.id == o.id && obj.type == "text") {
+                            o.text = obj;
+                            obj.moveTo(20)
+                        }
+                    });
+                    if(o.has_ball == true){
+                        player_with_ball = o;
+                    }
+                     o.moveTo(104)
+                }
+                return o;
+            });
         }
 
-        canvas.setHeight(canvas_height);
-        canvas.setWidth(canvas_width);
+        function loadCanvasFromJson(new_canvas, progr, init){
+            canvas = new_canvas
+            var old_canvas_width = progr.canvas_width;
+            if(init == false){
+                var width_ratio = 1;
+            }
+            else{
+                var width_ratio = old_canvas_width/canvas.width;
+            }
+            canvas.on('object:added', function(e) {
+                var object = e.target;
+                object.added = true;
+            });
+            var json_data = progr.json.replace(/&quot;/g,'"');
+            canvas.loadFromJSON(json_data, function() {
+                var ball;
+                var player_with_ball;
+                var objs = canvas.getObjects().map(function(o) {
+                    o.set({ left: o.left / width_ratio, top: o.top/width_ratio})
+                    if(o.type == "circle"){
+                        o.set({lockMovementX: true, lockMovementY: true, selectable: false, evented: false, radius: o.radius / width_ratio})
+                        o.moveTo(102)
+                    }
+                    else if (o.type == "rect"){
+                        o.set({lockMovementX: true, lockMovementY: true, selectable: false, evented: false, width: o.width / width_ratio, height: o.height / width_ratio})
+                    }
+                    else if (o.type == "text"){
+                        o.set({lockMovementX: true, lockMovementY: true, selectable: false, evented: false, fontSize: o.fontSize / width_ratio})
+                        o.moveTo(101);
+                    }
+                    else if (o.type == "basketball"){
+                        ball = o;
+                    }
+                    else if (o.type == "PlayerCircle"){
+                        canvas.getObjects().forEach(function(obj) {
+                            if(obj.id == o.id && obj.type == "text") {
+                                o.text = obj;
+                                obj.moveTo(20)
+                            }
+                        });
 
+                        if(o.has_ball == true){
+                            player_with_ball = o;
+                        }
+                        o.toAnchorPoint.x = o.toAnchorPoint.x / width_ratio
+                        o.toAnchorPoint.y = o.toAnchorPoint.y / width_ratio
+                        o.strokeWidth = o.strokeWidth/width_ratio;
+                        o.set({radius: o.radius / width_ratio})
+                        o.moveTo(104)
+                        o.setCoords()
+                        populateLines(o)
+                    }
+                    else if (o.type == "LineWithArrow" || o.type == "DribbleLine" || o.type == "PassLine" || o.type == "ScreenLine"){
+                        o.toAnchorPoint.x = o.toAnchorPoint.x / width_ratio
+                        o.toAnchorPoint.y = o.toAnchorPoint.y / width_ratio
+                        o.set({x1: o.x1 / width_ratio, x2: o.x2 / width_ratio, y1: o.y1 / width_ratio, y2: o.y2 / width_ratio})
+                        o.moveTo(103)
+                        o.setCoords()
+                        
+                    }
+                    o.setCoords()
+                    return o;
+                });
+                if(player_with_ball){
+                    player_with_ball.ball = ball;
+                    setBallPos(player_with_ball);
+                }
+                canvas.renderAll();
+            }); 
+            return canvas;
+        }
 
-        canvas.on('object:added', function(e) {
-        	var object = e.target;
-        	object.added = true;
-  		});
+        function stillEndpoint(move){
+            if(!move.moveLine){
+                return true;
+            }
+            else return false;
+        }
+
+        
+        function insertEndpointMoves(){
+            var len = endpoint_moves.length
+            for(var i = 0; i < len;i++){
+                var move = endpoint_moves[i];
+                if(stillEndpoint(move)){
+                    if(move.get("type") == "PlayerCircle"){
+                        canvas.getObjects().map(function(o) {
+                            if(o.id == move.id && o.get("type") == move.get("type")){
+                                o.set({top: move.top, left: move.left})
+                                o.setCoords()
+                                positionPlayer(o)
+                            }
+                        });
+                    }
+                    else{
+                        var player_id = (move.id).split("_")[0]
+                        canvas.getObjects().map(function(o) {
+                            if(o.id == player_id && o.get("type") == "PlayerCircle"){
+                                o.set({left: move.toAnchorPoint.x - o.radius, top: move.toAnchorPoint.y - o.radius})
+                                o.setCoords()
+                                positionPlayer(o)
+                            }
+                        });
+                    }
+                }
+            }
+            endpoint_moves = []
+        }
+
+        function getRootId(obj){
+            var id = (obj.id).split("_")[0]
+            return id
+        }
+
+        // COULD BE BUG IN HERE SOMEWHERE
+        function insertRootMoves(){
+            var len = root_moves.length 
+            for(var i = 0; i < len; i++){
+                var move = root_moves[i];
+                //console.log(move)
+                canvas.getObjects().map(function(o) {
+                    var type = o.get("type")
+                    if(validateLine(o) && getRootId(o) == move.id && !o.moveLine && type != "PassLine"){
+                        var x = move.left + move.radius
+                        var y = move.top + move.radius
+                        positionLine(o, x, y)
+                        o.setCoords()
+                        if(o.passer){
+                            positionLine(o.passer, x, y)
+                            snapPassLine(o.passer)
+                        }
+                    }
+                    else if (type == "PlayerCircle" && o.id == move.id && !o.moveLine){
+                        o.set({left: move.toAnchorPoint.x - o.radius, top: move.toAnchorPoint.y - o.radius})
+                        o.setCoords()
+                        positionPlayer(o)
+                    }
+                });
+            }
+            root_moves =[]
+        }
+
+        function jumpToProgression(new_index){
+            deselect_all_active()
+            var canvas_json = JSON.stringify(canvas.toJSON(['id']));
+            progressions_arr[index].json = canvas_json;
+            canvas = loadCanvasFromJson(progressions_arr[new_index].canvas, progressions_arr[new_index], !progressions_arr[new_index].visited)
+            if(index> new_index){
+                insertRootMoves()
+            }
+            else{
+                insertEndpointMoves()
+            }
+            
+            $(".canvas-container").hide()
+            $("#c-"+progressions_arr[new_index].id).parent().show()
+            global_canvas_directions(progressions_arr[new_index])
+            progressions_arr[new_index].visited = true;
+            index = new_index;
+        }
 
         function indexJsonArray(change){
+            deselect_all_active()
             var max_depth = 0;
+            
+            var canvas_json = JSON.stringify(canvas.toJSON(['id']));
+            progressions_arr[index].json = canvas_json;
+
+
             if(change > 0){
-                canvas.getObjects().forEach(function(o) {
-                  if (o.type == "PlayerCircle"){
-                    o.lines = [];
-                    populateLines(o)
-                    var depth = recurseLines(o)
-                    console.log("depth: " + depth)
-                    if(depth > max_depth) max_depth = depth;
-                    animateMovement(o, o)
-                  }
-                });
-                hideLines();
+                startAnimation()
             }
-             
-        	index = index + change;
+            index = index + change;
+        	
+            max_depth = getAnimationTime()+1
             console.log("max_depth: " + max_depth)
             setTimeout(function(){ 
                 if(index > progressions_arr.length -1){
-                    loadCanvasFromJson(0)
+                    canvas = loadCanvasFromJson(progressions_arr[0].canvas, progressions_arr[0], !progressions_arr[0].visited)
+                    index = 0
                 }
                 else if (index < 0){
-                    loadCanvasFromJson(progressions_arr.length -1)
+                    canvas = loadCanvasFromJson(progressions_arr[progressions_arr.length-1].canvas, progressions_arr[progressions_arr.length-1], !progressions_arr[progressions_arr.length-1].visited)
+                    index = progressions_arr.length -1
                 }
                 else{
-                    loadCanvasFromJson(index);
+                    canvas = loadCanvasFromJson(progressions_arr[index].canvas, progressions_arr[index], !progressions_arr[index].visited)
                 }
-            }, 1300 *  max_depth);  
+                $(".canvas-container").hide()
+                $("#c-"+progressions_arr[index].id).parent().show()
+                global_canvas_directions(progressions_arr[index])
+                progressions_arr[index].visited = true;
+                if(change>0){
+                    insertEndpointMoves()
+                }
+                else{
+                    insertRootMoves()
+                }
+
+            }, animate_time *  max_depth);  
+
         }
 
 
@@ -182,84 +404,99 @@
             dropdowns.hide()
           }
         }
+        // $(".progression-notes-text").html(progressions_arr[new_index].notes)
+  		//loadCanvasFromJson(index);
+        function canvasModifiedCallback(){
+            progressions_arr[index].edited = true;
+        }
 
-  		loadCanvasFromJson(index);
-
-        function loadCanvasFromJson(new_index){
-            var progressions_arr_len = progressions_arr.length;
-            
-            $(".progression-notes-text").html(progressions_arr[new_index].notes)
-            index = new_index;
-           
-            if(new_index > progressions_arr_len -1){
-                index = 0;
-            }
-            else if (new_index < 0 ){
-                index = progressions_arr_len -1;
-            }
-
-            var old_canvas_width = progressions_arr[index].canvas_width;
-            var width_ratio = old_canvas_width/canvas.width;
-
-            var json_data = progressions_arr[index].json.replace(/&quot;/g,'"');
-            canvas.loadFromJSON(json_data, function() {
-            	var ball;
-            	var player_with_ball;
-                var objs = canvas.getObjects().map(function(o) {
-                	o.set({ left: o.left / width_ratio, top: o.top/width_ratio})
-                	if(o.type == "circle"){
-                		o.set({lockMovementX: true, lockMovementY: true, selectable: false, evented: false, radius: o.radius / width_ratio})
-                        o.moveTo(102)
-                	}
-                	else if (o.type == "rect"){
-                		o.set({lockMovementX: true, lockMovementY: true, selectable: false, evented: false, width: o.width / width_ratio, height: o.height / width_ratio})
-                	}
-                	else if (o.type == "text"){
-                		o.set({lockMovementX: true, lockMovementY: true, selectable: false, evented: false, fontSize: o.fontSize / width_ratio})
-                        o.moveTo(101);
-                	}
-                	else if (o.type == "basketball"){
-                		ball = o;
-                	}
-                	else if (o.type == "PlayerCircle"){
-                		canvas.getObjects().forEach(function(obj) {
-					        if(obj.id == o.id && obj.type == "text") {
-					            o.text = obj;
-					            obj.moveTo(20)
-					        }
-					    });
-					    if(o.has_ball == true){
-					    	player_with_ball = o;
-					    }
-                		o.toAnchorPoint.x = o.toAnchorPoint.x / width_ratio
-                		o.toAnchorPoint.y = o.toAnchorPoint.y / width_ratio
-                        o.strokeWidth = o.strokeWidth/width_ratio;
-                		o.set({radius: o.radius / width_ratio})
-                        o.moveTo(104)
-                		o.setCoords()
-                	}
-                	else if (o.type == "LineWithArrow" || o.type == "DribbleLine" || o.type == "PassLine" || o.type == "ScreenLine"){
-                		o.toAnchorPoint.x = o.toAnchorPoint.x / width_ratio
-                		o.toAnchorPoint.y = o.toAnchorPoint.y / width_ratio
-                		o.set({x1: o.x1 / width_ratio, x2: o.x2 / width_ratio, y1: o.y1 / width_ratio, y2: o.y2 / width_ratio})
-                        o.moveTo(103)
-                		o.setCoords()
-                        
-                	}
-                	o.setCoords()
-                    return o;
-                });
-                if(player_with_ball){
-                    player_with_ball.ball = ball;
-                    setBallPos(player_with_ball);
+        function global_canvas_directions(progr){
+            initializeObjects(progr)
+            canvas.on('object:moving', function (e) {
+                progressions_arr[index].edited = true;
+                var obj = e.target;
+                if(obj.get("anchorable") == true && obj.added){
+                    if(!obj.moveLine && obj.isMoveLine !=false && endpoint_moves.filter(o => o.id == obj.id).length == 0){
+                        endpoint_moves.push(obj)
+                        console.log(endpoint_moves)
+                    }
+                    if((obj.get("type")=="PlayerCircle" && root_moves.filter(o => o.id == obj.id).length == 0)){
+                        root_moves.push(obj)
+                    }
+                    anchorPositioning(e);
                 }
-                canvas.renderAll();
-            }); 
-            $("#progression_index").html(index+1);
+            });
+
+            canvas.on('selection:created', function() {
+                canvas.getActiveObjects().forEach(function(o) {
+                    var type = o.get('type');
+                    if(type == "PlayerCircle"){
+                        o.lockMovementY = false;
+                        o.lockMovementX = false;
+                        o.set({stroke: "#91ff30"});
+                    }
+                    if(validateLine(o)){
+                      if(!o.toAnchor){
+                        getToAnchor(o.toAnchorId, o);
+                      }
+                      o.toAnchor.animate('opacity', '1', {
+                        duration: 50,
+                        onChange: canvas.requestRenderAll.bind(canvas),
+                      });
+                    } 
+                });
+            });
+
+            canvas.on('before:selection:cleared', function() {
+                 canvas.getActiveObjects().forEach(function(o) {
+                    var type = o.get('type');
+                    if(type == "PlayerCircle"){
+                        o.set({stroke: o.color});
+                    } 
+                    if(validateLine(o)){
+                      if(!o.toAnchor){
+                        getToAnchor(o.toAnchorId, o);
+                      }
+                      o.toAnchor.animate('opacity', '0', {
+                        duration: 50,
+                        onChange: canvas.requestRenderAll.bind(canvas),
+                      });
+                    }       
+                });
+            });
+
+            canvas.on('selection:updated', function() {
+                canvas.getActiveObjects().forEach(function(o) {
+                    var type = o.get('type');
+                    if(type == "PlayerCircle"){
+                        o.lockMovementY = false;
+                        o.lockMovementX = false;
+                    }   
+                });
+            });
+            canvas.on('object:added', function(obj){
+                if(!obj.moveLine && obj.isMoveLine !=false && endpoint_moves.filter(o => o.id == obj.id).length == 0 && obj.added){
+                    endpoint_moves.push(obj)
+                    //console.log(endpoint_moves)
+                }
+                if(obj.added){
+                    canvasModifiedCallback()
+                }
+                
+            });
+            canvas.on('object:removed', function(obj) {
+                if(obj.added){
+                    canvasModifiedCallback()
+                }
+            });
+            canvas.on('object:modified', function(obj) {
+                if(obj.added){
+                    canvasModifiedCallback()
+                }
+            });
         }
 
         canvas.on('object:moving', function (e) {
-
             var obj = e.target;
             if(obj.get("anchorable") == true && obj.added){
               anchorPositioning(e);
@@ -314,25 +551,50 @@
 	        });
 	    });
 
-
+        function updateChangedCanvases(){
+            var canvas_json = JSON.stringify(canvas.toJSON(['id']));
+            progressions_arr[index].json = canvas_json;
+            if(endpoint_moves.length > 0 && index < progressions_arr.length-1){
+                canvas = loadCanvasFromJson(progressions_arr[index+1].canvas, progressions_arr[index+1], !progressions_arr[index+1].visited)
+                global_canvas_directions(progressions_arr[index+1])
+                progressions_arr[index+1].visited = true;
+                insertEndpointMoves()
+                progressions_arr[index+1].edited = true;
+                var next_json = JSON.stringify(canvas.toJSON(['id']));
+                progressions_arr[index+1].json = next_json;
+            }
+        }
 
         function update_progression(){
-	      deselect_all_active()
-	      /* get values from elements on the page: */
-	        var json_data = JSON.stringify(canvas.toJSON(['id']));
-	        var patch_url = "/plays/" + <%= @play.id %> + "/progressions/" + progressions_arr[index].id
-	        var new_notes = $(".progression-notes-text").html()
-            var play_image = canvas.toDataURL('png')
-            var play_name = $("#play-name").html()
+            deselect_all_active()
+            var data = [];
+            updateChangedCanvases()
+            var len = progressions_arr.length
+            for(var i = 0; i < len; i++){
+                if(progressions_arr[i].edited){
+                    
+                    var progr_canvas = loadCanvasFromJson(progressions_arr[i].canvas, progressions_arr[i], !progressions_arr[i].visited)
+                    var image = progr_canvas.toDataURL('png')
+                    // console.log("printing json")
+                    // console.log(progressions_arr[i].json)
+                    data.push({progression_id: progressions_arr[i].id, json_diagram : progressions_arr[i].json, notes: progressions_arr[i].notes, play_image: image, canvas_width: progr_canvas.width})
 
+                }
+            }
+            var patch_url = "/teams/"+ <%= @team_id %> +"/plays/" + <%= @play.id %> 
+            // var patch_url = "/plays/" + <%= @play.id %> + "/progressions/" + progressions_arr[index].id
+            // var new_notes = $(".progression-notes-text").html()
+            // var play_image = canvas.toDataURL('png')
+            // var play_name = $("#play-name").html()
+            // console.log(progressions_arr)
 	      /* Send the data using post and put the results in a div */
-	      
+	        console.log(data)
 	        $.ajax({
 	          url: patch_url,
 	          beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
 	          type: "PATCH",
 	          data_type: 'json',
-	          data: {progression: {json_diagram: json_data , progression_id: progressions_arr[index].id, play_id: <%= @play.id %>, team_id: <%=@team_id%>, canvas_width: canvas_width, notes: new_notes, play_image: play_image}, play_name: play_name}
+	          data: {progressions_data: data}
 	        });
 	    }
 </script>

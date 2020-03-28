@@ -35,11 +35,15 @@ class SettingsController < ApplicationController
 		non_default_team_advanced = StatList.where(advanced: true, team_stat: true, default_stat: false)
 		@non_default_team_advanced_add = []
 		non_default_team_advanced.each do |stat|
-			add_stat = @non_default_team_advanced_belongs.any?{|s| s.id == stat.id}
+			puts stat.stat
+			add_stat = @non_default_team_advanced_belongs.none?{|s| s.stat_list_id == stat.id}
 			if add_stat
-				@non_default_team_advanced_add.push(add_stat)
+				@non_default_team_advanced_add.push(stat)
 			end
 		end
+
+		puts "non defualt team advanced add"
+		puts @non_default_team_advanced_add
 
 		@default_collectable = StatList.where(default_stat: true, collectable: true)
 		@default_basic = StatList.where(default_stat: true, rankable: true, advanced: false).sort_by{|stat| stat.id}

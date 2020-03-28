@@ -1,4 +1,17 @@
 
+<div class = "pc-menu dropdown">
+	<button id="notifications-button" class="dropdown-toggle " data-toggle="dropdown" onclick = "click_notifications()">
+	    <%= render 'layouts/navigation/collapsible_elements/notif_bell'%>
+  	</button>
+
+  	<div id = "notifications" class = "dropdown-menu" role="menu">
+  		<div id = "notifications-header">Notifications</div>
+  		<div class = "box-nub" id = "notifications-nub"></div>
+  		<div id = "notifications-container"></div>
+  		
+
+  	</div>
+</div>
 
 <div class="dropdown pc-menu">
   <a id="user-settings" class="dropdown-toggle " data-toggle="dropdown" href="#">
@@ -11,6 +24,109 @@
     <li><%= link_to 'Log out', destroy_user_session_path, method: :delete %></li>
   </ul>
 </div>
+
+
+<script>
+	var notifications = []
+	
+	load_notifications()
+	
+
+	function convert_data(str){
+		var text = str.text()
+		var split = text.split(/[\s, ]+/);
+		if(split[0] == "less"){
+			var return_word = str.text()
+		}
+		else{
+			var arr_len = split.length
+			for(var i = 0; i < arr_len; i++){
+				if(parseInt(split[i])){
+					var return_word = split[i] + split[i+1][0]
+				}
+			}
+		}
+		return return_word
+	}
+
+	$(".notification-ago").each(function(){
+		$(this).text(convert_data($(this)))
+	})
+
+	function build_notification_dom(notification, link){
+		var notification_button = $("<button class = 'notification-button' id = '"+notification.id+"' onclick = 'update_notification_read("+ notification.id + ")'></button>")
+		notification_button.append(link)
+		$("#notifications-container").append(notification_button)
+	}
+
+	function load_notifications(){
+		var unviewed_notif = false;
+		<%@notifications.each do |notif|%>
+			var notification = {"content" : "<%=notif.content%>", "viewed" : <%=notif.viewed%>, "id" : <%=notif.member_notif_id%>, "read" : <%=notif.read%>, "notif_type_id" : <%=notif.notif_type_id%>, }
+			notifications.push(notification)
+			var link = '<%=link_to polymorphic_url([Team.find_by_id(notif.team_id), notif.notif_type_type.tableize.singularize], :id => notif.notif_type_id) do %><div class = "notification <%if !notif.read%> notification-unread <%end%>"><div class = "notification-content"><%=notif.content%></div><div class = "notification-ago"><%=time_ago_in_words(notif.updated_at)%></div></div><%end%>'
+
+			if(<%=notif.viewed%> == false){
+				unviewed_notif = true;
+			}
+			if (unviewed_notif){
+				$(".notif-circle").show()
+			}
+			build_notification_dom(notification, link)
+		<%end%>
+	} 
+
+	function splice_notifications(notif_type_id){
+		var unviewed_notif = false;
+		notifications = notifications.filter(function(notif) {
+		    if(notif_type_id == notif.notif_type_id){
+				var notif_dom = $("#" + notif.id)
+				notif_dom.remove();
+			}
+			else{
+				 return notif;
+			}
+		});
+		notifications.forEach(function(notif){
+			if(!notif.viewed){
+				unviewed_notif = true;
+			}
+		})
+		if(!unviewed_notif){
+			$(".notif-circle").hide()
+		}
+	}
+
+	function update_notification_read(notification_id){
+		$.ajax({
+			url: "/notification_read", 
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		    type: "post",
+		    data: {"notification_id" : notification_id},
+			success: function(result){
+		        console.log("viewed notification")
+		    }
+		});
+	}
+
+	
+	function click_notifications(){
+		$("#notifications").css("left", $("#notifications").width() * -1 + 25)
+		$("#notifications-nub").css("left", $("#notifications").width() - 18)
+		$(".notif-circle").hide()
+		console.log(notifications)
+		$.ajax({
+			url: "/notifications/", 
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		    type: "post",
+		    data: {"notifications" : notifications},
+			success: function(result){
+		        console.log("viewed notification")
+		    }
+		});
+	}
+
+</script>
 
 
 

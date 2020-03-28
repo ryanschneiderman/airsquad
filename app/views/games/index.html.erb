@@ -56,16 +56,7 @@
 
 <script>
 
-	$(".navbar").addClass("navbar-active");
-    $(".navbar-default a").addClass("navbar-text-active");
-    $(".home-link").css("border-color", "black");
-
-    $(window).on("scroll", function() {
-        $(".navbar").addClass("navbar-active");
-        $(".navbar-default a").addClass("navbar-text-active");
-        $(".home-link").css("border-color", "black")
-
-	});
+	activate_header();
 
 	var new_game_data = []
 
@@ -120,7 +111,7 @@
 	}
 
 	function parseTime(str){
-		var substring = str.substr(str.indexOf(' ')+1); // "tocirah sneab"
+		var substring = str.substr(str.indexOf(' ')+1); 
 		var military_time = substring.substr(0,substring.indexOf(' '));
 		var length = military_time.length;
 		var seconds_stripped = military_time.substr(0,length - 3);

@@ -2,12 +2,37 @@
 <div id = "main">
 	<div id = "content-grid">
 		<div id = "col1">
-			<div id = "feed" class = "full-column">
-				<div class = "team-page-link">Feed</div>
-					<%= link_to new_team_post_path(@team.id) do %>
-						<div class = "team-page-link"></div>
+			<div id = "schedule-info">
+				<div id = "date-info" class = "schedule-info">
+					<%=link_to team_games_path(@team.id) do %>
+						<div id = "date-wrapper">
+							<div class = "day-week"><%=@day_of_week%></div>
+							<div class = "day-date"><%=@day_number%></div>
+							<div class = "month-year"><%=@month_string%> <%=@year%></div>
+						</div>
 					<%end%>
-				<%= render @posts %>
+				</div>
+				<div id = "schedule-event-wrapper" class = "schedule-info">
+					<div id = "schedule-event">
+						
+					</div>
+				</div>
+			</div>
+			<div id = "feed" class = "full-column">
+				<div class = "new-post-wrapper post">
+					<div class = "new-post-author" id = <%=@current_member.id%>>
+						<%=@current_member.nickname%>:
+					</div>
+					<div class = "new-post-content">
+						<div class = "post-placeholder">What's on your mind...</div>
+						<div class = "new-post" contenteditable="true" role = "textbox"></div>
+					</div>
+					<div class = "new-post-toolbar">
+						<button class = "send-post send-post-inactive" onclick = "send_post()">Send</button>
+					</div>
+				</div>
+				
+				<div class = "posts"></div>
 			</div>
 		</div>
 		<div id = "col2">
@@ -22,7 +47,6 @@
 					<div class = "team-page-link">Stats</div>
 				</div>
 			<%end%>
-				
 		</div>
 		<div id = "col3">
 			<%= link_to team_plays_path(@team.id) do %>
@@ -32,7 +56,7 @@
 			<%end%>
 			
 			<%= link_to  team_lineups_path(@team.id) do%>
-				<div id = "roster" class = "big-box">
+				<div id = "lineups" class = "big-box">
 					<div class = "team-page-link">Lineup Explorer</div>
 				</div>	
 			<%end%>
@@ -74,33 +98,166 @@
 <script>
 	var member_to_join; 
 	var curr_button;
-	$("#main").css("margin-top", "55px");
-	$(".navbar").addClass("navbar-active");
-    $(".navbar-default a").addClass("navbar-text-active");
-    $(".home-link").css("border-color", "black");
+	var posts = []
+	$(".send-post").prop("disabled",true);
+	$("#main").css("margin-top", "65px");
+	//$(".navbar").addClass("navbar-active");
+    //$(".navbar-default a").addClass("navbar-text-active");
+    //$(".home-link").css("border-color", "black");
+    $('body').on('focus', '[contenteditable]', function() {
+	    const $this = $(this);
+	    $this.data('before', $this.html());
+	}).on('blur keyup paste input', '[contenteditable]', function() {
+	    const $this = $(this);
+	    if ($this.data('before') !== $this.html()) {
+	    	if($(".new-post").is(':empty')){
+		    	$(".post-placeholder").show()
+		    	$(".send-post").addClass("send-post-inactive")
+		    	$(".send-post").prop("disabled",true);
+		    }
+		    else{
+		    	$(".post-placeholder").hide()
+		    	$(".send-post").removeClass("send-post-inactive")
+		    	$(".send-post").prop("disabled",false);
+		    }
+	    	
+	        $this.data('before', $this.html());
+	        $this.trigger('change');
+	    }
+	});
+
+	$(".new-post").width($(".new-post-wrapper").width() - $(".new-post-author").width() - 30)
+
+    
+    $(document).click(function(){
+    	if($(".new-post").is(':empty')){
+	    	$(".post-placeholder").show()
+	    }
+    })
+    
 
     $(window).on("scroll", function() {
-        $(".navbar").addClass("navbar-active");
-        $(".navbar-default a").addClass("navbar-text-active");
-        $(".home-link").css("border-color", "black")
+       // $(".navbar").addClass("navbar-active");
+       // $(".navbar-default a").addClass("navbar-text-active");
+       // $(".home-link").css("border-color", "black");
 
 	});
-	var window_height = $(window).height() - 70;
+	var window_height = $(window).height() - 80;
+	var big_box_height = (window.innerHeight - $(".big-box").offset().top)/2
 
-	$(".big-box").height(window_height/2);
-	$(".horiz-rectangle").height(window_height/4);
-	$(".vert-rectangle").height(window_height/2);
+	$(".posts").height(window.innerHeight - $(".posts").offset().top - 11)
+	console.log("feed-height: " + (window.innerHeight - $("#feed").offset().top))
+	$(".big-box").height(big_box_height -5);
 
 	$(window).on("resize", function() {
     	window_height = $(window).height() - 70;
-	    $(".big-box").height(window_height/2);
-		$(".horiz-rectangle").height(window_height/4);
-		$(".vert-rectangle").height(window_height/2);
+    	var big_box_height = (window.innerHeight - $(".big-box").offset().top)/2
+	    $(".big-box").height(big_box_height - 5);
+		$(".posts").height(window.innerHeight - $(".posts").offset().top - 11)
 	});
 
 	if(<%=params.has_key?(:joined_team)%> && "<%=@current_member%>" == ""){
 		$(".modal-overlay").show()
 		$(".new-box").show()
+	}
+
+	populate_schedule_info()
+	populate_posts_with_extras()
+	classify_current_member()
+
+	function send_post(){
+		var url = "/teams/"+ <%=params[:id]%> +"/posts/"
+		var data = {content: $(".new-post").text(), team_id: <%=@team.id%>, member_id: <%=@current_member.id%>, author: "<%=@current_member.nickname%>"}
+		$.ajax({
+			url: url, 
+			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		    type: "post",
+		    data_type: 'json',
+		    data: data,
+			success: function(result){
+		        insert_post(result)
+		    }
+		});
+	}
+
+	function insert_post(result){
+		load_post(result.author, result.content, result.post_id, result.role_id)
+	}
+
+	function load_post(author, content, post_id, role_id){
+		var post_wrapper = "<div class = 'post-wrapper post' id = "+post_id+"></div>"
+		var post_author = "<div class = 'post-author'>"+author + ": </div>"
+		var post_content = "<div class = 'post-content'>"+content + "</div>"
+		var post = $(".posts").prepend($(post_wrapper).append(post_author).append(post_content))
+		classify_post($(post).find("#"+post_id), role_id)
+	}
+
+	function classify_current_member(){
+		classify_post($(".new-post-wrapper"), <%=@curr_member.role_id%>)
+	}
+	function classify_post(post, role_id){
+		var random = Math.floor(Math.random() * 10)
+		var num = random%2 
+		num++;
+		console.log(num)
+		console.log(post)
+		switch(num){
+			case 1:
+				post.addClass("player-post")
+			case 2:
+				post.addClass("coach-post")
+			case 4: 
+				post.addClass("coach-post")
+			case 3:
+		}
+	}
+
+	function populate_posts_with_extras(){
+		<%@posts.each do |post|%>
+				load_post("<%= post.nickname %>", "<%=post.content%>", <%=post.post_id%>, <%=post.role_id%>)
+		<%end%>
+	}
+
+	function populate_schedule_info(){
+		if(<%=@is_game%>){
+			var schedule_event_title = $("<div class = 'schedule-event-title'></div>")
+			var game_title = $("<div class = 'game-title'>GAME</div>")
+			var game_opponent = $("<div class = 'game-opponent'>vs. <%=@opponent_name%></div>")
+			$("#schedule-event").append(schedule_event_title.append(game_title).append(game_opponent))
+			var location_time = $("<div class = 'location-time'></div>")
+			var location = $("<div class = 'schedule-event-info'>Location: <%=@schedule_event_place%></div>")
+			var time_str = parseTime("<%=@schedule_event_time%>")
+			var time = $("<div class = 'schedule-event-info'>Time: "+time_str+"</div>")
+			$("#schedule-event").append(location_time.append(location).append(time))
+		}
+		else if (<%=@is_practice%>){
+			var schedule_event_title = $("<div class = 'schedule-event-title'></div>")
+			var game_title = $("<div class = 'game-title'>Practice</div>")
+			$("#schedule-event").append(schedule_event_title.append(game_title))
+			var location_time = $("<div class = 'location-time'></div>")
+			var location = $("<div class = 'schedule-event-info'>Location: <%=@schedule_event_place%></div>")
+			var time_str = parseTime("<%=@schedule_event_time%>")
+			var time = $("<div class = 'schedule-event-info'>Time: "+time_str+"</div>")
+			$("#schedule-event").append(location_time.append(location).append(time))
+		}
+		else{
+			var schedule_event_title = $("<div class = 'schedule-event-title'></div>")
+			var game_title = $("<div class = 'game-title'>No Practice</div>")
+			$("#schedule-event").append(schedule_event_title.append(game_title))
+		}
+
+	}
+
+	function parseTime(str){
+		var substring = str.substr(str.indexOf(' ')+1); 
+		var military_time = substring.substr(0,substring.indexOf(' '));
+		var length = military_time.length;
+		var seconds_stripped = military_time.substr(0,length - 3);
+		var military_hours = seconds_stripped.substr(0,seconds_stripped.indexOf(":"))
+		var minutes = seconds_stripped.substr(seconds_stripped.indexOf(":")+1)
+		var hours = military_hours % 12;
+		var suffix = (military_hours > 12) ? " PM" : " AM";
+		return hours + ":" + minutes + suffix
 	}
 
 
@@ -130,5 +287,7 @@
 		    }
 		});
 	}
+
+	
 
 </script>

@@ -1,7 +1,6 @@
  <script>
 
 
-
     /*********************************************************************************************************************************/
     /**************************************************** <DRAWING OBJECTS> **********************************************************/
     /*********************************************************************************************************************************/
@@ -112,7 +111,6 @@
           selectable: this.selectable,
           hasBorders: this.hasBorders,
           evented: this.evented,
-          lineIds: this.lineIds,
           perPixelTargetFind: this.perPixelTargetFind,
           padding: this.padding,
           objectCaching: this.objectCaching,
@@ -120,6 +118,10 @@
           x2: this.x2,
           y1: this.y1,
           y2: this.y2,
+          isMoveLine: this.isMoveLine,
+          moveLineId: this.moveLineId,
+          passLineId: this.passLineId,
+          passerId: this.passerId,
         });
 
       },
@@ -186,7 +188,6 @@
         return fabric.util.object.extend(this.callSuper('toObject'), {
           id: this.id,
           customProps: this.customProps,
-          lineIds: this.lineIds,
           color: this.color,
           toAnchorPoint: this.toAnchorPoint,
           anchorAngle: this.anchorAngle,
@@ -204,6 +205,9 @@
           x2: this.x2,
           y1: this.y1,
           y2: this.y2,
+          isMoveLine: this.isMoveLine,
+          moveLineId: this.moveLineId,
+          passLineId: this.passLineId,
         });
       },
     });
@@ -263,7 +267,6 @@
         return fabric.util.object.extend(this.callSuper('toObject'), {
           id: this.id,
           customProps: this.customProps,
-          lineIds: this.lineIds,
           color: this.color,
           toAnchorPoint: this.toAnchorPoint,
           anchorAngle: this.anchorAngle,
@@ -281,6 +284,10 @@
           x2: this.x2,
           y1: this.y1,
           y2: this.y2,
+          isMoveLine: this.isMoveLine,
+          moveLineId: this.moveLineId,
+          passLineId: this.passLineId,
+          passerId: this.passerId,
         });
       },
     });
@@ -389,7 +396,6 @@
         return fabric.util.object.extend(this.callSuper('toObject'), {
           id: this.id,
           customProps: this.customProps,
-          lineIds: this.lineIds,
           color: this.color,
           toAnchorPoint: this.toAnchorPoint,
           anchorAngle: this.anchorAngle,
@@ -407,6 +413,10 @@
           x2: this.x2,
           y1: this.y1,
           y2: this.y2,
+          isMoveLine: this.isMoveLine,
+          moveLineId: this.moveLineId,
+          passLineId: this.passLineId,
+          passerId: this.passerId,
         });
       },
     });
@@ -450,15 +460,27 @@
         canvas.on('mouse:up', function(e){
             line = onMouseUp(e, line);
             line.anchorId = anchor.id;
-            anchor.lineIds.push(line.id);
-            if(!anchor.lines){
+            if(line.isMoveLine){
+              anchor.moveLineId = line.id;
+              anchor.moveLine = line;
+            }
+            else{
+              anchor.passLineId = line.id;
+              anchor.passLine = line;
+            }
+            //anchor.lineIds.push(line.id);
+/*            if(!anchor.lines){
               anchor.lines = []
             }
-            anchor.lines.push(line);
+            anchor.lines.push(line);*/
+            // if(endpoint_moves){
+            //   endpoint_moves.push(line)
+            // }
             canvas.setActiveObject(line);
         });
         evented = true;
       }
+      return line;
     }
 
 
@@ -478,8 +500,12 @@
       
       var line = selectLine(points, anchor.color, line_type);
       line.color = anchor.color;
-      var num_anchor_lines = anchor.lineIds.length;
-      line.id = anchor.id + "_line_" + num_anchor_lines.toString();
+      if(line.isMoveLine){
+        line.id = anchor.id + "_moveline_"
+      }
+      else {
+        line.id = anchor.id + "_passline_"
+      }
       canvas.add(line);
       line.moveTo(3);
       return line;
@@ -498,39 +524,159 @@
       return line;
     }
 
+    function validatePassReceiver(object){
+      var isValidAnchor = false;
+      var object_type = object.get("type");
+      if (object_type == "PlayerCircle" || object_type == "LineWithArrow" || object_type == "DribbleLine" || object_type == "ScreenLine"){
+        isValidAnchor = true;
+      }
+      return isValidAnchor;
+    }
+
+    function findObjectEndpoint(obj){
+      // if(obj.get("type") == "PlayerCircle"){
+      //   return {x: obj.left + obj.radius, y: obj.top+obj.radius}
+      // }
+      // else{
+      //   
+      // }
+      return {x: obj.toAnchorPoint.x, y: obj.toAnchorPoint.y}
+    }
+
+    // TODO: DUPLICATE CODE
+    // function removeLine(obj){
+    //   console.log(obj)
+    //   removeLineRef(obj);
+    //   canvas.remove(obj.toAnchor);
+    //   canvas.remove(obj);
+    // }
+    // TODO: DUPLICATE CODE
+    function removeLineRef(line){
+      canvas.getObjects().forEach(function(o){
+        if(o.id == line.anchorId && validateAnchor(o)){
+          if(o.passLineId == line.id){
+            o.passLineId = null;
+            o.passLine = null;
+          }
+          else if (o.moveLineId = line.id){
+            o.moveLineId = null;
+            o.moveLine = null
+          }
+        }
+        if(o.passerId == line.id){
+          o.passerId == null;
+          o.passer == null;
+        }
+      });
+    }
+
+
+    function findClosestReceiver(line){
+      var curr_player = null;
+      var min_distance = null;
+      var line_distance = Math.sqrt(Math.pow(line.x1-line.x2, 2) + Math.pow(line.y1-line.y2, 2))
+      canvas.getObjects().forEach(function(o) {
+        if(validatePassReceiver(o) && line.id != o.id){
+          var endpoint = findObjectEndpoint(o);
+          var dx = Math.pow(endpoint.x - line.x2, 2);
+          var dy = Math.pow(endpoint.y - line.y2, 2);
+          if(min_distance == null){
+            curr_player = o;
+            min_distance = dx + dy
+          }
+          else if (dx + dy < min_distance){
+            min_distance = dx + dy
+            curr_player = o
+          }
+        }
+      });
+      if(line_distance > Math.sqrt(min_distance)){
+        return curr_player;
+      }
+      else{
+        return null;
+      }
+      //return curr_player;
+    }
+
+
+    function snapPassLine(line){
+      var receiver = findClosestReceiver(line)
+      if(receiver){
+        var endpoint = findObjectEndpoint(receiver)
+        var pass_line_endpoint = findPassLineEndpoint(line, endpoint, receiver.radius)
+        line.set({x2: pass_line_endpoint.x, y2: pass_line_endpoint.y})
+        adjustLineAngle(line)
+        line.setCoords()
+        adjustLineSnap(line, receiver.radius)
+        removePassLineRef(line)
+        receiver.passer = line;
+        receiver.passerId = line.id
+        line.setCoords()
+        return true;
+      }
+      else{
+        removeLine(line)
+        return false;
+      }
+    }
+
+    function adjustLineSnap(line, radius){
+      if(!radius) radius = 10;
+      else radius = radius + 18;
+      line.set({x2: line.x2 - Math.cos(line.anchorAngle) * radius, y2: line.y2 - Math.sin(line.anchorAngle) * radius})
+    }
+
+    function findPassLineEndpoint(line, endpoint, radius){
+      var x = endpoint.x;
+      var y = endpoint.y;
+      return {x: x, y:y}
+    }
+
     function onMouseUp(options, line) {
       isDown = false;
       line.moveTo(3);
-      line.setCoords();
-      var centerX = line.x2 - anchorOffset  + Math.cos(line.anchorAngle) * 10;
-      var centerY = line.y2 - anchorOffset + Math.sin(line.anchorAngle) * 10;
-
-      /*CHANGE*/
-      line.toAnchorPoint = new fabric.Point(centerX + anchorOffset, centerY + anchorOffset);
-
-      /*CHANGE*/
-      toAnchor = new fabric.Circle({
-        id: line.id + "_toAnchor",
-        selectable: false,
-        evented: false,
-        hasControls: false,
-        hasBorders: false,
-        left: centerX,
-        top: centerY,
-        lockMovementY: true,
-        lockMovementX: true,
-        radius: anchorRadius,
-        strokeWidth: 1,
-        stroke: line.color,
-        fill: "white",
-        added: true,
-      });
-      line.anchorable = true;
-      canvas.add(toAnchor);
-      line.toAnchorId = toAnchor.id;
-      line.toAnchor = toAnchor;
+      var success = true;
       
-      line.toAnchor.moveTo(4)
+      line.setCoords();
+      // if line is created. Not created if passLine isnt close enough to receiver
+        var centerX = line.x2 - anchorOffset + Math.cos(line.anchorAngle) * 10;
+        var centerY = line.y2 - anchorOffset + Math.sin(line.anchorAngle) * 10;
+        
+        /*CHANGE*/
+        line.toAnchorPoint = new fabric.Point(centerX + anchorOffset, centerY + anchorOffset);
+
+        /*CHANGE*/
+        toAnchor = new fabric.Circle({
+          id: line.id + "_toAnchor",
+          selectable: false,
+          evented: false,
+          hasControls: false,
+          hasBorders: false,
+          left: centerX,
+          top: centerY,
+          lockMovementY: true,
+          lockMovementX: true,
+          radius: anchorRadius,
+          strokeWidth: 1,
+          stroke: line.color,
+          fill: "white",
+          added: true,
+        });
+        line.anchorable = true;
+        canvas.add(toAnchor);
+        line.toAnchorId = toAnchor.id;
+        line.toAnchor = toAnchor;
+        
+        line.toAnchor.moveTo(4)
+
+      if(line.type == "PassLine"){
+        success = snapPassLine(line)
+        adjustLineAngle(line)
+        rotateAnchor(line)
+      }
+      
+      
       canvas.requestRenderAll();
       selection();
 
@@ -546,9 +692,11 @@
         objectCaching: false,
         selectable: true,
         padding: 10,
-        lines: [],
-        lineIds: [],
+        // lines: [],
+        // lineIds: [],
         added: true,
+        isMoveLine: true,
+        toAnchor: null,
       })
     }
 
@@ -559,9 +707,11 @@
         objectCaching: false,
         selectable: true,
         padding: 10,
-        lines: [],
-        lineIds: [],
+        // lines: [],
+        // lineIds: [],
         added: true,
+        isMoveLine: true,
+        toAnchor: null,
       })
     }
 
@@ -572,9 +722,11 @@
         objectCaching: false,
         selectable: true,
         padding: 10,
-        lines: [],
-        lineIds: [],
+        // lines: [],
+        // lineIds: [],
         added: true,
+        isMoveLine: false,
+        toAnchor: null,
       })
     }
 
@@ -585,9 +737,11 @@
         objectCaching: false,
         selectable: true,
         padding: 10,
-        lines: [],
-        lineIds: [],
+        // lines: [],
+        // lineIds: [],
         added: true,
+        isMoveLine: true,
+        toAnchor: null
       })
     }
 
@@ -633,8 +787,10 @@
               hasBorders: this.hasBorders,
               evented: this.evented,
               perPixelTargetFind: this.perPixelTargetFind,
-              lineIds: this.lineIds,
               has_ball: this.has_ball,
+              moveLineId: this.moveLineId,
+              passLineId: this.passLineId,
+              passerId: this.passerId,
             });
         },
 
@@ -670,10 +826,6 @@
             callback && callback(new fabric.Basketball(enlivenedObjects, object));
         });
     };
-
-    //fabric.CustomGroup.async = true;
-
-
 
     /******************************************************** <CIRCLE> ***************************************************************/
 
@@ -790,8 +942,9 @@
           hasControls: false,
           toAnchorPoint: new fabric.Point(left + playerRadius, top + playerRadius),
           anchorable: true,
-          lines: [],
-          lineIds: [],
+          // lines: [],
+          // moveLine: null,
+          // passLine: null,
           added: true,
           text: text,
           has_ball: has_ball,

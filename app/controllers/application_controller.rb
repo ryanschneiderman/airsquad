@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
 	before_action :set_user_data
 	before_action :all_related_members
 	before_action :authenticate_user!
+	before_action :notifications
 
 	def opened_conversations_windows
 	  if user_signed_in?
@@ -39,6 +40,18 @@ class ApplicationController < ActionController::Base
 					end
 				end
 			end
+		end
+	end
+
+	def notifications
+		if user_signed_in?
+			members = Member.where(user_id: current_user.id)
+			mem_ids = []
+			members.each do |mem|
+
+				mem_ids.push(mem.id)
+			end
+			@notifications = Notification.joins(:member_notifs).select("notifications.*, member_notifs.member_id, member_notifs.viewed, member_notifs.read as read, member_notifs.id as member_notif_id").where("member_notifs.member_id" => mem_ids).page(1).per(20).sort_by { |n| n.created_at }.reverse! 
 		end
 	end
 

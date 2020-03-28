@@ -8,6 +8,8 @@ class Stats::RollbackGameService
 		@game_id = params[:game_id]
 		@player_stats = Stat.where(game_id: @game_id).chunk{|e| e.member_id}
 		@team_stats = StatTotal.where(game_id: @game_id, is_opponent: false)
+		@lineup_stats = LineupGameStat.where(game_id: @game_id, is_opponent: false).chunk{|e| e.lineup_id}
+		@lineup_opponent_stats = LineupGameStat.where(game_id: @game_id, is_opponent: true)
 		@opponent_stats = StatTotal.where(game_id: @game_id, is_opponent: true)
 		@stat_granules = StatGranule.where(game_id: @game_id)
 		@member_id = nil
@@ -42,6 +44,8 @@ class Stats::RollbackGameService
 			rollback_stat_granules
 			rollback_player_stats
 			adjust_bpm
+			rollback_lineup_stats
+			create_advanced_lineup_stats
 		end
 	end
 
@@ -54,7 +58,6 @@ class Stats::RollbackGameService
 			team_season_stat.value -= team_stat.value
 			team_season_stat.save
 			if team_stat.stat_list_id == 16 
-				puts "FOUND_TEAM_STATS"
 				@team_minutes = team_season_stat.value
 			end
 			team_stat.destroy
@@ -66,6 +69,41 @@ class Stats::RollbackGameService
 			opp_season_stat.value -= opp_stat.value
 			opp_season_stat.save
 			opp_stat.destroy
+		end
+	end
+
+	def rollback_lineup_stats
+		@lineup_stats.each do |l_stat_arr|
+			l_stat_arr.each do |l_stat|
+				puts "l_stat"
+				puts l_stat
+				if l_stat.is_a? Integer
+					@lineup_id = l_stat
+					@lineup = Lineup.find_by_id(@lineup_id)
+					## TODO add games played to lineup
+					#@lineup.games_played -=1
+				else
+					l_stat.each do |stat|
+						season_stat = LineupStat.where(lineup_id: @lineup_id, stat_list_id: stat.stat_list_id)
+						season_stat = season_stat.take
+						if stat.stat_list_id == 16 
+							@lineup.season_minutes -= stat.value
+							@lineup.save
+							puts @lineup.season_minutes
+							@minutes = @lineup.season_minutes
+						end
+						season_stat.value -= stat.value
+						season_stat.save
+						stat.destroy
+					end
+
+					Advanced::CalcLineupAdvancedStatsService.new({
+						lineup_id: @lineup_id,
+						team_id: @team_id
+					}).call
+				end
+				
+			end
 		end
 	end
 
@@ -81,8 +119,6 @@ class Stats::RollbackGameService
 		if(@offensive_efficiency != nil && @defensive_efficiency != nil)
 			@team_rating = @offensive_efficiency - @defensive_efficiency
 		end
-		puts "TEAM RATING"
-		puts @team_rating
 
 	end
 
@@ -99,10 +135,7 @@ class Stats::RollbackGameService
 					p_stat.each do |stat|
 						season_stat = SeasonStat.where(member_id: @member_id, stat_list_id: stat.stat_list_id)
 						season_stat = season_stat.take
-						puts "stat_list_id"
-						puts stat.stat_list_id
 						if stat.stat_list_id == 16 
-							
 							@member.season_minutes -= stat.value
 							@member.save
 							puts @member.season_minutes
@@ -116,10 +149,6 @@ class Stats::RollbackGameService
 						member_id: @member_id,
 						team_id: @team_id.to_i,
 					}).call
-					puts "~~minutes"
-					puts @minutes
-					puts "~~team_minutes"
-					puts @team_minutes
 					if(bpms["obpm"] && bpms["obpm"].value != nil)
 						@bpm_sums[0] += bpms["obpm"].value * (@minutes / (@team_minutes / 5))
 						#puts "adding_bpm"
@@ -175,6 +204,11 @@ class Stats::RollbackGameService
 		@stat_granules.each do |stat_granule|
 			stat_granule.destroy
 		end
+	end
+
+	
+
+	def create_lineup_advanced_stats
 	end
 
 

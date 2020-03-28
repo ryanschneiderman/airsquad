@@ -1,0 +1,92 @@
+<script>
+	/*
+		Lets list here every function we think we will need for this file. 
+	*/
+
+	// Initializes stats from lineup controller into a javascript array
+	function initialize_stat_array(){
+		console.log('test')
+		<%@lineup_objs.each do|lineup|%>
+			var lineup_obj = {"lineup_members" : [], "lineup_stats" : []}
+			<%lineup[:lineup_stats].each do |stat|%>
+				lineup_obj.lineup_stats.push({"value": "<%= stat.value%>", "stat_list_id" : "<%= stat.stat_list_id%>", "stat" : "<%= stat.stat%>", "display_priority" : "<%= stat.display_priority%>"})
+			<%end%>
+			<%lineup[:lineup_members].each do |member|%>
+				lineup_obj.lineup_members.push({"name" : "<%= member.name%>", "id" : "<%= member.member_id%>"})
+			<%end%>
+			lineup_stats.push(lineup_obj)
+		<%end%>
+		console.log(lineup_stats)
+	}
+
+	// inserts modules for each lineup into the parent html
+	function initialize_lineup_modules(){
+		// for each lineup_obj
+			// create html module
+			// insert player names
+			// insert basic table
+	}
+
+	function insert_basic_stat_header(table){
+		var insert_index = 0;
+		var header = table.createTHead();
+		var row = header.insertRow(0);
+		var num_stats = display_stats.length
+		for(i = 0; i < num_stats; i++){
+			var col = row.insertCell(insert_index)
+			col.innerHTML += "<button class = 'stat-table-button'  onclick='sort_basic_table(" + display_stats[i].display_priority + ")'>" + display_stats[i].stat + "</button>";
+			if(display_stats[i].display_type == "fraction"){
+				insert_index++;
+				var pct_col = row.insertCell(insert_index);
+				pct_col.innerHTML = "<div>" + display_stats[i].percentage_string + "</div>"; 
+			}
+			insert_index++;
+		}
+	}
+
+	function insert_basic_table(table, lineup_obj){
+
+	}
+
+	// this function is for inserting a row of data for a single lineup. 
+	// when doing this, we should be passing the lineup_obj so we can have access to important info on the lineup like minutes, games_played etc. 
+	function insert_basic_data(row, is_per_minute, lineup_obj){
+		var insert_index = 0;
+		var num_stats = display_stats.length
+
+		for(j = 0 ;j < num_stats; j++){
+			if(row.cells.length <= insert_index) var col = row.insertCell(insert_index);
+			else var col = row.cells[insert_index];
+
+			if(display_stats[j].display_type == "fraction"){
+				insert_fraction_data(row, col, display_stats[j].display_priority, ++insert_index, is_per_minute);
+			}
+			else if (display_stats[j].display_type == "minutes"){
+				insert_minutes_data(col, display_stats[j].stat_list_id, is_per_minute);
+			}
+			else{
+				insert_standard_data(col, display_stats[j].stat_list_id, false, is_per_minute)
+			}
+			insert_index++;
+		}	
+	}
+
+	function insert_fraction_data(row, col, stat_list_id, index, is_per_minute){
+		if (row.cells.length <= index){
+			var pct_col = row.insertCell(index)
+		}
+		else var pct_col = row.cells[index];
+		make_miss = find_player_fraction_stat(stat_list_id);
+		makes = parseInt(make_miss[0]);
+		misses = parseInt(make_miss[1]);
+		numerator = (is_per_minute) ? (makes * (per_minute_factor/(minutes/60))).toFixed(1) : (makes/games_played).toFixed(1) ;
+		denomenator = (is_per_minute) ? ((makes + misses) * (per_minute_factor/(minutes/60))).toFixed(1) : ((makes + misses)/games_played).toFixed(1);
+		col.innerHTML = numerator + "/" + denomenator;
+		pct_col.innerHTML = (denomenator != 0) ? Math.round(numerator / denomenator * 100) + "%" : "0%"  
+	}
+
+	function sort_modules(){
+
+	}
+
+</script>

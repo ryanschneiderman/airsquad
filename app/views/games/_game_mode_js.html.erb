@@ -3733,6 +3733,7 @@
 		var minutes_index = find_stat_in_player_arr(16);
 		for(var i = 0; i < len; i++){
 			lineups_arr[i].cumulative_arr[minutes_index].total = lineups_arr[i].timer.time_played
+			lineups_arr[i].opponent_stats[minutes_index].total = lineups_arr[i].timer.time_played
 		}
 	}
 
@@ -3765,7 +3766,7 @@
 		set_minutes_in_player_array();
 		set_team_minutes();
 		//console.log(team_stat_totals)
-		//console.log(lineups_arr)
+		console.log(lineups_arr)
 	}
 
 	function close_game_mode(){
