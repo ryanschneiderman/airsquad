@@ -1,0 +1,372 @@
+<%=render "layouts/small_header"%>
+<div id = "play-demo" style ="">
+    <canvas id ="c" ></canvas>
+    <div id = "tool-bar">
+        <div id = "drawing-buttons">
+          <button id = "run" class = "drawing-button" type = "button" onclick="lineToRun(this)">
+            <div class = "drawing-button-name">RUN</div>
+            <div class = "drawing-button-arrow">
+              <div class="line"></div>
+              <div class="triangle-point"></div>
+            </div>
+          </button>
+          
+          <button id = "pass" class = "drawing-button" type = "button" onclick="lineToPass(this)">
+            <div class = "drawing-button-name">PASS</div>
+            <div class = "drawing-button-arrow">
+              <div class="dotted-line"></div>
+              <div class="triangle-point"></div>
+            </div>
+          </button>
+          
+          <button id = "drive" class = "drawing-button" type = "button" onclick="lineToDribble(this)">
+            <div class = "drawing-button-name">DRIBBLE</div>
+            <div class = "drawing-button-arrow ">
+              <div class="line dribble-line"></div>
+              <div class="triangle-point dribble-triangle"></div>
+            </div>
+          </button>
+          
+          <button id = "screen" class = "drawing-button" type = "button" onclick="lineToScreen(this)">
+            <div class = "drawing-button-name">SCREEN</div>
+            <div class = "drawing-button-arrow">
+               <div class="line"></div>
+               <div class="vert-line"></div>
+            </div>
+          </button>  
+          <button id = "has-ball" class = "drawing-button" type = "button" onclick="hasBall()">
+            <div class = "drawing-button-name">Has Ball</div>
+            <%= image_tag("basketball-icon.png", :alt => "basketball", :class => "basketball-icon") %>
+          </button>         
+        </div>
+        <div id = "save-block">
+          <button class = "save-button" type ="button" onclick="animate_progression()"> ANIMATE </button>
+        </div>
+    </div>
+</div>
+
+
+<%= render 'games/canvas_js' %>
+<%= render 'progressions/js_objects' %>
+<%= render 'progressions/javascript' %>
+
+<script>
+    //activate_header();
+    var anchorRadius = 3;
+    var anchorOffset = anchorRadius - .5;
+    var play_name;
+    var animate_time = 1300;
+
+    var curr_line_type = null;
+
+    var line, isDown, evented;
+    $("#drawing-buttons").css("margin-top", $(window).width() * .05)
+    $("#play-demo").css("margin-top", $("#header-outer").outerHeight())
+    $("body").css("background-color", "#e9eeef")
+
+
+  var canvas_vars = initialize_canvas(0.64, 0.75, 'c', 3);
+  var canvas = canvas_vars.canvas
+  var playerRadius = canvas.width * .02 *.95;
+  var bench = 0
+  plotBasket(canvas_vars.canvas_width/1.978, canvas_vars.canvas_width/9.5, 14, canvas_vars.canvas_width, canvas_vars.canvas);
+  add_players(bench, playerRadius);
+
+
+
+  canvas.on('object:moving', function (e) {
+
+            var obj = e.target;
+            if(obj.get("anchorable") == true ){
+              anchorPositioning(e);
+            }
+            if(obj.type == "toAnchor"){
+              linePositioning(e)
+            }
+            else if (obj.type == "curvePoint"){
+              curveLine(obj)
+            }
+    });
+
+  
+
+  canvas.on('selection:created', function() {
+        canvas.getActiveObjects().forEach(function(o) {
+            var type = o.get('type');
+            if(type == "PlayerCircle"){
+                if(curr_line_type && !o.moveLine){
+                  o.lockMovementY = true;
+                  o.lockMovementX = true;
+                  drawFromAnchor(o, curr_line_type)
+                }
+                else{
+                  o.lockMovementY = false;
+                  o.lockMovementX = false;
+                  o.set({stroke: "#7ceb3b"});
+                  if(o.moveLine){
+                    o.moveLine.toAnchor.animate('opacity', '1', {
+                        duration: 50,
+                        onChange: canvas.requestRenderAll.bind(canvas),
+                    });
+                    o.moveLine.curvePoint.animate('opacity', '1', {
+                      duration: 50,
+                      onChange: canvas.requestRenderAll.bind(canvas),
+                    });
+                    o.moveLine.curvePoint.set({evented: true})
+                    console.log(o.moveLine.curvePoint)
+                  }
+                }
+            }
+            else if (type == "toAnchor"){
+              if(curr_line_type && !o.moveLine){
+                  o.lockMovementY = true;
+                  o.lockMovementX = true;
+                  anchor = getLineFromAnchor(o)
+                  drawFromAnchor(anchor, curr_line_type)
+              }
+              else{
+                o.lockMovementY = false;
+                o.lockMovementX = false;
+                o.animate('opacity', '1', {
+                  duration: 50,
+                  onChange: canvas.requestRenderAll.bind(canvas),
+                });
+                o.line.curvePoint.animate('opacity', '1', {
+                  duration: 50,
+                  onChange: canvas.requestRenderAll.bind(canvas),
+                });
+                o.line.curvePoint.set({evented: true})
+                console.log(o.line.curvePoint)
+                // linePositioning(o)
+              }
+             
+            }
+            if(o.type == "curvePoint"){
+              o.animate('opacity', '1', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+              o.line.curvePoint.animate('opacity', '1', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+              o.line.curvePoint.set({evented: true})
+            }
+            if(o.isMoveLine){
+              console.log("line validated in selection!!!! ")
+              if(!o.toAnchor){
+                getToAnchor(o.toAnchorId, o);
+              }
+              o.toAnchor.animate('opacity', '1', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+            } 
+        });
+    });
+
+    canvas.on('before:selection:cleared', function() {
+         canvas.getActiveObjects().forEach(function(o) {
+            var type = o.get('type');
+            if(type == "PlayerCircle"){
+                o.set({stroke: o.color});
+                if(o.moveLine){
+                  o.moveLine.toAnchor.animate('opacity', '0', {
+                    duration: 50,
+                    onChange: canvas.requestRenderAll.bind(canvas),
+                  });
+                  o.moveLine.curvePoint.animate('opacity', '0', {
+                    duration: 50,
+                    onChange: canvas.requestRenderAll.bind(canvas),
+                  });
+                  o.moveLine.curvePoint.set({ evented: false})
+                }
+            } 
+            if(validateLine(o)){
+              if(!o.toAnchor){
+                getToAnchor(o.toAnchorId, o);
+              }
+              o.toAnchor.animate('opacity', '0', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+              if(o.isMoveLine){
+                  o.curvePoint.animate('opacity', '0', {
+                  duration: 50,
+                  onChange: canvas.requestRenderAll.bind(canvas),
+                });
+                o.curvePoint.set({ evented: false})
+              }
+            } 
+             else if (type == "toAnchor"){
+              o.animate('opacity', '0', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+              o.line.curvePoint.animate('opacity', '0', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+              o.line.curvePoint.set({ evented: false})
+              // linePositioning(o)
+            }
+            else if (o.type == "curvePoint"){
+              o.animate('opacity', '0', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+              o.line.curvePoint.set({ evented: false})
+            }        
+        });
+    });
+
+    function hideLineExtras(line){
+
+    }
+
+    canvas.on('selection:updated', function() {
+        canvas.getActiveObjects().forEach(function(o) {
+            var type = o.get('type');
+            if(type == "PlayerCircle"){
+                o.lockMovementY = false;
+                o.lockMovementX = false;
+            }   
+        });
+    });
+
+    function insertEndpoint(obj){
+
+  }
+
+  /*********************************************************************************************************************************/
+  /**************************************************** <DOCUMENT ON READY> ********************************************************/
+  /*********************************************************************************************************************************/
+  function init_play(){
+    play_name = $(".play-name").val();
+    console.log("play_name: " + play_name);
+    $("#new-header").text(play_name);
+    $(".modal-overlay").hide()
+
+  }
+
+  function loadCanvasFromJson(json_diagram){
+    var width_ratio = 1
+
+    var json_data = json_diagram.replace(/&quot;/g,'"');
+    canvas.on('object:added', function(e) {
+          var object = e.target;
+          object.added = true;
+    });
+    canvas.loadFromJSON(json_data, function() {
+          var ball;
+          var player_with_ball;
+          console.log("width ratio: " + width_ratio)
+          var objs = canvas.getObjects().map(function(o) {
+            if (o.type == "MoveLine"){
+              o.toAnchorPoint.x = o.toAnchorPoint.x / width_ratio
+              o.toAnchorPoint.y = o.toAnchorPoint.y / width_ratio
+              o.path[0][1] = o.path[0][1] /width_ratio
+              o.path[0][2] = o.path[0][2] /width_ratio
+              o.path[1][1] = o.path[1][1] /width_ratio
+              o.path[1][2] = o.path[1][2] /width_ratio
+              o.path[1][3] = o.path[1][3] /width_ratio
+              o.path[1][4] = o.path[1][4] /width_ratio
+              o.width = o.width / width_ratio
+              o.height = o.height / width_ratio
+              o.pathOffset.x = o.pathOffset.x / width_ratio
+              o.pathOffset.y= o.pathOffset.y / width_ratio
+              o.left = o.left /width_ratio;
+              o.top = o.top/width_ratio
+              o.setCoords()  
+              o.points = getPathValues(o.path, 45)      
+            }
+            else{
+              o.set({ left: o.left / width_ratio, top: o.top/width_ratio,})
+              if(o.type == "circle"){
+                o.set({lockMovementX: true, lockMovementY: true, selectable: false, evented: false, radius: o.radius / width_ratio})
+                    o.moveTo(1)
+              }
+              else if (o.type == "toAnchor" || o.type == "curvePoint"){
+                o.set({selectable: true, evented: true, radius: o.radius / width_ratio, opacity: 1,})
+                o.moveTo(102)
+                canvas.renderAll();
+                o.set({opacity: 0})
+              }
+              else if (o.type == "rect"){
+                o.set({lockMovementX: true, lockMovementY: true, selectable: false, width: o.width / width_ratio, height: o.height / width_ratio, evented: false})
+                o.moveTo(1)
+              }
+              else if (o.type == "triangle"){
+                o.set({selectable: false, evented: false, fontSize: o.fontSize / width_ratio})
+              }
+              else if (o.type == "text"){
+                o.set({lockMovementX: true, lockMovementY: true, selectable: false, evented: false, fontSize: o.fontSize / width_ratio})
+                    o.moveTo(101);
+              }
+              else if (o.type == "basketball"){
+                o.set({lockMovementX: true, lockMovementY: true, selectable: false, evented: false, radius: o.radius / width_ratio})
+                ball = o;
+              }
+              else if (o.type == "PlayerCircle"){
+                canvas.getObjects().forEach(function(obj) {
+                  if(obj.id == o.id && obj.type == "text"){
+                      o.text = obj;
+                      obj.moveTo(20)
+                  }
+                  else if (obj.anchorId == o.id && (obj.type == "LineWithArrow" || obj.type == "DribbleLine" || obj.type == "ScreenLine")){
+                    move_to_x = obj.x2 / width_ratio
+                    move_to_y = obj.y2 / width_ratio
+                  }
+                });
+                if(o.has_ball == true){
+                  player_with_ball = o;
+                }
+                o.toAnchorPoint.x = o.toAnchorPoint.x / width_ratio
+                o.toAnchorPoint.y = o.toAnchorPoint.y / width_ratio
+                
+                o.strokeWidth = o.strokeWidth/width_ratio;
+                o.set({radius: o.radius / width_ratio})
+               // o.moveTo(100)
+                o.setCoords()
+                populateLines(o)
+              }
+              else if (o.type == "LineWithArrow" || o.type == "DribbleLine" || o.type == "PassLine" || o.type == "ScreenLine"){
+                o.toAnchorPoint.x = o.toAnchorPoint.x / width_ratio
+                o.toAnchorPoint.y = o.toAnchorPoint.y / width_ratio
+                o.set({x1: o.x1 / width_ratio, x2: o.x2 / width_ratio, y1: o.y1 / width_ratio, y2: o.y2 / width_ratio})
+                o.moveTo(99)
+                o.setCoords()
+                rotateAnchor(o)
+
+              }
+              console.log(o)
+              o.setCoords()
+              return o
+            }
+            
+          });
+          if(player_with_ball){
+              player_with_ball.ball = ball;
+              setBallPos(player_with_ball);
+          }
+          populatePasserRefs()
+    }); 
+  }
+
+
+  function animate_progression(){
+    updateMoveLines()
+    var json_data = JSON.stringify(canvas.toJSON(['id']));
+    var max_depth = 0;
+    hideLines()
+    startAnimation()
+    max_depth = getAnimationTime()
+    setTimeout(function(){ 
+      loadCanvasFromJson(json_data)
+    }, max_depth * (animate_time));
+  }
+
+</script>
+
+<style>
+</style>

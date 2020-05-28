@@ -1,0 +1,69 @@
+<div class = "flex-column plays-index-content-wrapper" id = "plays-home-wrapper">
+		<div class = "plays-index-content">
+			<div id = "new-play-row-wrapper">
+				<div id = "new-play-row">
+					<div class = "new-play-wrapper">
+						<button class = "new-playlist-button" onclick = "new_play_modal()">
+                        	<%= image_tag("play.png", :alt => "information", :class => "new-play-icon") %>
+                      		<div class = "new-play-text">New Play</div>
+						<button>
+					</div>
+					<div class = "new-play-wrapper">
+						<button class = "new-playlist-button" onclick = "new_playlist_modal()">
+	                        <%= image_tag("playlist-2.png", :alt => "information", :class => "new-play-icon") %>
+	                      	<div class = "new-play-text">New Playlist</div>
+	                    <button>  	
+					</div>
+				</div>
+			</div>
+			<div class = "plays-and-playlists">
+				<div class = "plays-row-wrapper">
+					<div class = "plays-row-heading">Recently Viewed</div>
+					<div class = "plays-row" id = "recently-viewed">
+						<%counter = 0%>
+						<%@recently_viewed.each do |play| %>
+							<div class ="play-image-block" id = "recently-viewed-<%=play.id%>">
+								<div class= "play-index-image" id = "play-image-<%=play.id%>">
+									<%= link_to show_vs_edit(play.id), :class => "play-link" do %>
+										<%= image_tag(@recently_viewed_progressions[counter].first.play_image, :alt => "play", :class => "play-img recently_viewed", :id => counter) %>
+									<%end%>
+								</div>
+								<div class = "play-link-text"><%= link_to play.name, show_vs_edit(play.id) %></div>
+							</div>
+							<%counter+=1%>
+						<%end%>
+					</div>
+				</div>
+				<div class = "plays-row-wrapper">
+					<div class = "plays-row-heading">Playlists</div>
+					<div class = "plays-row" id = "playlists">
+						<%@playlist_arr.first(4).each do |playlist|%>
+							<button class = "playlist-block" id = 'playlist-home-block-<%=playlist[:playlist].id%>' onclick = "go_to_playlist(<%=playlist[:playlist].id%>)">
+								<div class = "playlist-imgs playlist-style-<%=playlist[:playlist].color_scheme%>">
+									<div class = "playlist-link-text playlist-link-text-<%=playlist[:playlist].id%>"><%=playlist[:playlist].name%></div>
+								</div>
+								
+							</button>
+						<%end%>
+					</div>
+				</div>
+				<div class = "plays-row-wrapper">
+					<div class = "plays-row-heading">Recently Updated</div>
+					<div class = "plays-row" id = "recently-viewed">
+						<%counter = 0%>
+						<%@recently_updated.each do |play| %>
+							<div class ="play-image-block" id = "recently-updated-<%=play.id%>">
+								<div class= "play-index-image" id = "play-image-<%=play.id%>">
+									<%= link_to show_vs_edit(play.id), :class => "play-link" do %>
+										<%= image_tag(@recently_updated_progressions[counter].first.play_image, :alt => "play", :class => "play-img recently_viewed", :id => counter) %>
+									<%end%>
+								</div>
+								<div class = "play-link-text"><%= link_to play.name, show_vs_edit(play.id) %></div>
+							</div>
+							<%counter+=1%>
+						<%end%>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>

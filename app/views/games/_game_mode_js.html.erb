@@ -122,8 +122,6 @@
 		vert_offset  = $(".canvas-container").offset().top;
 	})
 
-	$("#bench").css("margin-left", $(".flex-margin-auto").css("margin-left"))
-
 	// TODO - set in initializer
 	var arc_vert_radius;
 	var arc_horiz_radius; 
@@ -513,6 +511,7 @@
 			if(!submitted){
 				update_fg_locations()
 				var game_state =  {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr,  "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}
+				console.log(lineups_arr)
 				$.ajax({
 					url: "/teams/" + <%=@team_id%> + "/games/" + <%=@game_id%> + "/game_state_update/", 
 					beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
@@ -658,8 +657,10 @@
 	function load_lineups_arr(new_lineups_arr){
 		var len = new_lineups_arr.length;
 		for(var i=0; i < len; i++){
-
+			console.log(new_lineups_arr)
 			var lineup = lineup_exists(new_lineups_arr[i].ids)
+			console.log("this lineup")
+			console.log(lineup)
 			if(lineup){
 				var timer = new_lineups_arr[i].timer;
 				lineup.timer.clock_moving = timer.clock_moving;
@@ -685,6 +686,8 @@
 				}
 			}
 		}
+		console.log("curr_lineup")
+		console.log(curr_lineup)
 		lineups_arr = new_lineups_arr;
 	}
 
@@ -2464,7 +2467,6 @@
 		var edit_col = new_row.insertCell()
 		$(edit_col).addClass("stat-granule-edit")
 		edit_col.innerHTML = "<div class = 'edit-delete-granule'><button class = 'edit-stat-granule' id = 'edit-stat-" + stat_object.granule_id + "' onclick = 'edit_stat_granule(this, "+ stat_object.granule_id +")'>Edit</button> / <button class = 'edit-stat-granule' id = 'delete-stat-" + stat_object.granule_id + "' onclick = 'delete_stat_prompt(this, "+ stat_object.granule_id +")'>Delete</button></div>"
-		console.log(stat_object.metadata)
 
 		if(stat_object.metadata.minute != null){
 			var second = stat_object.metadata.second 
@@ -2676,8 +2678,8 @@
 
 	function toggle_table(table_case, button){
 		$(".active-table").removeClass("active-table")
-		$(".gm-table-button").addClass("inactive-table")
-		$(button).removeClass("inactive-table")
+		$(".gm-table-button").addClass("inactive-table-label")
+		$(button).removeClass("inactive-table-label")
 		$(button).addClass("active-table")
 		switch(table_case){
 			case 0 :

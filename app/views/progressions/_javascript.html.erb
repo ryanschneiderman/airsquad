@@ -1,767 +1,154 @@
+<style>
+  body{
+    background-image: url(<%= asset_path('tiled_floor3.png')%>);
+    background-size: 100%;
+  }
+
+</style>
+
 <script>
 
     /*********************************************************************************************************************************/
     /**************************************************** <BUTTON FUNCTIONS> *********************************************************/
     /*********************************************************************************************************************************/
+    var curr_drawing_button = null;
+
+
     function validateAnchor(object){
       var isValidAnchor = false;
       var object_type = object.get("type");
-      if (object_type == "PlayerCircle" || object_type == "LineWithArrow" || object_type == "PassLine" || object_type == "DribbleLine" || object_type == "ScreenLine"){
+      if (object_type == "PlayerCircle" || object_type == "LineWithArrow" || object_type == "PassLine" || object_type == "DribbleLine" || object_type == "ScreenLine" || object_type == "MoveLine"){
         isValidAnchor = true;
       }
       return isValidAnchor;
     }
 
-
-    function lineToRun(event){
-        line_type = "run";
-        var anchor = canvas.getActiveObject()
-            if(anchor && validateAnchor(anchor) && !anchor.moveLine){
-                draw(anchor);
-                canvas.requestRenderAll.bind(canvas);
-            }    
-    }
-
-    function lineToPass(event){
-        line_type = "pass";
-         var anchor = canvas.getActiveObject()
-            if(anchor && validateAnchor(anchor)){
-              hasBall()
-              draw(anchor);
-              canvas.requestRenderAll.bind(canvas);
-            } 
-    }
-
-    function lineToScreen(event){
-        line_type = "screen";
-        var anchor = canvas.getActiveObject()
-            if(anchor && validateAnchor(anchor) && !anchor.moveLine){
-                draw(anchor);
-                canvas.requestRenderAll.bind(canvas);
-                
-            } 
-    }
-
-    function lineToDribble(event){
-        line_type = "dribble";
-        var anchor = canvas.getActiveObject()
-            if(anchor && validateAnchor(anchor) && !anchor.moveLine){
-                draw(anchor);
-                canvas.requestRenderAll.bind(canvas);
-            } 
-    }
-
-    function setBallPos(obj){
-      obj.ball.set({left: obj.left + obj.radius * 1.7, top: obj.top + obj.radius * 1.7})
-      obj.ball.setCoords()
-      canvas.renderAll()
-    }
-
-    
-
-    function descendantHasBall(anchor){
-      var type = anchor.get("type")
-      if(validateLine(anchor) || type == "PlayerCircle"){
-        var anchor_id = anchor.id.split("_")[0]
-        canvas.getObjects().forEach(function(o) {
-            if(o.id == anchor_id){
-              if(o.has_ball){
-                return true;
-              }
-            }
-        });
+    function getLineFromAnchor(anchor){
+      if(anchor && anchor.get("type") == "toAnchor"){
+        return anchor.line
       }
-      return false;
+      else return anchor
     }
 
-    function getDescendant(anchor){
-      var type = anchor.get("type")
-      var return_object;
-      if(validateLine(anchor) || type == "PlayerCircle"){
-        var anchor_id = anchor.id.split("_")[0]
-        canvas.getObjects().forEach(function(o) {
-            if(o.id == anchor_id && o.get("type") == "PlayerCircle"){
-              return_object = o;
-            }
-        });
-      }
-      return return_object
+    function highlight_play_button(button){
+      console.log("highlighting-button")
+      $(".drawing-button").removeClass("play-button-selected")
+      $(button).addClass("play-button-selected")
+      console.log(button)
     }
 
-    function objectHasPassLine(player){
-      if(player.passLine){
-        return true;
+    function lineToRun(button){
+      selection()
+      curr_line_type = "run";
+      highlight_play_button(button)
+      var selected = canvas.getActiveObject()
+      if(selected){
+        selected.lockMovementY = true;
+        selected.lockMovementX = true;
       }
-      else if (player.moveLine){
-        return objectHasPassLine(player.moveLine)
+      anchor = getLineFromAnchor(selected)
+      if(anchor && validateAnchor(anchor) && !anchor.moveLine){
+        drawCurve(anchor, curr_line_type);
+        canvas.requestRenderAll.bind(canvas);
+      }    
+    }
+
+    function lineToPass(button){
+      selection()
+      curr_line_type = "pass";
+      highlight_play_button(button)
+      var selected = canvas.getActiveObject()
+      if(selected){
+        selected.lockMovementY = true;
+        selected.lockMovementX = true;
       }
+      anchor = getLineFromAnchor(selected)
+      if(anchor && validateAnchor(anchor) && !anchor.passLine){
+        setBall(anchor)
+        draw(anchor, curr_line_type);
+        canvas.requestRenderAll.bind(canvas);
+      } 
+    }
+
+    function lineToScreen(button){
+      selection()
+      curr_line_type = "screen";
+      highlight_play_button(button)
+      var selected = canvas.getActiveObject()
+      if(selected){
+        selected.lockMovementY = true;
+        selected.lockMovementX = true;
+      }
+      anchor = getLineFromAnchor(selected)
+      if(anchor && validateAnchor(anchor) && !anchor.moveLine){
+        console.log("in line to screen")
+          drawCurve(anchor, curr_line_type);
+          canvas.requestRenderAll.bind(canvas);
+          
+      } 
+    }
+
+    function lineToDribble(button){
+      selection()
+      curr_line_type = "dribble";
+      highlight_play_button(button)
+      var selected = canvas.getActiveObject()
+      if(selected){
+        selected.lockMovementY = true;
+        selected.lockMovementX = true;
+      }
+      anchor = getLineFromAnchor(selected)
+      if(anchor && validateAnchor(anchor) && !anchor.moveLine){
+          drawCurve(anchor, curr_line_type);
+          canvas.requestRenderAll.bind(canvas);
+      } 
+    }
+
+    function drawFromAnchor(anchor, line_type){
+      console.log(line_type)
+      if(line_type == "screen" ||line_type == "dribble" ||line_type == "run"){
+        console.log(line_type)
+        drawCurve(anchor, line_type)
+      }
+      else if (line_type == "pass"){
+        draw(anchor, line_type)
+      }
+    }
+
+    function deselectDrawingButton(){
+      console.log("deselecting drawing button")
+      curr_line_type = null;
+      $(".drawing-button").removeClass("play-button-selected")
+    }
+
+
+    $('body').click(function(evt){    
+      if($(evt.target).hasClass("canvas-container") || $(evt.target).hasClass("drawing-button")){
+        return;         
+       }
+      else if(($(evt.target).closest('.drawing-button').length) || ($(evt.target).closest('.canvas-container').length)){
+        return
+       }
       else{
-        return false;
+        deselectDrawingButton()
       }
-    }
-
-    function hasBall(){
-      var editing = false;
-      if(typeof progressions_arr !== 'undefined' && typeof progressions_arr[index] !== 'undefined'){
-        editing = true;
-      }
-      var anchor = canvas.getActiveObject()
-      var ball_found = false;
-      if(anchor){
-        var type = anchor.get("type")
-        var anchor_descendant = getDescendant(anchor)
-        if(anchor_descendant){
-          canvas.getObjects().forEach(function(o) {
-            var descendant = getDescendant(o)
-            if(descendant && descendant.has_ball){
-              if(!objectHasPassLine(descendant)){
-                o.has_ball = false;
-                anchor.ball = o.ball;
-                setBallPos(anchor)
-                o.ball = null;
-                anchor.has_ball = true;
-                if(editing) progressions_arr[index].edited = true;
-              }
-              ball_found = true;
-            }
-          });
-          if(!ball_found){
-            var ball = makeBasketball(anchor.top, anchor.left, anchor.radius)
-            anchor.ball = ball;
-            anchor.has_ball = true;
-            if(editing) progressions_arr[index].edited = true;
-          }
-
-        }
-      }
-
-      // canvas.getObjects().forEach(function(o) {
-      //    if(o.get("type") == "PlayerCircle"){
-      //     console.log(o)
-      //    }
-      // });
-
-    }
+    });
+      //Do processing of click event here for every element except with id menu_content
 
     
 
     /*********************************************************************************************************************************/
-    /**************************************************** <BUTTON FUNCTIONS/> *********************************************************/
+    /**************************************************** <BUTTON FUNCTIONS/> ********************************************************/
     /*********************************************************************************************************************************/
 
 
 
     /*********************************************************************************************************************************/
-    /**************************************************** <HELPER FUNCTIONS> *********************************************************/
+    /**************************************************** <BALL FUNCTIONS/> **********************************************************/
     /*********************************************************************************************************************************/
+  
 
-
-    function setLine (LineId, obj, isMoveLine) {
-        canvas.getObjects().forEach(function(o) {
-            if(o.id == LineId) {
-              (isMoveLine) ? obj.moveLine = o : obj.passLine = o; 
-                return o;
-            }
-            else if (o.passerId == LineId){
-              o.passer = obj.passLine
-            }
-        });
-    }
-
-    function setToAnchor(toAnchorId, line, centerX, centerY){
-      canvas.getObjects().forEach(function(o) {
-            if(o.id == toAnchorId) {
-                o.set({top: centerY, left: centerX});
-                line.toAnchor = o;
-                return o;
-            }
-      });
-    }
-
-    function getToAnchor(toAnchorId, line){
-       canvas.getObjects().forEach(function(o) {
-            if(o.id == toAnchorId && toAnchorId != null) {
-                line.toAnchor = o;
-                return o;
-            }
-      });
-    }
-
-
-
-    function adjustChildrenAnchors(obj){
-      if(obj.passLine){
-        obj.passLine.set({x1: obj.toAnchorPoint.x, y1: obj.toAnchorPoint.y})
-        rotateAnchor(obj.passLine)
-        obj.passLine.setCoords()
-      }
-      if (obj.moveLine){
-        obj.moveLine.set({x1: obj.toAnchorPoint.x, y1: obj.toAnchorPoint.y})
-        rotateAnchor(obj.moveLine)
-        obj.moveLine.setCoords()
-        checkPassLine(obj.moveLine)
-        adjustChildrenAnchors(obj.moveLine)
-      }
-    }
-
-    function populateLines(obj){
-      if(obj.passLineId){
-        setLine(obj.passLineId, obj, false)
-      }
-      if (obj.moveLineId){
-        setLine(obj.moveLineId, obj, true)
-        populateLines(obj.moveLine)
-      }
-    }
-
-    function rotateAnchor(line){
-      var centerX = line.x2 - anchorOffset + (Math.cos(line.anchorAngle) * 10);
-      var centerY = line.y2 - anchorOffset + (Math.sin(line.anchorAngle) * 10);
-      setToAnchor(line.toAnchorId, line, centerX, centerY);
-      line.toAnchorPoint.x = centerX + anchorOffset
-      line.toAnchorPoint.y = centerY + anchorOffset;
-    }
-
-
-    function add_players(bench, playerRadius){
-        var off1 = makeCircle(bench, canvas.height * .07, 'blue', 'off1', '1', false, playerRadius);
-        var off2 = makeCircle(bench, canvas.height * .14, 'blue', 'off2', '2', false, playerRadius);
-        var off3 = makeCircle(bench, canvas.height * .21, 'blue', 'off3', '3', false, playerRadius);
-        var off4 = makeCircle(bench, canvas.height * .28, 'blue', 'off4', '4', false, playerRadius);
-        var off5 = makeCircle(bench, canvas.height * .35, 'blue', 'off5', '5', false, playerRadius);
-
-        var def1 = makeCircle(bench, canvas.height * .49, 'red', 'def1', '1', false, playerRadius);
-        var def2 = makeCircle(bench, canvas.height * .56, 'red', 'def2', '2', false, playerRadius);
-        var def3 = makeCircle(bench, canvas.height * .63, 'red', 'def3', '3', false, playerRadius);
-        var def4 = makeCircle(bench, canvas.height * .7, 'red', 'def4', '4', false, playerRadius);
-        var def5 = makeCircle(bench, canvas.height * .77, 'red', 'def5', '5', false, playerRadius);
-    }
-
-    function add_fullcourt_players(bench, playerRadius){
-        var off1 = makeCircle(canvas.width * .20, bench, 'blue', 'off1', '1', false, playerRadius);
-        var off2 = makeCircle(canvas.width * .25, bench, 'blue', 'off2', '2', false, playerRadius);
-        var off3 = makeCircle(canvas.width * .30, bench, 'blue', 'off3', '3', false, playerRadius);
-        var off4 = makeCircle(canvas.width * .35, bench, 'blue', 'off4', '4', false, playerRadius);
-        var off5 = makeCircle(canvas.width * .40, bench, 'blue', 'off5', '5', false, playerRadius);
-
-        var def1 = makeCircle(canvas.width * .50, bench, 'red', 'def1', '1', false, playerRadius);
-        var def2 = makeCircle(canvas.width * .55, bench, 'red', 'def2', '2', false, playerRadius);
-        var def3 = makeCircle(canvas.width * .60, bench, 'red', 'def3', '3', false, playerRadius);
-        var def4 = makeCircle(canvas.width * .65, bench, 'red', 'def4', '4', false, playerRadius);
-        var def5 = makeCircle(canvas.width * .70, bench, 'red', 'def5', '5', false, playerRadius);
-    }
-
-    function checkPassLine(obj){
-      if(obj.passer){
-        console.log(obj)
-        adjustPassLine(obj)
-      }
-      else if (obj.passerId){
-        canvas.getObjects().forEach(function(o) {
-            if(o.id == obj.passLineId) {
-                obj.passer = o;
-                adjustPassLine(obj)
-            }
-        });
-      }
-    }
-
-    function adjustPassLine(obj){
-      var endpoint = findObjectEndpoint(obj)
-      var pass_line_endpoint = findPassLineEndpoint(obj.passer, endpoint, obj.radius)
-      obj.passer.set({x2: pass_line_endpoint.x, y2: pass_line_endpoint.y})
-      obj.passer.setCoords()
-      adjustLineSnap(obj.passer, obj.radius)
-      obj.passer.setCoords()
-      rotateAnchor(obj.passer)
-    }
-
-    function adjustLineAngle(line){
-      var xDiff = line.x2 - line.x1;
-      var yDiff = line.y2 - line.y1;
-      var angle = Math.atan2(yDiff, xDiff);
-      line.set({anchorAngle: angle})
-    }
-
-    function removePassLineRef(line){
-      canvas.getObjects().forEach(function(o){
-        if(o.passerId == line.id){
-          o.set({passerId: null, passer: null})
-        }
-      });
-    }
-
-    function positionPlayer(obj){
-      obj.toAnchorPoint.x = obj.left + obj.radius;
-      obj.toAnchorPoint.y = obj.top + obj.radius;
-      obj.text.left = obj.left + obj.radius + 2;
-      obj.text.top = obj.top + obj.radius + 2;
-
-      if(obj.has_ball){
-        obj.ball.left = obj.left + obj.radius * 1.7
-        obj.ball.top = obj.top + obj.radius * 1.7
-      }
-    }
-    function positionLine(obj, x, y){
-      obj.toAnchorPoint.x = x + Math.cos(obj.anchorAngle) * 10;
-      obj.toAnchorPoint.y =  y + Math.sin(obj.anchorAngle) * 10;
-      obj.set({x2: x, y2: y})
-      obj.setCoords();
-      rotateAnchor(obj);
-    }
-
-    function anchorPositioning(e){
-      var obj = e.target;
-      var type = obj.get('type');
-      if(validateLine(obj)){
-          positionLine(obj, canvas.getPointer(e.e).x, canvas.getPointer(e.e).y)
-      }
-      else if (type == "PlayerCircle"){
-          positionPlayer(obj)
-      }
-      checkPassLine(obj)
-      adjustChildrenAnchors(obj); 
-    }
-
-    $(document).mouseup( function(e){
-      var obj = canvas.getActiveObject()
-        if (obj && obj.type == 'PassLine'){
-          snapPassLine(obj)
-          adjustLineAngle(obj)
-          rotateAnchor(obj)
-        }
-    });
-
-    function boundObjects(obj){
-      // if object is too big ignore
-      if(obj.currentHeight > obj.canvas.height -1 || obj.currentWidth > obj.canvas.width -1){
-          return;
-      }        
-      obj.setCoords();        
-      // top-left  corner
-      if(obj.getBoundingRect().top < 1 || obj.getBoundingRect().left < 1){
-          obj.top = Math.max(obj.top, obj.top-obj.getBoundingRect().top);
-          obj.left = Math.max(obj.left, obj.left-obj.getBoundingRect().left);
-      }
-          // bot-right corner
-      if(obj.getBoundingRect().top+obj.getBoundingRect().height  > obj.canvas.height || obj.getBoundingRect().left+obj.getBoundingRect().width  > obj.canvas.width){
-          obj.top = Math.min(obj.top, obj.canvas.height-obj.getBoundingRect().height+obj.top-obj.getBoundingRect().top);
-          obj.left = Math.min(obj.left, obj.canvas.width-obj.getBoundingRect().width+obj.left-obj.getBoundingRect().left);
-      }
-    }
-
-    function validateLine(obj){
-      var type = obj.get("type");
-      if (type == 'LineWithArrow' || type == 'ScreenLine' || type == "PassLine" || type == "DribbleLine"){
-        return true;
-      }
-      else return false;
-    }
-
-    function getMaxDepth(obj){
-      if(!obj.passLine && !obj.moveLine){
-        return 0;
-      }
-      else{
-        if(obj.moveLine){
-          var max_depth = getMaxDepth(obj.moveLine)
-        }
-        if(obj.passLine){
-          var new_depth = getMaxDepth(obj.passLine)
-        }
-        if(new_depth> max_depth) max_depth = new_depth;
-        return max_depth + 1;
-      }
-    }
-
-    function recurseAnimationTime(move_players, wait_passer, wait_receivers){
-      var len = move_players.length
-      var queued_actions = []
-      var next_moves = []
-      for(var i = 0; i < len; i++){
-        //console.log(move_players[i])
-        if(move_players[i].mover.passer){
-          var new_wait_receiver = move_players[i]
-          new_wait_receiver.passer = move_players[i].mover.passer;
-          wait_receivers.push(new_wait_receiver)
-        }
-        else if(move_players[i].mover.passLine){
-          wait_passer = move_players[i]
-          wait_passer.passLine = move_players[i].mover.passLine;
-        }
-        else if(move_players[i].mover.moveLine){
-          next_moves.push({player: move_players[i].player, mover: move_players[i].mover.moveLine})
-        }
-        if (move_players[i].mover.isMoveLine){
-          queued_actions.push({player: move_players[i].player, mover: move_players[i].mover})
-        }
-      }
-      return animationTimeStep(next_moves, queued_actions, wait_passer, wait_receivers)
-    }
-
-    function animationTimeStep(next_moves, queued_actions, wait_passer, wait_receivers){
-      if(wait_passer && wait_receivers.length > 0){
-        var receiver = pass_pair_exists(wait_passer, wait_receivers)
-        if(receiver){
-          next_moves = exec_simul_pass_moves(next_moves, true)
-          if(wait_passer.mover && wait_passer.mover.moveLine) next_moves.push({player: wait_passer.player, mover: wait_passer.mover.moveLine});
-          if(receiver.mover && receiver.mover.moveLine) next_moves.push({player: receiver.player, mover: receiver.mover.moveLine});
-          if(next_moves.length> 0){
-            console.log("pass and move + 2")
-            return 2 + recurseAnimationTime(next_moves, null, wait_receivers);
-          }
-          else{
-            console.log("just pass + 1")
-            return 1 + recurseAnimationTime(next_moves, null, wait_receivers);
-          }
-        }
-        else{
-          console.log("non receiver + 1")
-          return 1 + recurseAnimationTime(next_moves, wait_passer, wait_receivers);
-        }
-      }
-      else if(next_moves.length > 0 ){
-        console.log("next moves + 1")
-        return 1 + recurseAnimationTime(next_moves, wait_passer, wait_receivers);
-      }
-      else {
-        console.log("end + 0")
-        return 0;
-      }
-    }
-
-    function getAnimationTime(){
-      var max_depth = 0;
-      var pass_player_depth = 0;
-      var wait_passer;
-      var wait_receivers = [];
-      var move_players = [];
-      canvas.getObjects().forEach(function(o) {
-        if (o.type == "PlayerCircle"){
-          if(o.passLine){
-            wait_passer = {player: o, mover: o, passLine: o.passLine,};
-          }
-          if(o.passer){
-            wait_receivers.push({player: o, mover: o, passer: o.passer});
-          }
-          else if(o.moveLine){
-            move_players.push({player: o, mover: o})
-          }
-        }
-      });
-      var time = recurseAnimationTime(move_players, wait_passer, wait_receivers)
-      return time;
-    }
-
-    function initiatePass(move_players, pass_player, maxDepth){
-
-      var max_depth = 0;
-      console.log(maxDepth)
-      setTimeout(function(){
-          animatePass(pass_player.player, pass_player.passLine)
-          if(pass_player.moveLine){
-            setTimeout(function(){
-              queueMovement(pass_player.player, pass_player.moveLine)
-            }, animate_time);
-          }
-      }, animate_time * maxDepth)
-    }
-
-
-
-    //BREAK UP THIS FUNCTION 
-    function animatePlayers(move_players, wait_passer, wait_receivers){
-      console.log('animating players')
-      var len = move_players.length
-      var queued_actions = []
-      var next_moves = []
-      for(var i = 0; i < len; i++){
-        //console.log(move_players[i])
-        if(move_players[i].mover.passer){
-          var new_wait_receiver = move_players[i]
-          new_wait_receiver.passer = move_players[i].mover.passer;
-          wait_receivers.push(new_wait_receiver)
-        }
-        else if(move_players[i].mover.passLine){
-          wait_passer = move_players[i]
-          wait_passer.passLine = move_players[i].mover.passLine;
-        }
-        else if(move_players[i].mover.moveLine){
-          next_moves.push({player: move_players[i].player, mover: move_players[i].mover.moveLine})
-        }
-        if (move_players[i].mover.isMoveLine){
-          queued_actions.push({player: move_players[i].player, mover: move_players[i].mover})
-        }
-      }
-      animationStep(next_moves, queued_actions, wait_passer, wait_receivers)
-    }
-
-    function animationStep(next_moves, queued_actions, wait_passer, wait_receivers){
-      // Passer and receiver are both ready
-      if(wait_passer && wait_receivers.length > 0){
-        ///passer and receiver are tethered to the same line
-        var receiver = pass_pair_exists(wait_passer, wait_receivers)
-        console.log("printing receiver!!!")
-        console.log(receiver)
-
-        if(receiver){
-          console.log("receiver exists")
-          // animate base action
-          animateMovements(queued_actions)
-          // if pass is from static player. I.e. no move into a pass
-          if(queued_actions.length == 0){
-            animatePass(wait_passer.player, wait_passer.passLine)
-            if(receiver.mover && receiver.mover.passLine) {
-              console.log("in move receiver");
-              //receiver.passLine = receiver.mover.passLine;
-              console.log(wait_receivers)
-              wait_passer = receiver;
-              console.log(wait_passer)
-            }
-             removeIndex = wait_receivers.map(function(item) { return item.mover.id; }).indexOf(receiver.mover.id);
-            ~removeIndex && wait_receivers.splice(removeIndex, 1);
-            if(wait_receivers.length != 0){
-              setTimeout(function(){
-                animatePlayers(next_moves, wait_passer, wait_receivers)
-              }, animate_time)
-              
-            }
-          }
-          else{
-            setTimeout(function(){
-              animatePass(wait_passer.player, wait_passer.passLine)
-               removeIndex = wait_receivers.map(function(item) { return item.mover.id; }).indexOf(receiver.mover.id);
-            ~removeIndex && wait_receivers.splice(removeIndex, 1);
-              next_moves = exec_simul_pass_moves(next_moves)
-              setTimeout(function(){
-                if(wait_passer.mover && wait_passer.mover.moveLine) next_moves.push({player: wait_passer.player, mover: wait_passer.mover.moveLine});
-                wait_passer = null;
-                if(receiver.mover && receiver.mover.moveLine) next_moves.push({player: receiver.player, mover: receiver.mover.moveLine});
-                if(receiver.mover && receiver.mover.passLine) wait_passer = receiver;
-                animatePlayers(next_moves, wait_passer, wait_receivers)
-              }, animate_time)
-            }, animate_time)
-          }
-        }
-        else{
-          default_animation(queued_actions, next_moves, wait_passer, wait_receivers)
-        }
-      }
-      // Default case. Moves without any pass
-      else if (queued_actions.length > 0){
-        console.log("queued_actions")
-        default_animation(queued_actions, next_moves, wait_passer, wait_receivers)
-      }
-      // Initial case. Movers are really players.
-      else if(next_moves.length > 0 ){
-        console.log("next moves")
-        animatePlayers(next_moves, wait_passer, wait_receivers)
-      }
-    }
-
-    function default_animation(queued_actions, next_moves, wait_passer, wait_receivers){
-      animateMovements(queued_actions)
-          setTimeout(function(){
-            animatePlayers(next_moves, wait_passer, wait_receivers)
-          }, animate_time)
-    }
-
-    function pass_pair_exists(passer, potential_receivers){
-      var len = potential_receivers.length
-      //console.log("passer")
-      //console.log(passer)
-      for(var i = 0; i < len; i++){
-        //console.log("potential_receiver")
-        //console.log(potential_receivers[i].passer.id)
-        if(passer.passLine.id == potential_receivers[i].passer.id){
-          //console.log("match found!!!")
-          return potential_receivers[i]
-        }
-      }
-    }
-
-    function exec_simul_pass_moves(moves, is_calc_time){
-      if(!is_calc_time) animateMovements(moves)
-      var return_moves = []
-      for(var i = 0; i < moves.length; i++){
-        if(moves[i].mover.moveLine){
-          return_moves.push({player: moves[i].player, mover: moves[i].mover.moveLine})
-        }
-      }
-      return return_moves;
-    }
-
-
-    function animateMovements(moves){
-      var len = moves.length
-      for(var i = 0; i < len; i++){
-        animateMovement(moves[i].player, moves[i].mover)
-      }
-    }
-
-
-    function startAnimation(){
-      var wait_passer;
-      var wait_receivers = [];
-      var move_players = [];
-      var max_depth = 0;
-      canvas.getObjects().forEach(function(o) {
-        if (o.type == "PlayerCircle"){
-          populateLines(o)
-          if(o.passLine && o.has_ball){
-            wait_passer = {player: o, mover: o, passLine: o.passLine,};
-          }
-          if(o.passer){
-            wait_receivers.push({player: o, mover: o, passer: o.passer, passLine: o.passLine});
-          }
-          else if(o.moveLine){
-            move_players.push({player: o, mover: o, passer: o.passer, passLine: o.passLine})
-          }
-        }
-      });
-      hideLines()
-      animatePlayers(move_players, wait_passer, wait_receivers)
-      return max_depth;
-    }
-
-    function animateMovement(player, line){
-          
-      var new_left = line.toAnchorPoint.x;
-      var new_top = line.toAnchorPoint.y;
-      
-      player.animate('left', new_left - player.radius, {
-        duration: animate_time,
-        onChange: canvas.renderAll.bind(canvas),
-      });
-      player.animate('top', new_top - player.radius, {
-        duration: animate_time,
-        onChange: canvas.renderAll.bind(canvas),
-      });
-
-      player.text.animate('top', new_top + 2, {
-        duration: animate_time,
-        onChange: canvas.renderAll.bind(canvas),
-      });
-
-      player.text.animate('left', new_left+ 2, {
-        duration: animate_time,
-        onChange: canvas.renderAll.bind(canvas),
-      });
-
-      if(player.has_ball){
-        player.ball.animate('top', new_top- player.radius + player.radius * 1.7, {
-        duration: animate_time,
-        onChange: canvas.renderAll.bind(canvas),
-        });
-
-        player.ball.animate('left', new_left - player.radius + player.radius * 1.7, {
-          duration: animate_time,
-          onChange: canvas.renderAll.bind(canvas),
-        });
-      }
-
-      player.toAnchorPoint.x = new_left
-      player.toAnchorPoint.y = new_top
-  }
-
-  function animatePass(player, line){
-    console.log("in animate pass")
-    console.log(JSON.parse(JSON.stringify(player)))
-    //console.log(line)
-    if(player.has_ball){
-      console.log("player has ball")
-        var new_left = line.toAnchorPoint.x;
-        var new_top = line.toAnchorPoint.y;
-        player.ball.animate('top', new_top, {
-          duration: animate_time,
-          onChange: canvas.renderAll.bind(canvas),
-          });
-
-        player.ball.animate('left', new_left , {
-            duration: animate_time,
-            onChange: canvas.renderAll.bind(canvas),
-        });
-        setTimeout(function(){ 
-          var new_play_w_ball = closestToBall(new_left, new_top)
-          setBallPlayer(new_play_w_ball)
-        }, animate_time);
-    }
-  }
-
-  /*  function animateMovement(player, o){
-      var wait = false;
-      canvas.getObjects().forEach(function(obj) {
-        if (obj.anchorId == o.id && (obj.type == "LineWithArrow" || obj.type == "DribbleLine" || obj.type == "ScreenLine")){
-          
-          var new_left = obj.toAnchorPoint.x;
-          var new_top = obj.toAnchorPoint.y;
-          
-          player.animate('left', new_left - player.radius, {
-            duration: animate_time,
-            onChange: canvas.renderAll.bind(canvas),
-          });
-          player.animate('top', new_top - player.radius, {
-            duration: animate_time,
-            onChange: canvas.renderAll.bind(canvas),
-          });
-
-          player.text.animate('top', new_top + 2, {
-            duration: animate_time,
-            onChange: canvas.renderAll.bind(canvas),
-          });
-
-          player.text.animate('left', new_left+ 2, {
-            duration: animate_time,
-            onChange: canvas.renderAll.bind(canvas),
-          });
-
-          if(player.has_ball){
-            player.ball.animate('top', new_top- player.radius + player.radius * 1.7, {
-            duration: animate_time,
-            onChange: canvas.renderAll.bind(canvas),
-            });
-
-            player.ball.animate('left', new_left - player.radius + player.radius * 1.7, {
-              duration: animate_time,
-              onChange: canvas.renderAll.bind(canvas),
-            });
-          }
-
-          player.toAnchorPoint.x = new_left
-          player.toAnchorPoint.y = new_top
-
-          setTimeout(function(){ 
-            if (o.passLine){
-              animateMovement(player, o.passLine)
-            } 
-            else if (o.moveLine){
-              animateMovement(player, o.moveLine)
-            }
-          }, animate_time);
-          
-        }
-        else if (player.has_ball && obj.anchorId == o.id && (obj.type == "PassLine" )){
-          var new_left = obj.toAnchorPoint.x;
-          var new_top = obj.toAnchorPoint.y;
-          player.ball.animate('top', new_top, {
-            duration: animate_time,
-            onChange: canvas.renderAll.bind(canvas),
-            });
-
-          player.ball.animate('left', new_left , {
-              duration: animate_time,
-              onChange: canvas.renderAll.bind(canvas),
-          });
-          setTimeout(function(){ 
-            var new_play_w_ball = closestToBall(new_left, new_top)
-            setBallPlayer(new_play_w_ball)
-          }, animate_time);
-          
-        }
-    });
-  }*/
-
-  function setBallPlayer(player){
+    function setBallPlayer(player){
       var ball_found = false;
       canvas.getObjects().forEach(function(o) {
             if(o.has_ball && !ball_found){
@@ -808,56 +195,1028 @@
     }
 
 
+    function setBallPos(obj){
+      obj.ball.set({left: obj.left + obj.radius * 1.7, top: obj.top + obj.radius * 1.7})
+      obj.ball.setCoords()
+      canvas.renderAll()
+    }
 
-  function attachBallClosest(){
+    function descendantHasBall(anchor){
+      var type = anchor.get("type")
+      if(validateLine(anchor) || type == "PlayerCircle"){
+        var anchor_id = anchor.id.split("_")[0]
+        canvas.getObjects().forEach(function(o) {
+            if(o.id == anchor_id){
+              if(o.has_ball){
+                return true;
+              }
+            }
+        });
+      }
+      return false;
+    }
 
-  }
-
-  function hideLines(){
-    canvas.getObjects().forEach(function(obj) {
-      if(obj.type == 'LineWithArrow' || obj.type == 'ScreenLine' || obj.type == "DribbleLine" || obj.type == "PassLine"){
-          obj.opacity = 0;
-          if(obj.toAnchor){
-            obj.toAnchor.opacity = 0;
+    function setBall(anchor){
+      var ball_found = false;
+      var editing = false;
+      if(typeof progressions_arr !== 'undefined' && typeof progressions_arr[index] !== 'undefined'){
+        editing = true;
+      }
+      var type = anchor.get("type")
+      var anchor_descendant = getDescendant(anchor)
+      if(anchor_descendant && !anchor_descendant.has_ball){
+        canvas.getObjects().forEach(function(o) {
+          var descendant = getDescendant(o)
+          if(descendant && descendant.has_ball){
+            if(!objectHasPassLine(descendant)){
+              descendant.has_ball = false;
+              anchor_descendant.ball = descendant.ball;
+              setBallPos(anchor_descendant)
+              if (anchor_descendant != descendant){
+                descendant.ball = null;
+              }
+              anchor_descendant.has_ball = true;
+              if(editing) progressions_arr[index].edited = true;
+            }
+            ball_found = true;
           }
-      }   
-    });
-  }
+        });
+        if(!ball_found){
+          var ball = makeBasketball(anchor_descendant.top, anchor_descendant.left, anchor_descendant.radius)
+          anchor_descendant.ball = ball;
+          anchor_descendant.has_ball = true;
+          if(editing) progressions_arr[index].edited = true;
+        }
+      }
+    }
 
-  function removeLine(obj){
-    removeLineRef(obj);
-    canvas.remove(obj.toAnchor);
-    canvas.remove(obj);
-    canvas.renderAll();
-  }
+    function hasBall(button){
+      
+      var anchor = canvas.getActiveObject()
+      if(anchor){
+        setBall(anchor)
+        deselectDrawingButton()
+      }
+      else{
+        highlight_play_button(button)
+        has_ball_selected = true;
+      }
 
-  function removeLines(){
-    canvas.getObjects().forEach(function(obj) {
-      if(obj.type == 'LineWithArrow' || obj.type == 'ScreenLine' || obj.type == "DribbleLine" || obj.type == "PassLine"){
-          removeLine(obj)
-      }   
-    });
+    }
+
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <BALL FUNCTIONS/> **********************************************************/
+    /*********************************************************************************************************************************/
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <ANCHOR FUNCTIONS> *********************************************************/
+    /*********************************************************************************************************************************/
+    function setToAnchor(toAnchorId, line, centerX, centerY){
+      canvas.getObjects().forEach(function(o) {
+            if(o.id == toAnchorId) {
+                o.set({top: centerY, left: centerX});
+                line.toAnchor = o;
+                return o;
+            }
+      });
+    }
+
+    function getToAnchor(toAnchorId, line){
+       canvas.getObjects().forEach(function(o) {
+            if(o.id == toAnchorId && toAnchorId != null) {
+                line.toAnchor = o;
+                return o;
+            }
+      });
+    }
+
+
+    function adjustChildrenAnchors(obj){
+      if(obj.passLine){
+        obj.passLine.set({x1: obj.toAnchorPoint.x, y1: obj.toAnchorPoint.y})
+        rotateAnchor(obj.passLine)
+        obj.passLine.setCoords()
+      }
+      if (obj.moveLine){
+        if(obj.moveLine.get("type") == "MoveLine" || obj.moveLine.get("type") == "ScreenLine"){
+          positionLineFromAnchor(obj.moveLine, obj)
+          checkPassLine(obj.moveLine)
+          adjustChildrenAnchors(obj.moveLine)
+        }
+        else{
+          obj.moveLine.set({x1: obj.toAnchorPoint.x, y1: obj.toAnchorPoint.y})
+          rotateAnchor(obj.moveLine)
+          obj.moveLine.setCoords()
+          checkPassLine(obj.moveLine)
+          adjustChildrenAnchors(obj.moveLine)
+        }
+      }
+    }
+
+    function rotateAnchor(line){
+      var centerX = line.x2 - anchorOffset + (Math.cos(line.anchorAngle) * 10);
+      var centerY = line.y2 - anchorOffset + (Math.sin(line.anchorAngle) * 10);
+      setToAnchor(line.toAnchorId, line, centerX, centerY);
+      line.toAnchorPoint.x = centerX + anchorOffset
+      line.toAnchorPoint.y = centerY + anchorOffset;
+    }
+
+    function positionLine(obj, x, y){
+      obj.toAnchorPoint.x = x + Math.cos(obj.anchorAngle) * 10;
+      obj.toAnchorPoint.y =  y + Math.sin(obj.anchorAngle) * 10;
+      obj.set({x2: x, y2: y})
+      obj.setCoords();
+      rotateAnchor(obj);
+    }
+
+    function updateCurveToAnchor(line){
+      var toAnchorX = line.path[1][3] - anchorOffset + (Math.cos(line.anchorAngle) * 10);
+      var toAnchorY = line.path[1][4] - anchorOffset + (Math.sin(line.anchorAngle) * 10);
+      line.toAnchor.set({left: toAnchorX, top: toAnchorY})
+      line.toAnchorPoint.x = line.path[1][3] + (Math.cos(line.anchorAngle) * 10)
+      line.toAnchorPoint.y = line.path[1][4] + (Math.sin(line.anchorAngle) * 10)
+    }
+
+    function curveLine(obj){
+      var line = obj.line 
+      line.path[1][1] = obj.left 
+      line.path[1][2] = obj.top
+      var slope_line_center = centerOfSlopeLine(line.path[1][1], line.path[1][2], line.path[1][3], line.path[1][4])
+      line.anchorAngle = getAnchorAngle(line.path[1][1], line.path[1][3], line.path[1][2], line.path[1][4])
+      updateEndpointPosition(line, line.anchorAngle)
+      updateCurveToAnchor(line)
+      checkPassLine(line)
+      adjustChildrenAnchors(line)
+      line.points = getPathValues(line.path, 45)
+    }
+
+    function getCurvePointFromLine(line){
+      var curve_point_id = line.id + "_curvePoint";
+      var curve_point;
+      canvas.getObjects().forEach(function(o){
+        if(o.id == curve_point_id){
+          curve_point = o;
+        }
+      });
+      return curve_point;
+    }
+
+    function getSideLength(x1, y1, x2, y2){
+      return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))
+    }
+
+    function updateCurvePoint(curve_point, line, prev_line_coords, new_line_coords){
+      var curve_angle = getAnchorAngle(prev_line_coords.x1, curve_point.left, prev_line_coords.y1, curve_point.top)
+      var old_line_angle = getAnchorAngle(prev_line_coords.x1, prev_line_coords.x2, prev_line_coords.y1, prev_line_coords.y2)
+      var new_line_angle = getAnchorAngle(new_line_coords.x1, new_line_coords.x2, new_line_coords.y1, new_line_coords.y2)
+      var line_angle_diff = new_line_angle - old_line_angle;
+
+      var new_curve_angle = curve_angle + line_angle_diff;
+
+      var curve_side = getSideLength(prev_line_coords.x1, prev_line_coords.y1, curve_point.left, curve_point.top)
+      var side3 = getSideLength(prev_line_coords.x1, prev_line_coords.y1, prev_line_coords.x2, prev_line_coords.y2)
+
+      var new_line_length = getSideLength(new_line_coords.x1, new_line_coords.y1, new_line_coords.x2, new_line_coords.y2);
+      var side_ratio = new_line_length / side3;
+
+      var new_curve_side = curve_side * side_ratio;
+      var new_curve_x = new_curve_side * Math.cos(new_curve_angle) + prev_line_coords.x1
+      var new_curve_y = new_curve_side * Math.sin(new_curve_angle) + prev_line_coords.y1
+      curve_point.set({left: new_curve_x , top: new_curve_y })
+      line.path[1][1] = new_curve_x;
+      line.path[1][2] = new_curve_y;
+      curve_point.setCoords()
+    }
+
+    function adjustCurvedLine(line, obj){
+        line.path[0][1] = obj.toAnchorPoint.x;
+        line.path[0][2] = obj.toAnchorPoint.y;
+        line.anchorAngle = getAnchorAngle(line.path[1][1], line.path[1][3], line.path[1][2], line.path[1][4])
+        updateEndpointPosition(line, line.anchorAngle)
+        var center = centerOfSlopeLine(obj.toAnchorPoint.x, obj.toAnchorPoint.y, line.path[1][3], line.path[1][4]);
+        line.path[1][1] = center.x;
+        line.path[1][2] = center.y;
+        line.points = getPathValues(line.path, 45)
+//line.setCoords()
+    }
+
+    function positionLineFromAnchor(line, obj){
+      var curve_point = getCurvePointFromLine(line)
+      var prev_line_coords = {x1: line.path[1][3], y1: line.path[1][4], x2: line.path[0][1], y2: line.path[0][2]}
+      line.path[0][1] = obj.toAnchorPoint.x;
+      line.path[0][2] = obj.toAnchorPoint.y;
+      var new_line_coords = {x1: line.path[1][3], y1: line.path[1][4], x2: line.path[0][1], y2: line.path[0][2]}
+      updateCurvePoint(curve_point, line, prev_line_coords, new_line_coords)
+      line.anchorAngle = getAnchorAngle(line.path[1][1], line.path[1][3], line.path[1][2], line.path[1][4])
+      updateEndpointPosition(line, line.anchorAngle)
+      updateCurveToAnchor(line)
+      line.points = getPathValues(line.path, 45)
+//line.setCoords()
+    }
+
+
+    function positionLineFromEndpoint(line, new_line_coords){
+      var curve_point = getCurvePointFromLine(line)
+      //var slope_line_center = centerOfSlopeLine(curve_point.left, curve_point.top, new_line_coords.x2, new_line_coords.y2);
+      var prev_line_coords = {x1: line.path[0][1], y1: line.path[0][2], x2: line.path[1][3], y2: line.path[1][4]}
+      
+      line.path[1][3] = new_line_coords.x2
+      line.path[1][4] = new_line_coords.y2
+      updateCurvePoint(curve_point, line, prev_line_coords, new_line_coords)
+      line.anchorAngle = getAnchorAngle(line.path[1][1], new_line_coords.x2, line.path[1][2], new_line_coords.y2)
+      updateEndpointPosition(line, line.anchorAngle)
+      updateCurveToAnchor(line)
+      line.points = getPathValues(line.path, 45)
+      //line.setCoords()
+    }
+
+    function linePositioning(e){
+      var obj = e.target
+      var line = obj.line
+      var x1 = line.path[0][1]
+      var y1 = line.path[0][2]
+      var x2 = obj.left;
+      var y2 = obj.top;
+      line.set({anchorAngle: getAnchorAngle(line.path[1][1], x2, line.path[1][2], y2)})
+      var new_line_x2 = obj.left + anchorOffset - (Math.cos(line.anchorAngle) * 10)
+      var new_line_y2 = obj.top + anchorOffset - (Math.sin(line.anchorAngle) * 10)
+      var new_line_coords = {x1: line.path[0][1], y1: line.path[0][2], x2: new_line_x2, y2: new_line_y2}
+      
+      positionLineFromEndpoint(line, new_line_coords)
+      checkPassLine(line)
+      adjustChildrenAnchors(line)
+      //line.setCoords()
+    }
+
+    function anchorPositioning(e){
+      var obj = e.target;
+      var type = obj.get('type');
+      if(validateLine(obj)){
+          positionLine(obj, canvas.getPointer(e.e).x, canvas.getPointer(e.e).y)
+      }
+      else if (type == "PlayerCircle"){
+          positionPlayer(obj)
+      }
+      else{
+      }
+      checkPassLine(obj)
+      adjustChildrenAnchors(obj); 
+    }
+
+    function clearSelection(){
+      canvas.discardActiveObject();
+      canvas.getObjects().forEach(function(o){
+          if(o.type == "curvePoint" || o.type == "toAnchor"){
+              o.set({opacity: 0})
+          }
+          if(o.type == "PlayerCircle"){
+            o.set({stroke: o.color})
+          }
+      })
+    }
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <ANCHOR FUNCTIONS/> ********************************************************/
+    /*********************************************************************************************************************************/
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <LINE FUNCTIONS> ***********************************************************/
+    /*********************************************************************************************************************************/
+
+
+    function hideLines(){
+      canvas.getObjects().forEach(function(obj) {
+        if(obj.type == 'LineWithArrow' || obj.type == 'ScreenLine' || obj.type == "DribbleLine" || obj.type == "PassLine" || obj.type == "MoveLine"){
+            obj.opacity = 0;
+            if(obj.toAnchor){
+              canvas.remove(obj.toAnchor)
+              //obj.toAnchor.opacity = 0;
+            }
+            if (obj.curvePoint){
+              canvas.remove(obj.curvePoint)
+              //obj.curvePoint.opacity = 0;
+            }
+            if(obj.lineEnd){
+              canvas.remove(obj.lineEnd)
+              //obj.lineEnd.opacity = 0;
+            }
+        }   
+      });
+    }
+
+    function removeLine(obj){
+      removeLineRef(obj);
+      canvas.remove(obj.toAnchor);
+      canvas.remove(obj.curvePoint)
+      canvas.remove(obj);
+      canvas.renderAll();
+    }
+
+    function removeLines(){
+      canvas.getObjects().forEach(function(obj) {
+        if(obj.type == 'ScreenLine' || obj.type == "DribbleLine" || obj.type == "PassLine" || obj.type == "MoveLine"){
+            removeLine(obj)
+        }   
+      });
+    }
+
+    function validateLine(obj){
+      var type = obj.get("type");
+      if (type == 'ScreenLine' || type == "PassLine" || type == "DribbleLine" || type == "MoveLine"){
+        return true;
+      }
+      else{
+        return false;
+      }
+    }
+
+    function validateMoveLine(obj){
+
+    }
+
+
+    function checkPassLine(obj){
+      if(obj.passer){
+        adjustPassLine(obj)
+      }
+      else if (obj.passerId){
+        canvas.getObjects().forEach(function(o) {
+            if(o.id == obj.passLineId) {
+                obj.passer = o;
+                adjustPassLine(obj)
+            }
+        });
+      }
+    }
+
+    function adjustPassLine(obj){
+      var endpoint = findObjectEndpoint(obj)
+      var pass_line_endpoint = findPassLineEndpoint(obj.passer, endpoint, obj.radius)
+      obj.passer.set({x2: pass_line_endpoint.x, y2: pass_line_endpoint.y})
+      obj.passer.setCoords()
+      adjustLineSnap(obj.passer, obj.radius)
+      obj.passer.setCoords()
+      rotateAnchor(obj.passer)
+    }
+
+    function adjustLineAngle(line){
+      var xDiff = line.x2 - line.x1;
+      var yDiff = line.y2 - line.y1;
+      var angle = Math.atan2(yDiff, xDiff);
+      line.set({anchorAngle: angle})
+    }
+
+    function removePassLineRef(line){
+      canvas.getObjects().forEach(function(o){
+        if(o.passerId == line.id){
+          o.set({passerId: null, passer: null})
+        }
+      });
+    }
+    function objectHasPassLine(player){
+      if(player.passLine){
+        return true;
+      }
+      else if (player.moveLine){
+        return objectHasPassLine(player.moveLine)
+      }
+      else{
+        return false;
+      }
+    }
+
+    function populatePasser(obj){
+      canvas.getObjects().forEach(function(o) {
+            if (obj.passerId && o.id == obj.passerId){
+              obj.passer = o
+            }
+        });
+        if (obj.moveLineId){
+              populatePasser(obj.moveLine)
+        }
+    }
+
+    function populatePasserRefs(){
+      canvas.getObjects().forEach(function(o) {
+          if (o.type == "PlayerCircle"){
+            populatePasser(o)
+          }
+        });
+    }
+
+    function setLine (LineId, obj, isMoveLine) {
+        canvas.getObjects().forEach(function(o) {
+            if(o.id == LineId) {
+              if(isMoveLine){
+                 obj.moveLine = o
+              }
+              else{
+                obj.passLine = o; 
+              }
+            }
+
+        });
+    }
+
+    function setLineExtras(line){
+      canvas.getObjects().forEach(function(o) {
+        if (o.id == line.id + "_curvePoint"){
+          line.curvePoint = o;
+          o.line = line
+        }
+        else if (o.id == line.id + "_lineEnd"){
+          line.lineEnd = o;
+          o.line = line
+        }
+        else if (o.id == line.id + "_toAnchor"){
+          line.toAnchor = o;
+          o.line = line;
+        }
+      });
+    }
+
+    function populateLines(obj){
+      if(obj.passLineId){
+        setLine(obj.passLineId, obj, false)
+      }
+      if (obj.moveLineId){
+        setLine(obj.moveLineId, obj, true)
+        setLineExtras(obj.moveLine)
+        populateLines(obj.moveLine)
+      }
+    }
+
+    function updateMoveLines(){
+      canvas.getObjects().forEach(function(o){
+        if(o.type== "MoveLine"){
+          updateDims(o)
+        }
+      });
+      return canvas
+    }
+
+    function updateDims(path) {
+      console.log("in update dims")
+      console.log(path)
+      var dims = path._parseDimensions(),
+          prevDims = path.prevDims || {},
+          leftDiff = dims.left - (prevDims.left || 0),
+          topDiff = dims.top - (prevDims.top || 0);
+      path.set({width: dims.width, height: dims.height});
+
+      if (dims.left < 0) {
+          path.pathOffset.x = path.width/2 + dims.left;
+          path.left = path.left + leftDiff;
+      } else {
+          path.pathOffset.x = path.width/2;
+      }
+
+      if (dims.top < 0) {
+          path.pathOffset.y = path.height/2 + dims.top;
+          path.top = path.top + topDiff;
+      } else {
+           path.pathOffset.y = path.height/2;   
+      }
+
+      path.prevDims = dims;
+      path.left = path.prevDims.left 
+      path.top = path.prevDims.top
+      path.setCoords();
+      console.log(path)
   }
+    /*********************************************************************************************************************************/
+    /**************************************************** <LINE FUNCTIONS/> **********************************************************/
+    /*********************************************************************************************************************************/
+
+
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <PLAYER FUNCTIONS> *********************************************************/
+    /*********************************************************************************************************************************/
+    function add_players(bench, playerRadius){
+
+        var endline_offset = canvas.width *.045;
+
+        makeCircle(0, canvas.height * .15, 'blue', 'off1', '1', false, playerRadius);
+        makeCircle(0, canvas.height * .21, 'blue', 'off2', '2', false, playerRadius);
+        makeCircle(0, canvas.height * .27, 'blue', 'off3', '3', false, playerRadius);
+        makeCircle(0, canvas.height * .33, 'blue', 'off4', '4', false, playerRadius);
+        makeCircle(0, canvas.height * .39, 'blue', 'off5', '5', false, playerRadius);
+
+        makeCircle(0, canvas.height * .61, 'red', 'def1', '1', false, playerRadius);
+        makeCircle(0, canvas.height * .67, 'red', 'def2', '2', false, playerRadius);
+        makeCircle(0, canvas.height * .73, 'red', 'def3', '3', false, playerRadius);
+        makeCircle(0, canvas.height * .79,'red', 'def4', '4', false, playerRadius);
+        makeCircle(0, canvas.height * .85, 'red', 'def5', '5', false, playerRadius);
+    }
+
+    function add_fullcourt_players(bench, playerRadius){
+      makeCircle(canvas.width * .20, bench, 'blue', 'off1', '1', false, playerRadius);
+      makeCircle(canvas.width * .25, bench, 'blue', 'off2', '2', false, playerRadius);
+      makeCircle(canvas.width * .30, bench, 'blue', 'off3', '3', false, playerRadius);
+      makeCircle(canvas.width * .35, bench, 'blue', 'off4', '4', false, playerRadius);
+      makeCircle(canvas.width * .40, bench, 'blue', 'off5', '5', false, playerRadius);
+
+      makeCircle(canvas.width * .50, bench, 'red', 'def1', '1', false, playerRadius);
+      makeCircle(canvas.width * .55, bench, 'red', 'def2', '2', false, playerRadius);
+      makeCircle(canvas.width * .60, bench, 'red', 'def3', '3', false, playerRadius);
+      makeCircle(canvas.width * .65, bench, 'red', 'def4', '4', false, playerRadius);
+      makeCircle(canvas.width * .70, bench, 'red', 'def5', '5', false, playerRadius);
+    }
+
+    
+
+    function positionPlayer(obj){
+      obj.toAnchorPoint.x = obj.left + obj.radius;
+      obj.toAnchorPoint.y = obj.top + obj.radius;
+      obj.text.left = obj.left + obj.radius + 2;
+      obj.text.top = obj.top + obj.radius + 2;
+
+      if(obj.has_ball){
+        obj.ball.left = obj.left + obj.radius * 1.7
+        obj.ball.top = obj.top + obj.radius * 1.7
+      }
+    }
+    /*********************************************************************************************************************************/
+    /**************************************************** <PLAYER FUNCTIONS/> ********************************************************/
+    /*********************************************************************************************************************************/
+
+    
+    
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <ANIMATION FUNCTIONS> *******************************************************/
+    /*********************************************************************************************************************************/
+
+    function startAnimation(){
+      var wait_passer;
+      var wait_receivers = [];
+      var move_players = [];
+      var max_depth = 0;
+      canvas.getObjects().forEach(function(o) {
+        if (o.type == "PlayerCircle"){
+          populateLines(o)
+          if(o.passLine && o.has_ball){
+            wait_passer = {player: o, mover: o, passLine: o.passLine,};
+          }
+          if(o.passer){
+            wait_receivers.push({player: o, mover: o, passer: o.passer, passLine: o.passLine});
+          }
+          // REFERENCE: BEFORE YOU HAD && (!o.passLine && !o.hasBall). You changed it so that you could have movement simulataneous to a pass
+          else if(o.moveLine ){
+            move_players.push({player: o, mover: o, passer: o.passer, passLine: o.passLine})
+          }
+        }
+      });
+      populatePasserRefs()
+      hideLines()
+      animatePlayers(move_players, wait_passer, wait_receivers)
+      return max_depth;
+    }
+
+    function animatePlayers(move_players, wait_passer, wait_receivers){
+        var len = move_players.length
+        var queued_actions = []
+        var next_moves = []
+        for(var i = 0; i < len; i++){
+          if(move_players[i].mover.passer){
+            var new_wait_receiver = move_players[i]
+            new_wait_receiver.passer = move_players[i].mover.passer;
+            wait_receivers.push(new_wait_receiver)
+          }
+          // REFERENCE: Changed to else if because receiver wasn't waiting for pass
+          else if(move_players[i].mover.moveLine){
+            next_moves.push({player: move_players[i].player, mover: move_players[i].mover.moveLine})
+          }
+          if (move_players[i].mover.isMoveLine){
+            queued_actions.push({player: move_players[i].player, mover: move_players[i].mover})
+          }
+          
+        }
+        animationStep(next_moves, queued_actions, wait_passer, wait_receivers)
+      
+    }
+
+    function animationStep(next_moves, queued_actions, wait_passer, wait_receivers){
+      if(wait_passer && wait_receivers.length > 0){
+        var receiver = pass_pair_exists(wait_passer, wait_receivers)
+        if(receiver){
+          if(queued_actions.length == 0){
+            justPassAnimation(receiver, next_moves, wait_passer, wait_receivers)
+          }
+          else{
+            animateMovements(queued_actions)
+            passAndMove(receiver, next_moves, wait_passer, wait_receivers)
+          }
+        }
+        else{
+          default_animation(queued_actions, next_moves, wait_passer, wait_receivers)
+        }
+      }
+      
+      else if (queued_actions.length > 0){
+        default_animation(queued_actions, next_moves, wait_passer, wait_receivers)
+      }
+      
+      else if(next_moves.length > 0 ){
+        animatePlayers(next_moves, wait_passer, wait_receivers)
+      }
+    }
+
+
+    function justPassAnimation(receiver, next_moves, wait_passer, wait_receivers){
+      animatePass(wait_passer.player, wait_passer.passLine)
+      wait_receivers = updateWaitReceivers(next_moves, wait_receivers)
+      removeIndex = wait_receivers.map(function(item) { return item.mover.id; }).indexOf(receiver.mover.id);
+      ~removeIndex && wait_receivers.splice(removeIndex, 1);
+      
+      next_moves = exec_simul_pass_moves(next_moves)
+      // REFERENCE: Remove comment to wait to move after passing
+      // if(wait_passer.mover.moveLine){
+      //     next_moves.push({player: wait_passer.player, mover: wait_passer.mover.moveLine});
+      // } 
+      // think this till wants to be here
+      wait_passer = null;
+      if(receiver.mover.passLine){
+          wait_passer = receiver;
+          wait_passer.passLine = receiver.mover.passLine;
+      } 
+      else if(receiver.mover.moveLine){
+        next_moves.push({player: receiver.player, mover:  receiver.mover.moveLine})
+      }
+      
+      if(wait_receivers.length != 0 || next_moves.length != 0){
+        setTimeout(function(){
+          animatePlayers(next_moves, wait_passer, wait_receivers)
+        }, animate_time)
+      }
+    }
+
+    function passAndMove(receiver, next_moves, wait_passer, wait_receivers){
+      animatePass(wait_passer.player, wait_passer.passLine)
+      setTimeout(function(){
+        removeIndex = wait_receivers.map(function(item) { return item.mover.id; }).indexOf(receiver.mover.id);
+        ~removeIndex && wait_receivers.splice(removeIndex, 1);
+        wait_receivers = updateWaitReceivers(next_moves, wait_receivers)
+
+        //next_moves = exec_simul_pass_moves(next_moves)
+        // if(wait_passer.mover.moveLine){
+        //   next_moves.push({player: wait_passer.player, mover: wait_passer.mover.moveLine});
+        // } 
+        // pass has been executed so set wait passer to null, search for new passers below and during default animation
+        wait_passer = null;
+        if(receiver.mover.passLine){
+          wait_passer = receiver;
+          wait_passer.passLine = receiver.mover.passLine;
+        } 
+        else if(receiver.mover.moveLine) {
+          next_moves.push({player: receiver.player, mover: receiver.mover.moveLine});
+        }
+        animatePlayers(next_moves, wait_passer, wait_receivers)
+      }, animate_time);
+    }
+
+    // Looks for new potential receivers in next action
+    function updateWaitReceivers(move_players, wait_receivers){
+      var len = move_players.length
+      for(var i = 0; i < len; i++){
+        if(move_players[i].mover.passer){
+          var new_wait_receiver = move_players[i]
+          new_wait_receiver.passer = move_players[i].mover.passer;
+          wait_receivers.push(new_wait_receiver)
+        }
+      }
+      return wait_receivers;
+    }
+
+    function exec_simul_pass_moves(moves, is_calc_time){
+      var return_moves = []
+      for(var i = 0; i < moves.length; i++){
+        // if mover is receiving a pass, wait to add to next moves
+        if(moves[i].mover.moveLine && !moves[i].mover.passer){
+          return_moves.push({player: moves[i].player, mover: moves[i].mover.moveLine})
+        }
+      }
+      // if not calculating animation time
+      if(!is_calc_time){
+        animateMovements(moves)
+      } 
+      return return_moves;
+    }
+
+    
+
+    function default_animation(queued_actions, next_moves, wait_passer, wait_receivers){
+      animateMovements(queued_actions)
+      for (var i = 0; i < queued_actions.length; i++){
+        if(queued_actions[i].mover.passLine){
+          wait_passer = queued_actions[i]
+          wait_passer.passLine = queued_actions[i].mover.passLine;
+        }
+      }
+          setTimeout(function(){
+            animatePlayers(next_moves, wait_passer, wait_receivers)
+          }, animate_time)
+    }
+
+    // function initiatePass(move_players, pass_player, maxDepth){
+    //   var max_depth = 0;
+    //   setTimeout(function(){
+    //       animatePass(pass_player.player, pass_player.passLine)
+    //       if(pass_player.moveLine){
+    //         setTimeout(function(){
+    //           queueMovement(pass_player.player, pass_player.moveLine)
+    //         }, animate_time);
+    //       }
+    //   }, animate_time * maxDepth)
+    // }
+
+
+    function pass_pair_exists(passer, potential_receivers){
+      var len = potential_receivers.length
+      for(var i = 0; i < len; i++){
+        if(passer.passLine.id == potential_receivers[i].passer.id){
+          return potential_receivers[i]
+        }
+      }
+    }
+
+    function spliceMoves(moves, obj){
+      removeIndex = moves.map(function(item) { return item.mover.id; }).indexOf(obj.mover.id);
+      ~removeIndex && moves.splice(removeIndex, 1);
+      return moves;
+    }
+
+    function animateMovements(moves){
+      var len = moves.length
+      for(var i = 0; i < len; i++){
+        animateMovement(moves[i].player, moves[i].mover)
+      }
+    }
+
+    function getPathValues(path_arr, samples){
+        var path_val = getPathString(path_arr)
+        var path = document.createElementNS('http://www.w3.org/2000/svg','path');
+        path.setAttribute('d',path_val);
+        var points = [];
+        var len  = path.getTotalLength();
+        var step =len/samples;
+        for (var i=0;i<=len;i+=step){
+          var p = path.getPointAtLength(i);
+          points.push( {x: p.x, y: p.y} );
+        }
+        return points;
+    }
+
+    function animateMovement(player, line){
+      var steps = 45
+      // include the line that separates lines in path.
+      var points = getPathValues(line.path, steps)
+      var i = 0;
+        setInterval(function animate() {
+           i = i +1;
+           if(i >= points.length )
+           {
+            return
+           }
+           player.left = points[i].x - player.radius;
+           player.top = points[i].y - player.radius;
+           player.text.left = points[i].x + 2;
+           player.text.top = points[i].y + 2;
+           if(player.has_ball){
+              player.ball.left = points[i].x - player.radius + player.radius * 1.7;
+              player.ball.top = points[i].y - player.radius + player.radius * 1.7;
+           }
+           player.toAnchorPoint.x = player.left + player.radius;
+           player.toAnchorPoint.y = player.top + player.radius;
+           player.setCoords()
+           canvas.requestRenderAll(player);
+        }, animate_time/steps);
+      
+      //player.setCoords()
+    }
+    
+
+    function animatePass(player, line){
+      if(player.has_ball){
+          player.has_ball = false;
+          var new_left = line.toAnchorPoint.x;
+          var new_top = line.toAnchorPoint.y;
+          player.ball.animate('top', new_top, {
+            duration: animate_time,
+            onChange: canvas.renderAll.bind(canvas),
+            });
+
+          player.ball.animate('left', new_left , {
+              duration: animate_time,
+              onChange: canvas.renderAll.bind(canvas),
+          });
+          setTimeout(function(){ 
+            canvas.remove(player.ball)
+            var new_play_w_ball = closestToBall(new_left, new_top)
+            setBallPlayer(new_play_w_ball)
+          }, animate_time - 10);
+      }
+    }
+
+
+    
+    /*********************************************************************************************************************************/
+    /**************************************************** <ANIMATION FUNCTIONS> *******************************************************/
+    /*********************************************************************************************************************************/
+    
+    /*********************************************************************************************************************************/
+    /**************************************************** <ANIMATION TIME> ***********************************************************/
+    /*********************************************************************************************************************************/
+
+
+    function getAnimationTime(){
+      var max_depth = 0;
+      var pass_player_depth = 0;
+      var wait_passer;
+      var wait_receivers = [];
+      var move_players = [];
+      canvas.getObjects().forEach(function(o) {
+        if (o.type == "PlayerCircle"){
+          if(o.passLine && o.has_ball){
+            wait_passer = {player: o, mover: o, passLine: o.passLine,};
+          }
+          if(o.passer){
+            wait_receivers.push({player: o, mover: o, passer: o.passer, passLine: o.passLine});
+          }
+          else if(o.moveLine){
+            move_players.push({player: o, mover: o, })
+          }
+        }
+      });
+      var time = recurseAnimationTime(move_players, wait_passer, wait_receivers)
+      return time;
+    }
+
+
+    function recurseAnimationTime(move_players, wait_passer, wait_receivers){
+      var len = move_players.length
+      var queued_actions = []
+      var next_moves = []
+      for(var i = 0; i < len; i++){
+        if(move_players[i].mover.passer){
+          var new_wait_receiver = move_players[i]
+          new_wait_receiver.passer = move_players[i].mover.passer;
+          wait_receivers.push(new_wait_receiver)
+        }
+        else if(move_players[i].mover.moveLine){
+          next_moves.push({player: move_players[i].player, mover: move_players[i].mover.moveLine})
+        }
+        if (move_players[i].mover.isMoveLine){
+          queued_actions.push({player: move_players[i].player, mover: move_players[i].mover})
+        }
+      }
+      return animationTimeStep(next_moves, queued_actions, wait_passer, wait_receivers)
+    }
+
+
+    function defaultAnimationTime(next_moves, queued_actions, wait_passer, wait_receivers){
+      var len = queued_actions.length
+      for(var i = 0; i < len; i++){
+        if(queued_actions[i].mover.passLine){
+            wait_passer = queued_actions[i]
+            wait_passer.passLine = queued_actions[i].mover.passLine;
+        }
+      }
+      
+      return 1 + recurseAnimationTime(next_moves, wait_passer, wait_receivers);
+    }
+
+    function animationTimeStep(next_moves, queued_actions, wait_passer, wait_receivers){
+      if(wait_passer && wait_receivers.length > 0){
+        var receiver = pass_pair_exists(wait_passer, wait_receivers)
+        if(receiver){
+          // need to update wait receivers for the case that a simulataneous move is a future receiver
+          wait_receivers = updateWaitReceivers(next_moves, wait_receivers)
+          removeIndex = wait_receivers.map(function(item) { return item.mover.id; }).indexOf(receiver.mover.id);
+          ~removeIndex && wait_receivers.splice(removeIndex, 1);
+          if(queued_actions.length == 0){
+            next_moves = exec_simul_pass_moves(next_moves, true)
+          }
+          // if(wait_passer.mover && wait_passer.mover.moveLine) {
+          //   next_moves.push({player: wait_passer.player, mover: wait_passer.mover.moveLine});
+          // }
+          if(receiver.mover && receiver.mover.moveLine) {
+            next_moves.push({player: receiver.player, mover: receiver.mover.moveLine});
+          }
+          if(receiver.mover && receiver.mover.passLine) {
+            wait_passer = receiver;
+            wait_passer.passLine = receiver.mover.passLine;
+          }
+          else{
+            wait_passer = null;
+          }
+          var len = next_moves.length
+          for(var i = 0; i < len; i++){
+            if(next_moves[i].mover.passLine){
+                wait_passer = next_moves[i]
+                wait_passer.passLine = next_moves[i].mover.passLine;
+            }
+          }
+
+          if(next_moves.length> 0){
+            // console.log("pass and move +1")
+            return 1 + recurseAnimationTime(next_moves, wait_passer, wait_receivers);
+          }
+          else{
+            // console.log("just pass + 1")
+            return 1 + recurseAnimationTime(next_moves, wait_passer, wait_receivers);
+          }
+        }
+        else{
+          // console.log("non reciever + 1")
+          return defaultAnimationTime(next_moves, queued_actions, wait_passer, wait_receivers)
+        }
+      }
+      else if (queued_actions.length > 0){
+        // console.log("queued_actions  +1")
+        return defaultAnimationTime(next_moves, queued_actions, wait_passer, wait_receivers)
+      }
+      else if(next_moves.length > 0 ){
+        // console.log("next moves  +1")
+        return recurseAnimationTime(next_moves, wait_passer, wait_receivers);
+      } 
+      else {
+        // console.log("returning 0")
+        return 0;
+      }
+    }
+
+
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <ANIMATION TIME/> **********************************************************/
+    /*********************************************************************************************************************************/
+
 
     /*********************************************************************************************************************************/
     /**************************************************** <HELPER FUNCTIONS/> ********************************************************/
     /*********************************************************************************************************************************/
+    function getDescendant(anchor){
+      var type = anchor.get("type")
+      var return_object;
+      if(validateLine(anchor) || type == "PlayerCircle" || type == "toAnchor"){
+        var anchor_id = anchor.id.split("_")[0]
+        canvas.getObjects().forEach(function(o) {
+            if(o.id == anchor_id && o.get("type") == "PlayerCircle"){
+              return_object = o;
+            }
+        });
+      }
+      return return_object
+    }
 
+    $(document).mouseup( function(e){
+      var obj = canvas.getActiveObject()
+        if (obj && obj.type == 'PassLine'){
+          snapPassLine(obj)
+          adjustLineAngle(obj)
+          rotateAnchor(obj)
+        }
+    });
 
+    function getMaxDepth(obj){
+      if(!obj.passLine && !obj.moveLine){
+        return 0;
+      }
+      else{
+        if(obj.moveLine){
+          var max_depth = getMaxDepth(obj.moveLine)
+        }
+        if(obj.passLine){
+          var new_depth = getMaxDepth(obj.passLine)
+        }
+        if(new_depth> max_depth) max_depth = new_depth;
+        return max_depth + 1;
+      }
+    }
 
     function deselect_all_active(){
       canvas.getActiveObjects().forEach(function(o) {
         var type = o.get('type');
             if(type == "PlayerCircle"){
+              console.log("deselecting player")
                 o.set({stroke: o.color});
+                o.stroke = o.color;
             } 
             if(validateLine(o)){
               if(!o.toAnchor){
                 getToAnchor(o.toAnchorId, o);
               }
+              if(o.isMoveLine){
+                o.curvePoint.set('opacity', '0')
+              }
               o.toAnchor.set('opacity', '0')
             }
       });
+      canvas.requestRenderAll()
+      console.log(canvas)
     }
 
     $(".progression-notes-text").click(function(){
@@ -868,14 +1227,100 @@
         if(e.keyCode == 46 || e.keyCode == 8) {
             canvas.getActiveObjects().forEach(function(o) {
                 var type = o.get('type');
-                if(type == 'LineWithArrow' || type == 'ScreenLine' || type == "PassLine" || type == "DribbleLine"){
+                if(type == "toAnchor"){
+                  console.log("here")
+                  var line = o.line;
+                  removeLineRef(line)
+                  canvas.remove(o)
+                  canvas.remove(line)
+                  canvas.remove(line.curvePoint)
+                  canvas.remove(line.lineEnd)
+                }
+                if(type == 'LineWithArrow' || type == 'ScreenLine' || type == "PassLine" || type == "DribbleLine" || type == "MoveLine"){
+                  console.log(o)
+                  console.log("here2")
                     removeLineRef(o);
                     canvas.remove(o.toAnchor);
+                    canvas.remove(o.lineEnd)
+                    canvas.remove(o.curvePoint)
                     canvas.remove(o);
-                }   
-        });
+                }  
+                if(type == 'textbox' && !o.isEditing){
+                  canvas.remove(o)
+                } 
+          });
+            canvas.renderAll()
+        }
+        if(e.keyCode == 80){
+          console.log("moving lines")
+          updateMoveLines()
+          canvas.getObjects().forEach(function(o) {
+                
+          });
+          console.log($("#propogate-changes-button").is(':checked'))
         }
     });
+
+    function expandCollapseToolbar(){
+            if($("#tool-bar").width() > 0){
+                $("#tool-bar").width(0)
+                $("#tool-bar").css("visibility", "hidden")
+                $("#expand-wrapper").show()
+                $("#collapse-wrapper").hide()
+                setTimeout(function(){
+                    $("#tool-bar").hide()
+                    $("#drawing-buttons-wrapper").hide()
+                   $("#other-buttons-wrapper").hide()
+                   $(".save-play-wrapper").hide()
+                }, 200)
+                
+            }   
+            else{
+                setTimeout(function(){
+                   $("#tool-bar").css("visibility", "visible")
+                   $("#drawing-buttons-wrapper").show()
+                   $("#other-buttons-wrapper").show()
+                   $(".save-play-wrapper").show()
+                }, 200)
+                $("#tool-bar").show()
+                if($("#tool-bar").hasClass("show-toolbar")){
+                  $("#tool-bar").width(120)
+                }
+                else{
+                  $("#tool-bar").width(180)
+                }
+                
+                $("#expand-wrapper").hide()
+                $("#collapse-wrapper").show()
+            }     
+        }
+
+        function expandToolbar(){
+            if($("#tool-bar").hasClass("show-toolbar")){
+              $("#tool-bar").width(120)
+            }
+              else{
+                $("#tool-bar").width(180)
+            }
+            $("#expand-wrapper").hide()
+            $("#collapse-wrapper").show()
+        }
+
+        function collapseToolbar(){
+            $("#tool-bar").width(0)
+            $("#expand-wrapper").show()
+            $("#collapse-wrapper").hide()
+        }
+
+    /*********************************************************************************************************************************/
+    /**************************************************** <HELPER FUNCTIONS/> ********************************************************/
+    /*********************************************************************************************************************************/
+
+
+
+
+
+  
 
 
 /*

@@ -1,0 +1,3 @@
+This is interesting, this is the way the canvas looks when... I update movelines???
+
+So there is some weird loading from canvas/json thing happening when i save and then jump around. My guess is it has something to do with the index

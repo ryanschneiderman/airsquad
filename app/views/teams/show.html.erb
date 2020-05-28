@@ -1,21 +1,19 @@
-
+<%=render "layouts/small_header"%>
 <div id = "main">
 	<div id = "content-grid">
 		<div id = "col1">
 			<div id = "schedule-info">
-				<div id = "date-info" class = "schedule-info">
 					<%=link_to team_games_path(@team.id) do %>
+					<div id = "date-info" class = "schedule-info">
 						<div id = "date-wrapper">
 							<div class = "day-week"><%=@day_of_week%></div>
 							<div class = "day-date"><%=@day_number%></div>
 							<div class = "month-year"><%=@month_string%> <%=@year%></div>
 						</div>
-					<%end%>
-				</div>
-				<div id = "schedule-event-wrapper" class = "schedule-info">
-					<div id = "schedule-event">
-						
 					</div>
+					<%end%>
+				<div id = "schedule-event-wrapper" class = "schedule-info">
+						<%=render get_schedule_event%>
 				</div>
 			</div>
 			<div id = "feed" class = "full-column">
@@ -24,15 +22,53 @@
 						<%=@current_member.nickname%>:
 					</div>
 					<div class = "new-post-content">
-						<div class = "post-placeholder">What's on your mind...</div>
-						<div class = "new-post" contenteditable="true" role = "textbox"></div>
+						<div class = "post-placeholder" id = "post-placeholder">What's on your mind...</div>
+						<div class = "new-post textbox-nostyle" contenteditable="true" role = "textbox"></div>
 					</div>
 					<div class = "new-post-toolbar">
 						<button class = "send-post send-post-inactive" onclick = "send_post()">Send</button>
 					</div>
 				</div>
 				
-				<div class = "posts"></div>
+				<div class = "posts">
+					<%@post_objs.each do |post_obj|%>
+						<div class = "post-wrapper post" id = '<%=post_obj[:post].post_id%>'>
+							<div class = "author-content">
+								<div class = "post-author"><%=post_obj[:post].nickname%>
+									<span class = "post-ago"><%=time_ago_in_words(post_obj[:post].post_created_at)%></span>
+
+								</div>
+								<div class = "post-content"><%=post_obj[:post].content%></div>
+							</div>
+							<div class = "comment-section">
+								<button class="comment-button" onclick="show_comments(this)">
+									<svg height="20" viewBox="0 0 20 20" width="20"><g>
+									<path class="comment-icon" transform="scale(.01116)" d="M896 384q-204 0-381.5 69.5t-282 187.5-104.5 255q0 112 71.5 213.5t201.5 175.5l87 50-27 96q-24 91-70 172 152-63 275-171l43-38 57 6q69 8 130 8 204 0 381.5-69.5t282-187.5 104.5-255-104.5-255-282-187.5-381.5-69.5zm896 512q0 174-120 321.5t-326 233-450 85.5q-70 0-145-8-198 175-460 242-49 14-114 22h-5q-15 0-27-10.5t-16-27.5v-1q-3-4-.5-12t2-10 4.5-9.5l6-9 7-8.5 8-9q7-8 31-34.5t34.5-38 31-39.5 32.5-51 27-59 26-76q-157-89-247.5-220t-90.5-281q0-174 120-321.5t326-233 450-85.5 450 85.5 326 233 120 321.5z"></path></g></svg>
+									<%if post_obj[:comments].length > 0%>
+										<div class = "num-comments"><%=post_obj[:comments].length%></div>
+									<% end%>
+								</button>
+								
+								<div class = "comments">
+									<div class = "member-comments" id = "member-comments-<%=post_obj[:post].post_id%>">
+										<%post_obj[:comments].each do |comment|%>
+											<div class="comment-wrapper comment" id="<%=comment.comment_id%>">
+												<div class="author-content">
+													<div class="comment-author"><%=comment.nickname%>: </div>
+													<div class="comment-content"><%=comment.content%></div>
+												</div>
+											</div>
+										<%end%>
+									</div>
+									<div class="enter-comment">
+										<div class="post-placeholder" data-post-id="<%=post_obj[:post].post_id%>" id="comment-placeholder-<%=post_obj[:post].post_id%>">Add comment...</div>
+										<div class="textbox-nostyle comment-text" contenteditable="true" data-post-id="<%=post_obj[:post].post_id%>" id="comment-section-<%=post_obj[:post].post_id%>" role="textbox"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					<%end%>
+				</div>
 			</div>
 		</div>
 		<div id = "col2">
@@ -94,63 +130,75 @@
 	</div>
 </div>
 
-
+<%=render "/teams/show_team_js"%>
 <script>
 	var member_to_join; 
 	var curr_button;
 	var posts = []
+	var svg_comment = '<svg height="20" viewBox="0 0 20 20" width="20"><g><path class = "comment-icon" transform="scale(.01116)" d="M896 384q-204 0-381.5 69.5t-282 187.5-104.5 255q0 112 71.5 213.5t201.5 175.5l87 50-27 96q-24 91-70 172 152-63 275-171l43-38 57 6q69 8 130 8 204 0 381.5-69.5t282-187.5 104.5-255-104.5-255-282-187.5-381.5-69.5zm896 512q0 174-120 321.5t-326 233-450 85.5q-70 0-145-8-198 175-460 242-49 14-114 22h-5q-15 0-27-10.5t-16-27.5v-1q-3-4-.5-12t2-10 4.5-9.5l6-9 7-8.5 8-9q7-8 31-34.5t34.5-38 31-39.5 32.5-51 27-59 26-76q-157-89-247.5-220t-90.5-281q0-174 120-321.5t326-233 450-85.5 450 85.5 326 233 120 321.5z"/></g></svg>'
+	var window_height = $(window).height() - $("#header-outer").outerHeight();
+	$("#main").css("margin-top", $("#header-outer").outerHeight() +2);
+	var big_box_height = (window.innerHeight - $(".big-box").offset().top)/2
+
+	$(".posts").height(window.innerHeight - $(".posts").offset().top - 11)
+	$(".big-box").height(big_box_height -5);
+
 	$(".send-post").prop("disabled",true);
-	$("#main").css("margin-top", "65px");
-	//$(".navbar").addClass("navbar-active");
-    //$(".navbar-default a").addClass("navbar-text-active");
-    //$(".home-link").css("border-color", "black");
+	
+
     $('body').on('focus', '[contenteditable]', function() {
 	    const $this = $(this);
 	    $this.data('before', $this.html());
 	}).on('blur keyup paste input', '[contenteditable]', function() {
 	    const $this = $(this);
-	    if ($this.data('before') !== $this.html()) {
-	    	if($(".new-post").is(':empty')){
-		    	$(".post-placeholder").show()
-		    	$(".send-post").addClass("send-post-inactive")
-		    	$(".send-post").prop("disabled",true);
+	    if($this.hasClass("new-post")){
+	    	if ($this.data('before') !== $this.html()) {
+		    	if($(".new-post").is(':empty')){
+			    	$("#post-placeholder").show()
+			    	$(".send-post").addClass("send-post-inactive")
+			    	$(".send-post").prop("disabled",true);
+			    }
+			    else{
+			    	$("#post-placeholder").hide()
+			    	$(".send-post").removeClass("send-post-inactive")
+			    	$(".send-post").prop("disabled",false);
+			    }
+		    	
+		        $this.data('before', $this.html());
+		        $this.trigger('change');
 		    }
-		    else{
-		    	$(".post-placeholder").hide()
-		    	$(".send-post").removeClass("send-post-inactive")
-		    	$(".send-post").prop("disabled",false);
-		    }
-	    	
-	        $this.data('before', $this.html());
-	        $this.trigger('change');
 	    }
+	    else if($this.hasClass("comment-text")){
+	    	var post_id = $this.data("postId")
+	    	if ($this.data('before') !== $this.html()) {
+		    	if($("#comment-section-"+post_id).is(':empty')){
+			    	$("#comment-placeholder-"+post_id).show()
+			    }
+			    else{
+			    	$("#comment-placeholder-"+post_id).hide()
+			    }
+		    	
+		        $this.data('before', $this.html());
+		        $this.trigger('change');
+		    }
+	    }
+	    
 	});
+
+	$('body').on('keypress', '.comment-text', function(event) {
+		  if (event.keyCode === 13) {
+		    submit_comment($(this))
+		    return false;
+		  }
+	})
 
 	$(".new-post").width($(".new-post-wrapper").width() - $(".new-post-author").width() - 30)
-
-    
-    $(document).click(function(){
-    	if($(".new-post").is(':empty')){
-	    	$(".post-placeholder").show()
-	    }
-    })
-    
-
-    $(window).on("scroll", function() {
-       // $(".navbar").addClass("navbar-active");
-       // $(".navbar-default a").addClass("navbar-text-active");
-       // $(".home-link").css("border-color", "black");
-
-	});
-	var window_height = $(window).height() - 80;
-	var big_box_height = (window.innerHeight - $(".big-box").offset().top)/2
-
-	$(".posts").height(window.innerHeight - $(".posts").offset().top - 11)
-	console.log("feed-height: " + (window.innerHeight - $("#feed").offset().top))
-	$(".big-box").height(big_box_height -5);
+	$(".post-ago").each(function(){
+		$(this).text(convert_date_string($(this)))
+	})
 
 	$(window).on("resize", function() {
-    	window_height = $(window).height() - 70;
+    	var window_height = $(window).height() - $("#header-outer").outerHeight();
     	var big_box_height = (window.innerHeight - $(".big-box").offset().top)/2
 	    $(".big-box").height(big_box_height - 5);
 		$(".posts").height(window.innerHeight - $(".posts").offset().top - 11)
@@ -160,133 +208,12 @@
 		$(".modal-overlay").show()
 		$(".new-box").show()
 	}
+   	
 
-	populate_schedule_info()
+	//populate_schedule_info()
 	populate_posts_with_extras()
 	classify_current_member()
 
-	function send_post(){
-		var url = "/teams/"+ <%=params[:id]%> +"/posts/"
-		var data = {content: $(".new-post").text(), team_id: <%=@team.id%>, member_id: <%=@current_member.id%>, author: "<%=@current_member.nickname%>"}
-		$.ajax({
-			url: url, 
-			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-		    type: "post",
-		    data_type: 'json',
-		    data: data,
-			success: function(result){
-		        insert_post(result)
-		    }
-		});
-	}
-
-	function insert_post(result){
-		load_post(result.author, result.content, result.post_id, result.role_id)
-	}
-
-	function load_post(author, content, post_id, role_id){
-		var post_wrapper = "<div class = 'post-wrapper post' id = "+post_id+"></div>"
-		var post_author = "<div class = 'post-author'>"+author + ": </div>"
-		var post_content = "<div class = 'post-content'>"+content + "</div>"
-		var post = $(".posts").prepend($(post_wrapper).append(post_author).append(post_content))
-		classify_post($(post).find("#"+post_id), role_id)
-	}
-
-	function classify_current_member(){
-		classify_post($(".new-post-wrapper"), <%=@curr_member.role_id%>)
-	}
-	function classify_post(post, role_id){
-		var random = Math.floor(Math.random() * 10)
-		var num = random%2 
-		num++;
-		console.log(num)
-		console.log(post)
-		switch(num){
-			case 1:
-				post.addClass("player-post")
-			case 2:
-				post.addClass("coach-post")
-			case 4: 
-				post.addClass("coach-post")
-			case 3:
-		}
-	}
-
-	function populate_posts_with_extras(){
-		<%@posts.each do |post|%>
-				load_post("<%= post.nickname %>", "<%=post.content%>", <%=post.post_id%>, <%=post.role_id%>)
-		<%end%>
-	}
-
-	function populate_schedule_info(){
-		if(<%=@is_game%>){
-			var schedule_event_title = $("<div class = 'schedule-event-title'></div>")
-			var game_title = $("<div class = 'game-title'>GAME</div>")
-			var game_opponent = $("<div class = 'game-opponent'>vs. <%=@opponent_name%></div>")
-			$("#schedule-event").append(schedule_event_title.append(game_title).append(game_opponent))
-			var location_time = $("<div class = 'location-time'></div>")
-			var location = $("<div class = 'schedule-event-info'>Location: <%=@schedule_event_place%></div>")
-			var time_str = parseTime("<%=@schedule_event_time%>")
-			var time = $("<div class = 'schedule-event-info'>Time: "+time_str+"</div>")
-			$("#schedule-event").append(location_time.append(location).append(time))
-		}
-		else if (<%=@is_practice%>){
-			var schedule_event_title = $("<div class = 'schedule-event-title'></div>")
-			var game_title = $("<div class = 'game-title'>Practice</div>")
-			$("#schedule-event").append(schedule_event_title.append(game_title))
-			var location_time = $("<div class = 'location-time'></div>")
-			var location = $("<div class = 'schedule-event-info'>Location: <%=@schedule_event_place%></div>")
-			var time_str = parseTime("<%=@schedule_event_time%>")
-			var time = $("<div class = 'schedule-event-info'>Time: "+time_str+"</div>")
-			$("#schedule-event").append(location_time.append(location).append(time))
-		}
-		else{
-			var schedule_event_title = $("<div class = 'schedule-event-title'></div>")
-			var game_title = $("<div class = 'game-title'>No Practice</div>")
-			$("#schedule-event").append(schedule_event_title.append(game_title))
-		}
-
-	}
-
-	function parseTime(str){
-		var substring = str.substr(str.indexOf(' ')+1); 
-		var military_time = substring.substr(0,substring.indexOf(' '));
-		var length = military_time.length;
-		var seconds_stripped = military_time.substr(0,length - 3);
-		var military_hours = seconds_stripped.substr(0,seconds_stripped.indexOf(":"))
-		var minutes = seconds_stripped.substr(seconds_stripped.indexOf(":")+1)
-		var hours = military_hours % 12;
-		var suffix = (military_hours > 12) ? " PM" : " AM";
-		return hours + ":" + minutes + suffix
-	}
-
-
-	function select_member(button, member_id){
-		member_to_join = member_id;
-		if (button.style.backgroundColor != "#00c1ff"){
-			button.style.backgroundColor = "#00c1ff";
-			button.style.color = "white";
-		}
-		if(curr_button){
-			curr_button.style.backgroundColor = "transparent";
-			curr_button.style.color = "#00efff";
-		}
-		curr_button = button;
-	}
-
-	function submit_join_member(){
-		$.ajax({
-			url: "/teams/" + <%=params[:id]%> + "/join_team/", 
-			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-		    type: "post",
-		    data_type: 'json',
-		    data: {member_id: member_to_join},
-			success: function(result){
-		        $(".modal-overlay").hide()
-				$(".new-box").hide()
-		    }
-		});
-	}
 
 	
 

@@ -11,4 +11,5 @@ class Team < ApplicationRecord
 	has_many :practice_stat_totals
 	has_many :lineups
 	has_many :schedule_events
+	has_many :playlists
 end

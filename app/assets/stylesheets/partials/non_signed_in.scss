@@ -2,9 +2,10 @@
 
 #grey-canvas{
 	background-color: #030d29;
-	display: grid;
-    grid-template-rows: 84vh 8vh 8vh;
+	display: flex;
+	flex-direction: column;
     align-items: center;
+    justify-content: center;
 }
 
 #slogan{
@@ -12,7 +13,4 @@
 	color: white;
 	text-align: center;
 	font-size: 50px;
-	position: relative;
-	bottom: 14vh;
 }
-

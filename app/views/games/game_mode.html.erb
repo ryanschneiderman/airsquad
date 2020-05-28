@@ -26,15 +26,15 @@
 		<div id = "gm-toolbar">
 			<div id = "players_w_stats">
 				<div id = "tb-first-level" class = "flex-horiz tb-container">
-					<div id = "player-buttons" class = "flex-margin-auto tb-elem">
+					<div id = "player-buttons" class = "tb-elem">
 						<div class = "in-game">
-							<div class = "in-game-label">In Game</div>
+							<div id = "players-in-game-label" class = "in-game-label">In Game</div>
 							<div class = "in-game-players"></div>
 						</div>
 						<div id = "player-shot-chart-toggle">
 							<input id = "player-charts-button" type="checkbox" name="player-shot-charts" value="false"> Show Player Shot Charts
 						</div>
-						<div id = "oppenent-label">Opponent</div>
+						<div id = "oppenent-label" class = "in-game-label">Opponent</div>
 						<div id = "opponent"></div>
 						<!--<button id = "voice-rec" onclick = "voice_rec_toggle()"><%= image_tag("microphone.png", :alt => "voice-recognition", :class => "microphone-icon") %></button> -->
 					</div>
@@ -47,8 +47,8 @@
 					</div>
 				</div>
 				<div id = "tb-second-level" class = "flex-horiz tb-container">
-					<div id = "bench" class = "tb-elem">
-						<div id = "bench-label">Bench</div>
+					<div id = "bench">
+						<div id = "bench-label" class = "in-game-label">Bench</div>
 						<div id = "bench-players"></div>
 					</div>
 
@@ -74,12 +74,12 @@
 				</table>
 				<div id = "gm-table-buttons">
 					<button class = "gm-table-button active-table" onclick = "toggle_table(0, this)">Team Totals</button>
-					<button class = "gm-table-button inactive-table" onclick = "toggle_table(1, this)">First Half</button>
-					<button class = "gm-table-button inactive-table" onclick = "toggle_table(2, this)">Second Half</button>
-					<button class = "gm-table-button inactive-table" onclick = "toggle_table(3, this)">Q1</button>
-					<button class = "gm-table-button inactive-table" onclick = "toggle_table(4, this)">Q2</button>
-					<button class = "gm-table-button inactive-table" onclick = "toggle_table(5, this)">Q3</button>
-					<button class = "gm-table-button inactive-table" onclick = "toggle_table(6, this)">Q4</button>
+					<button class = "gm-table-button inactive-table-label" onclick = "toggle_table(1, this)">First Half</button>
+					<button class = "gm-table-button inactive-table-label" onclick = "toggle_table(2, this)">Second Half</button>
+					<button class = "gm-table-button inactive-table-label" onclick = "toggle_table(3, this)">Q1</button>
+					<button class = "gm-table-button inactive-table-label" onclick = "toggle_table(4, this)">Q2</button>
+					<button class = "gm-table-button inactive-table-label" onclick = "toggle_table(5, this)">Q3</button>
+					<button class = "gm-table-button inactive-table-label" onclick = "toggle_table(6, this)">Q4</button>
 				</div>
 				<table class = "gm-stats-table" id = "team-stats-table">	
 				</table>
@@ -99,7 +99,7 @@
 			</div>
 			<div id = "gm-log-wrapper" style = "display: none;">
 				<table class = "gm-log" id = "gm-log">
-					<tr>
+					<tr class = "gm-log-header">
 						<th>Player</th>
 						<th>Stat</th>
 						<th>Timestamp</th>
@@ -179,9 +179,10 @@
 	var curr_aspect_ratio = 0;
 	var update_canvas = false;
 	
-	var scoreboard_height = $("#scoreboard-wrapper").height()
+	var scoreboard_height = $("#scoreboard-wrapper").outerHeight()
 	
 	$("#top-grid").css("min-height", $(window).height() - scoreboard_height);
+	var height_log_tables = $(window).height() - scoreboard_height - 60;
 
 	var max_w = window.matchMedia("(max-device-width : 1024px) ");
 	var min_w = window.matchMedia("(min-device-width : 768px)");
@@ -218,11 +219,11 @@
 
 	var gm_toggle_buttons_height = $("#gm-toggle-buttons").height()
 
-	$("#gm-log-wrapper").height($("#canvas-wrapper").height())
+	$("#gm-log-wrapper").height(height_log_tables)
 
-	$("#gm-stat-tables").height($("#canvas-wrapper").height())
+	$("#gm-stat-tables").height(height_log_tables)
 
-	$("#gm-middle").height($("#canvas-wrapper").height() + gm_toggle_buttons_height)
+	$("#gm-middle").css("min-height", $(window).height() - scoreboard_height)
          
 	});
 	
@@ -262,7 +263,10 @@
 	}); 	
 
     $(window).resize(function(){
-    	$("#top-grid").css("min-height", $("#canvas-wrapper").height());
+    	$("#top-grid").css("min-height", $(window).height() - scoreboard_height);
+    	$("#gm-middle").css("min-height", $(window).height() - scoreboard_height);
+    	$("#gm-log-wrapper").height(height_log_tables);
+		$("#gm-stat-tables").height(height_log_tables);
         canvas_vars.canvas.getObjects().forEach(function(o){
         	switch(o.type){
         		case "MakeSymbol" :

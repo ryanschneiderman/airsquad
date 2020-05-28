@@ -1,0 +1,334 @@
+<script>
+
+	$(".sidebar-link").hover(function(){
+		$(this).find(".sidebar-link-text").addClass("underline")
+	}, function(){
+		if(!$(this).hasClass("sidebar-link-active"))
+		$(this).find(".sidebar-link-text").removeClass("underline")
+	});
+	 $("#plays-index").css("margin-top", $("#header-outer").outerHeight())
+	 $(".plays-index-content-wrapper").css("margin-left", $("#plays-index-sidebar").width())
+	 $("#plays-index-sidebar").css("top", $("#header-outer").outerHeight()-5);
+	 
+
+
+
+
+	 var playlist_plays = []
+	 var play_type;
+	 var play_playlists = []
+
+	 var previous_page;
+	 var curr_page = "home"
+
+	 $(".play-type-select").hover(function(){
+	 	$(this).find(".select-play-type").addClass("play-added")
+	 	$(this).find(".play-type-text").addClass("play-link-name-added")
+	 }, function(){
+	 	$(this).find(".select-play-type").removeClass("play-added")
+	 	$(this).find(".play-type-text").removeClass("play-link-name-added")
+	 })
+
+	function back_to_previous(){
+		switch(previous_page){
+			case "playlists" : 
+				view_playlists();
+				break;
+			case "home" : 
+				plays_home();
+				break;
+			case "all_plays" : 
+				all_plays();
+				break;
+			case "deleted_plays" : 
+				deleted_plays();
+				break;
+		}	
+	}
+
+	function set_delete_button_position(){
+		$(".delete-play").each(function(){
+			$(this).css("left", $(this).parent().width() -22)
+		})
+	}
+
+
+	// TODO: should be a couple more things to add to this re: all_plays page
+	function reset_play_page_info(){
+		reset_playlist_stuff()
+		exit_edit_plays_mode()
+		$(document).scrollTop(0)
+		$(".select-playlist-play-block-full").show()
+		$(".plays-index-content-wrapper").addClass("plays-index-deactivated");
+		$(".sidebar-link").removeClass("sidebar-link-active")
+		$(".sidebar-link-text").removeClass("underline")
+	}
+
+	function deleted_plays(scroll_top){
+		reset_play_page_info()
+	 	$("#deleted-plays-wrapper").removeClass("plays-index-deactivated");;
+	 	$("#deleted-plays-link").addClass("sidebar-link-active")
+	 	$("#deleted-plays-link").find(".sidebar-link-text").addClass("underline")
+	 	previous_page = curr_page;
+	 	curr_page = "deleted_plays"
+	 	setDeletedActionsPos()
+	}
+
+	 function all_plays(scroll_top){
+	 	reset_play_page_info()
+	 	$("#all-plays-wrapper").removeClass("plays-index-deactivated");;
+	 	$("#all-plays-link").addClass("sidebar-link-active")
+	 	$("#all-plays-link").find(".sidebar-link-text").addClass("underline")
+	 	previous_page = curr_page;
+	 	curr_page = "all_plays"
+	 	set_delete_button_position()
+	 }
+
+	 function view_playlists(scroll_top){
+	 	reset_play_page_info()
+	 	$("#view-playlists-wrapper").removeClass("plays-index-deactivated");;
+	 	$("#view-playlists-link").addClass("sidebar-link-active")
+		$("#view-playlists-link").find(".sidebar-link-text").addClass("underline")
+		previous_page = "home";
+		curr_page = "playlists";
+		back_to_playlists_home()
+
+	 }
+
+	 function plays_home(scroll_top){
+	 	reset_play_page_info()
+	 	$("#plays-home-wrapper").removeClass("plays-index-deactivated");
+	 	$("#plays-home-link").addClass("sidebar-link-active")
+		$("#plays-home-link").find(".sidebar-link-text").addClass("underline")
+		previous_page = curr_page;
+		curr_page = "home";
+	 }
+
+	 function add_play_to_playlist(button, playlist_id){
+	 	if(!$(button).hasClass("add-button-selected")){
+	 		$(button).addClass("add-button-selected")
+	 		$(button).find("#green-check").show()
+	 		$(button).find("#plus-icon").hide()
+	 		play_playlists.push(playlist_id)
+	 	}
+	 	else{
+	 		removeIndex = play_playlists.map(function(item) { return item; }).indexOf(playlist_id);
+        	~removeIndex && play_playlists.splice(removeIndex, 1);
+	 		$(button).removeClass("add-button-selected")
+	 		$(button).find("#green-check").hide()
+	 		$(button).find("#plus-icon").show()
+	 	}
+	 }
+
+	 function back_to_play_type_select(){
+	 	$("#select-halfcourt-fullcourt").show();
+	 	$("#play-to-playlist").hide();
+	 	$(".modal-submit-button").prop('disabled', true);
+	 	$(".modal-submit-button").addClass("modal-submit-button-deactivated")
+	 }
+
+	 function select_play_type(curr_play_type){
+	 	// 0 == halfcourt, 1 == fullcourt
+	 	play_type = curr_play_type;
+	 	$("#select-halfcourt-fullcourt").hide()
+	 	$("#play-to-playlist").show()
+	 	$(".modal-submit-button").prop('disabled', false);
+	 	$(".modal-submit-button").removeClass("modal-submit-button-deactivated")
+
+	 }
+
+	 function close_playlist_modal(){
+	 	$("#playlist-name-input").val("New Playlist")
+	 	$(".play-link-name").removeClass("play-link-name-added")
+	 	$(".play-to-playlist-button").removeClass("play-added")
+	 	playlist_plays = []
+	 	$("#playlist-modal-overlay").hide()
+	 	$("#playlist-modal").hide()
+	 }
+
+	 function close_play_modal(){
+	 	$("#playlist-name-input").val("New Play")
+	 	$("#play-modal-overlay").hide()
+	 	$("#play-modal").hide()
+	 }
+
+	 function new_playlist_modal(){
+	 	$("#playlist-modal-overlay").show()
+	 	$("#playlist-modal").show()
+	 	// DOESNT WORK ON SAFARI MOBILE
+	 	$("#playlist-name-input").select();
+	 }
+
+	 function new_play_modal(){
+	 	$("#play-modal-overlay").show()
+	 	$("#play-modal").show()
+	 	// DOESNT WORK ON SAFARI MOBILE
+	 	$("#play-name-input").select();
+	 }
+
+	 function play_to_playlist(play_id, button){
+	 	var img;
+	 	var text;
+	 	if($(button).hasClass("play-to-playlist-button")){
+	 		var text = $(button).parents(".select-playlist-play-block").find(".play-link-name")
+	 		var img = $(button)
+	 	}
+	 	else{
+	 		var text = $(button).find(".play-link-name")
+	 		var img = $(button).parents(".select-playlist-play-block").find(".play-to-playlist-button")
+	 	}
+	 	if(!$(img).hasClass("play-added")){
+	 		playlist_plays.push(play_id)
+	 		$(img).addClass("play-added")
+	 		$(text).addClass("play-link-name-added")
+	 	}
+	 	else{
+	 		removeIndex = playlist_plays.map(function(item) { return item.id; }).indexOf(play_id);
+        	~removeIndex && playlist_plays.splice(removeIndex, 1);
+	 		$(img).removeClass("play-added")
+	 		$(text).removeClass("play-link-name-added")
+	 	}
+	 }
+
+
+	 function insertNewPlaylistIcon(result){
+	 	var playlist_block = '<button class = "playlist-block" id = "playlist-home-block'+result.playlist_id+'"></div>'
+	 	var playlist_imgs = '<div class = "playlist-imgs playlist-style-'+result.color_scheme+'" id = "playlist-imgs-'+result.playlist_id+'"></div>'
+	 	$("#playlists").append($(playlist_block).append($(playlist_imgs).append('<div class = "playlist-link-text">'+result.playlist_name+'</div>')))
+	 }
+
+	 function insertNewPlaylistDom(result){
+	 	var button = '<button class = "playlist-block" id = "playlist-full-block-'+result.playlist_id+'" onclick = "show_playlist_full('+result.playlist_id+')"></button>'
+	 	var playlist_icon = '<div class = "playlist-imgs playlist-style-'+result.color_scheme+'"></div>'
+	 	var playlist_name = '<div class = "playlist-link-text playlist-link-text-'+result.playlist_id+'" >'+result.playlist_name+'</div>'
+	 	$("#all-playlists").append($(button).append($(playlist_icon).append(playlist_name)))
+	 }
+
+
+	 function insertNewPlaylistFull(result){
+	 	var playlist_wrapper = '<div class = "playlist-solo-wrapper playlist-deactivated" id = "playlist-'+result.playlist_id+'"></div>'
+	 	var play_back_wrapper = '<div class = "play-back-wrapper"></div>'
+	 	var back_to_previous = '<button class = "modal-back-button" onclick = "back_to_previous()"></button>'
+	 	var back_object = '<object data="<%=asset_path("back-arrow.svg")%>" type="image/svg+xml" class = "back-arrow-img"></object>'
+	 	var back_image = '<%= image_tag("back-arrow.png", :alt => "back-arrow", :class => "back-arrow-img") %>'
+	 	var playlist_buttons_wrapper = '<div class = "plays-buttons-wrapper"></div>'
+	 	var done_editing = '<button class = "done-button not-editing" onclick = "update_playlist('+result.playlist_id+')"> Done </button>'
+	 	var editing_button = '<button class = "modal-back-button settings-button" id = "playlist-settings-button-'+result.playlist_id+'" onclick = "expand_settings()"></button>'
+	 	var editing_object = '<object data="<%=asset_path("settings.svg")%>" type="image/svg+xml" class = "settings-img"></object>'
+	 	var editing_img = '<%= image_tag("settings.png", :alt => "back-arrow", :class => "settings-img") %>'
+	 	var settings_wrapper = '<div class = "settings-wrapper playlist-settings-wrapper" id = "playlist-settings-wrapper-'+result.playlist_id+'" style = "display: none;"></div>'
+	 	var edit_button = '<button class = "settings-action" onclick = "edit_playlist('+result.playlist_id+')">Edit playlist</button>'
+	 	var delete_button = '<button class = "settings-action" onclick = "delete_playlist()">Delete playlist</button>'
+	 	var playlist_heading = '<div class = "plays-full-heading" id = "playlist-heading-'+result.playlist_id+'" contenteditable="false">'+result.playlist_name+'</div>'
+	 	var add_to_playlist_wrapper = '<div class = "add-to-playlist-wrapper flex-row not-editing"></div>'
+	 	var add_to_playlist_button = '<button class = "add-to-playlist flex-row" onclick = "show_full_playlist_modal()"></button>'
+	 	var add_to_playlist_img = '<%= image_tag("add-filled.png", :alt => "delete-progression", :class => "add-filled-icon") %>'
+	 	var add_to_playlist_text = '<div class = "add-to-playlist-text">Add to Playlist</div>'
+	 	var playlist_block = '<div class = "playlist-solos plays-full" id = "playlist-solo-'+result.playlist_id+'"></div>'
+
+	 	//$("#playlists-full").append('<div class = "playlist-solo-wrapper playlist-deactivated" id = "playlist-'+result.playlist_id+'"></div>')
+	 	$("#playlists-full").append($(playlist_wrapper).append($(play_back_wrapper).append($(back_to_previous).append($(back_object).append(back_image))).append($(playlist_buttons_wrapper).append(done_editing).append($(editing_button).append($(editing_object).append(editing_img)))).append($(settings_wrapper).append(edit_button).append(delete_button))).append(playlist_heading).append($(add_to_playlist_wrapper).append($(add_to_playlist_button).append(add_to_playlist_img).append(add_to_playlist_text))).append(playlist_block))
+
+	 	var len = result.playlist_imgs.length;
+	 	for(var i = 0; i < len; i++){
+	 		var play_image_wrapper = '<div class = "play-image-block-wrapper"></div>'
+	 		var play_image_block = '<div class ="play-image-block flex-row"></div>'
+	 		var button = '<button class= "play-index-image playlist-index-image" id = "play-image-'+result.playlist_imgs[i].play_id+'" data-play-id = '+result.playlist_imgs[i].play_id+'></button>'
+	 		var delete_object = '<object data=<%=asset_path("delete.svg")%> type="image/svg+xml" class = "delete-img delete-play delete-svg not-editing"></object>'
+	 		var delete_img = '<%= image_tag("delete.png", :alt => "delete-progression", :class => "delete-img delete-play") %>	'
+	 		var link = '<a class="play-link" href="/teams/<%=@team_id%>/plays/'+result.playlist_imgs[i].play_id+'/edit"></a>'
+	 		var play_img = '<img alt="play" class="play-img-full playlist" src="'+result.playlist_imgs[i].progression_img+'">'
+	 		var play_link_text = '<div class = "play-link-text"><a href="/teams/<%=@team_id%>/plays/'+result.playlist_imgs[i].play_id+'/edit">'+result.playlist_imgs[i].play_name+'</a></div>'
+	 		$('#playlist-solo-'+result.playlist_id).append($(play_image_wrapper).append($(play_image_block).append($(button).append($(delete_object).append(delete_img)).append($(link).append(play_img)))).append(play_link_text))
+	 	}
+	 	$('.play-link').click(function(e) {
+			if(editing){
+				e.preventDefault();
+			}
+		});
+	 }
+
+	 function insertNewPlaylistPlays(result){
+	 	var len = result.playlist_imgs.length;
+	 	for(var i = 0; i < len; i++){
+	 		var play_image_wrapper = '<div class = "play-image-block-wrapper"></div>'
+	 		var play_image_block = '<div class ="play-image-block flex-row"></div>'
+	 		var button = '<button class= "play-index-image playlist-index-image" id = "play-image-'+result.playlist_imgs[i].play_id+'" data-play-id = '+result.playlist_imgs[i].play_id+'></button>'
+	 		var delete_object = '<object data=<%=asset_path("delete.svg")%> type="image/svg+xml" class = "delete-img delete-play delete-svg not-editing"></object>'
+	 		var delete_img = '<%= image_tag("delete.png", :alt => "delete-progression", :class => "delete-img delete-play") %>	'
+	 		var link = '<a class="play-link" href="/teams/<%=@team_id%>/plays/'+result.playlist_imgs[i].play_id+'/edit"></a>'
+	 		var play_img = '<img alt="play" class="play-img-full playlist" src="'+result.playlist_imgs[i].progression_img+'">'
+	 		var play_link_text = '<div class = "play-link-text"><a href="/teams/<%=@team_id%>/plays/'+result.playlist_imgs[i].play_id+'/edit">'+result.playlist_imgs[i].play_name+'</a></div>'
+	 		$(playlist_block).append($(play_image_wrapper).append($(play_image_block).append($(button).append($(delete_object).append(delete_img)).append($(link).append(play_img)))).append(play_link_text))
+
+			$('.play-link').click(function(e) {
+				if(editing){
+					e.preventDefault();
+				}
+			});
+	 	}
+	 }
+
+	 function insertPlaylist(result){
+	 	//console.log(playlist);
+	 	insertNewPlaylistIcon(result)
+	 	insertNewPlaylistDom(result)
+	 	insertNewPlaylistFull(result)
+
+	 	close_playlist_modal()
+	 	// insert playlist dom
+	 }
+
+	 function go_to_playlist(playlist_id){
+	 	view_playlists()
+	 	show_playlist_full(playlist_id)
+	 }
+
+	 function create_play(){
+	 	console.log(play_playlists)
+	 	var create_url = "/teams/" + <%= @team_id %> +"/plays/new_play";
+	 	$.ajax({
+	      url: create_url,
+	      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+	      method: "post",
+	      async: false,
+	      context: document.body,
+	      data_type: 'json',
+	      data: {playlists: play_playlists, play_name: $("#play-name-input").val(), play_type: play_type},
+
+	     });
+	 }
+
+	 function create_playlist(){
+	 	console.log(playlist_plays)
+	 	var create_url = "/teams/" + <%= @team_id %> +"/playlists";
+	 	
+	 	$.ajax({
+	      url: create_url,
+	      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+	      method: "post",
+	      data_type: 'json',
+	      data: {plays: playlist_plays, playlist_name: $("#playlist-name-input").val()},
+	      success: function(result){
+	      	insertPlaylist(result)
+	      }
+	     });
+	 }
+
+	
+
+	function back_to_playlists_home(){
+		$("#playlist-home-wrapper").show()
+		$(".playlist-solo-wrapper").addClass("playlist-deactivated");
+		//$("#playlist-"+playlist_id).removeClass("playlist-deactivated");
+	}
+
+	function setSettingsPos(playlist_id){
+	 	$("#playlist-settings-wrapper-"+playlist_id).css("top", $("#playlist-settings-button-"+playlist_id).offset().top + $("#playlist-settings-button-"+playlist_id).height() + 5)
+	  	$("#playlist-settings-wrapper-"+playlist_id).css("left", $("#playlist-settings-button-"+playlist_id).offset().left - $("#playlist-settings-wrapper-"+playlist_id).outerWidth() + $("#playlist-settings-button-"+playlist_id).width())
+	 }
+
+
+
+
+</script>

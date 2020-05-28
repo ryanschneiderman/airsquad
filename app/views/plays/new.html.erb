@@ -1,222 +1,285 @@
-<div id = "new-header" style = "margin-top: 60px;"></div>
+<%=render "layouts/small_header"%>
+
 <div id = "tactical-grid">
-    <div id = "tool-bar">
-        <div id = "drawing-buttons">
-          <button id = "run" class = "drawing-button" type = "button" onclick="lineToRun(event)">
-            <div class = "drawing-button-name">RUN</div>
-            <div class = "drawing-button-arrow">
-              <div class="line"></div>
-              <div class="triangle-point"></div>
-            </div>
-          </button>
-          
-          <button id = "pass" class = "drawing-button" type = "button" onclick="lineToPass(event)">
-            <div class = "drawing-button-name">PASS</div>
-            <div class = "drawing-button-arrow">
-              <div class="dotted-line"></div>
-              <div class="triangle-point"></div>
-            </div>
-          </button>
-          
-          <button id = "drive" class = "drawing-button" type = "button" onclick="lineToDribble(event)">
-            <div class = "drawing-button-name">DRIBBLE</div>
-            <div class = "drawing-button-arrow">
-              <div class="zigzag"></div>
-              <div class="triangle-point"></div>
-            </div>
-          </button>
-          
-          <button id = "screen" class = "drawing-button" type = "button" onclick="lineToScreen(event)">
-            <div class = "drawing-button-name">SCREEN</div>
-            <div class = "drawing-button-arrow">
-               <div class="line"></div>
-               <div class="vert-line"></div>
-            </div>
-          </button>  
-          <button id = "has-ball" class = "drawing-button" type = "button" onclick="hasBall()">
-            <div class = "drawing-button-name">Has Ball</div>
-            <%= image_tag("basketball-icon.png", :alt => "basketball", :class => "basketball-icon") %>
-          </button>         
-        </div>
-        <div id = "save-block">
-          <button class = "save-button" type ="button" onclick="save_and_next_progression()"> SAVE AND NEXT </button>
-          <button class = "save-button" type ="button" onclick="save_progression()"> SAVE AND FINISH </button>
+  <div id = "play-scrollbar-wrapper">
+        <!-- RENDER EDIT SCROLLBAR or RENDER NEW SCROLLBAR -->
+        <div class="progression-block-header" ><%=@play_name%></div>
+        <div id = "play-scrollbar">
+            
         </div>
     </div>
-    <canvas id ="c"></canvas>
-    <div id ="progression-notes">
-      <div class = "progression-notes-header">Notes</div>
-      <div class = "progression-notes-text" contenteditable="true" data-text="Enter play description..."></div>
+    <div class = "plays-with-arrows">
+        <div class = "progressions">
+            <canvas id ="c-1" class = "show-canvas"></canvas>
+        </div>
+        <!-- END -->
+    </div>
+    <div id = "toolbar-wrapper">
+        <div id = "expand-collapse" onclick = "expandCollapseToolbar()"> 
+            <div id = "expand-wrapper"style = "display: none;">
+                <button class = "left expand-collapse-arrow" id = "expand-arrow" onclick = "expandCollapseToolbar()"></button>
+            </div>
+            <div id = "collapse-wrapper">
+                <button class = "right expand-collapse-arrow" id = "collapse-arrow" onclick = "expandCollapseToolbar()"></button>
+            </div>
+        </div>
+        <div id = "tool-bar">
+            <div id = "drawing-buttons-wrapper">
+                <div class = "toolbar-heading">Drawing Buttons</div>
+                <div id = "drawing-buttons">
+                  <button id = "run" class = "drawing-button" type = "button" onclick="lineToRun(this)">
+                    <div class = "drawing-button-name">Run</div>
+
+                    <div class = "drawing-button-arrow">
+                          <%= image_tag("white-arrow.png", :alt => "information", :class => "drawing-img") %>
+                    </div>
+                  </button>
+                  
+                  <button id = "pass" class = "drawing-button" type = "button" onclick="lineToPass(this)">
+                    <div class = "drawing-button-name">Pass</div>
+                    <div class = "drawing-button-arrow">
+                      <object data='<%=asset_path("dotted-arrow.svg")%>' type="image/svg+xml" class = "drawing-img">
+                          <%= image_tag("dotted-arrow.png", :alt => "information", :class => "drawing-img") %>
+                      </object>
+                    </div>
+                  </button>
+                  
+                  <button id = "drive" class = "drawing-button" type = "button" onclick="lineToDribble(this)">
+                    <div class = "drawing-button-name">Dribble</div>
+                    <div class = "drawing-button-arrow ">
+                      <div class="line dribble-line"></div>
+                      <div class="triangle-point dribble-triangle"></div>
+                    </div>
+                  </button>
+                  
+                  <button id = "screen" class = "drawing-button" type = "button" onclick="lineToScreen(this)">
+                    <div class = "drawing-button-name">Screen</div>
+                    <div class = "drawing-button-arrow">
+                       <object data='<%=asset_path("screen-line.svg")%>' type="image/svg+xml" class = "drawing-img">
+                          <%= image_tag("screen-line.png", :alt => "information", :class => "drawing-img") %>
+                      </object>
+                    </div>
+                  </button> 
+                  <button id = "has-ball" class = "drawing-button" type = "button" onclick="hasBall(this)">
+                    <div class = "drawing-button-name">Has Ball</div>
+                       <%= image_tag("basketball-icon.png", :alt => "basketball", :class => "basketball-icon") %>
+                  </button>  
+                  <button id = "text-box" class = "drawing-button" type = "button" onclick="textBox(this)">
+                    <div class = "drawing-button-name">Textbox</div>
+                    <div class = "textbox-logo">T</div>
+                  </button>  
+                </div>
+            </div>
+            <div id = "other-buttons-wrapper">
+                <div id = "other-play-buttons">
+                    <button class = "other-button" type ="button" onclick="indexJsonArray(1)">
+                        <div class="tooltiptext">Animate Step</div>
+                        <%= image_tag("animate-icon.png", :alt => "download", :class => "other-button-icon") %>
+                    </button>
+                    <button id = "download" class = "other-button" type = "button" onclick="downloadPlay()">
+                        <div class="tooltiptext">Download Play</div>
+                        <%= image_tag("download-icon.png", :alt => "download", :class => "other-button-icon") %>
+                    </button> 
+                    <button class = "other-button" type ="button" id ="new-progression-button" onclick="new_progression_save()">
+                        <div class="tooltiptext">New Step</div>
+                        <%= image_tag("plus-icon.png", :alt => "download", :class => "other-button-icon") %>
+                    </button>
+                    
+                    <button  class = "other-button" type = "button" onclick="delete_progression()">
+                        <div class="tooltiptext">Delete Step</div>
+                        <%= image_tag("delete-play-icon.png", :alt => "download", :class => "other-button-icon") %>
+                    </button> 
+                </div>
+            </div>
+            <div class = "save-play-wrapper">
+                <div id = "propogate-changes-wrapper">
+                    <input id = "propogate-changes-button" type="checkbox" name="propogate-changes" value="true" checked> Propagate Changes 
+                    <span class = "propogate-icon-wrapper">
+                        <div class="tooltiptext">What is this? <span class = "propogation-more-info-link" onclick = "test_function()">Learn about play propagation here</span>.</div>
+                        <object data='<%=asset_path("information-icon.svg")%>' type="image/svg+xml" class = "propogate-changes-info">
+                          <%= image_tag("information-icon.svg", :alt => "information", :class => "information-icon") %>
+                        </object>
+                    </span>
+                </div>
+                <button class = "save-play-button" type ="button" onclick="save_progression(false)"> SAVE </button>
+            </div>
+        </div>
     </div>
 </div>
+<div id = "save-changes-banner" class = "play-change-banner"><div class = "play-change-text">Play Saved</div>
+    <object data='<%=asset_path("green-check.svg")%>' type="image/svg+xml" class = "changes-saved-check">
+        <%= image_tag("green-check.svg", :alt => "changes-saved", :class => "changes-saved") %>
+</object></div>
 
 
-<div class = "modal-overlay"></div>
-<div class = "GM-modal modal-overlay">
-  <div id = "play-initializer" class = "modal-container">
-    <div id = "GM-init-wrapper" class = "GM-modal-wrapper">
-      <div id = "GM-init-body" class = "GM-modal-body">
-        <div id = "GM-init-header" class = "GM-modal-header">Enter a name for new play</div>
-        <form class = "new-play-name">
-          <input type="text" class = "play-name">
-        </form>
-        <div id = "play-submit-wrapper"><button id = "submit play" class = "create-new-play" onclick = "init_play()">Create Play</button></div>
-      </div>
-      
-    </div>
-  </div>
-</div>
 
-<div class = "new-play-form">
-
-    </div>
 
 <%= render 'games/canvas_js' %>
 <%= render 'progressions/js_objects' %>
 <%= render 'progressions/javascript' %>
+<%= render 'progressions/edit_play_js' %>
+
 
 <script>
-    activate_header();
+    //activate_header();
+    $("#tactical-grid").css("margin-top", $("#header-outer").outerHeight())
+    $("#toolbar-wrapper").css("top", $("#header-outer").outerHeight()-5)
+    $("#play-scrollbar-wrapper").css("top", $("#header-outer").outerHeight()-5)
+    $("#play-scrollbar-wrapper").css("max-height", "89vh")
+    $( window ).resize(function() {
+        //$("#tool-bar").height("height", "100vh")
+        //$("#play-scrollbar-wrapper").css("max-height", "89vh")
+    });
+
+
+
+    $(".new-progression-box").width($(".progression-block").width())
    
     var anchorRadius = 3;
     var anchorOffset = anchorRadius - .5;
     var play_name;
+    var animate_time = 900;
+
+    var curr_line_type = null;
+
+    var progressions_arr = []
+    var endpoint_moves = []
+    var root_moves = []
 
     var line_type;
 
+    var has_ball_selected = false;
+
     var line, isDown, evented;
+
+    var play_type = "<%=@play_type%>";
+    var play_name = "<%=@play_name%>";
+    var play_id;
+    var index = 0;
+    var canvas;
+    var playlist_ids = []
+    <%if @playlists%>
+      <%@playlists.each do |playlist_id|%>
+        playlist_ids.push(<%=playlist_id%>)
+      <%end%>
+    <%end%>
     
 
-    if("<%=@play_type%>" == "Fullcourt"){
-      var canvas_vars = initialize_full_court_canvas(0.7, 0.6, 'c', 3);
-      var canvas = canvas_vars.canvas
+    if(play_type == 2){
+      var canvas_vars = initialize_full_court_canvas(0.7, 0.6, 'c-1', 3);
+      canvas = canvas_vars.canvas
       var playerRadius = canvas.height * .025;
       var bench = playerRadius;
       var endline_offset = canvas_vars.canvas_width * 0.04;
       plotBasket(canvas_vars.canvas_width * 0.03 + endline_offset, canvas_vars.canvas_height/2.07, 7, canvas_vars.canvas_width, canvas_vars.canvas);
       plotBasket(canvas_vars.canvas_width * 0.97 - endline_offset + 1, canvas_vars.canvas_height/2.07, 7, canvas_vars.canvas_width, canvas_vars.canvas);
       add_fullcourt_players(bench, playerRadius);
+      var canvas_json =  JSON.stringify(canvas.toJSON(['id']));
+      progressions_arr.push({"json": canvas_json , "canvas_width" : canvas.width, "id" : null, "notes" : "", "visited" : true, "edited" : true, "play_image":null, canvas: canvas, "index":0})
+      $(".plays-with-arrows").addClass("fullcourt")
+      global_canvas_directions(progressions_arr[0])
     }
     else{
-      var canvas_vars = initialize_canvas(0.6, 0.7, 'c', 3);
-      var canvas = canvas_vars.canvas
-      var playerRadius = canvas.height * .03;
-      var bench = canvas.width - canvas.width * .05;
-      plotBasket(canvas_vars.canvas_width/1.978, canvas_vars.canvas_height/11.5, 14, canvas_vars.canvas_width, canvas_vars.canvas);
+      var canvas_vars = initialize_canvas(0.635, 0.75, 'c-1', 3);
+      canvas = canvas_vars.canvas
+      var playerRadius = canvas.width * .02 *.95;
+      var bench = 0
+      plotBasket(canvas_vars.canvas_width/1.978, canvas_vars.canvas_width/9.5, 14, canvas_vars.canvas_width, canvas_vars.canvas);
       add_players(bench, playerRadius);
+      var canvas_json =  JSON.stringify(canvas.toJSON(['id']));
+      progressions_arr.push({"json": canvas_json , "canvas_width" : canvas.width, "id" : null, "notes" : "", "visited" : true, "edited" : true, "play_image":null, canvas: canvas, "index":0})
+      $(".plays-with-arrows").addClass("halfcourt")
+      global_canvas_directions(progressions_arr[0])
     }
 
 
-
-  canvas.on('object:moving', function (e) {
-            var obj = e.target;
-            if(obj.get("anchorable") == true && obj.added == true){
-              anchorPositioning(e);
-            }
-
-    });
-
   
-
-  canvas.on('selection:created', function() {
-        canvas.getActiveObjects().forEach(function(o) {
-            var type = o.get('type');
-            if(type == "PlayerCircle"){
-                o.lockMovementY = false;
-                o.lockMovementX = false;
-                o.set({stroke: "#91ff30"});
-            }
-            if(validateLine(o)){
-              if(!o.toAnchor){
-                getToAnchor(o.toAnchorId, o);
-              }
-              o.toAnchor.animate('opacity', '1', {
-                duration: 50,
-                onChange: canvas.requestRenderAll.bind(canvas),
-              });
-            } 
-        });
-    });
-
-    canvas.on('before:selection:cleared', function() {
-         canvas.getActiveObjects().forEach(function(o) {
-            var type = o.get('type');
-            if(type == "PlayerCircle"){
-                o.set({stroke: o.color});
-            } 
-            if(validateLine(o)){
-              if(!o.toAnchor){
-                getToAnchor(o.toAnchorId, o);
-              }
-              o.toAnchor.animate('opacity', '0', {
-                duration: 50,
-                onChange: canvas.requestRenderAll.bind(canvas),
-              });
-            }       
-        });
-    });
-
-    canvas.on('selection:updated', function() {
-        canvas.getActiveObjects().forEach(function(o) {
-            var type = o.get('type');
-            if(type == "PlayerCircle"){
-                o.lockMovementY = false;
-                o.lockMovementX = false;
-            }   
-        });
-    });
 
   /*********************************************************************************************************************************/
   /**************************************************** <DOCUMENT ON READY> ********************************************************/
   /*********************************************************************************************************************************/
+
   function init_play(){
     play_name = $(".play-name").val();
     console.log("play_name: " + play_name);
-    $("#new-header").text(play_name);
+    $(".progression-block-header").text(play_name);
     $(".modal-overlay").hide()
-
+    save_progression()
   }
 
-  function save_progression(){
+  function save_progression(new_progression){
   /* get values from elements on the page: */
+    var play_name = $(".progression-block-header").text()
+    progressionUpdatedBanner()
+    updateChangedCanvases(0)
+    deselect_all_active(canvas)
+    canvas.discardActiveObject()
+    canvas.requestRenderAll()
+    // TODO: recheck this.
+    var progr_canvas = loadCanvasFromJson(progressions_arr[0].canvas, progressions_arr[0].json, progressions_arr[0], !progressions_arr[0].visited)
+    //deselect_all_active(progr_canvas)
+    progr_canvas.discardActiveObject()
+    progr_canvas.requestRenderAll()
+    var image = progr_canvas.toDataURL('png')
+   // $("#progression-img-"+i).find(".progression-img").attr('src', image);
+    var edited_json = convertQuotInText(progressions_arr[0].json)
+    progressions_arr[0].json = edited_json;
+    var data = {json_diagram : progressions_arr[0].json, team_id:  <%= @team_id %>, play_image: image, canvas_width: progr_canvas.width, play_name: play_name, play_type: "<%=@play_type%>", playlists: playlist_ids}
+    progressions_arr[0].edited = false;
+    // canvas.discardActiveObject()
+    // canvas.requestRenderAll()
 
-    deselect_all_active()
-    var json_data = JSON.stringify(canvas.toJSON(['id']));
     var play_image = canvas.toDataURL('png')
     var create_url = "/teams/" + <%= @team_id %> +"/plays/";
-    var notes_text = $(".progression-notes-text").html().replace(/\n/g, "<br>");
+    
+
+    var json_data = JSON.stringify(canvas.toJSON(['id']));
+
+    progressions_arr[0].play_image = play_image;
+    progressions_arr[0].json = json_data
+    // canvas = loadCanvasFromJson(progressions_arr[0].canvas, progressions_arr[0].json, progressions_arr[0], !progressions_arr[0].visited)
+
+    // var canvas_json = JSON.stringify(canvas.toJSON(['id',]));
+    // progressions_arr[0].json = canvas_json;
+
+    
+
   /* Send the data using post and put the results in a div */
-  
     $.ajax({
       url: create_url,
       beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
       type: "post",
       data_type: 'json',
-      data: {json_diagram: json_data , team_id:  <%= @team_id %>, canvas_width: canvas.width, notes: notes_text, play_image: play_image, play_name: play_name, offense_defense: <%=@offense_defense%>, play_type: "<%=@play_type%>"}
+      data: {json_diagram: json_data , team_id:  <%= @team_id %>, canvas_width: canvas.width, play_image: play_image, play_name: play_name, play_type: "<%=@play_type%>", playlists: playlist_ids},
+      success: function(result){
+        progressions_arr[0].id = result.progression_id;
+        $("#c-1").attr("id","c-"+result.progression_id);
+        play_id = result.play_id;
+        insertProgressionImage(progressions_arr[0], play_image)
+        highlightPlay(0)
+        global_canvas_directions(progressions_arr[0])
+        $('.save-play-button').attr('onclick', 'update_progression(false)')
+        $('#new-progression-button').attr('onclick', 'new_progression()')
+        if(new_progression){
+          new_progression_ajax(0);
+        }
+      }
     });
-}
+  }
 
-
-function save_and_next_progression(){
-  deselect_all_active()
-  /* get values from elements on the page: */
-    var json_data = JSON.stringify(canvas.toJSON(['id']));
-    var play_image = canvas.toDataURL('png')
-    var create_url = "/teams/" + <%= @team_id %> +"/plays/";
-    var notes_text = $(".progression-notes-text").html().replace(/\n/g, "<br />");
-
-  /* Send the data using post and put the results in a div */
-    $.ajax({
-      url: create_url,
-      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-      type: "post",
-      data_type: 'json',
-      data: {json_diagram: json_data , team_id:  <%= @team_id %>, canvas_width: canvas.width, notes: notes_text, play_image: play_image, play_name: play_name, offense_defense: <%=@offense_defense%>, play_type: "<%=@play_type%>", create_next: true}
-    });
-}
- 
-
+  function new_progression_save(){
+    var progression_index = progressions_arr.length-1;
+    save_progression(true);
+    //var progression_id = new_progression_ajax(progression_index);
+  }
     
 
 
 </script>
+
+<style>
+  body{
+    background-image: url(<%= asset_path('tiled_floor3.png')%>);
+    background-size: cover;
+  }
+</style>

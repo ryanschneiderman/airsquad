@@ -1,0 +1,232 @@
+<script>
+	var editors = $(".not-editing")
+		var curr_playlist;
+		var plays_to_add = [];
+		var settings_open = false;
+		var editing = false;
+		$('#view-playlists-wrapper').click(function(){
+
+		})
+
+		$('.play-link').click(function(e) {
+			if(editing){
+				e.preventDefault();
+			}
+		});
+		function hide_duplicate_plays_in_modal(playlist_id){
+			var curr_playlist_plays = []
+			$("#playlist-" + playlist_id).find(".playlist-index-image").each(function(e){
+				curr_playlist_plays.push($(this).data("play-id"))
+			})
+			$(".select-playlist-play-block-full").each(function(){
+				var play_id = $(this).data("play-id");
+				var len = curr_playlist_plays.length;
+				for(var i = 0; i < len;i++){
+					if(curr_playlist_plays[i] == play_id){
+						$(this).hide()
+						console.log(play_id)
+					}
+				}
+			})
+		}
+		function expandPlaylist(playlist_id){
+			show_playlist_full(playlist_id)
+			previous_page = "playlists";
+		}
+
+		function show_playlist_full(playlist_id){
+
+			$("#view-playlists-wrapper").scrollTop(0)
+			$("#playlist-home-wrapper").hide()
+			$(".playlist-solo-wrapper").addClass("playlist-deactivated");
+			$("#playlist-"+playlist_id).removeClass("playlist-deactivated");
+			setSettingsPos(playlist_id)
+			curr_playlist = playlist_id;
+			hide_duplicate_plays_in_modal(playlist_id)
+			set_delete_button_position()
+		}
+
+		function expand_settings(){
+			$(".playlist-settings-wrapper").show()
+			$('#view-playlists-wrapper').on("mousedown", function(e){
+				console.log(e.target)
+				if(!$(e.target).hasClass("settings-action")){
+					collapse_settings()
+				}
+			})
+		}
+
+		function collapse_settings(){
+			$(".playlist-settings-wrapper").hide()
+			$('#view-playlists-wrapper').off()
+		}
+
+		function edit_playlist(playlist_id){
+			
+			$(".not-editing").addClass("editing")
+			$(".not-editing").removeClass("not-editing")
+			$(".settings-wrapper").hide()
+			$(".settings-button").hide()
+			$(".playlist").addClass("editing-playlist")
+			$(".playlist-index-image").addClass("play-index-editing")
+			$('#playlist-heading-'+playlist_id).attr('contenteditable','true');
+			$('#playlist-heading-'+playlist_id).select();
+			$(".playlist-index-image").each(function(){
+				$(this).attr("onclick", "delete_playlist_play("+$(this).data("play-id")+")")
+			})
+			editing = true;
+		}
+
+		function play_to_playlist_full(play_id, button){
+			var img;
+		 	var text;
+		 	if($(button).hasClass("play-to-playlist-button")){
+		 		var text = $(button).parents(".select-playlist-play-block").find(".play-link-name")
+		 		var img = $(button)
+		 	}
+		 	else{
+		 		var text = $(button).find(".play-link-name")
+		 		var img = $(button).parents(".select-playlist-play-block").find(".play-to-playlist-button")
+		 	}
+		 	if(!$(img).hasClass("play-added")){
+		 		plays_to_add.push(play_id)
+		 		$(img).addClass("play-added")
+		 		$(text).addClass("play-link-name-added")
+		 	}
+		 	else{
+		 		removeIndex = plays_to_add.map(function(item) { return item.id; }).indexOf(play_id);
+	        	~removeIndex && plays_to_add.splice(removeIndex, 1);
+		 		$(img).removeClass("play-added")
+		 		$(text).removeClass("play-link-name-added")
+		 	}
+		}
+
+		function reset_playlist_stuff(){
+			$(".editing").addClass("not-editing")
+			$(".editing").removeClass("editing")
+			$(".settings-button").show()
+			$(".playlist").removeClass("editing-playlist")
+			$(".play-index-image").removeClass("play-index-editing")
+			$('.plays-full-heading').attr('contenteditable','false');
+			$(".new-playlist-play").find(".delete-svg").addClass("not-editing")
+			$(".playlist-index-image").each(function(){
+				$(this).attr("onclick", "")
+			})
+			editing = false;
+		}
+
+		function update_playlist(){
+			reset_playlist_stuff()
+			update_playlist_name()
+		}
+
+		function show_full_playlist_modal(){
+		 	$("#full-playlist-modal").show()
+		 	$("#full-playlist-modal-overlay").show()
+		 }
+
+		function close_full_playlist_modal(){
+		 	$(".play-link-name").removeClass("play-link-name-added")
+		 	$(".play-to-playlist-button").removeClass("play-added")
+		 	plays_to_add = []
+		 	$("#full-playlist-modal-overlay").hide()
+		 	$("#full-playlist-modal").hide()
+		}
+
+		function insert_play_in_playlist_dom(){
+
+		}
+
+		function insertPlaylistInFull(){
+			var len = plays_to_add.length;
+			for(var i = 0 ; i < len; i++){
+
+				var play_div = $("#play-all-"+plays_to_add[i]).clone().addClass("new-playlist-play")
+				play_div.find(".play-index-image").addClass("playlist-index-image play-index-editing").prepend($(".delete-svg").first().clone().addClass("editing"))
+				play_div.find(".play-img-full").addClass("editing-playlist").addClass("playlist")
+				
+				$("#playlist-solo-"+curr_playlist).append(play_div)
+				$(play_div).click(function(e) {
+					if(editing){
+						e.preventDefault();
+					}
+				});
+				$(play_div).find(".play-index-image").attr("onclick", "delete_playlist_play("+$(play_div).data("play-id")+")")
+			}
+			set_delete_button_position()
+		}
+
+		function remove_play_from_playlist_dom(play_id){
+			$("#playlist-solo-"+curr_playlist).find("#play-image-"+play_id).parents(".play-image-block-wrapper").remove()
+			$("#select-playlist-play-block-full-"+play_id).show()
+		}
+
+		function update_playlist_plays(){
+		 	var create_url = "/teams/" + <%= @team_id %> +"/playlists/" + curr_playlist;
+		 	$.ajax({
+		      url: create_url,
+		      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		      method: "patch",
+		      data_type: 'json',
+		      data: {plays: plays_to_add, playlist_id: curr_playlist},
+
+		      success: function(result){
+		      	insertPlaylistInFull()
+		      	close_full_playlist_modal()
+		      	hide_duplicate_plays_in_modal(curr_playlist)
+		      }
+		    });
+		}
+
+		function update_playlist_name(){
+			console.log("updating playlist name")
+			var playlist_name = $("#playlist-heading-"+curr_playlist).text()
+			var create_url = "/teams/" + <%= @team_id %> +"/playlists/" + curr_playlist;
+		 	$.ajax({
+		      url: create_url,
+		      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		      method: "patch",
+		      data_type: 'json',
+		      data: {playlist_name: playlist_name, playlist_id: curr_playlist},
+		      success: function(){
+		      	$(".playlist-link-text-"+curr_playlist).each(function(){
+		      		$(this).text(playlist_name)
+		      	})
+		      }
+		    });
+		}
+
+		function delete_playlist_play(play_id){
+			var create_url = "/teams/" + <%= @team_id %> +"/playlists/" + curr_playlist +"/delete_association";
+		 	$.ajax({
+		      url: create_url,
+		      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		      method: "post",
+		      data_type: 'json',
+		      data: {play_id: play_id, playlist_id: curr_playlist},
+
+		      success: function(result){
+		      	remove_play_from_playlist_dom(play_id)
+		      }
+		    });
+		}
+
+		function delete_playlist(){
+			var create_url = "/teams/" + <%= @team_id %> +"/playlists/" + curr_playlist;
+		 	$.ajax({
+		      url: create_url,
+		      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		      method: "delete",
+		      data_type: 'json',
+		      data: {playlist_id: curr_playlist},
+
+		      success: function(){
+		      	previous_page = "home"
+		      	$("#playlist-full-block-"+curr_playlist).remove()
+		      	$("#playlist-home-block-"+curr_playlist).remove()
+		      	view_playlists()
+		      	
+		      }
+		    });
+		}
+</script>

@@ -32,11 +32,13 @@ class TeamsController < ApplicationController
 		@year = @date.year
 		@is_game = false
 		@is_practice = false
+		@team_id = params[:id]
 
 		@schedule_event = ScheduleEvent.where(date: @date).take
 		if @schedule_event
 			@schedule_event_place = @schedule_event.place
 			@schedule_event_time = @schedule_event.time
+			@schedule_time_parsed = convert_time_readable(@schedule_event_time)
 			@game = Game.where(schedule_event_id: @schedule_event.id).take
 			if @game 
 				@opponent = Opponent.find_by_id(@game.opponent_id)
@@ -55,7 +57,13 @@ class TeamsController < ApplicationController
 			redirect_to root_path 
 		else
 			@post_objs = []
-			@posts = Role.joins(members: [:posts, :assignments]).select("members.*,  posts.id as post_id, posts.created_at as post_created_at, posts.content as content, roles.id as role_id, roles.name as role_name").where("members.team_id" => params[:id], "roles.id" => [1,2]).uniq { |item| item.post_id }.sort_by{|post| post.post_created_at}
+			@posts = Role.joins(members: [:posts, :assignments]).select("members.*,  posts.id as post_id, posts.created_at as post_created_at, posts.content as content, roles.id as role_id, roles.name as role_name").where("members.team_id" => params[:id], "roles.id" => [1,2]).uniq { |item| item.post_id }.sort_by{|post| post.post_id}
+			
+			@posts.each do |post|
+				comments = Role.joins(members: [:comments, :assignments]).select("members.*, comments.id as comment_id, comments.post_id as post_id, comments.created_at as comment_created_at, comments.content as content, roles.id as role_id, roles.name as role_name").where("comments.post_id" => post.post_id, "roles.id" => [1,2]).uniq { |item| item.comment_id }.sort_by{|comment|  comment.comment_created_at}
+				@post_objs.push({post: post, comments: comments})
+			end
+			@post_objs = @post_objs.reverse
 		end			
 	end
 
@@ -184,6 +192,24 @@ class TeamsController < ApplicationController
 
 	def team_params
 		params.require(:team).permit(:name, :username, :password, :primary_color, :secondary_color)                  
+	end
+
+	def convert_time_readable(time)
+
+
+		substring = time.strftime("%I:%M%p")
+		return substring
+=begin
+		substring = time[0, time.index(' ')+1)]
+		military_time = substring.[0,substring.index(' ')]
+		length = military_time.length
+		seconds_stripped = military_time[0,length - 3]
+		military_hours = seconds_stripped[0,seconds_stripped.index(":")]
+		minutes = seconds_stripped[seconds_stripped.index(":")+1)
+		hours = military_hours % 12
+		suffix = (military_hours > 12) ? " PM" : " AM"
+		return hours + ":" + minutes + suffix
+=end
 	end
 
 	def day_of_week(day_int)

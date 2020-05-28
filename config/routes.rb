@@ -11,8 +11,29 @@ Rails.application.routes.draw do
   root to: 'pages#index'
 
   get 'landing' => 'landing#index'
+  get 'about'=> 'pages#about'
+  get 'tutorial' => 'pages#tutorial'
+  get 'product' => 'pages#product'
+  get 'demos' => 'pages#demos'
+  get 'demo1' => 'pages#demo1'
+
+  get 'play_demo' => 'pages#play_demo'
 
   get 'add_team' => 'teams#new'
+
+ # post '/teams/:team_id/plays/new' => "plays#new"
+
+  post '/teams/:team_id/plays/new_play' => "plays#new_play"
+
+  post '/teams/:team_id/plays/:play_id/soft_delete' => "plays#soft_delete"
+  post '/teams/:team_id/plays/:play_id/recover' => "plays#recover"
+  post '/teams/:team_id/plays/delete_all' => "plays#destroy_all"
+  post '/teams/:team_id/plays/recover_all' => "plays#recover_all"
+  patch '/teams/:team_id/plays/:play_id/update_name' => "plays#update_name"
+
+  post '/teams/:team_id/playlists/:playlist/delete_association' => "playlists#delete_association"
+
+  post '/teams/:team_id/plays/:play_id/blank_progression' => 'progressions#blank_progression'
 
   post '/plays/:play_id/progressions/next(.:format)' => 'progressions#create_next'
 
@@ -33,6 +54,10 @@ Rails.application.routes.draw do
   post '/teams/:team_id/lineup_explorer' => "teams#create_lineup"
 
   post '/teams/:team_id/settings(.:format)' => "settings#update"
+
+  get 'test_home' => 'pages#test_home'
+
+  post '/teams/:team_id/posts/:post_id/comment(.:format)' => "posts#create_comment"
 
   get '/bezier' => "games#bezier" 
 
@@ -114,6 +139,8 @@ Rails.application.routes.draw do
     resources :lineups do 
     end
     resources :settings do
+    end
+    resources :playlists do 
     end
   end
 

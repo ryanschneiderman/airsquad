@@ -21,7 +21,6 @@ respond_to :html, :xml, :json
 
 	def create_comment
 		@comment = Comment.new(
-			title: params[:title],
 			content: params[:content],
 			member_id: params[:member_id],
 			post_id: params[:post_id]

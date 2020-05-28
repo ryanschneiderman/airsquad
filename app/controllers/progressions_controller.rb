@@ -25,6 +25,24 @@ class ProgressionsController < ApplicationController
 		end
 	end
 
+	def blank_progression
+		play = Play.find_by_id(params[:progression][:play_id])
+		puts "play id"
+		puts params[:progression][:play_id]
+		team_id = params[:progression][:team_id]
+		play.num_progressions = play.num_progressions + 1
+		play.save
+		play_name = play.name
+		member = Member.where(user_id: current_user.id, team_id: team_id).take
+
+		progression = Progression.new(
+			index: params[:progression][:index].to_i, 
+			play_id: params[:play_id], 
+		)
+		progression.save
+		render :json => {id: progression.id}
+	end
+
 	def create
 		play = Play.find_by_id(params[:progression][:play_id])
 		team_id = params[:progression][:team_id]
@@ -289,7 +307,6 @@ class ProgressionsController < ApplicationController
 			progression.save
 		end
 		progression.destroy
-		redirect_to edit_team_play_path(team_id, play.id)
 	end
 
 	private

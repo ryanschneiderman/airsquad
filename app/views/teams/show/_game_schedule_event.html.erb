@@ -1,0 +1,12 @@
+<%= link_to team_game_path(@team.id, @game.id) do %>
+	<div id = "schedule-event">
+		<div class = "schedule-event-title">
+			<div class = 'game-title'>GAME</div>
+			<div class = 'game-opponent'>vs. <%=@opponent_name%></div>
+		</div>
+		<div class = "location-time">
+			<div class = 'schedule-event-info'>Location: <%=@schedule_event_place%></div>
+			<div class = 'schedule-event-info'>Time: <%=@schedule_time_parsed%></div>
+		</div>
+	</div>
+<%end %>

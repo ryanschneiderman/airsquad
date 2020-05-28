@@ -17,8 +17,9 @@ a:hover{
 .post-placeholder{
 	position: absolute;
 	z-index: 1;
-	color: grey;
+	color: #5e637d;
 }
+
 #schedule-info{
 	display: grid;
     grid-template-columns: 2fr 3fr;
@@ -48,14 +49,17 @@ a:hover{
 	justify-content: flex-end;
 }
 
+.textbox-nostyle{
+	outline: none;
+	user-select: text;
+	overflow-wrap: break-word;
+	z-index: 5;
+}
+
 .new-post{
 	position: relative;
-	outline: none;
-    user-select: text;
-    overflow-wrap: break-word;
     text-align: left;
     color: white;
-    z-index: 5;
     width: 300px;
 }
 
@@ -64,12 +68,12 @@ a:hover{
 }
 
 .post-author{
-	float: left;
+	font-weight: bold;
+	font-size: 15px;
 }
 
 .post-content{
 	display: inline-block;
-	margin-left: 10px;
 }
 
 .new-post-content{
@@ -82,17 +86,10 @@ a:hover{
     text-align: left;
 }
 
-.new-post-wrapper{
-	margin-bottom: 10px;
-	border: 1px solid #bbb9b9;
-    border-radius: 10px;
-    box-shadow: 0px 0px 8px #bbb9b9;
-}
-
 .posts{
 	padding-top: 5px;
 	margin-top: 10px;
-	border-top: 1px solid grey;
+	border-top: 1px solid #5e637d;
 	height: 450px;
 	overflow: scroll;
 	margin-right: -8px;
@@ -128,8 +125,79 @@ a:hover{
 	text-align: center;
 }
 
+.author-content{
+	padding-right: 15px;
+	padding-left: 15px;
+	padding-bottom: 10px;
+}
+
 .post{
 	border-radius: 10px;
+	padding-top: 15px;
+	padding-bottom: 5px;
+}
+
+.post-ago{
+	font-weight: normal;
+    color: #5e637d;
+}
+
+.num-comments{
+	width: 20px;
+    font-size: 14px;
+    color: #5e637d;
+}
+
+.comment-section{
+	position: relative;
+	border-top: 1px solid #5e637d;
+	padding-left: 15px;
+	padding-right: 15px;
+	padding-top: 5px;
+	font-size: 13px;
+}
+.comments{
+	display: none;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.comment-author{
+	font-weight: bold;
+	display: inline-block;
+}
+.comment-content{
+	display: inline-block;
+}
+
+.enter-comment{
+	border: 1px solid #5e637d;
+    border-radius: 10px;
+	position: relative;
+	padding: 7px;
+}
+
+.comment-text{
+	position: relative;
+}
+
+.comment-button{
+	display: flex;
+	align-items: flex-end;
+	margin-left: 30px;
+	border: none;
+	margin-bottom: 5px;
+}
+
+.comment-icon{
+	fill: #5e637d;
+}
+
+.new-post-wrapper{
+	margin-bottom: 10px;
+	border: 1px solid #bbb9b9;
+    border-radius: 10px;
+    box-shadow: 0px 0px 8px #bbb9b9;
     padding: 15px;
 }
 
@@ -173,18 +241,14 @@ a:hover{
 	padding-left: 15px;
 	padding-top: 10px;
 	padding-bottom: 15px;
-	border-top-left-radius: 8px;
-	border-bottom-left-radius: 8px;
+	border-top-left-radius: 9px;
+	border-bottom-left-radius: 9px;
 }
 
 .schedule-info:hover{
 	background-color: #303550;
 }
 
-.schedule-event-wrapper{
-	border-top-right-radius: 8px;
-	border-bottom-right-radius: 8px;
-}
 
 
 #date-toggle-wrapper{
@@ -201,6 +265,8 @@ a:hover{
 	flex-direction: column;
 	width: 100%;
     border-left: 1px solid #5e637d;
+    border-top-right-radius: 9px;
+    border-bottom-right-radius: 9px;
 }
 
 #schedule-event-info{

@@ -17,9 +17,9 @@ gem 'jquery-rails'
 gem 'devise'
 gem 'bootstrap_form'
 
-gem 'will_paginate', '~> 3.0.5'
+#gem 'will_paginate', '~> 3.0.5'
 gem 'betterlorem', '~> 0.1.2'
-gem 'bootstrap-will_paginate', '~> 0.0.10'
+#gem 'bootstrap-will_paginate', '~> 0.0.10'
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'

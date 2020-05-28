@@ -3,15 +3,14 @@
 }
 
 #sprite{
-	width: 100vw; height: 100vh;
-	transform: scale(.55);
-	position: relative;
-	top: -30px;
+	width: 800px; 
+	height: 600px;
+	/*transform: scale(.55);*/
+	/*top: -30px;*/
 }
 
 
 #portal{
-	position: relative;
 	justify-content: center;
 	display: flex;
 	bottom: 10vh;
@@ -19,25 +18,23 @@
 }
 
 .portal-button{
-	width: 275px;
-    padding-top: 15px;
-    padding-bottom: 15px;
+	width: 150px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     border-radius: 30px;
     font-size: 16px;
-    margin-right: 50px;
-    margin-left: 50px;
     font-weight: 600;
     font-family: system-ui;
     letter-spacing: 1px;
 }
 
 #join-team-button{
-	border: 1px solid #ff2b6d;
+	border: 1px solid #ff6c40;
 	color: white;
 }
 
 #create-team-button{
-	background-color: #ff2b6d;
+	background-color: #ff6c40;
 	color: white;
 }
 

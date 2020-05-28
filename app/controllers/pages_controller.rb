@@ -1,6 +1,6 @@
 
 class PagesController < ApplicationController
-	skip_before_action :authenticate_user!, only: [:index]
+	skip_before_action :authenticate_user!, only: [:index, :about, :tutorial, :test_home, :product, :demo1, :play_demo]
 	def index
 		if user_signed_in?
 			##dont use string sql
@@ -15,6 +15,27 @@ class PagesController < ApplicationController
 				redirect_to team_path(@teams[0].id)
 			end
 		end	
+  end
+
+  def about
+  end
+
+  def tutorial
+  end
+
+  def product
+  end
+
+  def test_home
+  end
+
+  def demos
+  end
+
+  def demo1
+  end
+
+  def play_demo
   end
 
 end

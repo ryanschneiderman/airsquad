@@ -16,6 +16,7 @@
               hasBorders: false,
               evented: false,
               perPixelTargetFind: true,
+              fill: "transparent"
             });
         },
 
@@ -44,7 +45,6 @@
         top: basket_top,
         strokeWidth: 2,
         radius: r,
-        fill: "white",
         stroke: "black",
         canvas_width: canvas_width,
       });
@@ -56,11 +56,10 @@
         return fabric.Object._fromObject('Basket', object, callback);
     };
 
-    /**************************************************** <LINE WITH ARROW> **********************************************************/
 
-      fabric.LineWithArrow = fabric.util.createClass(fabric.Line, {
-      type: 'LineWithArrow',
-
+    /**************************************************** <CURVED LINE> **************************************************************/
+    fabric.MoveLine = fabric.util.createClass(fabric.Path, {
+      type: "MoveLine",
       initialize(element, options) {
         options || (options = {});
         this.callSuper('initialize', element, options);
@@ -69,9 +68,9 @@
         this.set({
           id:   this.id,
           hasControls: false,
-          selectable: true,
+          selectable: false,
           hasBorders: false,
-          evented: true,
+          evented: false,
           perPixelTargetFind: true,
           anchorable: true,
         });
@@ -79,22 +78,10 @@
 
       _render(ctx) {
         this.callSuper('_render', ctx);
-        ctx.save();
-        const xDiff = this.x2 - this.x1;
-        const yDiff = this.y2 - this.y1;
-        const angle = Math.atan2(yDiff, xDiff);
-        ctx.translate((this.x2 - this.x1) / 2, (this.y2 - this.y1) / 2);
-        ctx.rotate(angle);
-        this.anchorAngle = angle;
-        ctx.beginPath();
-        // Move 5px in front of line to start the arrow so it does not have the square line end showing in front (0,0)
-        ctx.moveTo(5, 0);
-        ctx.lineTo(-5, 5);
-        ctx.lineTo(-5, -5);
-        ctx.closePath();
-        ctx.fillStyle = this.stroke;
-        ctx.fill();
-        ctx.restore();
+         const xDiff = this.path[1][3] - this.path[0][1];
+         const yDiff = this.path[1][4] - this.path[0][2];
+         const angle = Math.atan2(yDiff, xDiff);
+         this.anchorAngle = angle;
       },
 
       toObject() {
@@ -114,14 +101,16 @@
           perPixelTargetFind: this.perPixelTargetFind,
           padding: this.padding,
           objectCaching: this.objectCaching,
-          x1: this.x1,
-          x2: this.x2,
-          y1: this.y1,
-          y2: this.y2,
+          path: this.path,
           isMoveLine: this.isMoveLine,
           moveLineId: this.moveLineId,
           passLineId: this.passLineId,
           passerId: this.passerId,
+          lineEndId: this.lineEnd.id,
+          // height: this.height,
+          // width: this.width,
+          // pathOffset: this.pathOffset,
+          // prevDims: this.prevDims,
         });
 
       },
@@ -129,9 +118,89 @@
 
     });
 
-    fabric.LineWithArrow.fromObject = function(object, callback) {
-      callback && callback(new fabric.LineWithArrow([object.x1, object.y1, object.x2, object.y2], object));
-    };
+     fabric.MoveLine.fromObject = function(object, callback) {
+       callback && callback(new fabric.MoveLine(getPathString(object.path), object));
+     };
+
+    /**************************************************** <CURVED LINE/> *************************************************************/
+
+    /**************************************************** <LINE WITH ARROW> **********************************************************/
+
+    //   fabric.LineWithArrow = fabric.util.createClass(fabric.Line, {
+    //   type: 'LineWithArrow',
+
+    //   initialize(element, options) {
+    //     console.log("initializing")
+    //     options || (options = {});
+    //     this.callSuper('initialize', element, options);
+
+    //     // Set default options
+    //     this.set({
+    //       id:   this.id,
+    //       hasControls: false,
+    //       selectable: true,
+    //       hasBorders: false,
+    //       evented: true,
+    //       perPixelTargetFind: true,
+    //       anchorable: true,
+    //     });
+    //   },
+
+    //   _render(ctx) {
+    //     this.callSuper('_render', ctx);
+    //     ctx.save();
+    //     const xDiff = this.x2 - this.x1;
+    //     const yDiff = this.y2 - this.y1;
+    //     const angle = Math.atan2(yDiff, xDiff);
+    //     ctx.translate((this.x2 - this.x1) / 2, (this.y2 - this.y1) / 2);
+    //     ctx.rotate(angle);
+    //     this.anchorAngle = angle;
+    //     ctx.beginPath();
+    //     // Move 5px in front of line to start the arrow so it does not have the square line end showing in front (0,0)
+    //     ctx.moveTo(5, 0);
+    //     ctx.lineTo(-5, 5);
+    //     ctx.lineTo(-5, -5);
+    //     ctx.closePath();
+    //     ctx.fillStyle = this.stroke;
+    //     ctx.fill();
+    //     ctx.restore();
+    //   },
+
+    //   toObject() {
+    //     return fabric.util.object.extend(this.callSuper('toObject'), {
+    //       id: this.id,
+    //       customProps: this.customProps,
+    //       anchorAngle: this.anchorAngle,
+    //       color: this.color,
+    //       toAnchorPoint: this.toAnchorPoint,
+    //       anchorable: this.anchorable,
+    //       anchorId: this.anchorId,
+    //       toAnchorId: this.toAnchorId,
+    //       hasControls: this.hasControls,
+    //       selectable: this.selectable,
+    //       hasBorders: this.hasBorders,
+    //       evented: this.evented,
+    //       perPixelTargetFind: this.perPixelTargetFind,
+    //       padding: this.padding,
+    //       objectCaching: this.objectCaching,
+    //       x1: this.x1,
+    //       x2: this.x2,
+    //       y1: this.y1,
+    //       y2: this.y2,
+    //       isMoveLine: this.isMoveLine,
+    //       moveLineId: this.moveLineId,
+    //       passLineId: this.passLineId,
+    //       passerId: this.passerId,
+    //     });
+
+    //   },
+
+
+    // });
+
+    // fabric.LineWithArrow.fromObject = function(object, callback) {
+    //   callback && callback(new fabric.LineWithArrow([object.x1, object.y1, object.x2, object.y2], object));
+    // };
 
 
 
@@ -306,124 +375,122 @@
 
     /************************************************************ <DRIBBLE LINE> ******************************************************/
 
-    fabric.DribbleLine = fabric.util.createClass(fabric.Line, {
-      type: 'DribbleLine',
+    // fabric.DribbleLine = fabric.util.createClass(fabric.Line, {
+    //   type: 'DribbleLine',
 
-      initialize(element, options) {
-        options || (options = {});
-        this.callSuper('initialize', element, options);
+    //   initialize(element, options) {
+    //     options || (options = {});
+    //     this.callSuper('initialize', element, options);
 
-        // Set default options
-        this.set({
-          id:   this.id,
-          hasControls: false,
-          hasBorders: false,
-          selectable: true,
-          evented: true,
-          perPixelTargetFind: true,
-        });
-      },
+    //     // Set default options
+    //     this.set({
+    //       id:   this.id,
+    //       hasControls: false,
+    //       hasBorders: false,
+    //       selectable: true,
+    //       evented: true,
+    //       perPixelTargetFind: true,
+    //     });
+    //   },
 
-      _render(ctx) {
-        //this.callSuper('_render', ctx);
-        ctx.save();
-      const xDiff = this.x2 - this.x1;
-      const yDiff = this.y2 - this.y1;
-      const angle = Math.atan2(yDiff, xDiff);
-      ctx.translate(xDiff / 2, yDiff / 2);
-      ctx.rotate(angle);
-      this.anchorAngle = angle;
-      ctx.beginPath();
-      // Move 5px in front of line to start the arrow so it does not have the square line end showing in front (0,0)
-      ctx.moveTo(3, 0);
-      ctx.lineTo(-3, 3);
-      ctx.lineTo(-3, -3);
-      ctx.closePath();
-      ctx.fillStyle = this.stroke;
-      ctx.fill();
-      ctx.restore();
-      var p = this.calcLinePoints();
-      var point = this.pointOnLine(this.point(p.x2, p.y2), this.point(p.x1, p.y1), 10)
-      this.wavy(this.point(p.x1, p.y1), point, this.point(p.x2, p.y2), ctx);
-      ctx.stroke();
-      },
-
-
+    //   _render(ctx) {
+    //     //this.callSuper('_render', ctx);
+    //     ctx.save();
+    //   const xDiff = this.x2 - this.x1;
+    //   const yDiff = this.y2 - this.y1;
+    //   const angle = Math.atan2(yDiff, xDiff);
+    //   ctx.translate(xDiff / 2, yDiff / 2);
+    //   ctx.rotate(angle);
+    //   this.anchorAngle = angle;
+    //   ctx.beginPath();
+    //   // Move 5px in front of line to start the arrow so it does not have the square line end showing in front (0,0)
+    //   ctx.moveTo(3, 0);
+    //   ctx.lineTo(-3, 3);
+    //   ctx.lineTo(-3, -3);
+    //   ctx.closePath();
+    //   ctx.fillStyle = this.stroke;
+    //   ctx.fill();
+    //   ctx.restore();
+    //   var p = this.calcLinePoints();
+    //   var point = this.pointOnLine(this.point(p.x2, p.y2), this.point(p.x1, p.y1), 10)
+    //   this.wavy(this.point(p.x1, p.y1), point, this.point(p.x2, p.y2), ctx);
+    //   ctx.stroke();
+    //   },
 
 
-      point: function(x, y) {
-          return {
-            x: x,
-            y: y
-          };
-      },
+    //   point: function(x, y) {
+    //       return {
+    //         x: x,
+    //         y: y
+    //       };
+    //   },
 
-      wavy: function(from, to, endPoint, ctx) {
-          var cx = 0,
-            cy = 0,
-            fx = from.x,
-            fy = from.y,
-            tx = to.x,
-            ty = to.y,
-            i = 0,
-            step = 2,
-            waveOffsetLength = 0,
+    //   wavy: function(from, to, endPoint, ctx) {
+    //       var cx = 0,
+    //         cy = 0,
+    //         fx = from.x,
+    //         fy = from.y,
+    //         tx = to.x,
+    //         ty = to.y,
+    //         i = 0,
+    //         step = 2,
+    //         waveOffsetLength = 0,
 
-            ang = Math.atan2(ty - fy, tx - fx),
-            distance = Math.sqrt((fx - tx) * (fx - tx) + (fy - ty) * (fy - ty)),
-            amplitude = -10
-            f = distance / 4;
+    //         ang = Math.atan2(ty - fy, tx - fx),
+    //         distance = Math.sqrt((fx - tx) * (fx - tx) + (fy - ty) * (fy - ty)),
+    //         amplitude = -10
+    //         f = distance / 4;
 
-          for (i; i <= distance; i += step) {
-            waveOffsetLength = triangle_line((i / distance) * f);
-            cx = from.x + Math.cos(ang) * i + Math.cos(ang - Math.PI / 2) * waveOffsetLength;
-            cy = from.y + Math.sin(ang) * i + Math.sin(ang - Math.PI / 2) * waveOffsetLength;
-            i > 0 ? ctx.lineTo(cx, cy) : ctx.moveTo(cx, cy);
-          }
-          ctx.lineTo(to.x, to.y);
-          ctx.lineTo(endPoint.x, endPoint.y);
-    },
+    //       for (i; i <= distance; i += step) {
+    //         waveOffsetLength = triangle_line((i / distance) * f);
+    //         cx = from.x + Math.cos(ang) * i + Math.cos(ang - Math.PI / 2) * waveOffsetLength;
+    //         cy = from.y + Math.sin(ang) * i + Math.sin(ang - Math.PI / 2) * waveOffsetLength;
+    //         i > 0 ? ctx.lineTo(cx, cy) : ctx.moveTo(cx, cy);
+    //       }
+    //       ctx.lineTo(to.x, to.y);
+    //       ctx.lineTo(endPoint.x, endPoint.y);
+    // },
 
-    pointOnLine: function(point1, point2, dist) {
-      var len = Math.sqrt(((point2.x - point1.x) * (point2.x - point1.x)) + ((point2.y - point1.y) * (point2.y - point1.y)));
-      var t = (dist) / len;
-      var x3 = ((1 - t) * point1.x) + (t * point2.x),
-        y3 = ((1 - t) * point1.y) + (t * point2.y);
-      return new fabric.Point(x3, y3);
-    },
+    // pointOnLine: function(point1, point2, dist) {
+    //   var len = Math.sqrt(((point2.x - point1.x) * (point2.x - point1.x)) + ((point2.y - point1.y) * (point2.y - point1.y)));
+    //   var t = (dist) / len;
+    //   var x3 = ((1 - t) * point1.x) + (t * point2.x),
+    //     y3 = ((1 - t) * point1.y) + (t * point2.y);
+    //   return new fabric.Point(x3, y3);
+    // },
 
-      toObject() {
-        return fabric.util.object.extend(this.callSuper('toObject'), {
-          id: this.id,
-          customProps: this.customProps,
-          color: this.color,
-          toAnchorPoint: this.toAnchorPoint,
-          anchorAngle: this.anchorAngle,
-          anchorable: this.anchorable,
-          anchorId: this.anchorId,
-          toAnchorId: this.toAnchorId,
-          hasControls: this.hasControls,
-          selectable: this.selectable,
-          hasBorders: this.hasBorders,
-          evented: this.evented,
-          perPixelTargetFind: this.perPixelTargetFind,
-          padding: this.padding,
-          objectCaching: this.objectCaching,
-          x1: this.x1,
-          x2: this.x2,
-          y1: this.y1,
-          y2: this.y2,
-          isMoveLine: this.isMoveLine,
-          moveLineId: this.moveLineId,
-          passLineId: this.passLineId,
-          passerId: this.passerId,
-        });
-      },
-    });
+    //   toObject() {
+    //     return fabric.util.object.extend(this.callSuper('toObject'), {
+    //       id: this.id,
+    //       customProps: this.customProps,
+    //       color: this.color,
+    //       toAnchorPoint: this.toAnchorPoint,
+    //       anchorAngle: this.anchorAngle,
+    //       anchorable: this.anchorable,
+    //       anchorId: this.anchorId,
+    //       toAnchorId: this.toAnchorId,
+    //       hasControls: this.hasControls,
+    //       selectable: this.selectable,
+    //       hasBorders: this.hasBorders,
+    //       evented: this.evented,
+    //       perPixelTargetFind: this.perPixelTargetFind,
+    //       padding: this.padding,
+    //       objectCaching: this.objectCaching,
+    //       x1: this.x1,
+    //       x2: this.x2,
+    //       y1: this.y1,
+    //       y2: this.y2,
+    //       isMoveLine: this.isMoveLine,
+    //       moveLineId: this.moveLineId,
+    //       passLineId: this.passLineId,
+    //       passerId: this.passerId,
+    //     });
+    //   },
+    // });
 
-    fabric.DribbleLine.fromObject = function(object, callback) {
-      callback && callback(new fabric.DribbleLine([object.x1, object.y1, object.x2, object.y2], object));
-    };
+    // fabric.DribbleLine.fromObject = function(object, callback) {
+    //   callback && callback(new fabric.DribbleLine([object.x1, object.y1, object.x2, object.y2], object));
+    // };
 
 
     /************************************************************ <DRIBBLE LINE/> *****************************************************/
@@ -434,6 +501,27 @@
 
 
     /********************************************************** <DRAWING FUNCTIONS> ***************************************************/
+    function textBox(button){
+      selection()
+      highlight_play_button(button)
+      canvas.on('mouse:down', function(e){
+        
+        var pointer = canvas.getPointer(e.e);
+        var text = new fabric.Textbox('Text', {
+            width: 150,
+            height: 200,
+            top: pointer.y,
+            left: pointer.x,
+            hasControls: true,
+            fontSize: 18,
+            fixedFontSize: 18,
+            fixedWidth: 150
+        });
+        canvas.add(text);
+        deselectDrawingButton()
+        selection()
+      })
+    }
 
     function triangle_line(x){
       let g = x % 6;
@@ -447,9 +535,359 @@
       canvas.off('mouse:move');
       canvas.off('mouse:up');
       evented = false;
+      canvas.selection = false;
     }
 
-    function draw(anchor) {
+    function drawCurve(anchor, line_type){
+      selection()
+      var line;
+      changeObjSelection(false);
+      if (!evented) {
+        canvas.on('mouse:down', function(e){
+            line = curveMouseDown(anchor, line_type, e)});
+        canvas.on('mouse:move', function(e){
+            line = curveMouseMove(anchor,line_type, line, e)});
+        canvas.on('mouse:up', function(e){
+            line = curveMouseUp(anchor,line_type, line, e);
+            if(line){
+              line.anchorId = anchor.id;
+              line.moveTo(9)
+              if(line.isMoveLine){
+                anchor.moveLineId = line.id;
+                anchor.moveLine = line;
+                insertEndpoint(line)
+              }
+              else{
+                anchor.passLineId = line.id;
+                anchor.passLine = line;
+              }
+            }
+            else{
+              canvas.setActiveObject(anchor);
+              drawCurve(anchor, line_type)
+            }
+        });
+        evented = true;
+      }
+    }
+
+    function centerOfSlopeLine(x1, y1, x2, y2){
+      var centerX = (x1+x2)/2;
+      var centerY = (y1+y2)/2;
+      return new fabric.Point(centerX, centerY);
+    }
+
+    function curveMouseDown(anchor, line_type, options){
+      isDown = true;
+      var pointer = canvas.getPointer(options.e);
+      var anchor_point = anchor.toAnchorPoint;
+      var slope_line_center = centerOfSlopeLine(anchor_point.x, anchor_point.y, pointer.x, pointer.y);
+
+      var points = [[anchor_point.x, anchor_point.y], [slope_line_center.x, slope_line_center.y, pointer.x, pointer.y]]
+      
+      var line = selectLine(points, anchor.color, line_type);
+      line.color = anchor.color;
+      canvas.add(line);
+      line.moveTo(9)
+      return line;
+    }
+
+    // TODO: need new function that is updateEndpointPosition
+    function updateTrianglePosition(line, angle){
+      var lineEnd = line.lineEnd;
+      var offset = 1;
+      if(line.kind == "Dribble"){
+        offset = 1.5
+      }
+      lineEnd.set({left: line.path[1][3]+offset, top: line.path[1][4]+offset, angle: radians_to_degrees(angle) + 90})
+      lineEnd.setCoords()
+    }
+
+    function updateScreenPosition(line, angle){
+      var lineEnd = line.lineEnd;
+      lineEnd.set({x1: line.path[1][3] + Math.cos(angle - Math.PI/2) * 10, y1: line.path[1][4] + Math.sin(angle - Math.PI/2) *10, x2:  line.path[1][3] + Math.cos(angle + Math.PI/2) * 10, y2: line.path[1][4] + Math.sin(angle + Math.PI/2) *10})
+
+      lineEnd.setCoords()
+    }
+
+
+    function updateEndpointPosition(line, angle){
+      if(line.lineEnd.type == "line"){
+        updateScreenPosition(line, angle)
+      }
+      else{
+        updateTrianglePosition(line, angle)
+      }
+    }
+
+    function curveMouseMove(anchor, line_type, line, options){
+      if (!isDown) return;
+      var pointer = canvas.getPointer(options.e);
+      var slope_line_center = centerOfSlopeLine(line.path[0][1], line.path[0][2], pointer.x, pointer.y);
+      line.path[1][1] = slope_line_center.x;
+      line.path[1][2] = slope_line_center.y;
+      line.path[1][3] = pointer.x;
+      line.path[1][4] = pointer.y;
+
+      var anchorAngle = getAnchorAngle(line.path[0][1], line.path[1][3], line.path[0][2], line.path[1][4])
+      updateEndpointPosition(line, anchorAngle)
+      canvas.requestRenderAll();
+
+      return line;
+    }
+
+    function insideAnchorRadius(anchor, pointer){
+      var centerX = anchor.left + anchor.radius;
+      var centerY = anchor.top + anchor.radius;
+      if(Math.sqrt((pointer.x-centerX)*(pointer.x-centerX) + (pointer.y-centerY)*(pointer.y-centerY))<anchor.radius){
+        return true
+      }
+      return false;
+    }
+    
+
+    function curveMouseUp(anchor, line_type, line, options){
+      isDown = false;
+
+      var pointer = canvas.getPointer(options.e);
+      // pointer is inside of the radius of the anchor
+      if(insideAnchorRadius(anchor, pointer)){
+        canvas.remove(line.lineEnd)
+        canvas.remove(line)
+        return false
+      }
+      else{
+        var slope_line_center = centerOfSlopeLine(line.path[0][1], line.path[0][2], pointer.x, pointer.y);
+        line.path[1][1] = slope_line_center.x;
+        line.path[1][2] = slope_line_center.y;
+        line.path[1][3] = pointer.x;
+        line.path[1][4] = pointer.y;
+        var anchorAngle = getAnchorAngle(line.path[0][1], line.path[1][3], line.path[0][2], line.path[1][4])
+        // TODO: change to update endpoint position
+        updateEndpointPosition(line, anchorAngle)
+        var success = true;
+    
+        var centerX = line.path[1][3] - anchorOffset + (Math.cos(line.anchorAngle) * 10);
+        var centerY = line.path[1][4] - anchorOffset + (Math.sin(line.anchorAngle) * 10);
+        /*INVESTIGATE WHY I WANTED TO CHANGE -- LOOKS GOOD*/
+        line.toAnchorPoint = new fabric.Point(centerX + anchorOffset, centerY + anchorOffset);
+
+        line.id = anchor.id + "_moveline_"
+
+        /*CHANGE*/
+        var toAnchor = new fabric.ToAnchor({
+          kind: "toAnchor",
+          id: line.id + "_toAnchor",
+          selectable: true,
+          evented: true,
+          hasControls: false,
+          hasBorders: false,
+          left: centerX,
+          top: centerY,
+          line: line,
+          anchorAngle: anchorAngle,
+          // lockMovementY: true,
+          // lockMovementX: true,
+          radius: anchorRadius,
+          strokeWidth: 1,
+          stroke: line.stroke,
+          fill: "white",
+          added: true,
+          padding: 20,
+        });
+        var curvePoint = new fabric.CurvePoint({
+          kind: "curvePoint",
+          id: line.id + "_curvePoint",
+          selectable: true,
+          evented: true,
+          hasControls: false,
+          hasBorders: false,
+          left: slope_line_center.x,
+          top: slope_line_center.y,
+          line: line,
+          radius: anchorRadius,
+          fill: "#7ceb3b",
+          stroke: "black",
+          strokeWidth: 1,
+          added: true,
+          padding: 10,
+        });
+
+        line.lineEnd.id = line.id + "_lineEnd"
+        line.anchorable = true;
+        canvas.add(toAnchor);
+        canvas.add(curvePoint)
+        line.toAnchorId = toAnchor.id;
+        line.toAnchor = toAnchor;
+        line.curvePoint = curvePoint;
+        line.curvePointId = curvePoint.id
+        
+        toAnchor.moveTo(10)
+        line.moveTo(3);
+        
+        canvas.requestRenderAll();
+        selection();
+        // Reconsider this
+        canvas.setActiveObject(line);
+        deselectDrawingButton()
+      }
+
+      
+      return line;
+    }
+
+    function getPathString(path){
+      return 'M'+path[0][1] +','+ path[0][2] + ' Q' + path[1][1] + ',' + path[1][2] + ' ' + path[1][3] + ',' + path[1][4] 
+    }
+
+
+    function drawMoveLine(points, color){
+      var path_string = 'M'+points[0][0] +','+ points[0][1] + ' Q' + points[1][0] + ',' + points[1][1] + ' ' + points[1][2] + ',' + points[1][3] 
+      var line = new fabric.MoveLine(path_string, {
+         fill: '',
+         strokeWidth: 2,
+         stroke: color,
+         objectCaching: false,
+         isMoveLine: true,
+         padding: 10,
+         lockMovementY: true,
+         lockMovementX: true,
+         kind: "SimpleMove",
+       });
+      
+      line.path[0][1] = points[0][0];
+      line.path[0][2] = points[0][1];
+
+      line.path[1][1] = points[1][0];
+      line.path[1][2] = points[1][1];
+
+      line.path[1][3] = points[1][2];
+      line.path[1][4] = points[1][3];
+
+      var anchorAngle = getAnchorAngle(line.path[0][1], line.path[1][3], line.path[0][2], line.path[1][4])
+      var lineEnd = createTriangle(points[1][2] +1, points[1][3] + 1, anchorAngle, color, 12)
+      line.lineEnd = lineEnd;
+      canvas.add(lineEnd)
+      return line;
+    }
+
+    function drawDribbleLine(points, color){
+      var path_string = 'M'+points[0][0] +','+ points[0][1] + ' Q' + points[1][0] + ',' + points[1][1] + ' ' + points[1][2] + ',' + points[1][3] 
+      var line = new fabric.MoveLine(path_string, {
+         fill: '',
+         strokeWidth: 4,
+         stroke: "#00ab00",
+         objectCaching: false,
+         isMoveLine: true,
+         padding: 10,
+         lockMovementY: true,
+         lockMovementX: true,
+         kind: "Dribble",
+       });
+      
+      line.path[0][1] = points[0][0];
+      line.path[0][2] = points[0][1];
+
+      line.path[1][1] = points[1][0];
+      line.path[1][2] = points[1][1];
+
+      line.path[1][3] = points[1][2];
+      line.path[1][4] = points[1][3];
+
+      var anchorAngle = getAnchorAngle(line.path[0][1], line.path[1][3], line.path[0][2], line.path[1][4])
+      var lineEnd = createTriangle(points[1][2]+1, points[1][3] +1, anchorAngle, "#00ab00")
+      line.lineEnd = lineEnd;
+      canvas.add(lineEnd)
+      return line;
+    }
+
+    function drawScreenLine(points, color) {
+      var path_string = 'M'+points[0][0] +','+ points[0][1] + ' Q' + points[1][0] + ',' + points[1][1] + ' ' + points[1][2] + ',' + points[1][3] 
+      var line = new fabric.MoveLine(path_string, {
+         fill: '',
+         strokeWidth: 2,
+         stroke: color,
+         objectCaching: false,
+         isMoveLine: true,
+         padding: 10,
+         lockMovementY: true,
+         lockMovementX: true,
+         kind: "ScreenLine",
+       });
+      
+      line.path[0][1] = points[0][0];
+      line.path[0][2] = points[0][1];
+
+      line.path[1][1] = points[1][0];
+      line.path[1][2] = points[1][1];
+
+      line.path[1][3] = points[1][2];
+      line.path[1][4] = points[1][3];
+
+      var anchorAngle = getAnchorAngle(line.path[0][1], line.path[1][3], line.path[0][2], line.path[1][4])
+      var lineEnd = createScreenEnd(points[1][2] +1, points[1][3] + 1, anchorAngle, color)
+      line.lineEnd = lineEnd;
+      canvas.add(lineEnd)
+      return line;
+    }
+
+    function createScreenEnd(x, y, angle, color){
+      var width = 10;
+      var points = [x + Math.cos(angle - Math.PI/2) * 10,  y + Math.sin(angle - Math.PI/2) *10,   x + Math.cos(angle + Math.PI/2) * 10,  y + Math.sin(angle + Math.PI/2) *10]
+      var screen_end = new fabric.Line(points,
+      { 
+          selectable: false,
+          strokeWidth: 2,
+          evented: false,
+          hasBorders: false,
+          stroke: color,
+          kind: "Screen",
+
+      });
+      return screen_end
+    }
+
+
+    function getAnchorAngle(x1, x2, y1, y2){
+      var xDiff = x2 - x1;
+      var yDiff = y2 - y1;
+      var anchorAngle = Math.atan2(yDiff, xDiff);
+      return anchorAngle
+    }
+
+    function radians_to_degrees(radians){
+      var pi = Math.PI;
+      return radians * (180/pi);
+    }
+
+    function degrees_to_radians(degrees){
+      var pi = Math.PI;
+      return degrees * pi /180
+    }
+
+    function createTriangle(x, y, angle, color, id){
+        var width = 12;
+        var height = 12;
+        return new fabric.Triangle(
+        {
+            width: width,
+            height: height,
+            selectable: false,
+            evented: false,
+            hasBorders: false,
+            fill: color,
+            left: x,
+            top: y,
+            originX: 'center',
+            originY: 'center',
+            angle: radians_to_degrees(angle) + 90,
+            kind: "Arrow"
+        });
+    }
+
+
+    function draw(anchor, line_type) {
+      selection()
       var line;
       changeObjSelection(false);
       if (!evented) {
@@ -463,19 +901,8 @@
             if(line.isMoveLine){
               anchor.moveLineId = line.id;
               anchor.moveLine = line;
+              insertEndpoint(line)
             }
-            else{
-              anchor.passLineId = line.id;
-              anchor.passLine = line;
-            }
-            //anchor.lineIds.push(line.id);
-/*            if(!anchor.lines){
-              anchor.lines = []
-            }
-            anchor.lines.push(line);*/
-            // if(endpoint_moves){
-            //   endpoint_moves.push(line)
-            // }
             canvas.setActiveObject(line);
         });
         evented = true;
@@ -505,6 +932,8 @@
       }
       else {
         line.id = anchor.id + "_passline_"
+        anchor.passLineId = line.id;
+        anchor.passLine = line;
       }
       canvas.add(line);
       line.moveTo(3);
@@ -527,45 +956,32 @@
     function validatePassReceiver(object){
       var isValidAnchor = false;
       var object_type = object.get("type");
-      if (object_type == "PlayerCircle" || object_type == "LineWithArrow" || object_type == "DribbleLine" || object_type == "ScreenLine"){
+      if (object_type == "PlayerCircle" || object_type == "LineWithArrow" || object_type == "DribbleLine" || object_type == "ScreenLine" || object_type=="MoveLine"){
         isValidAnchor = true;
       }
       return isValidAnchor;
     }
 
     function findObjectEndpoint(obj){
-      // if(obj.get("type") == "PlayerCircle"){
-      //   return {x: obj.left + obj.radius, y: obj.top+obj.radius}
-      // }
-      // else{
-      //   
-      // }
       return {x: obj.toAnchorPoint.x, y: obj.toAnchorPoint.y}
     }
 
     // TODO: DUPLICATE CODE
-    // function removeLine(obj){
-    //   console.log(obj)
-    //   removeLineRef(obj);
-    //   canvas.remove(obj.toAnchor);
-    //   canvas.remove(obj);
-    // }
-    // TODO: DUPLICATE CODE
     function removeLineRef(line){
       canvas.getObjects().forEach(function(o){
-        if(o.id == line.anchorId && validateAnchor(o)){
+        if(validateAnchor(o)){
           if(o.passLineId == line.id){
             o.passLineId = null;
             o.passLine = null;
           }
-          else if (o.moveLineId = line.id){
+          else if (o.moveLineId == line.id){
             o.moveLineId = null;
             o.moveLine = null
           }
         }
         if(o.passerId == line.id){
-          o.passerId == null;
-          o.passer == null;
+          o.passerId = null;
+          o.passer = null;
         }
       });
     }
@@ -616,7 +1032,8 @@
         return true;
       }
       else{
-        removeLine(line)
+        canvas.remove(line.toAnchor);
+        canvas.remove(line);
         return false;
       }
     }
@@ -647,7 +1064,7 @@
         line.toAnchorPoint = new fabric.Point(centerX + anchorOffset, centerY + anchorOffset);
 
         /*CHANGE*/
-        toAnchor = new fabric.Circle({
+        toAnchor = new fabric.ToAnchor({
           id: line.id + "_toAnchor",
           selectable: false,
           evented: false,
@@ -668,7 +1085,7 @@
         line.toAnchorId = toAnchor.id;
         line.toAnchor = toAnchor;
         
-        line.toAnchor.moveTo(4)
+        line.toAnchor.moveTo(0)
 
       if(line.type == "PassLine"){
         success = snapPassLine(line)
@@ -679,9 +1096,10 @@
       
       canvas.requestRenderAll();
       selection();
-
+      deselectDrawingButton()
       return line;
     }
+
 
 
 
@@ -700,26 +1118,11 @@
       })
     }
 
-    function drawScreenLine(points, color) {
-      return new fabric.ScreenLine(points, {
-        strokeWidth: 2,
-        stroke: color,
-        objectCaching: false,
-        selectable: true,
-        padding: 10,
-        // lines: [],
-        // lineIds: [],
-        added: true,
-        isMoveLine: true,
-        toAnchor: null,
-      })
-    }
-
     function drawPassLine(points, color) {
       return new fabric.PassLine(points, {
         strokeWidth: 2,
         stroke: color,
-        objectCaching: false,
+        objectCaching: true,
         selectable: true,
         padding: 10,
         // lines: [],
@@ -730,37 +1133,105 @@
       })
     }
 
-    function drawDribbleLine(points, color) {
-      return new fabric.DribbleLine(points, {
-        strokeWidth: 2,
-        stroke: color,
-        objectCaching: false,
-        selectable: true,
-        padding: 10,
-        // lines: [],
-        // lineIds: [],
-        added: true,
-        isMoveLine: true,
-        toAnchor: null
-      })
-    }
+    // function drawDribbleLine(points, color) {
+    //   return new fabric.DribbleLine(points, {
+    //     strokeWidth: 2,
+    //     stroke: color,
+    //     objectCaching: false,
+    //     selectable: true,
+    //     padding: 10,
+    //     // lines: [],
+    //     // lineIds: [],
+    //     added: true,
+    //     isMoveLine: true,
+    //     toAnchor: null
+    //   })
+    // }
 
     function selectLine(points, color, line_type) {
       switch(line_type){
         case "run"  :
-            return drawLineWithArrow(points, color)
+            return drawMoveLine(points, color)
         case "screen" :
             return drawScreenLine(points, color);
         case "pass" :
             return drawPassLine(points, color);
         case "dribble" :
             return drawDribbleLine(points, color);
+        case "curved":
+            return drawCurvedLine(points, color);
       }
       
     }
 
     /********************************************************** <DRAWING FUNCTIONS/> ***************************************************/
+    
+    fabric.CurvePoint = fabric.util.createClass(fabric.Circle, {
+        type: 'curvePoint',
+        initialize(options) {
+            options || (options = { });
+            this.callSuper('initialize', options);
+            this.set({
+              id: this.id
+            })
+        },
+        _render(ctx) {
+            this.callSuper('_render', ctx);
+        }, 
 
+        toObject() {
+            return fabric.util.object.extend(this.callSuper('toObject'), {
+              customProps: this.customProps,
+              id: this.id,
+              anchorable: this.anchorable,
+              hasControls: this.hasControls,
+              selectable: this.selectable,
+              hasBorders: this.hasBorders,
+              evented: this.evented,
+              perPixelTargetFind: this.perPixelTargetFind,
+            });
+        },
+
+    });
+
+    fabric.CurvePoint.fromObject = function(object, callback) {
+        return fabric.Object._fromObject('CurvePoint', object, callback);
+    };
+
+    fabric.ToAnchor = fabric.util.createClass(fabric.Circle, {
+        type: 'toAnchor',
+        initialize(options) {
+            options || (options = { });
+            this.callSuper('initialize', options);
+            this.set({
+              id: this.id
+            })
+        },
+        _render(ctx) {
+            this.callSuper('_render', ctx);
+        }, 
+
+        toObject() {
+            return fabric.util.object.extend(this.callSuper('toObject'), {
+              customProps: this.customProps,
+              id: this.id,
+              color: this.color,
+              anchorable: this.anchorable,
+              hasControls: this.hasControls,
+              selectable: this.selectable,
+              hasBorders: this.hasBorders,
+              evented: this.evented,
+              padding: this.padding,
+              perPixelTargetFind: this.perPixelTargetFind,
+              objectCaching: this.objectCaching
+            });
+        },
+
+    });
+
+    fabric.ToAnchor.fromObject = function(object, callback) {
+        return fabric.Object._fromObject('ToAnchor', object, callback);
+    };
 
     fabric.PlayerCircle = fabric.util.createClass(fabric.Circle, {
         type: 'PlayerCircle',
@@ -791,6 +1262,7 @@
               moveLineId: this.moveLineId,
               passLineId: this.passLineId,
               passerId: this.passerId,
+              stroke: this.stroke
             });
         },
 
@@ -882,7 +1354,7 @@
         strokeWidth: 1,
         fill: '',
         perPixelTargetFind: true,
-        objectCaching: false,
+        objectCaching: true,
       });
 
       var line2 = new fabric.Rect({
@@ -901,6 +1373,8 @@
         left: left + 1.7* playerRadius,
         hasControls: false,
         hasBorders: false,
+        selectable: false,
+        evented: false,
       })
       canvas.add(g)
 
@@ -942,24 +1416,19 @@
           hasControls: false,
           toAnchorPoint: new fabric.Point(left + playerRadius, top + playerRadius),
           anchorable: true,
-          // lines: [],
-          // moveLine: null,
-          // passLine: null,
           added: true,
           text: text,
           has_ball: has_ball,
           ball: ball,
+          objectCaching: true,
         });
-
-
 
         
         canvas.add(c);
-        canvas.add(text)
-        c.moveTo(1000)
-        text.moveTo(1001)
+        canvas.add(text);
 
-        return c;
+        c.moveTo(1000);
+        text.moveTo(1001);
       }
 
     /******************************************************** <CIRCLE/> ***************************************************************/

@@ -1,0 +1,109 @@
+<div class = "modal-overlay" id = "playlist-modal-overlay" style = "display: none;"></div>
+<div class = "modal modal-positioning" id = "playlist-modal" style = "display: none;">
+  <div id = "playlist-initializer" class = "modal-container">
+    <div class = "GM-modal-wrapper">
+      <div class = "modal-inner-content" id = "play-modal-content">
+        <form class = "new-play-name">
+          <input type="text" class = "playlist-name-input" id = "playlist-name-input" value = "Untitled Playlist">
+        </form>
+        <div class = "modal-body" id = "select-playlist-plays">
+        	<div class = "select-plays-heading">Select Plays To Add</div>
+        	<div id = "plays-select">
+        		<%counter = 0%>
+        		<%@all_plays.each do |play|%>
+	        		<div class ="play-image-block select-playlist-play-block" id = "<%=play.id%>">
+						<div class= "play-index-image" id = "play-image-<%=play.id%>">
+							<button class ="play-to-playlist-button" onclick = "play_to_playlist(<%=play.id%>,this)">
+								<%= image_tag(@all_plays_progressions[counter].first.play_image, :alt => "play", :class => "play-img recently_viewed", :id => counter) %>
+							</button>
+						</div>
+						<button class = "play-link-text" onclick = "play_to_playlist(<%=play.id%>, this)">
+							<div class = "play-link-name"><%=play.name%></div>
+						</button>
+					</div>
+					<%counter+=1%>
+        		<%end%>
+        	</div>
+        </div>
+      </div>
+      <div id = "playlist-create-wrapper">
+      	<button class = "modal-cancel-button" onclick = "close_playlist_modal()">Cancel</button>
+      	<button class = "modal-submit-button" onclick = "create_playlist()">Create Playlist</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class = "modal-overlay" id = "play-modal-overlay" style = "display: none;"></div>
+<div class = "modal modal-positioning" id = "play-modal" style = "display: none;">
+  <div id = "playlist-initializer" class = "modal-container">
+    <div class = "GM-modal-wrapper">
+
+      <div class = "modal-inner-content" id = "play-modal-content">
+
+        <form class = "new-play">
+          <input type="text" class = "playlist-name-input" id = "play-name-input" value = "Untitled Play">
+        </form>
+        <div class = "modal-body ">
+        	<div id = "select-halfcourt-fullcourt" class = "flex-row center-justified">
+            <input type = "hidden" id = "play_type_select">
+                <button class = "play-type-select" onclick = "select_play_type(1)">
+                  <%= image_tag("blank-halfcourt.png", :alt => "halfcourt", :class => "select-play-type play-index-image") %>
+                  <div class = "flex-row center-justified">
+                    <div class = "play-type-text">Half court</div>
+                  </div>
+                </button> 
+            
+             
+          		<!-- <button class = "play-type-select" onclick = "select_play_type(1)">
+          			<%= image_tag("blank-halfcourt.png", :alt => "halfcourt", :class => "select-play-type play-index-image") %>
+          			<div class = "flex-row center-justified">
+          				<div class = "play-type-text">Half court</div>
+          			</div>
+          		</button> -->
+          		<button class = "play-type-select" onclick = "select_play_type(2)">
+          			<%= image_tag("blank-fullcourt.png", :alt => "fullcourt", :class => "select-play-type play-index-image") %>
+          			<div class = "flex-row center-justified">
+          				<div class = "play-type-text">Full court</div>
+          			</div>
+          		</button>
+          	</div>
+          	<div id = "play-to-playlist" style = "display: none">
+          		<button class = "modal-back-button" onclick = "back_to_play_type_select()">
+          			<object data='<%=asset_path("back-arrow.svg")%>' type="image/svg+xml" class = "back-arrow-img">
+                            <%= image_tag("back-arrow.png", :alt => "back-arrow", :class => "back-arrow-img") %>	
+                       </object>
+          		</button>
+
+
+        		<div class = "select-plays-heading">Add to playlist(s)</div>
+            <div id = "select-play-to-playlist-wrapper" class = "flex-row">
+          		<div id = "select-play-to-playlist" class = "flex-column">
+          			<%@playlists.each do |playlist|%>
+          				<button class = "add-button add-playlist flex-row center-justified center-aligned" onclick = "add_play_to_playlist(this, <%=playlist.id%>)">
+          					<div class = "add-added-wrapper">
+  	        					<object data='<%=asset_path("add.svg")%>' type="image/svg+xml" id = "plus-icon" class = "add-button-icon">
+  			                          <%= image_tag("add.png", :alt => "back-arrow", :class => "add-button-icon") %>	
+  			                     </object>
+  			                     <object data='<%=asset_path("green-check-no-circle.svg")%>' type="image/svg+xml" id = "green-check" class = "added-button-icon" style = "display: none">
+  			                          <%= image_tag("green-check-no-circle.png", :alt => "back-arrow", :class => "add-button-icon") %>	
+  			                     </object>
+  	        				</div>
+  	        				<div class = "add-button-text"><%=playlist.name%></div>
+          				</button>
+          			<%end%>
+          		</div>
+            </div>
+        	</div>
+        </div>
+
+      </div>
+      <div id = "playlist-create-wrapper">
+      	<button class = "modal-cancel-button" onclick = "close_play_modal()">Cancel</button>
+      
+      	<button class = "modal-submit-button modal-submit-button-deactivated" disabled onclick = "create_play()">Create Play</button>
+      </div>
+      
+    </div>
+  </div>
+</div>

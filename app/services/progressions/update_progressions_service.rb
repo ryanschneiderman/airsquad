@@ -13,6 +13,8 @@ class Progressions::UpdateProgressionsService
 
 	def call()
 		play = Play.find_by_id(@play_id)
+		play.updated_at = Time.now
+		play.save
 		member = Member.where(user_id: @current_user_id, team_id: @team_id).take
 
 		notification = Notification.where("notif_type_id = ? AND created_at >= ? AND notif_kind = ?", play.id, Date.today - 1, 'edited').take 

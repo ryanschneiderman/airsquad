@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_24_211302) do
+ActiveRecord::Schema.define(version: 2020_05_22_144420) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -59,13 +59,13 @@ ActiveRecord::Schema.define(version: 2020_03_24_211302) do
   end
 
   create_table "comments", force: :cascade do |t|
-    t.bigint "posts_id"
-    t.bigint "members_id"
     t.text "content"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["members_id"], name: "index_comments_on_members_id"
-    t.index ["posts_id"], name: "index_comments_on_posts_id"
+    t.bigint "member_id"
+    t.bigint "post_id"
+    t.index ["member_id"], name: "index_comments_on_member_id"
+    t.index ["post_id"], name: "index_comments_on_post_id"
   end
 
   create_table "games", force: :cascade do |t|
@@ -226,6 +226,34 @@ ActiveRecord::Schema.define(version: 2020_03_24_211302) do
     t.string "play_type"
   end
 
+  create_table "play_views", force: :cascade do |t|
+    t.bigint "play_id"
+    t.bigint "member_id"
+    t.datetime "viewed"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["member_id"], name: "index_play_views_on_member_id"
+    t.index ["play_id"], name: "index_play_views_on_play_id"
+  end
+
+  create_table "playlist_associations", force: :cascade do |t|
+    t.bigint "play_id"
+    t.bigint "playlist_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["play_id"], name: "index_playlist_associations_on_play_id"
+    t.index ["playlist_id"], name: "index_playlist_associations_on_playlist_id"
+  end
+
+  create_table "playlists", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "team_id"
+    t.integer "color_scheme"
+    t.index ["team_id"], name: "index_playlists_on_team_id"
+  end
+
   create_table "plays", force: :cascade do |t|
     t.string "name"
     t.boolean "offense_defense"
@@ -234,6 +262,7 @@ ActiveRecord::Schema.define(version: 2020_03_24_211302) do
     t.bigint "user_id"
     t.integer "num_progressions"
     t.bigint "play_type_id"
+    t.boolean "deleted_flag"
     t.index ["play_type_id"], name: "index_plays_on_play_type_id"
     t.index ["user_id"], name: "index_plays_on_user_id"
   end

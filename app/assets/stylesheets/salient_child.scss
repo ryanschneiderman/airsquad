@@ -1,0 +1,212 @@
+/*
+
+-------------------------------------------------------------------------
+
+/*	1.	Header
+/*	2.	Footer
+/*	3.	Blog
+/*	4.	Team Page
+/*	5.	Case Studies
+
+-------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------*/
+/*	1.	Header
+/*-------------------------------------------------------------------------*/
+/* Header request button */
+.request_desk {
+  padding-top:32px;
+}
+.small-nav .request_desk {
+  padding-top:17px;
+}
+.request_mobile {
+  color: rgb(86, 84, 84);
+  display:none;
+  font-size: 16px;
+  font-weight: 600;
+  position: absolute;
+  right: 50px;
+  top: 5px;
+  z-index:11;
+}
+@media screen and (max-width:1000px) {
+  .request_mobile {
+    display:block;
+  }
+}
+/* Particle header */
+#page-header-bg .nectar-particles .span_6 .inner-wrap {
+  transform: translateY(-50%)!important;
+}
+
+
+
+/*-------------------------------------------------------------------------*/
+/*	2.	Footer
+/*-------------------------------------------------------------------------*/
+#footer-widgets {
+  padding: 60px 0 30px 0;
+}
+#footer-widgets .col.span_4 {
+  padding: 0 60px;
+  width: 50%;
+  margin: 0;
+}
+#footer-widgets .widget {
+  display: inline-block;
+  margin: 0;
+}
+#footer-outer #footer-widgets .widget>h4 {
+  font-size: 24px;
+  letter-spacing: -1px;
+  line-height: 30px;
+  text-align: center;
+  text-transform: none!important;
+}
+#footer-widgets .textwidget {
+  padding: 0;
+  text-align: center;
+}
+#footer-widgets .textwidget p {
+  font-size: 18px;
+  font-family: Playfair Display, serif;
+}
+#footer-widgets .col.span_4:nth-of-type(1) {
+  border-right: 1px solid white;
+  text-align: right;
+}
+@media screen and (max-width:690px) {
+  #footer-widgets .col.span_4,
+  #footer-widgets .col.span_4:nth-of-type(1) {
+    padding: 0;
+    text-align: center;
+    width: 100%;
+  }
+  #footer-widgets .col.span_4:nth-of-type(1) {
+    border-right: 0px;
+  }
+}
+
+/* Footer column 3 */
+#footer-widgets .col.span_4:last-of-type {
+  padding: 60px 0 0 0;
+  width: 100%;
+}
+#footer-widgets .col.span_4:last-of-type .widget {
+  display:block;
+}
+#footer-widgets .col.span_4:last-of-type a:link {
+    text-decoration: underline;
+}
+
+/* Footer copyright */
+#copyright p {
+  font-family: "Open Sans";
+  font-weight: 600;
+}
+#copyright img {
+  margin-bottom: 0;
+  margin-right:20px;
+}
+@media screen and (max-width:690px) {
+  #copyright {
+    text-align: center;
+  }
+  #copyright img {
+    display:block;
+    margin:20px auto;
+  }
+  body #footer-outer #copyright .col.col_last ul {
+    float: none;
+    display: inline-block;
+  }
+}
+
+
+
+/*-------------------------------------------------------------------------*/
+/*	3.	Blog
+/*-------------------------------------------------------------------------*/
+body .masonry.classic_enhanced .masonry-blog-item .article-content-wrap,
+body .blog-recent[data-style*="classic_enhanced"] .article-content-wrap {
+  padding: 10% 10% 0 10%!important;
+}
+
+
+
+/*-------------------------------------------------------------------------*/
+/*	4.	Team
+/*-------------------------------------------------------------------------*/
+.showoff-project-inner-pagination-page {
+  margin: 1px 8px;
+}
+
+
+
+/*-------------------------------------------------------------------------*/
+/*	5.	Case Studies
+/*-------------------------------------------------------------------------*/
+body.single-portfolio #page-header-bg h1,
+html body.single-portfolio .row .col.section-title h1 {
+  font-family: "Open Sans", serif;
+  font-size: 75px!important;
+  font-weight: 700;
+  line-height: 1em!important;
+}
+body.postid-11543 h3,
+.postid-11543 .row .col h3 {
+  font-size: 33px;
+  line-height: 1em;
+}
+.casestudy-intro-aside {
+  padding-left: 5%;
+}
+.casestudy-intro-aside .inner_row .img-with-aniamtion-wrap {
+  display: inline-block;
+  padding: 5px;
+  vertical-align: top;
+  width: 50%;
+}
+.casestudy-intro-aside .nectar-social {
+  margin-top:14px;
+}
+.casestudy-intro-name {
+  background-color: #BEBCBC;
+  padding:20px 0;
+}
+body.postid-11543 .row .col .casestudy-intro-name h3 {
+  color: #fff;
+  font-size: 25px;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+/* Min width queries */
+@media only screen and (min-width: 1000px) {
+  body.postid-11543 .container {
+      max-width: 1820px;
+  }
+}
+
+/* Max width queries */
+@media screen and ( max-width: 1600px ) {
+  .postid-11543 .casestudy-intro-aside {
+    padding-left: 3%;
+  }
+}
+@media screen and ( max-width: 1366px ) {
+  .postid-11543 .casestudy-intro-aside {
+    padding-left: 0;
+  }
+}
+@media screen and ( max-width: 999px ) {
+  body.single-portfolio #page-header-bg h1,
+  html body.single-portfolio .row .col.section-title h1 {
+    font-size: 30px!important;
+  }
+}
+@media screen and ( max-width: 690px ) {
+  .casestudy-intro-aside p {
+    font-size: 11px;
+  }
+}

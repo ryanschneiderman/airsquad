@@ -1,0 +1,275 @@
+<div id = "new-header" style = "margin-top: 60px;"></div>
+<div id = "tactical-grid">
+    <div id = "tool-bar">
+        <div id = "drawing-buttons">
+          <button id = "run" class = "drawing-button" type = "button" onclick="lineToRun(event)">
+            <div class = "drawing-button-name">RUN</div>
+            <div class = "drawing-button-arrow">
+              <div class="line"></div>
+              <div class="triangle-point"></div>
+            </div>
+          </button>
+          
+          <button id = "pass" class = "drawing-button" type = "button" onclick="lineToPass(event)">
+            <div class = "drawing-button-name">PASS</div>
+            <div class = "drawing-button-arrow">
+              <div class="dotted-line"></div>
+              <div class="triangle-point"></div>
+            </div>
+          </button>
+          
+          <button id = "drive" class = "drawing-button" type = "button" onclick="lineToDribble(event)">
+            <div class = "drawing-button-name">DRIBBLE</div>
+            <div class = "drawing-button-arrow ">
+              <div class="line dribble-line"></div>
+              <div class="triangle-point dribble-triangle"></div>
+            </div>
+          </button>
+          
+          <button id = "screen" class = "drawing-button" type = "button" onclick="lineToScreen(event)">
+            <div class = "drawing-button-name">SCREEN</div>
+            <div class = "drawing-button-arrow">
+               <div class="line"></div>
+               <div class="vert-line"></div>
+            </div>
+          </button>  
+          <button id = "has-ball" class = "drawing-button" type = "button" onclick="hasBall()">
+            <div class = "drawing-button-name">Has Ball</div>
+            <%= image_tag("basketball-icon.png", :alt => "basketball", :class => "basketball-icon") %>
+          </button>         
+        </div>
+    </div>
+    <canvas id ="c"></canvas>
+</div>
+
+
+<%= render 'games/canvas_js' %>
+<%= render 'progressions/js_objects' %>
+<%= render 'progressions/javascript' %>
+
+<script>
+    //activate_header();
+   
+    var anchorRadius = 3;
+    var anchorOffset = anchorRadius - .5;
+    var play_name;
+    var animate_time = 1300;
+
+    var line_type;
+
+    var line, isDown, evented;
+    
+
+
+    var canvas_vars = initialize_canvas(0.6, 0.7, 'c', 3);
+    var canvas = canvas_vars.canvas
+    var playerRadius = canvas.height * .03;
+    var bench = canvas.width - canvas.width * .05;
+    plotBasket(canvas_vars.canvas_width/1.978, canvas_vars.canvas_height/11.5, 14, canvas_vars.canvas_width, canvas_vars.canvas);
+    add_players(bench, playerRadius);
+
+
+
+  canvas.on('object:moving', function (e) {
+
+            var obj = e.target;
+            if(obj.get("anchorable") == true ){
+              anchorPositioning(e);
+            }
+            if(obj.type == "toAnchor"){
+              linePositioning(e)
+            }
+            else if (obj.type == "curvePoint"){
+              curveLine(obj)
+            }
+    });
+
+  
+
+  canvas.on('selection:created', function() {
+        canvas.getActiveObjects().forEach(function(o) {
+            var type = o.get('type');
+            if(type == "PlayerCircle"){
+                o.lockMovementY = false;
+                o.lockMovementX = false;
+                o.set({stroke: "#91ff30"});
+                if(o.moveLine){
+                  o.moveLine.toAnchor.animate('opacity', '1', {
+                      duration: 50,
+                      onChange: canvas.requestRenderAll.bind(canvas),
+                  });
+                  o.moveLine.curvePoint.animate('opacity', '1', {
+                    duration: 50,
+                    onChange: canvas.requestRenderAll.bind(canvas),
+                  });
+                  o.moveLine.curvePoint.set({evented: true})
+                  console.log(o.moveLine.curvePoint)
+                }
+            }
+            else if (type == "toAnchor"){
+              o.animate('opacity', '1', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+              o.line.curvePoint.animate('opacity', '1', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+              o.line.curvePoint.set({evented: true})
+              console.log(o.line.curvePoint)
+              // linePositioning(o)
+            }
+            if(o.type == "curvePoint"){
+              o.animate('opacity', '1', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+              o.line.curvePoint.animate('opacity', '1', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+              o.line.curvePoint.set({evented: true})
+            }
+            if(o.isMoveLine){
+              console.log("line validated in selection!!!! ")
+              if(!o.toAnchor){
+                getToAnchor(o.toAnchorId, o);
+              }
+              o.toAnchor.animate('opacity', '1', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+            } 
+        });
+    });
+
+    canvas.on('before:selection:cleared', function() {
+         canvas.getActiveObjects().forEach(function(o) {
+            var type = o.get('type');
+            if(type == "PlayerCircle"){
+                o.set({stroke: o.color});
+                if(o.moveLine){
+                  o.moveLine.toAnchor.animate('opacity', '0', {
+                    duration: 50,
+                    onChange: canvas.requestRenderAll.bind(canvas),
+                  });
+                  o.moveLine.curvePoint.animate('opacity', '0', {
+                    duration: 50,
+                    onChange: canvas.requestRenderAll.bind(canvas),
+                  });
+                  o.moveLine.curvePoint.set({ evented: false})
+                }
+            } 
+            if(validateLine(o)){
+              if(!o.toAnchor){
+                getToAnchor(o.toAnchorId, o);
+              }
+              o.toAnchor.animate('opacity', '0', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+              if(o.isMoveLine){
+                  o.curvePoint.animate('opacity', '0', {
+                  duration: 50,
+                  onChange: canvas.requestRenderAll.bind(canvas),
+                });
+                o.curvePoint.set({ evented: false})
+              }
+            } 
+             else if (type == "toAnchor"){
+              o.animate('opacity', '0', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+              o.line.curvePoint.animate('opacity', '0', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+              o.line.curvePoint.set({ evented: false})
+              // linePositioning(o)
+            }
+            else if (o.type == "curvePoint"){
+              o.animate('opacity', '0', {
+                duration: 50,
+                onChange: canvas.requestRenderAll.bind(canvas),
+              });
+              o.line.curvePoint.set({ evented: false})
+            }        
+        });
+    });
+
+    function hideLineExtras(line){
+
+    }
+
+    canvas.on('selection:updated', function() {
+        canvas.getActiveObjects().forEach(function(o) {
+            var type = o.get('type');
+            if(type == "PlayerCircle"){
+                o.lockMovementY = false;
+                o.lockMovementX = false;
+            }   
+        });
+    });
+
+    function insertEndpoint(obj){
+
+  }
+
+  /*********************************************************************************************************************************/
+  /**************************************************** <DOCUMENT ON READY> ********************************************************/
+  /*********************************************************************************************************************************/
+  function init_play(){
+    play_name = $(".play-name").val();
+    console.log("play_name: " + play_name);
+    $("#new-header").text(play_name);
+    $(".modal-overlay").hide()
+
+  }
+
+  function save_progression(){
+  /* get values from elements on the page: */
+
+    deselect_all_active()
+    
+    var play_image = canvas.toDataURL('png')
+    var create_url = "/teams/" + <%= @team_id %> +"/plays/";
+    var notes_text = $(".progression-notes-text").html().replace(/\n/g, "<br>");
+    updateMoveLines()
+    var json_data = JSON.stringify(canvas.toJSON(['id']));
+  /* Send the data using post and put the results in a div */
+  
+    $.ajax({
+      url: create_url,
+      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type: "post",
+      data_type: 'json',
+      data: {json_diagram: json_data , team_id:  <%= @team_id %>, canvas_width: canvas.width, notes: notes_text, play_image: play_image, play_name: play_name, offense_defense: <%=@offense_defense%>, play_type: "<%=@play_type%>"}
+    });
+}
+
+
+
+
+function save_and_next_progression(){
+  deselect_all_active()
+    var play_image = canvas.toDataURL('png')
+    var create_url = "/teams/" + <%= @team_id %> +"/plays/";
+    var notes_text = $(".progression-notes-text").html().replace(/\n/g, "<br />");
+    updateMoveLines()
+    var json_data = JSON.stringify(canvas.toJSON(['id']));
+  /* Send the data using post and put the results in a div */
+    $.ajax({
+      url: create_url,
+      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+      type: "post",
+      data_type: 'json',
+      data: {json_diagram: json_data , team_id:  <%= @team_id %>, canvas_width: canvas.width, notes: notes_text, play_image: play_image, play_name: play_name, offense_defense: <%=@offense_defense%>, play_type: "<%=@play_type%>", create_next: true}
+     });
+}
+ 
+
+    
+
+
+</script>

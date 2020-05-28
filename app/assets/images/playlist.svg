@@ -1,0 +1,11 @@
+<svg id="Component_2_1" data-name="Component 2 – 1" xmlns="http://www.w3.org/2000/svg" width="310" height="310" viewBox="0 0 310 310">
+  <g id="Component_1_1" data-name="Component 1 – 1">
+    <rect id="Rectangle_10" data-name="Rectangle 10" width="250" height="250" rx="3" fill="#ddd"/>
+    <rect id="Rectangle_11" data-name="Rectangle 11" width="250" height="250" rx="4" transform="translate(22 22)" fill="#fff"/>
+    <rect id="Rectangle_12" data-name="Rectangle 12" width="250" height="250" rx="3" transform="translate(30 30)" fill="#ddd"/>
+    <rect id="Rectangle_13" data-name="Rectangle 13" width="250" height="250" rx="4" transform="translate(52 52)" fill="#fff"/>
+    <rect id="Rectangle_14" data-name="Rectangle 14" width="250" height="250" rx="3" transform="translate(60 60)" fill="#ddd"/>
+  </g>
+  <line id="Line_1" data-name="Line 1" y2="100" transform="translate(179.5 126.5)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="8"/>
+  <line id="Line_2" data-name="Line 2" y2="100" transform="translate(229.5 178.5) rotate(90)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="8"/>
+</svg>

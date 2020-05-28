@@ -1,18 +1,51 @@
+<nav>
+  <ul class="buttons notif" data-user-set-ocm="1">
+    <div class = "pc-menu dropdown">
+		<button id="notifications-button" class="dropdown-toggle " data-toggle="dropdown" onclick = "click_notifications()">
+		    <%= render 'layouts/navigation/collapsible_elements/notif_bell'%>
+	  	</button>
+	  	<div id = "notifications" class = "dropdown-menu" role="menu">
+	  		<div id = "notifications-header">Notifications</div>
+	  		<div class = "box-nub" id = "notifications-nub"></div>
+	  		<div id = "notifications-container"></div>
+	  	</div>
+	</div>
+   
+  </ul>
+  <ul class="sf-menu">  
+    <li id="home-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home  page_item page-item-3166 menu-item-8559"><%= link_to 'Home', root_path %>
+    </li>
+    <%if params.has_key?(:team_id)%>
+		<li id="stats-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%=link_to "Stats", team_stats_path(params[:team_id])%> 
+    </li>
+    <li id="schedule-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home page_item page-item-3166 menu-item-8559"> <%=link_to "Schedule", team_games_path(params[:team_id])%>
+    </li>
+    <li id="plays-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%=link_to "Plays", team_plays_path(params[:team_id])%>
+    </li>
+    <li id="lineup-explorer-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%=link_to "Lineup Explorer", team_lineups_path(params[:team_id])%>
+    </li>
+    <li id="settings-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%=link_to "Settings", team_settings_path(params[:team_id])%>
+    </li>
+	<%elsif params.has_key?(:id)%>
+		<li id="stats-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%=link_to "Stats", team_stats_path(params[:id])%> 
+    </li>
+    <li id="schedule-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home page_item page-item-3166 menu-item-8559"> <%=link_to "Schedule", team_games_path(params[:id])%>
+    </li>
+    <li id="plays-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%=link_to "Plays", team_plays_path(params[:id])%>
+    </li>
+    <li id="lineup-explorer-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%=link_to "Lineup Explorer", team_lineups_path(params[:id])%>
+    </li>
+    <li id="settings-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%=link_to "Settings", team_settings_path(params[:id])%>
+    </li>
+	<%end%>
+    
+    
+  </ul>    
+</nav>    
 
-<div class = "pc-menu dropdown">
-	<button id="notifications-button" class="dropdown-toggle " data-toggle="dropdown" onclick = "click_notifications()">
-	    <%= render 'layouts/navigation/collapsible_elements/notif_bell'%>
-  	</button>
 
-  	<div id = "notifications" class = "dropdown-menu" role="menu">
-  		<div id = "notifications-header">Notifications</div>
-  		<div class = "box-nub" id = "notifications-nub"></div>
-  		<div id = "notifications-container"></div>
-  		
-
-  	</div>
-</div>
-
+	
+<!-- 
 <div class="dropdown pc-menu">
   <a id="user-settings" class="dropdown-toggle " data-toggle="dropdown" href="#">
     <span id="user-name"><%= current_user.name %></span>
@@ -23,13 +56,38 @@
     <li><%= link_to 'Edit Profile', edit_user_registration_path %></li>
     <li><%= link_to 'Log out', destroy_user_session_path, method: :delete %></li>
   </ul>
-</div>
+</div> -->
 
 
 <script>
+
+
 	var notifications = []
 	
 	load_notifications()
+	addCurrentPageClass()
+
+	function addCurrentPageClass(){
+		if($('body[data-controller-name="teams"').length > 0){
+			$("#home-page-link").addClass("current_page_item").addClass("current_menu_item")
+		}
+		else if($('body[data-controller-name="stats"').length > 0){
+			$("#stats-page-link").addClass("current_page_item").addClass("current_menu_item")
+		}
+		else if($('body[data-controller-name="games"').length > 0){
+			$("#schedule-page-link").addClass("current_page_item").addClass("current_menu_item")
+		}
+		else if($('body[data-controller-name="plays"').length > 0){
+			$("#plays-page-link").addClass("current_page_item").addClass("current_menu_item")
+		}
+		else if ($('body[data-controller-name="settings"').length > 0){
+			$("#settings-page-link").addClass("current_page_item").addClass("current_menu_item")
+		}
+		else if ($('body[data-controller-name="lineups"').length > 0){
+			$("#lineup-explorer-page-link").addClass("current_page_item").addClass("current_menu_item")
+		}
+
+	}
 	
 
 	function convert_data(str){

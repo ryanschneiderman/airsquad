@@ -1,0 +1,114 @@
+<div class = "flex-column plays-index-content-wrapper plays-index-deactivated" id = "view-playlists-wrapper">
+	<div class = "plays-index-content">
+		<div class = "plays-and-playlists" id = "playlists-full">
+			<div class = "plays-row-wrapper" id = "playlist-home-wrapper">
+				<div class = "play-back-wrapper">
+					<button class = "modal-back-button" onclick = "back_to_previous()">
+	        			<object data='<%=asset_path("back-arrow.svg")%>' type="image/svg+xml" class = "back-arrow-img">
+	                          <%= image_tag("back-arrow.png", :alt => "back-arrow", :class => "back-arrow-img") %>	
+	                     </object>
+	        		</button>
+	        	</div>
+				<div class = "plays-full-heading">Playlists</div>
+				<div class = "playlists-full" id = "all-playlists">
+					<%@playlist_arr.each do |playlist|%>
+						<button class = "playlist-block" id = "playlist-full-block-<%=playlist[:playlist].id%>" onclick = "expandPlaylist(<%=playlist[:playlist].id%>)">
+							<div class = "playlist-imgs playlist-style-<%=playlist[:playlist].color_scheme%>">
+								<div class = "playlist-link-text playlist-link-text-<%=playlist[:playlist].id%>" ><%=playlist[:playlist].name%></div>
+							</div>
+						</button>
+					<%end%>
+				</div>
+			</div>
+			<%@playlist_arr.each do |playlist|%>
+				<div class = "playlist-solo-wrapper playlist-deactivated" id = "playlist-<%=playlist[:playlist].id%>">
+					<div class = "play-back-wrapper">
+						<button class = "modal-back-button" onclick = "back_to_previous()">
+		        			<object data='<%=asset_path("back-arrow.svg")%>' type="image/svg+xml" class = "back-arrow-img">
+		                          <%= image_tag("back-arrow.png", :alt => "back-arrow", :class => "back-arrow-img") %>	
+		                     </object>
+		        		</button>
+		        		<div class = "plays-buttons-wrapper">
+			        		<button class = "done-button not-editing" onclick = "update_playlist(<%=playlist[:playlist].id%>)"> Done </button>
+			        		<button class = "modal-back-button settings-button" id = "playlist-settings-button-<%=playlist[:playlist].id%>" onclick = "expand_settings()">
+			        			<object data='<%=asset_path("settings.svg")%>' type="image/svg+xml" class = "settings-img">
+			                          <%= image_tag("settings.png", :alt => "back-arrow", :class => "settings-img") %>	
+			                     </object>
+			        		</button>
+			        	</div>
+
+		        		<div class = "settings-wrapper playlist-settings-wrapper" id = "playlist-settings-wrapper-<%=playlist[:playlist].id%>" style = "display: none;">
+		        			<button class = "settings-action" onclick = "edit_playlist(<%=playlist[:playlist].id%>)">Edit playlist</button>
+		        			<button class = "settings-action" onclick = "delete_playlist()">Delete playlist</button>
+		        		</div>
+		        	</div>
+					<div class = "plays-full-heading" id = "playlist-heading-<%=playlist[:playlist].id%>" contenteditable="false"><%=playlist[:playlist].name%></div>
+					<div class = "add-to-playlist-wrapper flex-row not-editing">
+						<button class = "add-to-playlist flex-row" onclick = "show_full_playlist_modal()">
+		                         <%= image_tag("add-filled.png", :alt => "delete-progression", :class => "add-filled-icon") %>	
+		                    <div class = "add-to-playlist-text">Add to Playlist</div>
+		                </button>
+					</div>
+					<div class = "playlist-solos plays-full" id = "playlist-solo-<%=playlist[:playlist].id%>">
+						<%playlist[:playlist_imgs].each do |img|%>
+							<div class = "play-image-block-wrapper">
+								<div class ="play-image-block flex-row">
+									<button class= "play-index-image playlist-index-image" id = "play-image-<%=img[:play_id]%>" data-play-id = "<%=img[:play_id]%>">
+										<object data='<%=asset_path("delete.svg")%>' type="image/svg+xml" class = "delete-img delete-play delete-svg not-editing">
+					                          <%= image_tag("delete.png", :alt => "delete-progression", :class => "delete-img delete-play") %>	
+					                     </object>
+										<%= link_to show_vs_edit(img[:play_id]), :class => "play-link" do %>
+											<%= image_tag(url_for(img[:progression_img]), :alt => "play", :class => "play-img-full playlist", ) %>
+										<%end%>
+									</button>
+								</div>
+								<div class = "play-link-text"><%= link_to img[:play_name], show_vs_edit(img[:play_id]) %></div>
+							</div>
+						<%end%>
+					</div>
+				</div>
+			<%end%>
+			
+			
+		</div>
+	</div>
+</div>
+
+<div class = "modal-overlay" id = "full-playlist-modal-overlay" style = "display: none;"></div>
+<div class = "modal modal-positioning" id = "full-playlist-modal" style = "display: none;">
+  <div id = "playlist-initializer" class = "modal-container">
+    <div class = "GM-modal-wrapper">
+      <div class = "modal-inner-content" id = "play-modal-content">
+        <div class = "modal-body" id = "select-playlist-plays">
+        	<div class = "select-plays-heading">Select Plays To Add</div>
+        	<div id = "plays-select">
+        		<%counter = 0%>
+        		<%@all_plays.each do |play|%>
+	        		<div class ="play-image-block select-playlist-play-block-full" id = "select-playlist-play-block-full-<%=play.id%>" data-play-id = "<%=play.id%>" >
+						<div class= "play-index-image" id = "play-image-<%=play.id%>">
+							<button class ="play-to-playlist-button" onclick = "play_to_playlist_full(<%=play.id%>,this)">
+								<%= image_tag(@all_plays_progressions[counter].first.play_image, :alt => "play", :class => "play-img recently_viewed", :id => counter) %>
+							</button>
+						</div>
+						<button class = "play-link-text" onclick = "play_to_playlist_full(<%=play.id%>, this)">
+							<div class = "play-link-name"><%=play.name%></div>
+						</button>
+					</div>
+					<%counter+=1%>
+        		<%end%>
+        	</div>
+        </div>
+      </div>
+      <div id = "playlist-create-wrapper">
+      	<button class = "modal-cancel-button" onclick = "close_full_playlist_modal()">Cancel</button>
+      	<button class = "modal-submit-button" onclick = "update_playlist_plays()">Add plays</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+	<script type="text/javascript">
+		
+
+	</script>

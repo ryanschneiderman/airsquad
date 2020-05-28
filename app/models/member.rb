@@ -13,4 +13,5 @@ class Member < ApplicationRecord
 	has_many :member_notifs
 	has_many :notifications, through: :member_notifs
 	has_many :comments
+	has_many :play_views
 end
