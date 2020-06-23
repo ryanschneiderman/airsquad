@@ -30,6 +30,9 @@ Rails.application.routes.draw do
   post '/teams/:team_id/plays/delete_all' => "plays#destroy_all"
   post '/teams/:team_id/plays/recover_all' => "plays#recover_all"
   patch '/teams/:team_id/plays/:play_id/update_name' => "plays#update_name"
+  get '/teams/:team_id/stats/trend_data' => 'stats#trend_data'
+
+  get '/teams/:team_id/stats/player_profile/:member_id' => 'stats#player_profile'
 
   post '/teams/:team_id/playlists/:playlist/delete_association' => "playlists#delete_association"
 

@@ -155,7 +155,6 @@ body #pagination a.page-numbers:hover,
 body #pagination a.page-numbers:focus, 
 .nectar-slide-in-cart .widget_shopping_cart .cart_list a, 
 .sf-menu ul .open-submenu > a,
-body[data-form-submit="see-through"] input[type=submit], 
 body[data-form-submit="see-through"] button[type=submit], 
 .nectar_icon_wrap[data-color="accent-color"] i, 
 .nectar_team_member_close .inner:before, 
@@ -239,10 +238,6 @@ div[data-style="minimal_small"] .toggle.accent-color > h3:after,
 .post.format-link .post-content .link-inner,
 .nectar-post-grid-wrap[data-load-more-color="accent-color"] .load-more:hover,
 .format-status .post-content .status-inner, 
-input[type=submit]:hover, 
-input[type="button"]:hover,  
-body[data-form-submit="regular"] input[type=submit], 
-body[data-form-submit="regular"] button[type=submit],
 body[data-form-submit="regular"] .container-wrap .span_12.light input[type=submit]:hover, 
 body[data-form-submit="regular"] .container-wrap .span_12.light button[type=submit]:hover,
 .woocommerce div.product .woocommerce-tabs ul.tabs li.active, 
@@ -418,10 +413,6 @@ body nav.woocommerce-pagination span.page-numbers.current,
 body .nectar-quick-view-box .single_add_to_cart_button, 
 .woocommerce .classic .add_to_cart_button,
 .woocommerce .classic .product-add-to-cart a.button, 
-button[type=submit]:hover, 
-button[type=submit]:focus,
-body[data-form-submit="see-through"] input[type=submit]:hover, 
-body[data-form-submit="see-through"] button[type=submit]:hover, 
 body[data-form-submit="see-through"] .container-wrap .span_12.light input[type=submit]:hover, 
 body[data-form-submit="see-through"] .container-wrap .span_12.light button[type=submit]:hover, 
 body[data-form-submit="see-through"] .woocommerce #order_review #payment #place_order:hover,
@@ -487,8 +478,6 @@ blockquote.wp-block-quote:before,
 .single #project-meta ul li:not(.meta-share-count):hover a, 
 .nectar_image_with_hotspots .nectar_hotspot_wrap .nttip .tipclose, 
 body[data-button-style="rounded"] #pagination > a:hover, 
-body[data-form-submit="see-through"] input[type=submit], 
-body[data-form-submit="see-through"] button[type=submit], 
 .nectar_icon_wrap[data-style="border-basic"][data-color="accent-color"] .nectar_icon, 
 .nectar_icon_wrap[data-style="border-animation"][data-color="accent-color"]:not([data-draw="true"]) .nectar_icon,
 .nectar_icon_wrap[data-style="border-animation"][data-color="accent-color"][data-draw="true"]:hover .nectar_icon, 
@@ -589,9 +578,6 @@ body.material[data-button-style^="rounded"] .nectar-button.see-through.accent-co
 	-webkit-box-shadow: inset 0 0 0 2px #825cff; 
 }
 
-.default-loading-icon:before { 
-	border-top-color:#825cff!important; 
-}
 
 #header-outer a.cart-contents span:before, 
 #fp-nav.tooltip ul li .fp-tooltip .tooltip-inner:after { 
@@ -1948,13 +1934,8 @@ body .dark .testimonial_slider[data-style="multiple_visible"][data-color*="accen
 			height: calc(100vh - 47px); 
 		} 
 		
-	}#ajax-loading-screen, 
-		#ajax-loading-screen[data-effect="center_mask_reveal"] span { 
-			background-color: #2e3049
-		} 
-		.default-loading-icon { 
-			border-color: rgba(255,255,255,0.2); 
-		} #ajax-loading-screen .reveal-1 { background-color: #2e3049; }#ajax-loading-screen .reveal-2 { background-color: #2e3049; }
+	}
+		 #ajax-loading-screen .reveal-1 { background-color: #2e3049; }#ajax-loading-screen .reveal-2 { background-color: #2e3049; }
 	 #header-outer #logo .mobile-only-logo, 
 	 #header-outer[data-format="centered-menu-bottom-bar"][data-condense="true"] .span_9 #logo img { 	
 		 height: 24px; 
@@ -2584,9 +2565,6 @@ body .dark .testimonial_slider[data-style="multiple_visible"][data-color*="accen
       body .vc_pie_chart .wpb_pie_chart_heading, 
       #infscr-loading div, #page-header-bg .author-section a, 
       .woocommerce-cart .wc-proceed-to-checkout a.checkout-button, 
-      .ascend input[type="submit"], .ascend button[type="submit"], 
-      .material input[type="submit"], 
-      .material button[type="submit"], 
       body.material #page-header-bg.fullscreen-header .inner-wrap >a, 
       #page-header-bg[data-post-hs="default_minimal"] .inner-wrap > a,
       .widget h4, .text-on-hover-wrap .categories a, 
@@ -2622,10 +2600,6 @@ body .dark .testimonial_slider[data-style="multiple_visible"][data-color*="accen
       .woocommerce .material.product .product-wrap .product-add-to-cart a.added_to_cart,
       .woocommerce-page ul.products li.product.material .price, 
       .woocommerce-page ul.products li.product.material .price ins span, 
-      body[data-form-submit="see-through-2"] input[type=submit], 
-      body[data-form-submit="see-through-2"] button[type=submit], 
-      body[data-form-submit="see-through"] input[type=submit], 
-      body[data-form-submit="see-through"] button[type=submit], 
       body[data-form-submit="regular"] input[type=submit] body[data-form-submit="regular"] button[type=submit], 
       .nectar_team_member_overlay .team_member_details .title, 
       body:not([data-header-format="left-header"]) #top nav > ul > .megamenu > ul > li > ul > li.has-ul > a, 

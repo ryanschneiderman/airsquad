@@ -7,13 +7,15 @@ class PlaylistsController < ApplicationController
 		playlist.color_scheme = playlist.id.modulo(7)
 		playlist.save!
 		progression_imgs = []
-		play_ids.each do |play_id|
-			play = Play.find_by_id(play_id)
-			playlist_association = PlaylistAssociation.new(play: play, playlist: playlist,)
-			playlist_association.save!
-			progression = Progression.where(play_id: play.id)
-			progression_img = progression[0].play_image
-			progression_imgs.push({progression_img: url_for(progression_img), play_id: play.id, play_name: play.name})
+		if play_ids
+			play_ids.each do |play_id|
+				play = Play.find_by_id(play_id)
+				playlist_association = PlaylistAssociation.new(play: play, playlist: playlist,)
+				playlist_association.save!
+				progression = Progression.where(play_id: play.id)
+				progression_img = progression[0].play_image
+				progression_imgs.push({progression_img: url_for(progression_img), play_id: play.id, play_name: play.name})
+			end
 		end
 		render :json => {playlist_name: playlist_name, playlist_id: playlist.id, playlist_imgs: progression_imgs, color_scheme: playlist.color_scheme}
 	end

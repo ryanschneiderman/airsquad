@@ -3,11 +3,13 @@
 			<div class = "plays-and-playlists">
 				<div class = "plays-row-wrapper">
 					<div class = "play-back-wrapper">
-						<button class = "modal-back-button" onclick = "back_to_previous()">
-		        			<object data='<%=asset_path("back-arrow.svg")%>' type="image/svg+xml" class = "back-arrow-img">
-		                          <%= image_tag("back-arrow.png", :alt => "back-arrow", :class => "back-arrow-img") %>	
-		                     </object>
-		        		</button>
+						<div class = "flex-row">
+							<button class = "modal-back-button" onclick = "back_to_previous()">
+			        			<object data='<%=asset_path("back-arrow.svg")%>' type="image/svg+xml" class = "back-arrow-img">
+			                          <%= image_tag("back-arrow.png", :alt => "back-arrow", :class => "back-arrow-img") %>	
+			                     </object>
+			        		</button>
+		        		</div>
 		        		<div class = "plays-buttons-wrapper">
 			        		<button class = "modal-back-button settings-button" id = "deleted-settings-button" onclick = "bulk_actions()">
 			        			<object data='<%=asset_path("settings.svg")%>' type="image/svg+xml" class = "settings-img">
@@ -15,9 +17,9 @@
 			                     </object>
 			        		</button>
 			        	</div>
-			        	<div class = "settings-wrapper playlist-settings-wrapper" id = "deleted-settings-wrapper" style = "display: none;">
-		        			<button class = "settings-action" onclick = "delete_all()">Delete All</button>
-		        			<button class = "settings-action" onclick = "recover_all()">Recover All</button>
+			        	<div class = "toolbar-dropdown playlist-settings-wrapper" id = "deleted-settings-wrapper" style = "display: none;">
+		        			<button class = "dropdown-action" onclick = "delete_all()">Delete All</button>
+		        			<button class = "dropdown-action" onclick = "recover_all()">Recover All</button>
 		        		</div>
 		        	</div>
 					<div class = "plays-full-heading">Deleted Plays</div>
@@ -51,114 +53,114 @@
 
 	<script type="text/javascript">
 
-		function bulk_actions(){
-			$("#deleted-settings-wrapper").show()
-			$('#deleted-plays-wrapper').on("mousedown", function(e){
-				console.log(e.target)
-				if(!$(e.target).hasClass("settings-action")){
-					collapse_bulk_actions()
-				}
-			})
-		}
+		// function bulk_actions(){
+		// 	$("#deleted-settings-wrapper").show()
+		// 	$('#deleted-plays-wrapper').on("mousedown", function(e){
+		// 		console.log(e.target)
+		// 		if(!$(e.target).hasClass("settings-action")){
+		// 			collapse_bulk_actions()
+		// 		}
+		// 	})
+		// }
 
-		function collapse_bulk_actions(){
-			$("#deleted-settings-wrapper").hide()
-		}
+		// function collapse_bulk_actions(){
+		// 	$("#deleted-settings-wrapper").hide()
+		// }
 
-		function insertPlayInDom(result){
-			var play_image_block_wrapper = '<div class = "play-image-block-wrapper" id = "play-all-'+result.play_id+'" data-play-id = "'+result.play_id+'"></div>'
-			var play_image_block = '<div class ="play-image-block flex-row" ></div>'
-	 		var button = '<button class= "play-index-image" id = "play-image-'+result.play_id+'" data-play-id = "'+result.play_id+'"></button>'
+		// function insertPlayInDom(result){
+		// 	var play_image_block_wrapper = '<div class = "play-image-block-wrapper" id = "play-all-'+result.play_id+'" data-play-id = "'+result.play_id+'"></div>'
+		// 	var play_image_block = '<div class ="play-image-block flex-row" ></div>'
+	 // 		var button = '<button class= "play-index-image" id = "play-image-'+result.play_id+'" data-play-id = "'+result.play_id+'"></button>'
 
-	 		var delete_object = '<object data="<%=asset_path("delete.svg")%>" type="image/svg+xml" class = "delete-img delete-play delete-svg not-editing"><%= image_tag("delete.png", :alt => "delete-progression", :class => "delete-img delete-play") %></object>'
-
-
-	 		var link = '<a class="play-link" href="/teams/<%=@team_id%>/plays/'+result.play_id+'/edit"></a>'
-	 		var play_img = '<img alt="play" class="play-img-full playlist" src="'+result.progression_img+'">'
-	 		var play_link_text = '<div class = "play-link-text"><a href="/teams/<%=@team_id%>/plays/'+result.play_id+'/edit">'+result.play_name+'</a></div>'
-	 		$("#all-plays").append($(play_image_block_wrapper).append($(play_image_block).append($(button).append($(delete_object)).append($(link).append(play_img)))).append(play_link_text))
-
-	 		$('.play-link').click(function(e) {
-				if(editing){
-					e.preventDefault();
-				}
-			});
-			set_delete_button_position()
-		}
-
-		function recover_all(){
-			var recover_all_url = "/teams/" + <%= @team_id %> +"/plays/recover_all"
-			$(".soft-deleted").each(function(){
-				$(this).remove()
-			})
-			collapse_bulk_actions()
-			$.ajax({
-		      url: recover_all_url,
-		      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-		      method: "post",
-		      data_type: 'json',
-		      success: function(result){
-		      	console.log(result)
-		      	var recovered_plays = result.content
-		      	$(recovered_plays).each(function(){
-		      		console.log(this)
-		      		insertPlayInDom(this)
-		      	})
-		      }
-		    });
-		}
-
-		function delete_all(){
-			var delete_all_url = "/teams/" + <%= @team_id %> +"/plays/delete_all"
-			$(".soft-deleted").each(function(){
-				$(this).remove()
-			})
-			collapse_bulk_actions()
-			$.ajax({
-		      url: delete_all_url,
-		      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-		      method: "post",
-		      data_type: 'json',
-		      success: function(result){
-		      	console.log("success")
-		      }
-		    });
-		}
+	 // 		var delete_object = '<object data="<%=asset_path("delete.svg")%>" type="image/svg+xml" class = "delete-img delete-play delete-svg not-editing"><%= image_tag("delete.png", :alt => "delete-progression", :class => "delete-img delete-play") %></object>'
 
 
-		function recover_play(play_id){
-			var delete_url = "/teams/" + <%= @team_id %> +"/plays/" + play_id + "/recover";
-		 	$.ajax({
-		      url: delete_url,
-		      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-		      method: "post",
-		      data_type: 'json',
-		      success: function(result){
-		      	removeFromDeletedDom(result.play_id)
-		      	insertPlayInDom(result, result.play_id)
-		      }
-		    });
-		}
+	 // 		var link = '<a class="play-link" href="/teams/<%=@team_id%>/plays/'+result.play_id+'/edit"></a>'
+	 // 		var play_img = '<img alt="play" class="play-img-full playlist" src="'+result.progression_img+'">'
+	 // 		var play_link_text = '<div class = "play-link-text"><a href="/teams/<%=@team_id%>/plays/'+result.play_id+'/edit">'+result.play_name+'</a></div>'
+	 // 		$("#all-plays").append($(play_image_block_wrapper).append($(play_image_block).append($(button).append($(delete_object)).append($(link).append(play_img)))).append(play_link_text))
 
-		function removeFromDeletedDom(play_id){
-			$("#play-deleted-"+play_id).remove()
-		}
+	 // 		$('.play-link').click(function(e) {
+		// 		if(editing){
+		// 			e.preventDefault();
+		// 		}
+		// 	});
+		// 	set_delete_button_position()
+		// }
 
-		function setDeletedActionsPos(playlist_id){
-		 	$("#deleted-settings-wrapper").css("top", $("#deleted-settings-button").offset().top + $("#deleted-settings-button").height() + 5)
-		  	$("#deleted-settings-wrapper").css("left", $("#deleted-settings-button").offset().left - $("#deleted-settings-wrapper").outerWidth() + $("#deleted-settings-button").width())
-		 }
+		// function recover_all(){
+		// 	var recover_all_url = "/teams/" + <%= @team_id %> +"/plays/recover_all"
+		// 	$(".soft-deleted").each(function(){
+		// 		$(this).remove()
+		// 	})
+		// 	collapse_bulk_actions()
+		// 	$.ajax({
+		//       url: recover_all_url,
+		//       beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		//       method: "post",
+		//       data_type: 'json',
+		//       success: function(result){
+		//       	console.log(result)
+		//       	var recovered_plays = result.content
+		//       	$(recovered_plays).each(function(){
+		//       		console.log(this)
+		//       		insertPlayInDom(this)
+		//       	})
+		//       }
+		//     });
+		// }
 
-		function full_delete(play_id){
-			var delete_url = "/teams/" + <%= @team_id %> +"/plays/" + play_id;
-		 	$.ajax({
-		      url: delete_url,
-		      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-		      method: "delete",
-		      data_type: 'json',
-		      success: function(){
-		      	removeFromDeletedDom(play_id)
-		      }
-		    });
-		}
+		// function delete_all(){
+		// 	var delete_all_url = "/teams/" + <%= @team_id %> +"/plays/delete_all"
+		// 	$(".soft-deleted").each(function(){
+		// 		$(this).remove()
+		// 	})
+		// 	collapse_bulk_actions()
+		// 	$.ajax({
+		//       url: delete_all_url,
+		//       beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		//       method: "post",
+		//       data_type: 'json',
+		//       success: function(result){
+		//       	console.log("success")
+		//       }
+		//     });
+		// }
+
+
+		// function recover_play(play_id){
+		// 	var delete_url = "/teams/" + <%= @team_id %> +"/plays/" + play_id + "/recover";
+		//  	$.ajax({
+		//       url: delete_url,
+		//       beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		//       method: "post",
+		//       data_type: 'json',
+		//       success: function(result){
+		//       	removeFromDeletedDom(result.play_id)
+		//       	insertPlayInDom(result, result.play_id)
+		//       }
+		//     });
+		// }
+
+		// function removeFromDeletedDom(play_id){
+		// 	$("#play-deleted-"+play_id).remove()
+		// }
+
+		// function setDeletedActionsPos(playlist_id){
+		//  	$("#deleted-settings-wrapper").css("top", $("#deleted-settings-button").offset().top + $("#deleted-settings-button").height() + 5)
+		//   	$("#deleted-settings-wrapper").css("left", $("#deleted-settings-button").offset().left - $("#deleted-settings-wrapper").outerWidth() + $("#deleted-settings-button").width())
+		//  }
+
+		// function full_delete(play_id){
+		// 	var delete_url = "/teams/" + <%= @team_id %> +"/plays/" + play_id;
+		//  	$.ajax({
+		//       url: delete_url,
+		//       beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		//       method: "delete",
+		//       data_type: 'json',
+		//       success: function(){
+		//       	removeFromDeletedDom(play_id)
+		//       }
+		//     });
+		// }
 	</script>

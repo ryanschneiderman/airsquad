@@ -3,11 +3,13 @@
 		<div class = "plays-and-playlists" id = "playlists-full">
 			<div class = "plays-row-wrapper" id = "playlist-home-wrapper">
 				<div class = "play-back-wrapper">
-					<button class = "modal-back-button" onclick = "back_to_previous()">
-	        			<object data='<%=asset_path("back-arrow.svg")%>' type="image/svg+xml" class = "back-arrow-img">
-	                          <%= image_tag("back-arrow.png", :alt => "back-arrow", :class => "back-arrow-img") %>	
-	                     </object>
-	        		</button>
+					<div class = "flex-row">
+						<button class = "modal-back-button" onclick = "back_to_previous()">
+		        			<object data='<%=asset_path("back-arrow.svg")%>' type="image/svg+xml" class = "back-arrow-img">
+		                          <%= image_tag("back-arrow.png", :alt => "back-arrow", :class => "back-arrow-img") %>	
+		                     </object>
+		        		</button>
+	        		</div>
 	        	</div>
 				<div class = "plays-full-heading">Playlists</div>
 				<div class = "playlists-full" id = "all-playlists">
@@ -23,11 +25,13 @@
 			<%@playlist_arr.each do |playlist|%>
 				<div class = "playlist-solo-wrapper playlist-deactivated" id = "playlist-<%=playlist[:playlist].id%>">
 					<div class = "play-back-wrapper">
-						<button class = "modal-back-button" onclick = "back_to_previous()">
-		        			<object data='<%=asset_path("back-arrow.svg")%>' type="image/svg+xml" class = "back-arrow-img">
-		                          <%= image_tag("back-arrow.png", :alt => "back-arrow", :class => "back-arrow-img") %>	
-		                     </object>
-		        		</button>
+						<div class = "flex-row">
+							<button class = "modal-back-button" onclick = "back_to_previous()">
+			        			<object data='<%=asset_path("back-arrow.svg")%>' type="image/svg+xml" class = "back-arrow-img">
+			                          <%= image_tag("back-arrow.png", :alt => "back-arrow", :class => "back-arrow-img") %>	
+			                     </object>
+			        		</button>
+		        		</div>
 		        		<div class = "plays-buttons-wrapper">
 			        		<button class = "done-button not-editing" onclick = "update_playlist(<%=playlist[:playlist].id%>)"> Done </button>
 			        		<button class = "modal-back-button settings-button" id = "playlist-settings-button-<%=playlist[:playlist].id%>" onclick = "expand_settings()">
@@ -37,9 +41,9 @@
 			        		</button>
 			        	</div>
 
-		        		<div class = "settings-wrapper playlist-settings-wrapper" id = "playlist-settings-wrapper-<%=playlist[:playlist].id%>" style = "display: none;">
-		        			<button class = "settings-action" onclick = "edit_playlist(<%=playlist[:playlist].id%>)">Edit playlist</button>
-		        			<button class = "settings-action" onclick = "delete_playlist()">Delete playlist</button>
+		        		<div class = "toolbar-dropdown playlist-settings-wrapper" id = "playlist-settings-wrapper-<%=playlist[:playlist].id%>" style = "display: none;">
+		        			<button class = "dropdown-action" onclick = "edit_playlist(<%=playlist[:playlist].id%>)">Edit playlist</button>
+		        			<button class = "dropdown-action" onclick = "delete_playlist()">Delete playlist</button>
 		        		</div>
 		        	</div>
 					<div class = "plays-full-heading" id = "playlist-heading-<%=playlist[:playlist].id%>" contenteditable="false"><%=playlist[:playlist].name%></div>

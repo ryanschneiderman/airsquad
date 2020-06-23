@@ -1,0 +1,45 @@
+<!-- <div class = "stats-index-content-wrapper stats-index-deactivated " id = "shot-charts-index">
+	<div class = "stats-index-header grid" id = "shot-chart-index-header">
+		<button class = "center-aligned shot-chart-button" id = "toggle-shot-chart-button" onclick = "shot_chart_dropdown()" style = "width: 125px;">
+			<div class = "sort-button-text" id = "shot-chart-current"><%=@team_name%></div>
+			<object data='<%=asset_path("down-arrow.svg")%>' type="image/svg+xml" class = "sort-img">
+                  <%= image_tag("down-arrow.png", :alt => "sort", :class => "sort-img") %>	
+             </object>
+		</button>
+		<div class = "stats-index-page-title flex-row center-justified" id = "shot-chart-page-title"> Shot Charts</div>
+		
+		<div class = "toolbar-dropdown" id = "show-shot-chart-dropdown" style = "display: none;">
+			<button class="flex-row toolbar-dropdown-button" onclick = "show_shot_chart(this, '<%=@team_name%>')"><div id="show-shot-chart-<%=@team_name%>" class="dropdown-action lineup-dropdown-action" ><%=@team_name%></div></button>
+			<button class="flex-row toolbar-dropdown-button" onclick = "show_shot_chart(this, 'opponents')"><div id="show-shot-chart-opponents" class="dropdown-action lineup-dropdown-action" >Opponents</div></button>
+		<%@shot_chart_data.each do |data|%>
+			<button class="flex-row toolbar-dropdown-button" onclick = "show_shot_chart(this, <%=data[:member_id]%>)"><div id="show-shot-chart-<%=data[:member_id]%>" class="dropdown-action lineup-dropdown-action" ><%=data[:name]%></div></button>
+		<%end%>
+		</div>
+	</div>
+	<div class = " flex-row center-justified center-aligned" id = "shot-charts-wrapper">
+		<div class = "shot-charts">
+			<div id = "shot-trends-<%=@team_name%>" class = "index-shot-chart"></div>
+			<div id = "shot-trends-opponents" class = "index-shot-chart"></div>
+			<%@shot_chart_data.each do |data|%>
+			<div id = "shot-trends-<%=data[:member_id]%>" class = "index-shot-chart"></div>
+			<%end%>
+		</div>
+		<div class = "color-key" id = "main-color-key">
+			<div class="calibration" role="calibration">
+				<div id = "color-key-header">EFG%</div>
+		        <div class="group" role="example">
+		          <svg width="55" height = "350">
+		          </svg>
+		                
+		        </div>
+		    </div>
+		</div>
+	</div>
+	
+</div> -->
+
+<script>
+
+    //$("#shot-trends-"+shot_charts[0].member_id).removeClass("shot-chart-deactivated")
+
+</script>

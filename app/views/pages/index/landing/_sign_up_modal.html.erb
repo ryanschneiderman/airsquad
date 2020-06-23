@@ -1,0 +1,47 @@
+<div class = "modal-overlay" id = "sign-up-overlay" style = "display: none;"></div>
+<div class = "modal modal-positioning" id = "sign-up-modal" style = "display: none;">
+  <div id = "signup-initializer" class = "modal-container">
+    <div class = "GM-modal-wrapper">
+      <div class = "modal-header-wrapper">
+        <div class = "modal-header" id = "create-account-header">Create Account</div>
+      </div>
+      <button class = "modal-back-button signup-deactivated" onclick = "back_to_signup()" id = "signup-back-button">
+        <object data='<%=asset_path("back-arrow.svg")%>' type="image/svg+xml" class = "back-arrow-img">
+            <%= image_tag("back-arrow.png", :alt => "back-arrow", :class => "back-arrow-img") %>  
+        </object>
+      </button>
+      <%= bootstrap_form_for(resource, 
+       :as => resource_name, 
+       :url => registration_path(resource_name),
+       :remote => true) do |f| %>
+      <div class = "modal-inner-content" id = "signup-modal-content">
+        <div class = "modal-body ">
+          
+          <!-- padding top, padding bottom -->
+            <div id = "create-account-wrapper">
+                <div class = "grid" id = "firstname-lastname">              
+                  <%= f.text_field :first_name, 
+                           class: 'form-control signup-modal-input' %>
+                  <%= f.text_field :last_name, 
+                          class: 'form-control signup-modal-input' %>
+                </div>
+                <%= f.text_field :email, 
+                           class: 'form-control signup-modal-input' %>
+                <%= f.password_field :password, 
+                                     class: 'form-control signup-modal-input' %>
+                <%= f.password_field :password_confirmation, 
+                                     class: 'form-control signup-modal-input' %>
+            </div>
+
+        </div>
+      </div>
+      <div class = "modal-footing">
+      	<button class = "modal-cancel-button" id = "signup-cancel" onclick = "close_signup_modal()">Cancel</button>
+        <%= f.submit 'Sign up', class: 'modal-submit-button modal-submit-button-deactivated' , id: "signup-submit", disabled: true %>
+      	<!-- <button class = "modal-submit-button modal-submit-button-deactivated" id = "signup-next" disabled onclick = "createAccount()">Create</button> -->
+        <% end %>
+      </div>
+      
+    </div>
+  </div>
+</div>

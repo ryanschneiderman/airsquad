@@ -9,11 +9,12 @@ class PlaysController < ApplicationController
 					@is_admin = true
 				end
 			end
+			member = @curr_member.take
 			cookies[:team_id] = params[:team_id] 
 			@team_id = params[:team_id]
 
 			##@half_offensive_plays = Play.joins(:team_plays, :play_type).select("play_types.play_type as p_type, team_plays.team_id as team_id, plays.*").where("plays.offense_defense" => true, "team_plays.team_id"=>params[:team_id], "play_types.play_type" => "Halfcourt").sort_by{|e| e.id}
-			@all_plays =  Play.joins(:team_plays, :play_type).select("play_types.play_type as p_type, team_plays.team_id as team_id, plays.*").where( "team_plays.team_id"=>params[:team_id], "plays.deleted_flag" => false).sort_by{|e| e.name}
+			@all_plays =  Play.joins(:team_plays, :play_views).select("team_plays.team_id as team_id, play_views.member_id as member_id, play_views.viewed as viewed, plays.*").where( "team_plays.team_id"=>params[:team_id], "plays.deleted_flag" => false, "play_views.member_id" => member.id).sort_by{|e| e.name}
 			@all_plays_progressions = []
 			@all_plays.each do |play|
 				all_plays_progression = Progression.where(:play_id => play.id).sort_by{|e| e.index}
@@ -27,7 +28,7 @@ class PlaysController < ApplicationController
 				@deleted_plays_progressions.append(deleted_plays_progression)
 			end
 
-			@recently_viewed = Play.joins(:team_plays, :play_views).select("plays.*, team_plays.team_id as team_id, play_views.member_id as member_id, play_views.viewed as viewed").where("team_plays.team_id" => params[:team_id], "plays.deleted_flag" => false).limit(4).sort_by{|e| e.viewed}.reverse!
+			@recently_viewed = Play.joins(:team_plays, :play_views).select("plays.*, team_plays.team_id as team_id, play_views.member_id as member_id, play_views.viewed as viewed").where("team_plays.team_id" => params[:team_id], "plays.deleted_flag" => false, "play_views.member_id" => member.id).sort_by{|e| e.viewed}.reverse!.first(4)
 			@recently_viewed_progressions = []
 			@recently_viewed.each do |play|
 				recently_viewed_progression = Progression.where(:play_id => play.id).sort_by{|e| e.index}
@@ -58,6 +59,9 @@ class PlaysController < ApplicationController
 			
 
 			@play_types = PlayType.all()
+
+			gon.team_id = @team_id
+			
 
 			#@play = Play.new
 		else
@@ -154,7 +158,7 @@ class PlaysController < ApplicationController
 		end
 
 		is_user_member = Team.joins(:members).where(members: {team_id: @team_id}).where(members: {user_id: current_user.id})
-		
+		gon.team_id = @team_id
 		## ensuring that the page viewer is a member of the team. Probably a better way to do this site wide. 
 		if is_user_member.size > 0 || param_play.user_id == current_user.id
 			@play = param_play
@@ -182,7 +186,7 @@ class PlaysController < ApplicationController
 		param_play_id = params[:id]
 		@team_id = cookies[:team_id]
 
-
+		gon.team_id = @team_id
 		@play_type = param_play.play_type_id
 
 		if param_play.num_progressions == 0 
@@ -210,7 +214,7 @@ class PlaysController < ApplicationController
 		play_name = params[:play_name]
 		play.update(name: play_name)
 	end
-	
+
 	def update
 		puts "updating progression"
 		play_id = params[:id]

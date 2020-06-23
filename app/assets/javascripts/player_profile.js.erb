@@ -1,0 +1,267 @@
+
+
+
+
+
+function get_player_profile(player_id, loading){
+	var player_profile_route = '/teams/'+gon.team_id+'/stats/player_profile/'+ player_id
+	$("#player-profile-dropdown").hide()
+	
+	$.ajax({
+	   url: player_profile_route,
+	   beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+	   method: "get",
+	   data_type: 'json',
+	   data: {player_id: player_id},
+	   success: function(result){
+	   		$("#player-profiles-index").addClass("stats-index-deactivated")
+	   		reset_player_profile_page()
+
+			player_profile(result)
+			if(loading){
+				console.log("removing in result")
+				$('#ajax-loading-screen').css({'opacity':0, 'display':'none'})
+				$('#ajax-loading-screen .loading-icon').css({'opacity':0}) 
+			}
+	   }
+	  });
+}
+
+function player_profile_hash(player_id){
+	window.location.hash = "player_profiles?"+player_id
+}
+
+
+function player_profile(result){
+	$("#player-profile-current").text(result.player.nickname)
+	$("#player-profile-index").removeClass("stats-index-deactivated")
+	percentage_circles(result)
+	create_player_shot_chart(result)
+	insert_game_log(result)
+	insert_advanced_stat_modules(result)
+	setPlayerProfileButtons()
+}
+
+
+function create_player_shot_chart(result){
+	var court = d3.select(".player-shot-chart").append('svg');
+	// 14 shot locations = length of array
+	var make_array = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+	var efg_array = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+	var att_array = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+	var court_regions = [];
+	var court_margin = { left: 0, right: 0, top: 0, bottom: 0};
+
+    var court_width =  getPlayerCourtWidth()
+    var court_height = court_width * 0.7
+    var inner_width = court_width - court_margin.left - court_margin.right;
+    var inner_height = court_height - court_margin.top - court_margin.bottom;
+
+    var x_offset = court_width / 179;
+    var y_offset = court_width / 716;
+
+    var region_spacing = court_width / 179
+
+	court.attr('width', court_width + 5)
+	   .attr('height', court_height + 5)
+	   
+	var heat_g = court.append('g')
+	var court_g = court.append('g');
+	shot_chart = ({"make_array": make_array, "court" : court, "court_g" : court_g, "efg_array": efg_array, "att_array": att_array, "court_regions": court_regions, "shot_chart_data": result.shot_chart_data,})
+
+	draw_court(court_width, shot_chart, inner_width, inner_height, x_offset, y_offset, region_spacing);
+	insert_player_shot_chart_data(shot_chart, court_width);
+	fill_regions(shot_chart);
+}
+
+function percentage_circles(result){
+	var fg_makes, fg_misses, three_pt_makes, three_pt_misses, ft_makes, ft_misses, fg_pct, ft_pct, three_pt_pct;
+	var len = result.season_stats.length
+	for(var i = 0; i < len; i++){
+		if(result.season_stats[i].stat_list_id == 1){
+			fg_makes = result.season_stats[i].value
+		}
+		else if (result.season_stats[i].stat_list_id == 2){
+			fg_misses = result.season_stats[i].value
+		}
+		else if (result.season_stats[i].stat_list_id == 11){
+			three_pt_makes = result.season_stats[i].value;
+		}
+		else if (result.season_stats[i].stat_list_id == 12){
+			three_pt_misses = result.season_stats[i].value;
+		}
+		else if (result.season_stats[i].stat_list_id == 13){
+			ft_makes = result.season_stats[i].value;
+		}
+		else if (result.season_stats[i].stat_list_id == 14){
+			ft_misses = result.season_stats[i].value;
+		}
+	}
+	if(fg_makes + fg_misses == 0){
+		fg_pct = 0
+	}
+	else{
+		fg_pct = 100*fg_makes/(fg_misses + fg_makes)
+	}
+
+	if(ft_makes + ft_misses == 0){
+		ft_pct = 0;
+	}
+	else {
+		ft_pct = 100*ft_makes/(ft_misses + ft_makes)
+	}
+
+	if(three_pt_makes+three_pt_misses==0){
+		three_pt_pct = 0
+	}
+	else{
+		three_pt_pct = 100*three_pt_makes/(three_pt_misses + three_pt_makes)
+	}
+	var colors = ["#00a3f9", "#0c0c0c"]
+
+	create_percentage_circle("#player-fg-percentage-circle", fg_pct, window.innerWidth/5.5, window.innerWidth /5.5, colors)
+	create_percentage_circle("#player-ft-percentage-circle", ft_pct, window.innerWidth/5.5, window.innerWidth /5.5, colors)
+	create_percentage_circle("#player-three-pt-percentage-circle", three_pt_pct, window.innerWidth/5.5, window.innerWidth /5.5, colors)
+
+}
+
+
+function insert_game_log(result){
+	var display_stats = gon.stat_table_columns
+	populate_game_log_header($("#player-game-log-header")[0], display_stats)
+	populate_game_log_data($("#player-game-log-body")[0], result)
+	$(".player-game-log-container").scrollTop($(".player-game-log-container").height())
+}
+
+
+
+function populate_game_log_header(row, display_stats){
+	var insert_index = 0;
+	var num_stats = display_stats.length
+	for(i = 0; i < num_stats + 1; i++){
+		th = document.createElement('th');
+		if (i > 0) {
+			th.innerHTML += "<div class = 'game-log-heading'>" + display_stats[i - 1].stat_name + "</div>";
+		}
+		else{
+			//th.classList.add("table-col1-bold");
+		}
+		row.appendChild(th)
+	}
+}
+
+
+function populate_game_log_data(table, stats){
+	var num_games = stats.game_data.length;
+	for(var i = 0; i < num_games; i++){
+		populate_game_data(table, stats.game_data[i], i)
+	}
+	populate_game_data(table, stats.game_data[0], i)
+	populate_game_data(table, stats.game_data[0], i+1)
+	populate_game_data(table, stats.game_data[0], i+2)
+	populate_game_data(table, stats.game_data[0], i+3)
+	populate_game_log_season_data(table, stats, num_games*3+1)
+}
+
+function populate_game_data(table, game_data, index){
+	var row = table.insertRow(index)
+	row.classList.add("team-table-row" + index % 2)
+	var col = row.insertCell(0);
+
+	col.innerHTML= parseDate(game_data.date, game_data.opponent_name.substring(0, 4))
+	var len = display_stats.length;
+	for (var i = 0; i < len; i++){
+		var col = row.insertCell(i+1);
+		if(display_stats[i].display_type == "fraction"){
+			insert_fraction_data(row, col, display_stats[i].stat_list_id, i+1, game_data.data, null, true, false, false, false)
+		}
+		else if (display_stats[i].display_type == "minutes"){
+			insert_minutes_data(col, display_stats[i].stat_list_id, game_data.data, null,true , false, false)
+		}
+		else{
+			standard_table_data(col, display_stats[i].stat_list_id, game_data.data, null, true, false, false, false)
+			
+		}
+	}
+}
+
+function populate_game_log_season_data(table, stats, i){
+	var per_game_row = $(".game-log-per-game")[0]
+	game_log_season_data(per_game_row, stats, true, false)
+	var per_minute_row = $(".game-log-per-minute")[0]
+	game_log_season_data(per_minute_row, stats, false, true)
+	var total_row = $(".game-log-totals")[0]
+	game_log_season_data(total_row, stats, false, false)
+}
+
+function game_log_season_data(row, stats, is_per_game, is_per_minute,){
+	var col = row.insertCell(0);
+	col.innerHTML = get_stat_type(is_per_game, is_per_minute)
+	col.classList.add("table-col1");
+	stats.player.minutes = stats.player.season_minutes
+	console.log(stats)
+	var len = display_stats.length;
+	for (var i = 0; i < len; i++){
+		var col = row.insertCell(i+1);
+		if(display_stats[i].display_type == "fraction"){
+			insert_fraction_data(row, col, display_stats[i].stat_list_id, i+1, stats.season_stats, stats.player, true, is_per_game, is_per_minute)
+		}
+		else if (display_stats[i].display_type == "minutes"){
+			insert_minutes_data(col, display_stats[i].stat_list_id, stats.season_stats, stats.player,true , is_per_game, is_per_minute)
+		}
+		else{
+			standard_table_data(col, display_stats[i].stat_list_id, stats.season_stats, stats.player, true, false, is_per_game, is_per_minute)
+			
+		}
+	}
+}
+
+function get_stat_type(is_per_game, is_per_minute){
+	if(is_per_game){
+		return "Per Game"
+	}
+	else if (is_per_minute){
+		return "Per " + gon.minutes_factor + "m"
+	}
+	else {
+		return "Total"
+	}
+}
+
+
+function insert_advanced_stat_modules(result){
+	var num_adv_stats = gon.adv_stat_table_columns.length;
+	var color_array = ["#d10002", "#de2429", "#e7767b", "#f0aaad", "#f7d3d4", "#e4eaf4", "#abbddd" ,"#7c98ca" ,"#5176b8", "#3661ad", "#bdbdbd"]
+	console.log(gon.adv_stat_table_columns)
+	for(var i = 0; i < num_adv_stats; i++){
+		var stat_obj = find_stat(result.advanced_stats, gon.adv_stat_table_columns[i].stat_list_id)
+		var rank = stat_obj.team_rank
+		var percentile = (rank)/ (gon.num_players)
+		var color = determine_adv_color(color_array, percentile)
+		var stat_wrapper = $("<div class = 'profile-advanced-wrapper flex-row center-aligned center-justified'></div>")
+		var stat_container = $('<div class = "profile-advanced-module stat-module"></div>')
+		var stat_label = $('<div class = "profile-module-label">'+ gon.adv_stat_table_columns[i].display_name +'</div>')
+		var stat_value = $('<div class = "profile-module-value">' + stat_obj.value + '</div>')
+		stat_wrapper.append(stat_container.append(stat_label).append(stat_value))
+		$(".player-advanced-stats").append(stat_wrapper)
+		$(stat_label).css("border-color", color)
+		//$(stat_container).css("border", "1px solid "+ color)
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

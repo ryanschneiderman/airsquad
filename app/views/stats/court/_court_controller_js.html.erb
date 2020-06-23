@@ -1,9 +1,11 @@
 <script>
+    function init(){
         var court_margin = { left: 20, right: 20, top: 20, bottom: 20 };
-        var court_width =  window.innerWidth * 0.65
+        var court_width =  $(window).width()*.65
         var court_height = court_width * 0.7
-        var innerWidth = court_width - court_margin.left - court_margin.right;
-        var innerHeight = court_height - court_margin.top - court_margin.bottom;
+        var inner_width = court_width - court_margin.left - court_margin.right;
+        var inner_height = court_height - court_margin.top - court_margin.bottom;
+
         var x_offset = 2;
         var y_offset = 1;
         var court = d3.select("#shot-trends").append('court').append('svg');
@@ -48,9 +50,15 @@
 
         var BasketRegion = court_g.append('circle');
         var MidRangeRegion = court_g.append('circle');
-
+        
         draw_court(court_width, court);
         initialize_shot_chart_data();
         initCalibration()
+    }
+        
+
+        
+        
+        
 
 </script>

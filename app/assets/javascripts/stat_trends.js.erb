@@ -1,0 +1,409 @@
+
+
+function initialize_trends_chart(){
+  data = gon.team_points;
+  curr_stat = {"stat_id": 15, "stat_name" : "Points", "is_advanced" : false}
+  var margin = {top: 10, right: 50, bottom: 75, left: 75};
+  var width = window.innerWidth * 0.87 - margin.left - margin.right;
+  var height = width * 0.47 - margin.top - margin.bottom;
+  trends_chart =  new TrendChart("#trends-chart", data, "#349dff", "Points", gon.team_name, width, height, margin)
+  trends_chart.createChart()
+  console.log(trends_chart.data)
+}
+
+
+
+function init_trend_display_stats(){
+  team_adv_display_stats = gon.team_adv_stat_table_columns
+  team_adv_display_stats = jQuery.grep(team_adv_display_stats, function(n) {
+    return !n.is_opponent;
+  });
+
+  off_display_stats = gon.off_stat_lists
+
+  def_display_stats = gon.def_stat_lists
+
+  adv_display_stats = gon.adv_stat_table_columns;
+
+}
+
+  function insert_team_trends_advanced_links(){
+    var adv_len = team_adv_display_stats.length;
+    var advanced_links;
+    if(adv_len > 0){
+      var advanced_header = $("<div class = 'lineup-order-subheader'>Advanced Stats</div>")
+      advanced_links = $("<div class = 'lineup-dropdown-section'></div>")
+      $("#trend-team-stats").append(advanced_header)
+    }
+    for (var i = 0; i < adv_len; i++){
+      var link_string = team_adv_display_stats[i].display_name;
+      var advanced_link = "<button class='flex-row toolbar-dropdown-button' data-is-advanced = 'true' onclick = 'stat_trend_button(this, "+team_adv_display_stats[i].stat_list_id+")'><div id = 'trend-link-"+team_adv_display_stats[i].stat_list_id+"' class = 'dropdown-action lineup-dropdown-action' >"+link_string+"</div></button>"
+      advanced_links.append(advanced_link)
+      
+    }
+    $("#trend-team-stats").append(advanced_links)
+  }
+
+  function insert_player_trends_advanced_links(){
+    var adv_len = adv_display_stats.length;
+    var advanced_links;
+    if(adv_len > 0){
+      var advanced_header = $("<div class = 'lineup-order-subheader'>Advanced Stats</div>")
+      advanced_links = $("<div class = 'lineup-dropdown-section'></div>")
+      $("#trend-player-stats").append(advanced_header)
+    }
+    for (var i = 0; i < adv_len; i++){
+      var link_string = adv_display_stats[i].display_name;
+      var advanced_link = "<button class='flex-row toolbar-dropdown-button' data-is-advanced = 'true' onclick = 'stat_trend_button(this, "+ adv_display_stats[i].stat_list_id+")'><div id = 'trend-link-"+ adv_display_stats[i].stat_list_id+"' class = 'dropdown-action lineup-dropdown-action'  >"+link_string+"</div></button>"
+      advanced_links.append(advanced_link)
+      
+    }
+    $("#trend-player-stats").append(advanced_links)
+  }
+
+  function insert_trends_offensive_links(){
+    var off_len = off_display_stats.length
+    var off_header = $("<div class = 'lineup-order-subheader'>Offensive Stats</div>")
+    var off_links = $("<div class = 'lineup-dropdown-section'></div>")
+    //$("#lineup-order-links").append(off_header)
+    for (var i =0; i<off_len; i++){
+      var link_string = off_display_stats[i].stat
+      var off_link = "<button class='flex-row toolbar-dropdown-button' data-is-advanced = 'false' onclick = 'stat_trend_button(this, "+off_display_stats[i].stat_list_id+")'><div id = 'trend-link-"+off_display_stats[i].stat_list_id+"' class = 'dropdown-action lineup-dropdown-action'  >"+link_string+"</div></button>"
+      off_links.append(off_link)
+    }
+
+    var player_off_header = $(off_header).clone()
+    var player_off_links = $(off_links).clone()
+
+    $("#trend-team-stats").append(off_header)
+    $("#trend-team-stats").append(off_links)
+    $("#trend-player-stats").append(player_off_header)
+    $("#trend-player-stats").append(player_off_links)
+  }
+
+  function insert_trends_defensive_links(){
+    var def_len = def_display_stats.length
+    var def_header = $("<div class = 'lineup-order-subheader'>Defensive Stats</div>")
+    var def_links = $("<div class = 'lineup-dropdown-section'></div>")
+    //$("#lineup-order-links").append(def_header)
+    for (var i =0; i<def_len; i++){
+      var link_string = def_display_stats[i].stat
+      var def_link = "<button class='flex-row toolbar-dropdown-button' data-is-advanced = 'false' onclick = 'stat_trend_button(this, "+def_display_stats[i].stat_list_id+")'><div id = 'trend-link-"+def_display_stats[i].stat_list_id+"' class = 'dropdown-action lineup-dropdown-action'  >"+link_string+"</div></button>"
+      def_links.append(def_link)
+    }
+
+    var player_def_header = $(def_header).clone()
+    var player_def_links = $(def_links).clone()
+
+    $("#trend-team-stats").append(def_header)
+    $("#trend-team-stats").append(def_links)
+
+    $("#trend-player-stats").append(player_def_header)
+    $("#trend-player-stats").append(player_def_links)
+  }
+
+  function insert_trends_order_links(){
+    insert_team_trends_advanced_links()
+    insert_player_trends_advanced_links()
+    insert_trends_offensive_links()
+    insert_trends_defensive_links()
+  }
+
+ 
+
+  function is_off_player_stat(stat){
+    var len = off_display_stats.length;
+    for(var i = 0; i < len; i++){
+      if(stat == off_display_stats[i].stat_list_id) return true;
+    }
+    return false;
+  }
+
+  function is_def_player_stat(stat){
+    var len = def_display_stats.length;
+    for(var i = 0; i < len; i++){
+      if(stat == def_display_stats[i].stat_list_id) return true;
+    }
+    return false;
+  }
+
+  function is_adv_player_stat(stat){
+    var len = adv_display_stats.length;
+    for(var i = 0; i < len; i++){
+      console.log("stat input: " + stat)
+      console.log("compare stat: " + adv_display_stats[i].stat_list_id)
+      if(stat == adv_display_stats[i].stat_list_id) return true;
+    }
+    return false;
+  }
+
+  function is_adv_team_stat(stat){
+    var len = team_adv_display_stats.length;
+    for(var i = 0; i < len; i++){
+      if(stat == team_adv_display_stats[i].stat_list_id) return true;
+    }
+  }
+
+  function is_player_stat(stat){
+    if(is_off_player_stat(stat)){
+      return true;
+    }
+    else if(is_def_player_stat(stat)){
+      return true;
+    }
+    else if (is_adv_player_stat(stat)){
+      console.log("returning true")
+      return true;
+    }
+    else return false;
+  }
+
+  function is_team_stat(stat){
+    if(is_off_player_stat(stat)){
+      return true;
+    }
+    else if (is_def_player_stat(stat)){
+      return true
+    }
+    else if(is_adv_team_stat(stat)){
+      return true;
+    }
+    else return false;
+  }
+
+  function team_trend_button(button, is_opponent){
+    console.log("in team trend button")
+    $("#trend-player-stats-button").hide()
+    $("#trends-player-dropdown").hide()
+    $("#trend-team-stats-button").show()
+
+    curr_player = null;
+    if(!team_trend){
+      if(!is_team_stat(curr_stat.stat_id)){
+        curr_stat = {"stat_id": 15, "stat_name" : "Points", "is_advanced" : false}
+      }
+    }
+    team_is_opponent = is_opponent
+    team_trend = true;
+    get_trend_data(button, true)
+    
+  }
+
+  function player_trend_button(button, player){
+    $("#trends-player-dropdown").hide()
+    $("#trend-team-stats-button").hide()
+    $("#trend-player-stats-button").show()
+
+    curr_player = player;
+    if(team_trend){
+      if(!is_player_stat(curr_stat.stat_id)){
+        console.log("setting to player points")
+        curr_stat = {"stat_id": 15, "stat_name" : "Points", "is_advanced" : false}
+      }
+    }
+    team_trend = false;
+    get_trend_data(button, true)
+    
+  }
+
+  function stat_trend_button(button, stat){
+    $("#trend-player-stats").hide()
+    $("#trend-team-stats").hide()
+    console.log($(button).data("is-advanced"))
+    curr_stat = {"stat_id": stat, "stat_name" : $(button).find(".dropdown-action").text(),  "is_advanced" : $(button).data("is-advanced")}
+    get_trend_data(button, false)
+  }
+
+  function update_trend_chart(result, button, is_player){
+    if(is_player){
+      console.log($(button).find(".dropdown-action").text())
+      $("#trend-player-current").text($(button).find(".dropdown-action").text())
+      if(is_player_stat(curr_stat.stat_id)){
+        $("#trend-player-stat-current").text(curr_stat.stat_name)
+      }
+      else{
+        $("#trend-team-stat-current").text(curr_stat.stat_name)
+      }
+    }
+    else{
+      if(team_trend){
+        $("#trend-team-stat-current").text(curr_stat.stat_name)
+      }
+      else{
+        console.log("changing player stat")
+        $("#trend-player-stat-current").text(curr_stat.stat_name)
+      }
+      
+    }
+    trends_chart.setData(result.stats)
+    trends_chart.setYAxis(curr_stat.stat_name)
+    trends_chart.createChart()
+  }
+
+
+
+  function get_trend_data(button, is_player){
+    console.log("in get trend data")
+    var create_url = "/teams/" + gon.team_id +"/stats/trend_data";
+    if(team_trend){
+      var data  = {is_opponent: team_is_opponent, is_team: true, stat: curr_stat}
+    }
+    else{
+      var data = {player_id: curr_player, is_team: false, stat: curr_stat}
+    }
+    
+    $.ajax({
+       url: create_url,
+       beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+       method: "get",
+       data_type: 'json',
+       data: data,
+       success: function(result){
+        console.log(result)
+        update_trend_chart(result, button, is_player)
+       }
+
+      });
+  }
+
+
+
+
+
+function find_trend_index(trend_array, stat_list_id){
+  var len = trend_array.length;
+  for (var i = 0; i < len; i++){
+    if(trend_array[i].stat_list_id == stat_list_id){
+      return i;
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+function TrendChart(id, data, color, y_axis_label, player, width, height, margin){
+  this.id = id;
+  this.data = data;
+  this.color = color;
+  this.y_axis_label = y_axis_label;
+  this.player = player;
+  this.width = width;
+  this.height = height;
+  this.margin = margin;
+
+  this.setData = function(data){
+    this.data = data;
+  }
+  this.setYAxis = function(label){
+    this.y_axis_label = label
+  }
+
+  this.createChart = function(){
+    console.log("In create chart")
+    var maxValue = d3.max(this.data, function(i){return i.value;});
+
+    var n = this.data.length
+
+    // 5. X scale will use the index of our this.data
+    var xScale = d3.scaleBand().rangeRound([0, width]).padding(1);
+
+    // 6. Y scale will use the randomly generate number 
+    var yScale = d3.scaleLinear()
+        .domain([0, maxValue * 1.25]) // input 
+        .range([height, 0]); // output 
+
+    // 7. d3's line generator
+    var line = d3.line()
+      .x(function(d) { return xScale(parseDate(d.date, d.opponent_name)); }) // set the x values for the line generator
+      .y(function(d) { return yScale(d.value); }) // set the y values for the line generator 
+      .curve(d3.curveMonotoneX) // apply smoothing to the line
+
+    xScale.domain(this.data.map(function(d) { return parseDate(d.date, d.opponent_name) }));
+
+    d3.select(this.id).select("svg").remove();
+
+      // 1. Add the SVG to the page and employ #2
+    var svg = d3.select(this.id).append("svg")
+        .attr("width", this.width + this.margin.left + this.margin.right)
+        .attr("height", this.height + this.margin.top + this.margin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+
+    // 3. Call the x axis in a group tag
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + this.height + ")")
+        .call(d3.axisBottom(xScale))
+        .selectAll("text")
+        .attr("transform", "rotate(30)")
+        .attr("y", 15)
+        .attr("x", 35); // Create an axis component with d3.axisBottom
+
+      // X axis label == date
+    svg.append("text")
+        .attr("class", "trend-axis-label")   
+        .style("font-size", "14px")          
+        .attr("transform",
+              "translate(" + (this.width/2) + " ," + 
+                             (this.height + 40) + ")")
+        .style("text-anchor", "middle")
+        .text("Date");
+
+    // 4. Call the y axis in a group tag
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(d3.axisLeft(yScale)); // Create an axis component with d3.axisLeft
+
+      // text label for the y axis
+    svg.append("text")
+        .attr("class", "trend-axis-label")
+        .attr("transform", "rotate(-90)")
+        .attr("fill", "white")
+        .style("font-size", "14px")
+        .attr("y", -60)
+        .attr("x",0 - (this.height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text(this.y_axis_label);   
+
+
+    // 9. Append the path, bind the this.data, and call the line generator 
+    svg.append("path")
+        .datum(this.data) // 10. Binds this.data to the line 
+        .attr("stroke", this.color)
+        .attr("class", "line") // Assign a class for styling 
+        .attr("d", line); // 11. Calls the line generator 
+
+    // 12. Appends a circle for each this.datapoint 
+    svg.selectAll(".dot")
+        .data(this.data)
+      .enter().append("circle") // Uses the enter().append() method
+        .attr("class", "dot") // Assign a class for styling
+        .style("fill", this.color)
+        .attr("cx", function(d) { return xScale(parseDate(d.date, d.opponent_name)) })
+        .attr("cy", function(d) { return yScale(d.value) })
+        .attr("r", 5)
+          .on("mouseover", function(a, b, c) { 
+            console.log(a) 
+            //this.attr('class', 'focus')
+        })
+          .on("mouseout", function() {  })
+  };
+
+}
+
+function parseDate(date, opponent_name){
+  var split_date = date.split("-")
+  var return_date = opponent_name + " (" + split_date[1]+"/" + split_date[2] + ")"
+  return return_date
+}
+
+
+
+

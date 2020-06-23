@@ -18,11 +18,17 @@
 			</div>
 			<div class = "plays-and-playlists">
 				<div class = "plays-row-wrapper">
-					<div class = "plays-row-heading">Recently Viewed</div>
+					<div class = "plays-row-heading-wrapper">
+						<div class = "plays-row-heading">Recently Viewed</div>
+						<div class = "see-all-plays-wrapper">
+							<button class = "see-all-link " onclick = "all_plays(1)">See All</button>
+						</div>
+						
+					</div>
 					<div class = "plays-row" id = "recently-viewed">
 						<%counter = 0%>
 						<%@recently_viewed.each do |play| %>
-							<div class ="play-image-block" id = "recently-viewed-<%=play.id%>">
+							<div class ="play-image-block home-image-block" id = "recently-viewed-<%=play.id%>">
 								<div class= "play-index-image" id = "play-image-<%=play.id%>">
 									<%= link_to show_vs_edit(play.id), :class => "play-link" do %>
 										<%= image_tag(@recently_viewed_progressions[counter].first.play_image, :alt => "play", :class => "play-img recently_viewed", :id => counter) %>
@@ -35,7 +41,12 @@
 					</div>
 				</div>
 				<div class = "plays-row-wrapper">
-					<div class = "plays-row-heading">Playlists</div>
+					<div class = "plays-row-heading-wrapper">
+						<div class = "plays-row-heading">Playlists</div>
+						<div class = "see-all-plays-wrapper">
+							<button class = "see-all-link" onclick = "view_playlists()">See All</button>
+						</div>
+					</div>
 					<div class = "plays-row" id = "playlists">
 						<%@playlist_arr.first(4).each do |playlist|%>
 							<button class = "playlist-block" id = 'playlist-home-block-<%=playlist[:playlist].id%>' onclick = "go_to_playlist(<%=playlist[:playlist].id%>)">
@@ -48,11 +59,16 @@
 					</div>
 				</div>
 				<div class = "plays-row-wrapper">
-					<div class = "plays-row-heading">Recently Updated</div>
+					<div class = "plays-row-heading-wrapper">
+						<div class = "plays-row-heading">Recently Updated</div>
+						<div class = "see-all-plays-wrapper">
+							<button class = "see-all-link" onclick = "all_plays(2)">See All</button>
+						</div>
+					</div>
 					<div class = "plays-row" id = "recently-viewed">
 						<%counter = 0%>
 						<%@recently_updated.each do |play| %>
-							<div class ="play-image-block" id = "recently-updated-<%=play.id%>">
+							<div class ="play-image-block home-image-block" id = "recently-updated-<%=play.id%>">
 								<div class= "play-index-image" id = "play-image-<%=play.id%>">
 									<%= link_to show_vs_edit(play.id), :class => "play-link" do %>
 										<%= image_tag(@recently_updated_progressions[counter].first.play_image, :alt => "play", :class => "play-img recently_viewed", :id => counter) %>

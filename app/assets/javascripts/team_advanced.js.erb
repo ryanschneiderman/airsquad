@@ -1,0 +1,161 @@
+function teamStatsPercentageCircles(team_stats, advanced_stats){
+	var team_efg, opponent_efg, team_orb, opponent_orb, team_tov, opponent_tov, team_ftr, opponent_ftr, offensive_efficiency, defensive_efficiency, ftar, three_pt_ar, assist_ratio, pace;
+	var len = advanced_stats.length;
+	var winner_colors = ["#00ff97", "#0c0c0c"]
+	var loser_colors = ["#929292", "#0c0c0c"]
+	for(var i = 0; i < len; i++){
+		if(advanced_stats[i].stat_list_id == 18 && advanced_stats[i].is_opponent == false){
+			team_efg = advanced_stats[i].value
+		}
+		else if (advanced_stats[i].stat_list_id == 18 && advanced_stats[i].is_opponent == true){
+			opponent_efg = advanced_stats[i].value
+		}
+		else if (advanced_stats[i].stat_list_id == 33){
+			team_orb = advanced_stats[i].value
+		}
+		else if (advanced_stats[i].stat_list_id == 34){
+			opponent_orb = 100 - advanced_stats[i].value
+		}
+		else if (advanced_stats[i].stat_list_id == 38 && advanced_stats[i].is_opponent == false){
+			team_tov = advanced_stats[i].value
+		}
+		else if (advanced_stats[i].stat_list_id == 38 && advanced_stats[i].is_opponent == true){
+			opponent_tov = advanced_stats[i].value
+		}
+		else if (advanced_stats[i].stat_list_id == 47 && advanced_stats[i].is_opponent == false){
+			team_ftr = advanced_stats[i].value
+		}
+		else if (advanced_stats[i].stat_list_id == 47 && advanced_stats[i].is_opponent == true){
+			opponent_ftr = advanced_stats[i].value
+		}
+		else if (advanced_stats[i].stat_list_id == 30){
+			offensive_efficiency = advanced_stats[i].value
+		}
+		else if (advanced_stats[i].stat_list_id == 31){
+			defensive_efficiency = advanced_stats[i].value
+		}
+		else if (advanced_stats[i].stat_list_id == 21){
+			three_pt_ar = advanced_stats[i]
+		}
+		else if (advanced_stats[i].stat_list_id == 22){
+			ftar = advanced_stats[i]
+		}
+		else if (advanced_stats[i].stat_list_id == 52){
+			assist_ratio = advanced_stats[i]
+		}
+		else if (advanced_stats[i].stat_list_id == 46){
+			pace = advanced_stats[i]
+		}
+	}
+	var team_advanced_data = {offensive_efficiency: offensive_efficiency, defensive_efficiency: defensive_efficiency, ftar: ftar, three_pt_ar: three_pt_ar, pace: pace, assist_ratio: assist_ratio}
+	
+	var team_efg_color = (team_efg > opponent_efg) ? winner_colors : loser_colors
+	var opponent_efg_color = (opponent_efg > team_efg) ? winner_colors : loser_colors
+	var team_orb_color = (team_orb > opponent_orb) ? winner_colors : loser_colors
+	var opponent_orb_color = (opponent_orb > team_orb) ? winner_colors : loser_colors
+	var team_tov_color = (team_tov < opponent_tov) ? winner_colors : loser_colors
+	var opponent_tov_color = (opponent_tov < team_tov) ? winner_colors : loser_colors
+	var team_ftr_color = (team_ftr > opponent_ftr) ? winner_colors : loser_colors
+	var opponent_ftr_color = (opponent_ftr > team_ftr) ? winner_colors : loser_colors
+
+	create_percentage_circle("#team-efg", team_efg, window.innerWidth/8, window.innerWidth /8, team_efg_color)
+	create_percentage_circle("#opponent-efg", opponent_efg, window.innerWidth/8, window.innerWidth /8, opponent_efg_color)
+	create_percentage_circle("#team-orb", team_orb, window.innerWidth/8, window.innerWidth /8, team_orb_color)
+	create_percentage_circle("#opponent-orb", opponent_orb, window.innerWidth/8, window.innerWidth /8, opponent_orb_color)
+	create_percentage_circle("#team-tov", team_tov, window.innerWidth/8, window.innerWidth /8, team_tov_color)
+	create_percentage_circle("#opponent-tov", opponent_tov, window.innerWidth/8, window.innerWidth /8, opponent_tov_color)
+	create_percentage_circle("#team-ftr", team_ftr, window.innerWidth/8, window.innerWidth /8, team_ftr_color)
+	create_percentage_circle("#opponent-ftr", opponent_ftr, window.innerWidth/8, window.innerWidth /8, opponent_ftr_color)
+
+	insertTeamAdvancedData(team_advanced_data)
+}
+
+function insertBasicTeamPercentageCircles(team_stats){
+	console.log("inserting basic team percentage")
+	var len = team_stats.length;
+	var fg_pct, ft_pct, three_pt_pct;
+	for(var i = 0; i < len; i++){
+		if(team_stats[i].stat_list_id == 1){
+			fg_makes = team_stats[i].value
+		}
+		else if (team_stats[i].stat_list_id == 2){
+			fg_misses = team_stats[i].value
+		}
+		else if (team_stats[i].stat_list_id == 11){
+			three_pt_makes = team_stats[i].value;
+		}
+		else if (team_stats[i].stat_list_id == 12){
+			three_pt_misses = team_stats[i].value;
+		}
+		else if (team_stats[i].stat_list_id == 13){
+			ft_makes = team_stats[i].value;
+		}
+		else if (team_stats[i].stat_list_id == 14){
+			ft_misses = team_stats[i].value;
+		}
+	}
+	if(fg_makes + fg_misses == 0){
+		fg_pct = 0
+	}
+	else{
+		fg_pct = 100*fg_makes/(fg_misses + fg_makes)
+	}
+
+	if(ft_makes + ft_misses == 0){
+		ft_pct = 0;
+	}
+	else {
+		ft_pct = 100*ft_makes/(ft_misses + ft_makes)
+	}
+
+	if(three_pt_makes+three_pt_misses==0){
+		three_pt_pct = 0
+	}
+	else{
+		three_pt_pct = 100*three_pt_makes/(three_pt_misses + three_pt_makes)
+	}
+
+	var colors = ["#00a3f9", "#0c0c0c"]
+
+	create_percentage_circle("#team-fg-percentage-circle", fg_pct, window.innerWidth/5.5, window.innerWidth /5.5, colors)
+	create_percentage_circle("#team-ft-percentage-circle", ft_pct, window.innerWidth/5.5, window.innerWidth /5.5, colors)
+	create_percentage_circle("#team-three-pt-percentage-circle", three_pt_pct, window.innerWidth/5.5, window.innerWidth /5.5, colors)
+} 
+
+function insertTeamAdvancedData(team_advanced_data){
+	if(team_advanced_data.offensive_efficiency){
+		$("#offensive-rating-value").text(team_advanced_data.offensive_efficiency)
+	}
+	if(team_advanced_data.defensive_efficiency){
+		$("#defensive-rating-value").text(team_advanced_data.defensive_efficiency)
+	}
+	if(team_advanced_data.pace){
+		var other_advanced_wrapper = "<div class = 'other-advanced-wrapper'></div>"
+		var other_advanced_heading = "<div class = 'team-stats-text team-other-text team-rating-heading'>Pace</div>"
+		var other_advanced_value = "<div class = 'team-stats-text team-other-text'>" + team_advanced_data.pace.value + "</div>"
+
+		$(".other-advanced-container").append($(other_advanced_wrapper).append(other_advanced_heading).append(other_advanced_value))
+	}
+	if(team_advanced_data.three_pt_ar){
+		var other_advanced_wrapper = "<div class = 'other-advanced-wrapper'></div>"
+		var other_advanced_heading = "<div class = 'team-stats-text team-other-text team-rating-heading'>3PAr</div>"
+		var other_advanced_value = "<div class = 'team-stats-text team-other-text'>" + team_advanced_data.three_pt_ar.value + "</div>"
+
+		$(".other-advanced-container").append($(other_advanced_wrapper).append(other_advanced_heading).append(other_advanced_value))
+	}
+	if(team_advanced_data.ftar){
+		var other_advanced_wrapper = "<div class = 'other-advanced-wrapper'></div>"
+		var other_advanced_heading = "<div class = 'team-stats-text team-other-text team-rating-heading'>FTAr</div>"
+		var other_advanced_value = "<div class = 'team-stats-text team-other-text'>" + team_advanced_data.ftar.value + "</div>"
+
+		$(".other-advanced-container").append($(other_advanced_wrapper).append(other_advanced_heading).append(other_advanced_value))
+	}
+	if(team_advanced_data.assist_ratio){
+		var other_advanced_wrapper = "<div class = 'other-advanced-wrapper'></div>"
+		var other_advanced_heading = "<div class = 'team-stats-text team-other-text team-rating-heading'>Assist Ratio</div>"
+		var other_advanced_value = "<div class = 'team-stats-text team-other-text'>" + team_advanced_data.assist_ratio.value + "</div>"
+
+		$(".other-advanced-container").append($(other_advanced_wrapper).append(other_advanced_heading).append(other_advanced_value))
+	}
+}
+

@@ -1,0 +1,73 @@
+<div class = "modal-overlay" id = "sign-up-overlay" style = "display: none;"></div>
+<div class = "modal modal-positioning" id = "sign-up-modal" style = "display: none;">
+  <div id = "signup-initializer" class = "modal-container">
+    <div class = "GM-modal-wrapper">
+      <div class = "modal-header-wrapper">
+        <div class = "modal-header" id = "create-account-header">Create Account</div>
+      </div>
+      <button class = "modal-back-button signup-deactivated" onclick = "back_to_signup()" id = "signup-back-button">
+        <object data='<%=asset_path("back-arrow.svg")%>' type="image/svg+xml" class = "back-arrow-img">
+            <%= image_tag("back-arrow.png", :alt => "back-arrow", :class => "back-arrow-img") %>  
+        </object>
+      </button>
+      <div class = "modal-inner-content" id = "signup-modal-content">
+        <div class = "modal-body ">
+          
+          <!-- padding top, padding bottom -->
+            <div id = "create-account-wrapper">
+            	<div class = "create-account-elem-wrapper">
+                <div class = "grid" id = "firstname-lastname">
+                  <div class = "create-account-elem flex-column" id = "firstname">
+                    <div class = "modal-input-label">
+                      First Name
+                    </div>
+                    <input type = "text" name = "firstname" id = "firstname-input" class = "signup-modal-input modal-input">
+                  </div>
+                  <div class = "create-account-elem flex-column" id = "lastname">
+                    <div class = "modal-input-label">
+                      Last Name
+                    </div>
+                    <input type = "text" name = "lastname" id = "lastname-input" class = "signup-modal-input modal-input">
+                  </div>
+                </div>
+              </div>
+
+              <div class = "create-account-elem-wrapper">
+                  <div class = "create-account-elem flex-column" id = "email">
+                    <div class = "modal-input-label">
+                      Email
+                    </div>
+                    <input type = "text" name = "email" id = "email-input" class = "signup-modal-input modal-input">
+                  </div>
+              </div>
+
+              <div class = "create-account-elem-wrapper">
+                  <div class = "create-account-elem flex-column" id = "password">
+                    <div class = "modal-input-label">
+                      Password
+                    </div>
+                    <input type = "password" name = "password" id = "password-input" class = "signup-modal-input modal-input">
+                  </div>
+              </div>
+            </div>
+
+        </div>
+      </div>
+      <div class = "modal-footing">
+      	<button class = "modal-cancel-button" id = "signup-cancel" onclick = "close_signup_modal()">Cancel</button>
+      
+      	<button class = "modal-submit-button modal-submit-button-deactivated" id = "signup-next" disabled onclick = "createAccount()">Create</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+

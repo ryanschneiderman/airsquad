@@ -92,11 +92,11 @@
                 </div>
             </div>
             <div class = "save-play-wrapper">
-                <div id = "propogate-changes-wrapper">
-                    <input id = "propogate-changes-button" type="checkbox" name="propogate-changes" value="true" checked> Propagate Changes 
-                    <span class = "propogate-icon-wrapper">
-                        <div class="tooltiptext">What is this? <span class = "propogation-more-info-link" onclick = "test_function()">Learn about play propagation here</span>.</div>
-                        <object data='<%=asset_path("information-icon.svg")%>' type="image/svg+xml" class = "propogate-changes-info">
+                <div id = "propagate-changes-wrapper">
+                    <input id = "propagate-changes-button" type="checkbox" name="propagate-changes" value="true" checked> Propagate Changes 
+                    <span class = "propagate-icon-wrapper">
+                        <div class="tooltiptext">What is this? <span class = "propagation-more-info-link" onclick = "show_propagation_modal()">Learn about play propagation here</span>.</div>
+                        <object data='<%=asset_path("information-icon.svg")%>' type="image/svg+xml" class = "propagate-changes-info">
                           <%= image_tag("information-icon.svg", :alt => "information", :class => "information-icon") %>
                         </object>
                     </span>
@@ -112,15 +112,14 @@
         <%= image_tag("green-check.svg", :alt => "changes-saved", :class => "changes-saved") %>
 </object></div>
 
-<%= render 'progressions/js_objects' %>
-<%= render 'progressions/javascript' %>
-<%= render 'progressions/edit_play_js' %>
+<div id = "save-changes-banner" class = "play-change-banner">Play Saved 
+    <object data='<%=asset_path("green-check.svg")%>' type="image/svg+xml" class = "changes-saved-check">
+        <%= image_tag("green-check.svg", :alt => "changes-saved", :class => "changes-saved") %>
+</object></div>
+<%= render 'plays/propagation_modal'%>
 
 <script>
 
-    function test_function(){
-        console.log("works!")
-    }
     $("#edit-grid").css("margin-top", $("#header-outer").outerHeight())
     $("#toolbar-wrapper").css("top", $("#header-outer").outerHeight()-5)
     $("#play-scrollbar-wrapper").css("top", $("#header-outer").outerHeight()-5)
@@ -130,17 +129,7 @@
     });
 
     $(".new-progression-box").width($(".progression-block").width())
-    //activate_header();
-    // $(".navbar").addClass("navbar-active");
-    // $(".navbar-default a").addClass("navbar-text-active");
-    // $(".home-link").css("border-color", "black");
 
-    // $(window).on("scroll", function() {
-    //     $(".navbar").addClass("navbar-active");
-    //     $(".navbar-default a").addClass("navbar-text-active");
-    //     $(".home-link").css("border-color", "black")
-
-    // });
 
         var convert = function(convert){
             return $("<span />", { html: convert }).text();
@@ -159,6 +148,7 @@
         var canvas_width;
         var canvas_height;
         var playerRadius;
+        var propagation_modal_expanded = false;
 
         var animate_time = 900;
         var curr_line_type = null;
@@ -205,5 +195,11 @@
         
 </script>
 
+<style>
+  body{
+    background-image: url(<%= asset_path('tiled_floor3.png')%>);
+    background-size: 100%;
+  }
+</style>
 
 

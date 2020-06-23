@@ -354,7 +354,7 @@ body{
     display: flex;
     flex-direction: column;
     overflow: scroll;
-    max-height: 89vh;
+    max-height: 75vh;
     min-width: 15vw;
 }
 
@@ -529,12 +529,22 @@ $other_button_border: #616161;
 	width: 40px;
 }
 
-#propogate-changes-button{
+.propagation-img{
+	width: 15vw;
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+#propagate-changes-button{
 	color: white;
 	margin-bottom: 20px;
 }
-#propogate-changes-wrapper{
+#propagate-changes-wrapper{
 	font-size: 12px;
+}
+
+#propagation-description{
+	font-size: 15px;
 }
 
 .information-icon{
@@ -566,12 +576,12 @@ $other_button_border: #616161;
 	margin-left: 20px;
 }
 
-.propogate-icon-wrapper{
+.propagate-icon-wrapper{
 
 }
 
 
-.other-button .tooltiptext, .propogate-icon-wrapper .tooltiptext {
+.other-button .tooltiptext, .propagate-icon-wrapper .tooltiptext {
   color: black;
   visibility: hidden;
   background-color: white;
@@ -588,17 +598,18 @@ $other_button_border: #616161;
   z-index: 1;
 }
 
-.propogation-more-info-link{
+.propagation-more-info-link{
 	color: #337ab7;
+	cursor: pointer;
 }
 
-.propogate-changes-info{
+.propagate-changes-info{
 	width: 12px;
 	margin-bottom: -3px;
     margin-left: 5px;
 }
 
-.propogate-icon-wrapper .tooltiptext{
+.propagate-icon-wrapper .tooltiptext{
 	margin-top: -80px;
 	border-radius: 5px;
 }
@@ -607,8 +618,8 @@ $other_button_border: #616161;
 	margin-top: -15px;
 }
 
-.other-button:hover .tooltiptext, .propogate-icon-wrapper:hover .tooltiptext {
- transition-delay: .5s;
+.other-button:hover .tooltiptext, .propagate-icon-wrapper:hover .tooltiptext {
+  transition-delay: .5s;
   visibility: visible;
 }
 

@@ -1,0 +1,779 @@
+#stats-index-sidebar{
+	background-color: transparent;
+	color: white;
+	width: 11vw;
+	z-index: 11;
+}
+
+#sidebar-icons{
+	margin: auto;
+	display: grid;
+	margin-left: 1px;
+	grid-template-columns: 1fr;
+	border-bottom: 1px solid #616161;
+	border-left: 1px solid #616161;
+}
+
+
+.sidebar-icon-link{
+	display: block;
+	color: white;
+	width: 8vw;
+	height: 7vw;
+	border-top: 1px solid #616161;
+	border-right: 1px solid #616161;
+	border-bottom: none;
+	border-left: none;
+}
+
+
+.stats-table th {
+
+}
+
+.stats-table td{
+	border: none !important;
+}
+
+.player-game-log{
+	margin: 0 !important; 
+}
+
+.stats-table-1{
+	width: 75vw;
+}
+
+
+.stats-table{
+	font-size: 12px;
+	text-align: center;
+	margin: auto;
+	color: white;
+	border-radius: 5px;
+	font-weight: 500;
+	overflow: hidden;
+}
+
+.lineup-stat-table td {
+	padding: 5px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.stats-index-deactivated{
+	display: none !important;
+}
+
+.index-shot-chart{
+	text-align: center;
+}
+
+.shot-chart-deactivated{
+	display: none;
+}
+
+
+.stats-index-header{
+	padding-top: 20px;
+	padding-bottom: 20px;
+	width: 89vw;
+	z-index: 10;
+	color: white;
+	grid-template-columns: 1fr 1fr 1fr;
+}
+
+#lineups-index-header,#player-profile-index-header{
+	padding-bottom: 10px;
+	padding-top: 10px;
+	position: sticky;
+	top: 74px;
+	background-color: #252526;
+	grid-template-columns: 1fr 2fr 1fr;
+	z-index: 30;
+}
+
+#player-profile-dropdown, #show-shot-chart-dropdown{
+	width: 125px;
+	max-height: 400px;
+	overflow: scroll;
+}
+ .shot-chart-button, .trends-button, #sort-lineups-button{
+	width: 150px;
+	display: flex;
+}
+
+.box-score-button{
+	min-width: 150px;
+	display: flex;
+}
+
+.toggle-shot-chart-button{
+	margin-right: 60px;
+	font-weight: 500;
+	padding-left: 5px;
+	border: 2px solid black;
+	border-radius: 10px;
+	padding-right: 5px;
+	height: 30px;
+}
+
+#trends-player-dropdown, #trend-team-stats, #trend-player-stats, #show-lineup-explorer-dropdown{
+	max-height: 400px;
+	overflow: scroll;
+	width: 150px;
+}
+
+.color-scale-text{
+	font-size: 10px;
+	fill: white;
+}
+
+#main-color-key{
+	margin-left: 30px;
+	color: white;
+}
+
+.color-key{
+	display: flex;
+	justify-content: flex-end;
+}
+
+#color-key-header{
+	font-size: 17px;
+	margin-bottom: 10px;
+	font-weight: 500;
+}
+
+.stats-index-page-wrapper{
+	position: absolute;
+	top: 180px;
+}
+
+#shot-charts-wrapper, #trends-wrapper, #lineups-wrapper{
+	top: 180px;
+}
+
+#shot-charts-wrapper{
+	padding-left: 7vw;
+}
+
+#lineups-wrapper{
+	padding-left: 6vw;
+	padding-right: 6vw;
+	padding-top: 30px;
+	height: 700px;
+	overflow: scroll;
+}
+
+.lineup-table-header{
+	font-weight: 600;
+}
+
+.lineups-table-container{
+	margin-bottom: 10px;
+}
+
+#box-score-page-title, #player-profile-page-title, #player-profiles-page-title, #trends-page-title, #lineup-page-title{
+	grid-column-start: 2;
+}
+
+.stats-index-page-title{
+	font-size: 30px;
+	font-weight: 600;
+}
+
+.lineup-dropdown-wrapper{
+	
+}
+
+.trends-dropdown-section, .lineup-dropdown-section{
+	border-bottom: 1px solid #c1c1c1;
+	margin: 5px; 
+}
+
+
+.lineup-order-subheader {
+	/* font-size: 15px; */
+	font-weight: 600;
+	margin-left: 10px;
+	margin-top: 10px;
+}
+
+.box-score-button, .shot-chart-button, .trends-button, .sort-lineups-button{
+	margin-right: 60px;
+	font-weight: 500;
+	padding-left: 5px;
+	border: 2px solid white;
+	border-radius: 10px;
+	padding-right: 5px;
+	height: 45px;
+}
+
+.box-score-button{
+	justify-self: center;
+}
+
+.shot-chart-button{
+	margin-left: 60px;
+}
+
+.sort-button-text, .trends-button-text, .lineups-sort-text{
+	margin-left: 10px;
+	margin-right: 5px;
+	font-size: 16px;
+	font-weight: 500;
+	width: 70%;
+	text-align: left;
+}
+
+.trend-axis-label{
+	font-weight: 600;
+}
+
+.down-arrow{
+	width: 14px;
+}
+
+.player-profile-link-text{
+	font-size: 20px !important;
+	margin: 8px !important;
+}
+
+
+#player-profile-links{
+	flex-wrap: wrap;
+	padding-left: 5vw;
+}
+
+.player-profile-link{
+	width: 18vw;
+	height: 15vw;
+	margin: 8px; 
+}
+
+.player-profile-wrapper{
+	padding-top: 50px;
+}
+
+.player-profile-border-bottom{
+	border-bottom: 1px solid #cccccc;
+}
+
+.player-profile-border-right{
+	border-right: 1px solid #cccccc;
+}
+
+.player-circle-text{
+	font-size: 17px;
+	font-weight: 600;
+}
+
+path.color0 {
+	fill: #349dff;
+}
+path.color1 {
+	fill: white;
+}
+
+
+.percentage-circle-header{
+	font-size: 17px;
+	font-weight: 600;
+	text-align: center;
+}
+
+
+
+.player-game-log-table{
+	font-size: 11px !important;
+	font-weight: 500;
+	border-collapse: separate;
+	width: 75vw;
+}
+
+
+
+.player-game-log-container{
+	max-height: 500px;
+	overflow: scroll;
+	border-radius: 3px;
+}
+
+
+.player-game-log-table th{
+
+	text-align: center;
+	position: sticky;
+	top: 0;
+	background-color: #359cff;
+}
+
+.player-game-log-table tfoot td{
+	text-align: center;
+	position: sticky;
+	font-weight: 600;
+}
+
+.game-log-per-game td{
+	bottom: 82px;
+	background-color: #630b26;
+}
+
+.game-log-per-minute td{
+	bottom: 41px;
+	background-color: #8c1f41;
+}
+
+.game-log-totals td{
+	bottom: 0;
+	background-color: #f8165c;
+}
+
+
+.player-advanced-stats{
+	grid-template-columns: 1fr 1fr 1fr;
+	margin-top: 10px;
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
+.profile-advanced-module{
+	color: white;
+	background-color: #383838;
+	font-size: 17px;
+	font-weight: bold;
+	margin: 10px;
+	min-width: 100px;
+	box-shadow: 0px 0px 3px #333333;
+}
+
+.color-scale{
+	width: 200px;
+}
+
+#team-stats-wrapper{
+	background-color: #252525; 
+	
+}
+
+#team-advanced-wrapper{
+	background-color: #252525; 
+	grid-template-columns: 3fr 2fr;
+	position: relative;
+}
+
+.team-advanced-wrapper{
+	padding-left: 25px;
+	padding-right: 25px;
+}
+
+.team-advanced-sticky{
+	position: sticky;
+	top: 100px;
+}
+
+.player-profile-sticky{
+		position: sticky;
+	top: 150px;
+}
+
+.team-stats-container{
+	background-color: #0c0c0c;
+	border-radius: 2px;
+	padding-left: 25px;
+	padding-right: 25px;
+	padding-top: 30px;
+}
+
+.team-advanced{
+
+}
+
+#team-advanced-stats{
+	height: 600px;
+}
+
+.team-stats-heading{
+	color: white;
+	font-size: 40px;
+	font-weight: 600;
+}
+
+.team-stats-heading-2{
+	color: white;
+	font-size: 35px;
+	font-weight: 600;
+}
+
+#team-shooting-stats-grid{
+	grid-template-rows: 1fr 1fr 1fr 1fr;
+}
+
+.four-factors-row{
+	grid-template-columns: 1fr 1fr;
+}
+
+.four-factors-heading{
+	color: white;
+	font-weight: 600;
+	font-size: 17px;
+	padding-bottom: 10px;
+}
+
+.four-factors-row-wrapper{
+	margin-top: 20px;
+}
+
+.sticky-spacer-top{
+	height: 100px;
+	top: 0;
+	position: sticky;
+	width: 100%;
+	background-color: #252525; 
+	z-index: 20;
+}
+
+.sticky-spacer-middle{
+	height: 25px;
+	top: 74px;
+	position: sticky;
+	background-color: #252525; 
+	z-index: 20;
+}
+
+.sticky-spacer-bottom{
+	height: 25px;
+	bottom: 0;
+	position: sticky;
+	width: 100%;
+	background-color: #252525; 
+	z-index: 20;
+}
+
+.team-advanced-ratings{
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
+#team-advanced-container{
+	height: 600px;
+}
+#team-advanced{
+
+}
+
+.team-rating-heading{
+	padding-bottom: 10px;
+	border-bottom: 2px solid #707070;
+	margin-bottom: 10px;
+}
+
+.team-stats-text{
+	font-size: 30px;
+	font-weight: 600;
+	color: white;
+}
+
+.team-advanced-container{
+	margin-top: 50px;
+}
+
+
+.offensive-rating{
+	color: #31D7FF !important;
+}
+
+.defensive-rating{
+	color: #F8165C !important;
+}
+
+
+.other-advanced-container{
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.other-advanced-heading{
+	padding-bottom: 20px;
+}
+
+#team-advanced-heading{
+/*	position: sticky;
+	top: 100px;
+	background-color: #0d0d0d;
+	box-shadow: 0px 0px 3px #0d0d0d;
+	z-index: 15;*/
+}
+
+.four-factors-teams{
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	color: white;
+	font-size: 25px;
+	font-weight: 600;
+	margin-top: 30px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #707070;
+	margin-bottom: 10px;
+}
+
+.team-other-text{
+	font-size: 25px !important;
+}
+
+.player-profile-wrapper, .team-stats-wrapper{
+	margin-left: 25px;
+	margin-right: 25px;
+	color: white;
+}
+
+#team-stats-header{
+	font-size: 60px;
+}
+
+.team-stats-header{
+	font-size: 50px;
+	font-weight: 600;
+	text-align: center;
+	color: white
+}
+
+#basic-team-stats{
+	padding-top: 45px;
+	padding-bottom: 80px;
+}
+
+#player-profile-stats{
+	padding-top: 45px;
+	padding-bottom: 0px;
+}
+
+.player-percentage-circles, .basic-team-stat-circles{
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	padding-bottom: 60px;
+}
+
+.team-basic-heading{
+	padding-bottom: 30px;
+}
+
+.team-table-header{
+	font-weight: 600;
+	background-color: #359cff;
+	color: white;
+	font-size: 15px;
+}
+
+.team-table-row{
+	font-weight: 500;
+	font-size: 15px;
+}
+
+.team-table-row1{
+	background-color: #2f2f2f;
+}
+
+.team-table-row0{
+	background-color: #484848;
+}
+
+
+#team-stats-table{
+	border: none !important;
+}
+
+#team-stats-table td{
+	border: none !important;
+	padding: 10px;
+}
+
+.player-stats-table td{
+	padding: 5px; 
+	font-size: 15px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.player-stats-table{
+	width: 100%;
+}
+
+.player-stat-tables-container{
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+#team-stats-index{
+	padding-top: 20px !important;
+}
+
+#lineup-explorer-index, #player-profile-index, #player-profiles-index,#stat-tables-index, #team-stats-index, #shot-charts-index,{
+	background-color: #252526;
+	padding-top: 50px;
+	padding-bottom: 75px;
+}
+
+#trends-index{
+	background-color: #0d0d0d;
+	padding-top: 50px;
+	padding-bottom: 75px;
+}
+
+.player-col{
+	padding:5px;
+}
+
+.player-table-wrapper{
+	border-radius: 3px;
+}
+
+
+ .stat-table-header .tooltiptext {
+  color: black;
+  visibility: hidden;
+  background-color: #ffffa3;
+  text-align: center;
+  border-radius: 1px;
+  padding: 5px 0;
+  padding-left: 10px;
+  padding-right: 10px;
+  transition: .1s;
+  transition-delay: 0s;
+  font-size: 12px;
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+
+.stat-table-header .tooltiptext{
+	margin-top: -80px;
+	border-radius: 5px;
+}
+
+.other-button .tooltiptext{
+	margin-top: -15px;
+}
+
+ .stat-table-header:hover .tooltiptext {
+  transition-delay: 1s;
+  visibility: visible;
+}
+
+
+.player-percentage-circle .player-circle-text, .basic-team-stat-circles .player-circle-text{
+	font-size: 21px;
+}
+
+ #player-profile-stats .percentage-circle-header, .basic-team-stat-circles .percentage-circle-header{
+	font-size: 25px;
+	padding-bottom: 15px;
+	color: white;
+}
+
+.team-stats-header-spaced{
+	padding-bottom: 40px;
+}
+
+.stats-index-header .toolbar-dropdown{
+	box-shadow: 0px 0px 3px #d4d4d4;
+	border: 1px solid #d0d0d0;
+	background-color: #f3f3f3;
+	color: black;
+}
+
+#trends-chart text{
+	fill: white;
+	font-size: 12px;
+}
+
+.player-profile-module{
+	background-color: #0d0d0d;
+}
+
+.player-stats-table th {
+	padding: 5px;
+	font-size: 15px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	text-align: center;
+}
+
+.player-profile-grid{
+	grid-template-columns: 3fr 2fr;
+	height: 1000px;
+}
+
+.player-profile-container{
+	background-color: #0d0d0d;
+	padding: 25px;
+}
+
+#player-advanced-wrapper{
+	padding-left: 25px;
+	padding-right: 25px;
+}
+
+#player-shot-chart-wrapper{
+	padding-left: 25px;
+	height: 550px;
+}
+
+#player-shot-chart-container{
+	height: 550px;
+}
+
+#player-advanced-container{
+	height: 1000px;
+}
+
+#game-log-container{
+	padding-bottom: 50px;
+}
+
+#player-profile-page-title{
+	font-size: 50px;
+}
+
+.profile-module-label{
+	border-bottom: 4px solid #e5e5e5;
+	padding: 8px;
+	text-align: center;
+}
+
+.profile-module-value{
+	padding: 8px;
+	text-align: center;
+}
+
+.lineup-table-header{
+	background-color: #2f2f2f;
+}
+
+
+.lineup-radar .tooltip {
+	font-weight: 500;
+}
+
+.sticky_sentinel{
+  position: absolute;
+  left: 0;
+  right: 0;
+  visibility: hidden;
+}
+
+
+.sticky_sentinel-top {
+  background-color: yellow;
+  height: 40px;
+  top: -40px;
+}
+
+.sticky_sentinel-bottom {
+  height: 800px;
+  bottom: 0;
+}
+
+
+

@@ -1,0 +1,88 @@
+#firstname-lastname{
+	grid-template-columns: 1fr 2fr;
+	grid-column-gap: 20px;
+}
+
+.create-account-elem{
+
+}
+
+.modal-header-wrapper{
+	padding: 20px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.modal-header{
+	font-weight: 600;
+	font-size: 28px;
+	padding: 0px !important;
+	border-bottom: none !important;
+}
+
+#create-account-header{
+	color: black;
+}
+
+#signup-initializer{
+	margin-top: 18vh;
+}
+
+#signup-modal-content{
+	padding: 20px;
+}
+
+.modal-input{
+	border-radius: 5px;
+}
+
+.create-account-elem-wrapper{
+	padding-bottom: 10px;
+}
+
+.create-join-team-wrapper{
+	padding-left: 30px;
+    padding-right: 30px;
+}
+
+.create-join-team{
+	background-color: #a9a9a9;
+    border-radius: 10px;
+    padding: 30px;
+    padding-left: 40px;
+    padding-right: 40px;
+    box-shadow: 0px 0px 4px #929292;
+    width: 15vw;
+}
+
+.create-join-team-img{
+	height: 7vw;
+}
+
+.signup-deactivated{
+	display: none !important;
+}
+
+.create-join-team-heading{
+	font-size: 21px;
+	font-weight: 600;
+	padding-bottom: 20px;
+    color: black;
+}
+
+.create-join-team-footer{
+	color: black;
+	padding-top: 15px;
+	text-align: center; 
+	font-weight: 500;
+}
+
+#signup-back-button{
+	margin-top: 10px;
+    margin-left: 20px;
+}
+
+.signup-modal-input{
+	box-shadow: none !important;
+}
+
+

@@ -13,33 +13,27 @@
    
   </ul>
   <ul class="sf-menu">  
-    <li id="home-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home  page_item page-item-3166 menu-item-8559"><%= link_to 'Home', root_path %>
+    <li id="home-page-link" class="main-header-linkmenu-item menu-item-type-post_type menu-item-object-page menu-item-home  page_item page-item-3166 menu-item-8559"><%= link_to 'Home', root_path %>
     </li>
     <%if params.has_key?(:team_id)%>
-		<li id="stats-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%=link_to "Stats", team_stats_path(params[:team_id])%> 
+		<li id="stats-page-link" class="main-header-link menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%=link_to "Stats", team_stats_path(params[:team_id])%> 
     </li>
-    <li id="schedule-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home page_item page-item-3166 menu-item-8559"> <%=link_to "Schedule", team_games_path(params[:team_id])%>
+    <li id="plays-page-link" class="main-header-link menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%=link_to "Plays", team_plays_path(params[:team_id])%>
     </li>
-    <li id="plays-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%=link_to "Plays", team_plays_path(params[:team_id])%>
+    <li id="schedule-page-link" class="main-header-link menu-item menu-item-type-post_type menu-item-object-page menu-item-home page_item page-item-3166 menu-item-8559"> <%=link_to "Schedule", team_games_path(params[:team_id])%>
     </li>
-    <li id="lineup-explorer-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%=link_to "Lineup Explorer", team_lineups_path(params[:team_id])%>
-    </li>
-    <li id="settings-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%=link_to "Settings", team_settings_path(params[:team_id])%>
+    <li id="settings-page-link" class="main-header-link menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%=link_to "Settings", team_settings_path(params[:team_id])%>
     </li>
 	<%elsif params.has_key?(:id)%>
-		<li id="stats-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%=link_to "Stats", team_stats_path(params[:id])%> 
-    </li>
-    <li id="schedule-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home page_item page-item-3166 menu-item-8559"> <%=link_to "Schedule", team_games_path(params[:id])%>
+	<li id="stats-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%=link_to "Stats", team_stats_path(params[:id])%> 
     </li>
     <li id="plays-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%=link_to "Plays", team_plays_path(params[:id])%>
     </li>
-    <li id="lineup-explorer-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%=link_to "Lineup Explorer", team_lineups_path(params[:id])%>
+    <li id="schedule-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home page_item page-item-3166 menu-item-8559"> <%=link_to "Schedule", team_games_path(params[:id])%>
     </li>
     <li id="settings-page-link" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%=link_to "Settings", team_settings_path(params[:id])%>
     </li>
 	<%end%>
-    
-    
   </ul>    
 </nav>    
 
@@ -65,9 +59,12 @@
 	var notifications = []
 	
 	load_notifications()
+	$()
 	addCurrentPageClass()
 
 	function addCurrentPageClass(){
+		console.log("calling this")
+		$(".main-header-link").removeClass("current_page_item").removeClass("current_menu_item").removeClass("sfHover")
 		if($('body[data-controller-name="teams"').length > 0){
 			$("#home-page-link").addClass("current_page_item").addClass("current_menu_item")
 		}

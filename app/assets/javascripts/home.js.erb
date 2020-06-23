@@ -1,0 +1,80 @@
+
+function sign_up_modal(){
+	$("#sign-up-overlay").show()
+ 	$("#sign-up-modal").show()
+ 	// DOESNT WORK ON SAFARI MOBILE
+ 	$("#firstname-input").select();
+ 	$('.signup-modal-input').on('input', function() {
+	    checkSignupFilled()
+	});
+	$("form#new_user").on("ajax:success", receiveAJAXData)
+}
+
+function receiveAJAXData(event, data){
+	$("#sign-up-overlay").hide()
+ 	$("#sign-up-modal").hide()
+	if(event.detail[0].success){
+		insertUserInHeader()
+	}
+}
+
+function insertUserInHeader(){
+
+}
+
+function close_signup_modal(){
+	$("#sign-up-overlay").hide()
+ 	$("#sign-up-modal").hide()
+ 	// CLEAR ALL INPUT
+}
+
+function checkSignupFilled(){
+	var first_name = $("#user_first_name").val()
+	var last_name = $("#user_last_name").val()
+	var email = $("#user_email").val()
+	var password = $("#user_password").val()
+	var conf_password = $("#user_password_confirmation").val()
+	console.log(password)
+	if(first_name  && last_name && email && password && conf_password ){
+		$("#signup-submit").prop("disabled", false)
+		$("#signup-submit").removeClass("modal-submit-button-deactivated")
+		console.log("satistified!!!!!")
+	}
+	else{
+		console.log("need more")
+		console.log(password)
+		$("#signup-submit").prop("disabled", true)
+		$("#signup-submit").addClass("modal-submit-button-deactivated")
+	}
+}
+
+
+function showCreateJoinTeam(){
+	$("#create-account-wrapper").addClass("signup-deactivated")
+	$("#join-create-team-wrapper").removeClass("signup-deactivated")
+	$("#signup-back-button").removeClass("signup-deactivated")
+}
+
+function back_to_signup(){
+	$("#create-account-wrapper").removeClass("signup-deactivated")
+	$("#join-create-team-wrapper").addClass("signup-deactivated")
+	$("#signup-back-button").addClass("signup-deactivated")
+}
+
+function createAccount(){
+	// ajax new_user post request
+	$("#new_user").submit()
+}
+
+// WHEN CREATING A NEW TEAM ENSURE THAT THE USER HAS A SUBSCRIPTION
+function create_user_and_team(){
+
+}
+
+
+
+
+    
+
+
+

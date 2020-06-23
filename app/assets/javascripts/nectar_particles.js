@@ -61,7 +61,8 @@
         $(this).remove();
       });
     }
-    initSetup();
+    // ***************************************************  TODO: UNCOMMENT TO SEE PARTICLES *******************************************************
+    //initSetup();
     
     var Nodes = {
       
@@ -751,6 +752,7 @@
         
         //fadeout loading animation
         if(skipInitialDelay != true) {
+          console.log("SETTING DISPLAY NONE")
           $('#ajax-loading-screen').stop().transition({'opacity':0},1000,function(){ 
             $(this).css({'display':'none'}); 
           }); 

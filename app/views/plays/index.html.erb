@@ -1,12 +1,15 @@
 <%=render "layouts/small_header"%>
-<div id = "plays-index">
+ <% content_for(:body_attributes) do %>
+    data-turbolinks="false"
+  <% end %>
+<div id = "plays-index" class = "page-index">
 	<div class = "sidebar" id = "plays-index-sidebar">
 		<div class = "sidebar-links">
-			<button class = "sidebar-link sidebar-link-active" id = "plays-home-link"  onclick = "plays_home()"><div class = "sidebar-link-text underline">Plays Home</div></button>
-			<button class = "sidebar-link" id = "all-plays-link" onclick = "all_plays()"><div class = "sidebar-link-text">All Plays</div></button>
-			<button class = "sidebar-link"id = "view-playlists-link" onclick = "view_playlists()"><div class = "sidebar-link-text">View Playlists</div></button>
-			<button class = "sidebar-link" id = "deleted-plays-link" onclick = "deleted_plays()"><div class = "sidebar-link-text">Deleted Plays</div></button>
-			<button class = "sidebar-link"><div class = "sidebar-link-text">Tutorials</div></button>
+			<button class = "sidebar-link sidebar-link-active" id = "plays-home-link"  onclick = "plays_home_hash()"><div class = "sidebar-link-text underline">Plays Home</div></button>
+			<button class = "sidebar-link" id = "all-plays-link" onclick = "all_plays_hash()"><div class = "sidebar-link-text">All Plays</div></button>
+			<button class = "sidebar-link"id = "view-playlists-link" onclick = "view_playlists_hash()"><div class = "sidebar-link-text">View Playlists</div></button>
+			<button class = "sidebar-link" id = "deleted-plays-link" onclick = "deleted_plays_hash()"><div class = "sidebar-link-text">Deleted Plays</div></button>
+			<!-- <button class = "sidebar-link"><div class = "sidebar-link-text">Tutorials</div></button> -->
 		</div>
 	</div>
 	<%=render 'plays_home'%>
@@ -20,3 +23,26 @@
 <%=render 'plays_home_js'%>
 
 
+<script>
+	var play_dom = []
+
+	var playlist_plays = []
+
+	var play_type;
+
+	var play_playlists = []
+
+	var previous_page;
+
+	var curr_page = "home"
+
+	var team_id = <%=@team_id%>;
+
+
+	var editors = $(".not-editing")
+	var curr_playlist;
+	var plays_to_add = [];
+	var settings_open = false;
+	var editing = false;
+
+</script>

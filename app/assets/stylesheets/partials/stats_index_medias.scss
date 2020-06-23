@@ -1,0 +1,67 @@
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : portrait) { 
+
+	.team-table-header, .team-table-row{
+		font-size: 12px;
+	}
+
+	#team-stats-table td{
+		padding: 7px;
+	}
+
+	#team-advanced-stats{
+		height: 800px;
+	}
+
+	#team-advanced-container{
+		height: 800px;
+	}
+
+	.team-other-advanced{
+		margin-top: 100px;
+	}
+
+	.team-stats-basic-wrapper{
+
+	}
+
+	.player-stats-table td {
+		font-size: 12px;
+		padding: 2px;
+		padding-top: 10px;
+		padding-bottom: 10px;
+	}
+
+	.lineup-stat{
+		font-size: 13px;
+		min-width: 8vw;
+    	height: 57px;
+	}
+
+	.lineup-stats{
+		margin-bottom: 10px;
+	}
+
+	.lineup-member{
+		font-size: 21px;
+	}
+
+	.lineup-stat-table td {
+		font-size: 10px;
+		padding: 4px;
+	}
+	.player-profile-grid{
+		grid-template-columns: 1fr;
+		height: 1200px;
+	}
+
+	#player-advanced-container{
+		height: initial;
+	}
+
+	.player-advanced-stats{
+		grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+	}
+ }

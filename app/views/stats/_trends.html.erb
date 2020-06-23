@@ -1,0 +1,62 @@
+<!-- <div class = "stats-index-content-wrapper stats-index-deactivated " id = "trends-index">
+	<div class = "stats-index-header grid" id = "trends-index-header">
+		<div class = "stats-index-page-title flex-row center-justified" id = "trends-page-title"> Trends</div>
+		<div class = "flex-row end-justified stats-header-buttons" id = "lineup-buttons">
+			<button class = "center-aligned trends-button" id = "trends-player-button" onclick = "trends_player_dropdown()">
+				<div class = "trends-button-text" id = "trend-player-current"><%=@team_name%></div>
+				<object data='<%=asset_path("down-arrow.svg")%>' type="image/svg+xml" class = "down-arrow" style = "justify-self: center;">
+	                  <%= image_tag("down-arrow.png", :alt => "sort", :class => "down-arrow") %>	
+	             </object>
+			</button>
+			<button class = "center-aligned trends-button" id = "trend-player-stats-button" onclick = "player_stat_dropdown()" style = "display: none;">
+				<div class = "trends-button-text" id = "trend-player-stat-current"></div>
+				<object data='<%=asset_path("down-arrow.svg")%>' type="image/svg+xml" class = "down-arrow" style = "justify-self: center;">
+	                  <%= image_tag("down-arrow.png", :alt => "sort", :class => "down-arrow") %>	
+	             </object>
+			</button>
+			<button class = "center-aligned trends-button" id = "trend-team-stats-button" onclick = "team_stat_dropdown()">
+				<div class = "trends-button-text" id = "trend-team-stat-current">Points</div>
+				<object data='<%=asset_path("down-arrow.svg")%>' type="image/svg+xml" class = "down-arrow" style = "justify-self: center;">
+	                  <%= image_tag("down-arrow.png", :alt => "sort", :class => "down-arrow") %>	
+	             </object>
+			</button>
+			<div class = "toolbar-dropdown" id = "trends-player-dropdown" style = "display: none;">
+				<button class="flex-row toolbar-dropdown-button" onclick = "team_trend_button(this, '<%=@team_name%>', false)"><div id="trend-player-link-<%=@team_name%>" class="dropdown-action lineup-dropdown-action" ><%=@team_name%></div></button>
+				<button class="flex-row toolbar-dropdown-button" onclick = "team_trend_button(this, 'opponents', true)"><div id="trend-player-link-opponents" class="dropdown-action lineup-dropdown-action" >Opponents</div></button>
+
+				<%@players.each do |player|%>
+					<button class="flex-row toolbar-dropdown-button" onclick = "player_trend_button(this, <%=player.member_id%>)"><div id="trend-player-link-<%=player.member_id%>" class="dropdown-action lineup-dropdown-action" ><%=player.nickname%></div></button>
+				<%end%>
+			</div>
+			<div class = "toolbar-dropdown" id = "trend-player-stats" style = "display: none;">
+
+			</div>
+			<div class = "toolbar-dropdown" id = "trend-team-stats" style = "display: none;">
+
+			</div>
+		</div>
+	</div>
+	<div id = "trends-wrapper">
+		<div id = "trends-chart">	
+		</div>
+	</div>
+</div>
+
+
+
+<script>
+	
+	$( window ).on( "load", function() {
+		
+	});
+	$(document).on("turbolinks:load",function(){
+		if($("body").hasClass("stats")){
+	      
+		}
+	})
+	
+
+</script>
+
+
+ -->

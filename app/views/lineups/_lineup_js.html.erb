@@ -1,9 +1,5 @@
 <script>
-	/*
-		Lets list here every function we think we will need for this file. 
-	*/
 
-	// Initializes stats from lineup controller into a javascript array
 	function initialize_stat_array(){
 		<%@lineup_objs.each do|lineup|%>
 			var lineup_obj = {"lineup_members" : [], "lineup_stats" : [], "opponent_stats" : [], "advanced_stats" : [], "off_stats" : [], "def_stats": [], "html" : null, "minutes":0}
@@ -378,7 +374,7 @@
 		}
 		$("#lineup-order-links").append(def_links)
 	}
-
+	
 	function insert_order_links(){
 		insert_advanced_links()
 		insert_offensive_links()

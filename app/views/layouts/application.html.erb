@@ -26,6 +26,8 @@
     <script src="https://kit.fontawesome.com/1aa525d547.js" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/jspdf@latest/dist/jspdf.min.js"></script>
 
+    <meta name="turbolinks-cache-control" content="no-cache">
+
    
 
     
@@ -50,14 +52,29 @@
       <%= yield(:body_attributes) %> 
     <% end %>
     class="home page-template-default page page-id-3166 nectar-auto-lightbox ascend wpb-js-composer js-comp-ver-5.7 vc_responsive" data-footer-reveal="1" data-footer-reveal-shadow="small" data-header-format="centered-menu" data-body-border="off" data-boxed-style="" data-header-breakpoint="1000" data-dropdown-style="classic" data-cae="linear" data-cad="650" data-megamenu-width="contained" data-aie="none" data-ls="magnific" data-apte="standard" data-hhun="0" data-fancy-form-rcs="default" data-form-style="default" data-form-submit="default" data-is="minimal" data-button-style="default" data-header-inherit-rc="false" data-header-search="false" data-animated-anchors="true" data-ajax-transitions="true" data-full-width-header="true" data-slide-out-widget-area="true" data-slide-out-widget-area-style="fullscreen" data-user-set-ocm="1" data-loading-animation="none" data-bg-header="true" data-responsive="1" data-ext-responsive="true" data-header-resize="1" data-header-color="light" data-cart="false" data-remove-m-parallax="" data-remove-m-video-bgs="" data-force-header-trans-color="light" data-smooth-scrolling="0" data-permanent-transparent="false" data-controller-name = "<%= controller_name %>" data-action-name = "<%= action_name %>">
-
+      <%= include_gon %>
+    <div id="ajax-loading-screen" data-disable-mobile="1" data-disable-fade-on-click="0" data-effect="standard" data-method="standard"><div class="loading-icon none"><span class="default-loading-icon spin"></span></div></div>  
     <%= yield %>
     
     <%= render 'layouts/application/private_conversations_windows' %>
     <%= render 'layouts/application/group_conversations_windows' %>
   </body>
+  
 
   <script>
+    $( window ). on( "load", function(){
+      if(!$("body").hasClass("plays")&& !$("body").hasClass("pages") && !$("body").hasClass("stats")){
+        $('#ajax-loading-screen').css({'opacity':0, 'display':'none'})
+        $('#ajax-loading-screen .loading-icon').css({'opacity':0}) 
+      }
+    });
+    $(document).on("turbolinks:load",function(){
+      console.log("turbolinks loaded")
+      if(!$("body").hasClass("plays")&& !$("body").hasClass("pages") && !$("body").hasClass("stats")){
+        $('#ajax-loading-screen').css({'opacity':0, 'display':'none'})
+        $('#ajax-loading-screen .loading-icon').css({'opacity':0}) 
+      }
+    })
 /* <![CDATA[ */
 var nectarLove = {};
 /* ]]> */

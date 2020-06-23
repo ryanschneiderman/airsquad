@@ -1,0 +1,368 @@
+/*-------------------------------------------------------------------------
+
+	1.	Init
+	2.	Home
+	3.	All Plays 
+	4.	View Playlists
+	5.	Deleted Plays
+
+
+-------------------------------------------------------------------------*/
+
+
+/*-------------------------------------------------------------------------*/
+/*	1.	Init
+/*-------------------------------------------------------------------------*/
+
+$(document).on('turbolinks:load ', function(){
+	alignStatIndexDOM()
+	$( window ).on( "load", function() {
+		console.log("window loaded")
+	    
+	    
+	});
+
+	var hash = window.location.hash;
+ 		var split_hash = hash.split("?")
+	if(!(split_hash[0]=="#player_profiles" && split_hash[1])){
+    	console.log("removing loading screen")
+    	$('#ajax-loading-screen').css({'opacity':0, 'display':'none'})
+		$('#ajax-loading-screen .loading-icon').css({'opacity':0}) 
+    }
+
+    if($("body").hasClass("stats")){
+		populate_display_stats_basic();
+		populate_display_stats_adv();
+		populate_opponent_stats();
+		populate_team_display_stats_adv()
+		populate_team_advanced_stats();
+		populate_stat_array();
+		populate_team_stats();
+
+		init_stat_tables()
+
+		initCalibration()
+    	init_shot_charts(court_width)
+
+    	init_trend_display_stats()
+
+    	insert_trends_order_links()
+		initialize_trends_chart()
+		initialize_stat_array()
+		establish_hover_rules()
+		populate_basic_stat_table_columns()
+		insert_lineup_modules()
+		insert_lineup_order_links()
+		sort_lineups("#stat-link-16", 16, false)
+		teamStatsPercentageCircles(gon.team_stats, gon.team_advanced_stats)
+		insertBasicTeamPercentageCircles(gon.team_stats)
+		populate_team_stat_tables(true);
+		init_stats_page()
+	    testScrollTo()
+	    getPlayerCourtWidth()
+	    //observeStickyHeaderChanges(document.querySelector('#team-stats-wrapper'));
+	    align_sticky_elements()
+		$(document).scroll(function(){
+		    testScrollTo()
+		    testTeamStickyOff()
+		});
+	}
+
+	document.addEventListener('sticky-change', e => {
+	  const sticky_target = e.detail.target;  // header became sticky or stopped sticking.
+	  const sticking = e.detail.stuck; // true when header is sticky.
+	  //stick.classList.toggle('shadow', sticking); // add drop shadow when sticking.
+
+	  //document.querySelector('.who-is-sticking').textContent = header.textContent;
+	});
+});
+
+function getPlayerCourtWidth(){
+	var x = window.matchMedia("(max-device-width : 1024px) and (max-device-width : 1024px) and (orientation : portrait)")
+	if (x.matches){
+		return $(window).width()*.55
+	}
+	else return $(window).width()*.4
+}
+
+function observeStickyHeaderChanges(container) {
+  observeHeaders(container);
+  observeFooters(container);
+}
+
+/**
+ * Sets up an intersection observer to notify when elements with the class
+ * `.sticky_sentinel--top` become visible/invisible at the top of the container.
+ * @param {!Element} container
+ */
+function observeHeaders(container) {
+  const observer = new IntersectionObserver((records, observer) => {
+    for (const record of records) {
+      const targetInfo = record.boundingClientRect;
+      const stickyTarget = record.target.parentElement.querySelector('.sticky');
+      const rootBoundsInfo = record.rootBounds;
+
+      // Started sticking.
+      if (targetInfo.bottom < rootBoundsInfo.top) {
+        fireEvent(true, stickyTarget);
+      }
+
+      // Stopped sticking.
+      if (targetInfo.bottom >= rootBoundsInfo.top &&
+          targetInfo.bottom < rootBoundsInfo.bottom) {
+       fireEvent(false, stickyTarget);
+      }
+    }
+  }, {threshold: [0], root: container});
+
+  // Add the top sentinels to each section and attach an observer.
+  const sentinels = addSentinels(container, 'sticky_sentinel-top');
+  sentinels.forEach(el => observer.observe(el));
+}
+
+function addSentinels(container, className) {
+  return Array.from(container.querySelectorAll('.sticky')).map(el => {
+    const sentinel = document.createElement('div');
+    sentinel.classList.add('sticky_sentinel', className);
+    return el.parentElement.appendChild(sentinel);
+  });
+}
+
+function fireEvent(stuck, target) {
+  const e = new CustomEvent('sticky-change', {detail: {stuck, target}});
+  document.dispatchEvent(e);
+}
+
+/**
+ * Sets up an intersection observer to notify when elements with the class
+ * `.sticky_sentinel--bottom` become visible/invisible at the bottom of the
+ * container.
+ * @param {!Element} container
+ */
+function observeFooters(container) {
+  const observer = new IntersectionObserver((records, observer) => {
+    for (const record of records) {
+      const targetInfo = record.boundingClientRect;
+      const stickyTarget = record.target.parentElement.querySelector('.sticky');
+      const rootBoundsInfo = record.rootBounds;
+      const ratio = record.intersectionRatio;
+
+      // Started sticking.
+      if (targetInfo.bottom > rootBoundsInfo.top && ratio === 1) {
+        fireEvent(true, stickyTarget);
+      }
+
+      // Stopped sticking.
+      if (targetInfo.top < rootBoundsInfo.top &&
+          targetInfo.bottom < rootBoundsInfo.bottom) {
+        fireEvent(false, stickyTarget);
+      }
+    }
+  }, {threshold: [1], root: container});
+
+  // Add the bottom sentinels to each section and attach an observer.
+  const sentinels = addSentinels(container, 'sticky_sentinel-bottom');
+  sentinels.forEach(el => observer.observe(el));
+}
+
+function testTeamStickyOff(){
+	//var st = $(this).scrollTop();
+	//console.log(st)
+}
+
+function testScrollTo(){
+	var st = $(this).scrollTop();
+    if(!jumping){
+    	$(".stats-index-content-wrapper").each(function() {
+	        if(st +30 > $(this).offset().top && st +30 <= $(this).offset().top + $(this).outerHeight() ){   
+	            var id = $(this).attr('id');  
+	            if(id == "player-profile-index"){
+	            	id = "player-profiles-index"
+	            }
+	            $("#"+id+"-link").addClass("sidebar-link-active")
+	            $("#"+id+"-link").find(".sidebar-link-text").addClass('underline');
+	        }else{
+	            var id = $(this).attr('id');
+	            $("#"+id+"-link").removeClass("sidebar-link-active")
+	            $("#"+id+"-link").find(".sidebar-link-text").removeClass('underline');   
+	        }   
+	    });
+    }
+}
+
+
+function jumpTo(id){
+	$(".sidebar-link").removeClass("sidebar-link-active")
+	$(".sidebar-link").each(function(){
+		$(this).find(".sidebar-link-text").removeClass("underline")
+	})
+	jumping = true;
+	$(id+"-link").addClass("sidebar-link-active")
+	$(id+"-link").find(".sidebar-link-text").addClass("underline")
+	$("html, body").animate({ scrollTop: $(id).offset().top -20 }, 500, function(){
+		jumping = false;
+	});
+
+}
+
+
+function align_sticky_elements(){
+	// var team_advanced_top = $(window).outerHeight() - $("#team-advanced-container").outerHeight()
+
+	// $(".team-advanced-sticky").css("top", team_advanced_top)
+	// var team_basic_top = team_advanced_top - ($(".team-stats-basic-wrapper").outerHeight() + $(".sticky-spacer-middle").outerHeight())
+	// $(".team-stats-basic-wrapper").css("top", team_basic_top)
+
+	// $("#team-basic-advanced-spacer").css("top", team_advanced_top - $("#team-basic-advanced-spacer").outerHeight())
+}
+
+function alignStatIndexDOM(){
+	// $(".page-index").css("margin-top", $("#header-outer").outerHeight() -5)
+	$("#stats-index-sidebar").css("top", $("#header-outer").outerHeight()-5);
+	$(".stats-index-content-wrapper").css("padding-left", $("#stats-index-sidebar").width())
+}
+
+function reset_player_profile_page(){
+	$(".player-percentage-circle").empty()
+	$(".player-game-log-body").empty()
+	$(".game-log-per-game").empty()
+	$(".game-log-per-minute").empty()
+	$("#player-game-log-header").empty()
+	$(".game-log-totals").empty()
+	$(".player-shot-chart").empty()
+	$(".profile-advanced-wrapper").each(function(){
+		$(this).remove()
+	})
+
+}
+
+function reset_stats_page_content(){
+	reset_player_profile_page()
+	$(".stats-index-content-wrapper").addClass("stats-index-deactivated")
+	$(".sidebar-link").removeClass("sidebar-link-active")
+	$(".sidebar-link-text").removeClass("underline")
+}
+
+
+function init_stats_page(){
+	// reset_stats_page_content()
+	$("#team-stats-index").removeClass("stats-index-deactivated");
+	$("#stat-tables-index").removeClass("stats-index-deactivated")
+	setStatTableButtons()
+	$("#shot-charts-index").removeClass("stats-index-deactivated")
+	setShotChartButtons()
+	$("#shot-charts-wrapper").css("top",$("#shot-chart-index-header").offset().top + $("#shot-chart-index-header").outerHeight()+10)
+	$("#trends-index").removeClass("stats-index-deactivated")
+	setTrendsButtons()
+	$("#player-profiles-index").removeClass("stats-index-deactivated")
+	$("#lineup-explorer-index").removeClass("stats-index-deactivated")
+	d3.selectAll(".legend").call(wrap, 60)
+	setLineupExplorerButtons()
+
+}
+
+
+function shot_chart_dropdown(){
+	$("#show-shot-chart-dropdown").show()
+	$('#shot-charts-index').on("mousedown", function(e){
+		if(!$(e.target).hasClass("dropdown-action") && !$(e.target).hasClass("toolbar-dropdown-button")){
+			$("#show-shot-chart-dropdown").hide()
+		}
+	})
+}
+
+function lineup_explorer_dropdown(){
+	$("#show-lineup-explorer-dropdown").show()
+	$('#lineup-explorer-index').on("mousedown", function(e){
+		if(!$(e.target).hasClass("dropdown-action") && !$(e.target).hasClass("toolbar-dropdown-button")){
+			$("#show-lineup-explorer-dropdown").hide()
+		}
+	})
+}
+
+function team_stat_dropdown(){
+	$("#trend-team-stats").show()
+	$('#trends-index').on("mousedown", function(e){
+		if(!$(e.target).hasClass("dropdown-action") && !$(e.target).hasClass("toolbar-dropdown-button")){
+			$("#trend-team-stats").hide()
+		}
+	})
+}
+
+function player_stat_dropdown(){
+	$("#trend-player-stats").show()
+	$('#trends-index').on("mousedown", function(e){
+		if(!$(e.target).hasClass("dropdown-action") && !$(e.target).hasClass("toolbar-dropdown-button")){
+			$("#trend-player-stats").hide()
+		}
+	})
+}
+
+function trends_player_dropdown(){
+	$("#trends-player-dropdown").show()
+	$('#trends-index').on("mousedown", function(e){
+		if(!$(e.target).hasClass("dropdown-action") && !$(e.target).hasClass("toolbar-dropdown-button")){
+			$("#trends-player-dropdown").hide()
+		}
+	})
+}
+
+function box_score_dropdown(){
+	$("#toggle-table-dropdown").show();
+	$("#stat-tables-index").on("mousedown", function(e){
+		if(!$(e.target).hasClass("dropdown-action") && !$(e.target).hasClass("toolbar-dropdown-button")){
+			$("#toggle-table-dropdown").hide()
+		}
+	})
+}
+
+function player_profile_dropdown(){
+	$("#player-profile-dropdown").show()
+	$('#player-profile-index').on("mousedown", function(e){
+		if(!$(e.target).hasClass("dropdown-action") && !$(e.target).hasClass("toolbar-dropdown-button")){
+			$("#player-profile-dropdown").hide()
+		}
+	})
+}
+
+
+
+function setTrendsButtons(){
+	$("#trend-team-stats").css("top", $("#trend-team-stats-button").outerHeight() + $("#trend-team-stats-button").offset().top + 5)
+  	$("#trend-team-stats").css("left", $("#trend-team-stats-button").offset().left)
+
+  	$("#trend-player-stats").css("top", $("#trend-team-stats-button").outerHeight() + $("#trend-team-stats-button").offset().top + 5)
+  	$("#trend-player-stats").css("left", $("#trend-team-stats-button").offset().left)
+
+  	$("#trends-player-dropdown").css("top", $("#trends-player-button").outerHeight() + $("#trends-player-button").offset().top + 5)
+  	$("#trends-player-dropdown").css("left", $("#trends-player-button").offset().left)
+
+}
+
+function setLineupExplorerButtons(){
+	$("#show-lineup-explorer-dropdown").css("top", $("#sort-lineups-button").outerHeight() + $("#sort-lineups-button").position().top + 5)
+  	$("#show-lineup-explorer-dropdown").css("left", $("#sort-lineups-button").position().left)
+}
+
+function setShotChartButtons() {
+
+	$("#show-shot-chart-dropdown").css("top", $("#toggle-shot-chart-button").outerHeight() + $("#toggle-shot-chart-button").offset().top + 5)
+  	$("#show-shot-chart-dropdown").css("left", $("#toggle-shot-chart-button").offset().left )
+}
+
+function setStatTableButtons(){
+	$("#toggle-table-dropdown").css("top", $("#box-score-button").outerHeight() + $("#box-score-button").offset().top + 5)
+  	$("#toggle-table-dropdown").css("left", $("#box-score-button").offset().left )
+}
+
+
+function setPlayerProfileButtons(){
+ 	$("#player-profile-dropdown").css("top", $("#player-profile-toggle-button").outerHeight() + $("#player-profile-toggle-button").position().top + 5)
+  	$("#player-profile-dropdown").css("left", $("#player-profile-toggle-button").css("margin-left") )
+ }
+
+
+
+
+
+

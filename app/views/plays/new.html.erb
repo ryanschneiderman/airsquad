@@ -92,11 +92,11 @@
                 </div>
             </div>
             <div class = "save-play-wrapper">
-                <div id = "propogate-changes-wrapper">
-                    <input id = "propogate-changes-button" type="checkbox" name="propogate-changes" value="true" checked> Propagate Changes 
-                    <span class = "propogate-icon-wrapper">
-                        <div class="tooltiptext">What is this? <span class = "propogation-more-info-link" onclick = "test_function()">Learn about play propagation here</span>.</div>
-                        <object data='<%=asset_path("information-icon.svg")%>' type="image/svg+xml" class = "propogate-changes-info">
+                <div id = "propagate-changes-wrapper">
+                    <input id = "propagate-changes-button" type="checkbox" name="propagate-changes" value="true" checked> Propagate Changes 
+                    <span class = "propagate-icon-wrapper">
+                        <div class="tooltiptext">What is this? <span class = "propagation-more-info-link" onclick = "show_propagation_modal()">Learn about play propagation here</span>.</div>
+                        <object data='<%=asset_path("information-icon.svg")%>' type="image/svg+xml" class = "propagate-changes-info">
                           <%= image_tag("information-icon.svg", :alt => "information", :class => "information-icon") %>
                         </object>
                     </span>
@@ -112,12 +112,7 @@
 </object></div>
 
 
-
-
-<%= render 'games/canvas_js' %>
-<%= render 'progressions/js_objects' %>
-<%= render 'progressions/javascript' %>
-<%= render 'progressions/edit_play_js' %>
+<%= render 'plays/propagation_modal'%>
 
 
 <script>
@@ -280,6 +275,7 @@
 <style>
   body{
     background-image: url(<%= asset_path('tiled_floor3.png')%>);
-    background-size: cover;
+    background-size: 100%;
   }
 </style>
+

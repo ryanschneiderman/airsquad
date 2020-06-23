@@ -24,12 +24,9 @@
 }
 
 
-.sidebar{
-	width: 150px;
-    position: fixed;
-    bottom: 0;
-    align-items: center;
-    background-image: linear-gradient(to right, #3e3d3d, #5f5f5f);
+#plays-index-sidebar{
+	width: 11vw;
+	background-image: linear-gradient(to right, #3e3d3d, #5f5f5f);
     box-shadow: 0px 0px 5px #676767;
     color: white;
 }
@@ -112,10 +109,13 @@
 	grid-template-columns: 1fr 1fr;
 	align-items: center;
 	justify-content: center; 
-	padding-top: 20px;
+	padding-top: 10px;
 	padding-bottom: 20px;
 }
-
+.home-image-block{
+	margin-left: 5px;
+	margin-right: 5px;
+}
 .plays-row{
 	display: flex;
 	overflow: scroll;
@@ -161,15 +161,37 @@
     border-bottom: 1px solid #E0E0E0;
 }
 
+.plays-row-heading-wrapper{
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
+.see-all-plays-wrapper{
+	justify-self: flex-end;
+}
+
+.see-all-link{
+	width: 7vw;
+    background-color: #29a6ff;
+    color: #ffffff;
+    border-radius: 10px;
+    text-align: center;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    font-weight: 600;
+    margin-right: 50px;
+    box-shadow: 0px 0px 3px #29a6ff;
+}
+
 .play-img{
 	opacity: 1;
-	height: 11vw;
+	height: 12vw;
 	padding: .5px;
 	transition: .2s ease;
 }
 
 .play-img-full{
-	height: 14vw;
+	height: 14.5vw;
 }
 
 .plays-full-heading{
@@ -230,7 +252,7 @@
 	color: black;
 }
 
-.playlist-link-text{
+.player-profile-link-text, .playlist-link-text{
 	justify-content: center;
     display: flex;
     color: white;
@@ -242,7 +264,7 @@
 .plays-row-heading{
 	font-weight: 600;
     font-size: 20px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .play-index-image{
@@ -306,7 +328,7 @@
 
 #play-modal-content{
 	width: 60vw;
-	padding: 30px 30px 0px;
+	padding: 30px 30px 10px;
 }
 
 .new-play-name{
@@ -321,9 +343,12 @@
 	margin-bottom: 10px;
 }
 
-.playlist-settings-wrapper{
+.plays-sort-by-wrapper{
+	width: 160px;
+}
+
+.toolbar-dropdown{
 	position: absolute;
-    width: 120px;
     border-radius: 3px;
     box-shadow: 0px 0px 3px #d0d0d0;
     border: 1px solid #d0d0d0;
@@ -331,17 +356,11 @@
     background-color: white;
 }
 
-.settings-action{
-	width: 100%;
-    text-align: left;
-    padding: 10px;
-    cursor: pointer;
-    border: none;
+.playlist-settings-wrapper{
+	width: 120px;
 }
 
-.settings-action:hover{
-	background-color: #e8e8e8;
-}
+
 
 .editing-playlist{
 	opacity: .6;
@@ -394,15 +413,15 @@
     color: white;
 }
 
-.playlist-imgs{
+.player-profile-link, .playlist-imgs{
 	justify-content: center;
     align-items: center;
     display: flex;
-    width: 15vw;
-    height: 13vw;
+    width: 17vw;
+    height: 15vw;
     border-radius: 4px;
     box-shadow: 0px 0px 5px #cac9c9;
-    margin: 5px;
+    margin: 6px;
     padding: 5px;
 }
 .playlist-img{
@@ -430,6 +449,24 @@
 
 .sort-img{
 	width: 10px
+}
+
+.sort-button-text{
+	margin-left: 5px;
+    margin-right: 5px;
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.sort-button{
+	margin-right: 20px;
+	align-items: center;
+	height: 25px;
+}
+
+.sort-button-highlighted{
+	background-color: #e8e8e8;
+	font-weight: 600;
 }
 
 .playlists-full{
@@ -496,6 +533,7 @@
 
 .plays-buttons-wrapper{
 	justify-self: flex-end;
+	align-items: center;
 }
 
 #select-play-to-playlist-wrapper{
@@ -528,35 +566,41 @@
 	margin-bottom: 20px; 
 }
 
-.playlist-style-1{
+.player-profile-link-style-1, .playlist-style-1{
 	background-image: linear-gradient(to bottom right, #304EF2, #2CC7FF);
+	box-shadow: 0px 0px 5px #2f8df9;
 }
 
-.playlist-style-2{
+.player-profile-link-style-2, .playlist-style-2{
 	background-image: linear-gradient(to bottom right, #FF755C, #FD1A57);
+	box-shadow: 0px 0px 5px #fe5a5a;
 }
 
-.playlist-style-3{
+.player-profile-link-style-3, .playlist-style-3{
 	background-image: linear-gradient(to bottom right, #21aade, #2DEBCE);
+	box-shadow: 0px 0px 5px #27cad6;
 }
 
 
-.playlist-style-4{
+.player-profile-link-style-4, .playlist-style-4{
 	background-image: linear-gradient(to bottom right, #FFC424,#FF5D2C);
-	
+	box-shadow: 0px 0px 5px #ff922a;
 }
 
-.playlist-style-5{
+.player-profile-link-style-5, .playlist-style-5{
 	background-image: linear-gradient(to bottom right, #f3294e, #db86ea);
+	box-shadow: 0px 0px 5px #e467b7;
 	
 }
 
-.playlist-style-6{
+.player-profile-link-style-6, .playlist-style-6{
     background-image: linear-gradient(to bottom right,  #5abaff, #9F58FF);
+    box-shadow: 0px 0px 5px #7b8bff;
 }
 
-.playlist-style-0{
+.player-profile-link-style-7, .playlist-style-0{
 	background-image: linear-gradient(to bottom right, #9F58FF, #605AFF);
+	box-shadow: 0px 0px 5px #8459ff;
 }
 
 

@@ -1,4 +1,4 @@
-<script>
+<!-- <script>
         function loadCanvasFromJson(new_canvas, json, progr, init){
             canvas = new_canvas
             var old_canvas_width = progr.canvas_width;
@@ -208,7 +208,7 @@
 
 
         function setRootMovesInCanvas(progr){
-            if(propogateChanges()){
+            if(propagateChanges()){
                 canvas = loadCanvasFromJson(progr.canvas, progr.json, progr, !progr.visited)
                 insertRootMoves();
                 updateMoveLines()
@@ -218,7 +218,7 @@
         }
 
         function setEndpointMovesInCanvas(progr){
-            if(propogateChanges()){
+            if(propagateChanges()){
                 canvas = loadCanvasFromJson(progr.canvas, progr.json, progr, !progr.visited)
                 insertEndpointMoves()
                 updateMoveLines()
@@ -859,8 +859,8 @@
 /*********************************************************************************/
 /******************************* HELPERS/IRRELEVANT ******************************/
 /*********************************************************************************/
-        function propogateChanges(){
-            return $("#propogate-changes-button").is(':checked')
+        function propagateChanges(){
+            return $("#propagate-changes-button").is(':checked')
         }    
     
         
@@ -939,6 +939,24 @@
           }
         }
 
+        function show_propagation_modal(){
+            $("#propagation-modal-overlay").show()
+            $("#propagation-modal").show()
+            $("body").mousedown(function(evt){
+                if (!$(evt.target).parents(".modal-wrapper").length){
+                    close_propagation_modal()
+                }
+            })
+        }   
+
+        function close_propagation_modal(){
+            $("#propagation-modal-overlay").hide()
+            $("#propagation-modal").hide()
+            propagation_modal_expanded = false;
+            $('body').mousedown(function(){});
+        }
+
+
         // TODO: see if really necessary.
         // function initializeObjects(progr){
         //     canvas.getObjects().map(function(o) {
@@ -1006,4 +1024,4 @@
             return new_canvas;
         }
 
-</script>
+</script> -->

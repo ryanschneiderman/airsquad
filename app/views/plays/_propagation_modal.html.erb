@@ -1,0 +1,42 @@
+<div class = "modal-overlay" id = "propagation-modal-overlay" style = "display: none;"></div>
+<div class = "modal modal-positioning" id = "propagation-modal" style = "display: none;">
+  <div id = "playlist-initializer" class = "modal-container">
+    <div class = "modal-wrapper">
+      <div class = "modal-inner-content" id = "play-modal-content">
+        <div class = "modal-heading">Play Propagation</div>
+        <div class = "modal-body">
+          <div id = "propagation-description">
+          <p class = "modal-p">When play propagation is turned on, any changes you make to a play progression will reflect in previous and subsequent progressions. Play propagation automatically makes starting and ending positions for players consistent. By default play propagation is turned on. </p>
+
+          <p class = "modal-p">In the following example, play propagation is turned on. When player 1's endpoint is moved in this progression, player 1's starting position in the next progression reflects this change. </p>
+          <div class = "flex-row propagation-imgs" >
+            <div class = "propagation-img-wrapper">
+              <%= image_tag("prop1.png", :alt => "propagation1", :class => "propagation-img") %>
+              <div class = "img-footer">Progression 1</div>
+            </div>
+            <div class = "propagation-img-wrapper">
+              <%= image_tag("prop3.png", :alt => "propagation1", :class => "propagation-img") %>
+              <div class = "img-footer">Progression 1</div>
+            </div>
+            <div class = "propagation-img-wrapper">
+              <%= image_tag("prop4.png", :alt => "propagation1", :class => "propagation-img") %>
+              <div class = "img-footer">Progression 2</div>
+            </div>
+            
+          </div>
+          <p class = "modal-p">If play propagation was turned off, player 1's starting position in the next progression would remain unchanged. </p>
+          <div class = "flex-row propagation-imgs" >
+            <div class = "propagation-img-wrapper">
+              <%= image_tag("prop2.png", :alt => "propagation1", :class => "propagation-img") %>
+              <div class = "img-footer">Progression 2</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class = "modal-footing">
+        <button class = "modal-cancel-button" onclick = "close_propagation_modal()">Close</button>
+      </div>
+  </div>
+</div>
+

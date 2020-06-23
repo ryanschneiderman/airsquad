@@ -1,0 +1,50 @@
+<!-- <div class = "stats-index-content-wrapper stats-index-deactivated " id = "lineup-explorer-index">
+	<div class = "stats-index-header grid" id = "lineups-index-header">
+		<div class = "stats-index-page-title flex-row center-justified" id = "lineup-page-title"> Lineup Explorer</div>
+		<div class = "flex-row end-justified stats-header-buttons" id = "lineup-buttons">
+			<button class = "center-aligned sort-lineups-button" id = "sort-lineups-button" onclick = "lineup_explorer_dropdown()">
+				<div class = "lineups-sort-text" id = "lineup-explorer-current">Minutes</div>
+				<object data='<%=asset_path("sort.svg")%>' type="image/svg+xml" class = "sort-img" style = "justify-self: center;">
+	                  <%= image_tag("sort.png", :alt => "sort", :class => "sort-img") %>	
+	             </object>
+			</button>
+			<div class = "toolbar-dropdown" id = "show-lineup-explorer-dropdown" style = "display: none;">
+				<div class = "lineup-dropdown-section">
+					<button class = "flex-row toolbar-dropdown-button" id = "stat-link-16" onclick = "sort_lineups(this, 16, false)">
+						<div  class = "dropdown-action lineup-dropdown-action"  >Minutes</div>
+					</button>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<div id = "lineups-wrapper">
+		<div id = "lineups-container">
+			
+		</div>
+	</div>
+</div> -->
+
+
+
+<script>
+	var display_stats = [];
+	var lineup_stats = [];
+	var desired_off_stats = [15, 27, 7, 3, 29, 28]
+	var per_minute_factor = <%=@minutes_factor%>
+	$( window ).on( "load", function() {
+		if($("body").hasClass("stats")){
+			
+		}
+	});
+	$(document).on("turbolinks:load",function(){
+		if($("body").hasClass("stats")){
+			
+		}
+	})
+	
+
+	
+	
+</script>

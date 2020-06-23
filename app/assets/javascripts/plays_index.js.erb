@@ -1,0 +1,1015 @@
+/*-------------------------------------------------------------------------
+
+	1.	Init
+	2.	Home
+	3.	All Plays 
+	4.	View Playlists
+	5.	Deleted Plays
+
+
+-------------------------------------------------------------------------*/
+
+
+/*-------------------------------------------------------------------------*/
+/*	1.	Init
+/*-------------------------------------------------------------------------*/
+
+$(document).on('turbolinks:load ', function(){
+	/**************** Plays sidebar ******************/
+	// Consider moving to more general file later
+	$(".sidebar-link").hover(function(){
+		$(this).find(".sidebar-link-text").addClass("underline")
+	}, function(){
+		if(!$(this).hasClass("sidebar-link-active"))
+		$(this).find(".sidebar-link-text").removeClass("underline")
+	});
+
+	$(".play-type-select").hover(function(){
+	 	$(this).find(".select-play-type").addClass("play-added")
+	 	$(this).find(".play-type-text").addClass("play-link-name-added")
+	 }, function(){
+	 	$(this).find(".select-play-type").removeClass("play-added")
+	 	$(this).find(".play-type-text").removeClass("play-link-name-added")
+	 })
+
+
+	alignPlayIndexDOM()
+	$('.play-link').click(function(e) {
+		console.log("editing: " + editing)
+		if(editing){
+			e.preventDefault();
+		}
+	});
+
+
+	$( window ). on( "load", function(){
+		$("#all-plays").find(".play-image-block-wrapper").each(function(){
+			play_dom.push({"elem": $(this).clone()})
+		})
+		parsePlayHash()
+		var hash = window.location.hash;
+ 		var split_hash = hash.split("?")
+		if(!(split_hash[0]=="#player_profiles" && split_hash[1])){
+			console.log("plays loading screen removing")
+			$('#ajax-loading-screen').css({'opacity':0, 'display':'none'})
+			$('#ajax-loading-screen .loading-icon').css({'opacity':0}) 
+		}
+		
+	});
+
+});
+
+$(window).on('hashchange', function () 
+{
+	console.log("hash change")
+	parsePlayHash()
+});
+
+	function alignPlayIndexDOM(){
+		$("#plays-index").css("margin-top", $("#header-outer").outerHeight())
+		$(".plays-index-content-wrapper").css("margin-left", $("#plays-index-sidebar").width())
+		$("#plays-index-sidebar").css("top", $("#header-outer").outerHeight()-5);
+	}
+	 
+	function getPlaySortedHash(str){
+	 	switch(str){
+	 		case "sort_viewed" :
+	 			return 1;
+	 		case "sort_updated" :
+	 			return 2;
+	 		case "alpha" :
+	 			break;
+	 	}
+	 }
+
+	function parsePlayHash(){
+	 	var hash = window.location.hash;
+	 	var split_hash = hash.split("?")
+	 	switch(split_hash[0]){
+	 		case "#all_plays":
+	 			if(split_hash[1]){
+	 				console.log("sorting all plays")
+	 				all_plays(getPlaySortedHash(split_hash[1]))
+	 			}
+	 			else{
+	 				console.log("default")
+	 				all_plays()
+	 			}
+	 			break;
+	 		case "#playlists" :
+	 			if(split_hash[1]){
+	 				go_to_playlist(split_hash[1])
+	 			}
+	 			else{
+	 				view_playlists();
+	 			}
+	 			
+	 			break;
+	 		case "#deleted" :
+	 			deleted_plays();
+	 			break;
+	 		case "#plays_home" :
+	 			plays_home();
+	 			break;
+	 	}
+	}
+
+
+	function back_to_previous(){
+		console.log("previous_page: " + previous_page)
+		switch(previous_page){
+			case "playlists" : 
+				view_playlists_hash()
+				//view_playlists();
+				break;
+			case "home" : 
+				plays_home_hash();
+				//plays_home();
+				break;
+			case "all_plays" : 
+				all_plays_hash();
+				//all_plays();
+				break;
+			case "deleted_plays" : 
+				deleted_plays_hash()
+				//deleted_plays();
+				break;
+		}	
+	}
+
+	// TODO: should be a couple more things to add to this re: all_plays page
+	function reset_play_page_info(){
+		reset_playlist_stuff()
+		exit_edit_plays_mode()
+		$(document).scrollTop(0)
+		$(".select-playlist-play-block-full").show()
+		$(".plays-index-content-wrapper").addClass("plays-index-deactivated");
+		$(".sidebar-link").removeClass("sidebar-link-active")
+		$(".sidebar-link-text").removeClass("underline")
+	}
+
+	function deleted_plays_hash(){
+		window.location.hash = "deleted";
+	}
+
+
+	function deleted_plays(){
+		reset_play_page_info()
+	 	$("#deleted-plays-wrapper").removeClass("plays-index-deactivated");;
+	 	$("#deleted-plays-link").addClass("sidebar-link-active")
+	 	$("#deleted-plays-link").find(".sidebar-link-text").addClass("underline")
+	 	previous_page = curr_page;
+	 	curr_page = "deleted_plays"
+	 	setDeletedActionsPos()
+	}
+
+	function all_plays_hash(sort_by){
+		if(sort_by == 1){
+	 		sort_viewed()
+	 		window.location.hash = "all_plays?sort_viewed";
+	 	}
+	 	// recently updated
+	 	else if (sort_by == 2){
+	 		sort_updated()
+	 		window.location.hash = "all_plays?sort_updated";
+	 	}
+	 	else {
+	 		window.location.hash = "all_plays";
+	 	}
+	}
+
+	function all_plays(sort_by){
+	 	// recently viewed
+	 	
+	 	reset_play_page_info()
+	 	$("#all-plays-wrapper").removeClass("plays-index-deactivated");;
+	 	$("#all-plays-link").addClass("sidebar-link-active")
+	 	$("#all-plays-link").find(".sidebar-link-text").addClass("underline")
+
+	 	previous_page = curr_page;
+	 	curr_page = "all_plays"
+	 	console.log("previous_page: " +previous_page)
+	 	set_delete_button_position()
+	 	setSortByPos()
+	 }
+
+	 function view_playlists_hash(){
+	 	window.location.hash = "playlists";
+	 }
+
+	 function view_playlists(){
+	 	reset_play_page_info()
+	 	$("#view-playlists-wrapper").removeClass("plays-index-deactivated");;
+	 	$("#view-playlists-link").addClass("sidebar-link-active")
+		$("#view-playlists-link").find(".sidebar-link-text").addClass("underline")
+		previous_page = "home";
+		curr_page = "playlists";
+		back_to_playlists_home()
+	 }
+
+	 function plays_home_hash(){
+	 	window.location.hash = "plays_home";
+	 }
+
+	 function plays_home(){
+	 	reset_play_page_info()
+	 	$("#plays-home-wrapper").removeClass("plays-index-deactivated");
+	 	$("#plays-home-link").addClass("sidebar-link-active")
+		$("#plays-home-link").find(".sidebar-link-text").addClass("underline")
+		previous_page = curr_page;
+		curr_page = "home";
+	 }
+
+	 function setSettingsPos(playlist_id){
+	 	$("#playlist-settings-wrapper-"+playlist_id).css("top", $("#playlist-settings-button-"+playlist_id).offset().top + $("#playlist-settings-button-"+playlist_id).height() + 5)
+	  	$("#playlist-settings-wrapper-"+playlist_id).css("left", $("#playlist-settings-button-"+playlist_id).offset().left - $("#playlist-settings-wrapper-"+playlist_id).outerWidth() + $("#playlist-settings-button-"+playlist_id).width())
+	 }
+
+
+
+/*-------------------------------------------------------------------------*/
+/*	2.	HOME
+/*-------------------------------------------------------------------------*/
+
+
+
+
+	function add_play_to_playlist(button, playlist_id){
+	 	if(!$(button).hasClass("add-button-selected")){
+	 		$(button).addClass("add-button-selected")
+	 		$(button).find("#green-check").show()
+	 		$(button).find("#plus-icon").hide()
+	 		play_playlists.push(playlist_id)
+	 	}
+	 	else{
+	 		removeIndex = play_playlists.map(function(item) { return item; }).indexOf(playlist_id);
+        	~removeIndex && play_playlists.splice(removeIndex, 1);
+	 		$(button).removeClass("add-button-selected")
+	 		$(button).find("#green-check").hide()
+	 		$(button).find("#plus-icon").show()
+	 	}
+	 }
+
+	 function back_to_play_type_select(){
+	 	$("#select-halfcourt-fullcourt").show();
+	 	$("#play-to-playlist").hide();
+	 	$(".modal-submit-button").prop('disabled', true);
+	 	$(".modal-submit-button").addClass("modal-submit-button-deactivated")
+	 }
+
+	 function select_play_type(curr_play_type){
+	 	// 0 == halfcourt, 1 == fullcourt
+	 	play_type = curr_play_type;
+	 	$("#select-halfcourt-fullcourt").hide()
+	 	$("#play-to-playlist").show()
+	 	$(".modal-submit-button").prop('disabled', false);
+	 	$(".modal-submit-button").removeClass("modal-submit-button-deactivated")
+
+	 }
+
+	 function close_playlist_modal(){
+	 	$("#playlist-name-input").val("New Playlist")
+	 	$(".play-link-name").removeClass("play-link-name-added")
+	 	$(".play-to-playlist-button").removeClass("play-added")
+	 	playlist_plays = []
+	 	$("#playlist-modal-overlay").hide()
+	 	$("#playlist-modal").hide()
+	 }
+
+	 function close_play_modal(){
+	 	$("#playlist-name-input").val("New Play")
+	 	$("#play-modal-overlay").hide()
+	 	$("#play-modal").hide()
+	 }
+
+	 function new_playlist_modal(){
+	 	$("#playlist-modal-overlay").show()
+	 	$("#playlist-modal").show()
+	 	// DOESNT WORK ON SAFARI MOBILE
+	 	$("#playlist-name-input").select();
+	 }
+
+	 function new_play_modal(){
+	 	$("#play-modal-overlay").show()
+	 	$("#play-modal").show()
+	 	// DOESNT WORK ON SAFARI MOBILE
+	 	$("#play-name-input").select();
+	 }
+
+	 function play_to_playlist(play_id, button){
+	 	var img;
+	 	var text;
+	 	if($(button).hasClass("play-to-playlist-button")){
+	 		var text = $(button).parents(".select-playlist-play-block").find(".play-link-name")
+	 		var img = $(button)
+	 	}
+	 	else{
+	 		var text = $(button).find(".play-link-name")
+	 		var img = $(button).parents(".select-playlist-play-block").find(".play-to-playlist-button")
+	 	}
+	 	if(!$(img).hasClass("play-added")){
+	 		playlist_plays.push(play_id)
+	 		$(img).addClass("play-added")
+	 		$(text).addClass("play-link-name-added")
+	 	}
+	 	else{
+	 		removeIndex = playlist_plays.map(function(item) { return item.id; }).indexOf(play_id);
+        	~removeIndex && playlist_plays.splice(removeIndex, 1);
+	 		$(img).removeClass("play-added")
+	 		$(text).removeClass("play-link-name-added")
+	 	}
+	 }
+
+
+	 function insertNewPlaylistIcon(result){
+	 	if(($("#playlists").find(".playlist-block")).length < 4){
+	 		var playlist_block = '<button class = "playlist-block" id = "playlist-home-block'+result.playlist_id+'"></div>'
+		 	var playlist_imgs = '<div class = "playlist-imgs playlist-style-'+result.color_scheme+'" id = "playlist-imgs-'+result.playlist_id+'"></div>'
+		 	$("#playlists").append($(playlist_block).append($(playlist_imgs).append('<div class = "playlist-link-text">'+result.playlist_name+'</div>')))
+	 	}
+	 }
+
+
+	 function create_play(){
+	 	var create_url = "/teams/" + team_id +"/plays/new_play";
+	 	$.ajax({
+	      url: create_url,
+	      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+	      method: "post",
+	      async: false,
+	      context: document.body,
+	      data_type: 'json',
+	      data: {playlists: play_playlists, play_name: $("#play-name-input").val(), play_type: play_type},
+
+	     });
+	 }
+
+	 function create_playlist(){
+	 	var create_url = "/teams/" + team_id +"/playlists";
+	 	
+	 	$.ajax({
+	      url: create_url,
+	      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+	      method: "post",
+	      data_type: 'json',
+	      data: {plays: playlist_plays, playlist_name: $("#playlist-name-input").val()},
+	      success: function(result){
+	      	insertPlaylist(result)
+	      }
+	     });
+	 }
+
+
+
+/*-------------------------------------------------------------------------*/
+/*	3.	All Plays
+/*-------------------------------------------------------------------------*/
+	 
+
+	function set_delete_button_position(){
+		$(".delete-play").each(function(){
+			$(this).css("left", $(this).parent().width() -22)
+		})
+	}
+
+	function setSortByPos(){
+	 	$("#plays-sort-by").css("top", $("#plays-sort-button").offset().top + $("#plays-sort-button").height() + 5)
+	  	$("#plays-sort-by").css("left", $("#plays-sort-button").offset().left - $("#plays-sort-by").outerWidth() + $("#plays-sort-button").width())
+	 }
+
+	 function compare_alphabetical( a, b ) {
+	  if ( a.elem.data("play-name") < b.elem.data("play-name") ){
+	    return -1;
+	  }
+	  if ( a.elem.data("play-name") > b.elem.data("play-name") ){
+	    return 1;
+	  }
+	  return 0;
+	}
+
+	function compare_viewed( a, b ) {
+	  if ( a.elem.data("viewed") > b.elem.data("viewed") ){
+	    return -1;
+	  }
+	  if ( a.elem.data("viewed") < b.elem.data("viewed") ){
+	    return 1;
+	  }
+	  return 0;
+	}
+
+	function compare_updated( a, b ) {
+	  if ( a.elem.data("updated-at") > b.elem.data("updated-at") ){
+	    return -1;
+	  }
+	  if ( a.elem.data("updated-at") < b.elem.data("updated-at") ){
+	    return 1;
+	  }
+	  return 0;
+	}
+
+	function sort_button(button, sorting){
+		$(".dropdown-action").removeClass("dropdown-action-selected")
+		$(button).addClass("dropdown-action-selected")
+		$("#plays-sort-by").hide()
+		switch(sorting){
+			case "alpha" : sort_alphabetical();
+				break;
+			case "viewed" : sort_viewed();
+				break;
+			case "updated" : sort_updated();
+				break;
+		}	
+	}
+
+	function sort_alphabetical(){
+		$("#plays-sort-button-text").text("A-Z")
+		sort_play_dom(compare_alphabetical)
+	}
+
+	function sort_viewed(){
+		$("#plays-sort-button-text").text("Recently Viewed")
+		sort_play_dom(compare_viewed)
+	}
+
+	function sort_updated(){
+		$("#plays-sort-button-text").text("Recently Updated")
+		sort_play_dom(compare_updated)
+	}
+
+
+	function sorting_dropdown(){
+		$("#plays-sort-by").show()
+		$('#all-plays-wrapper').on("mousedown", function(e){
+			if(!$(e.target).hasClass("dropdown-action")){
+				$("#plays-sort-by").hide()
+			}
+		})
+	}
+
+	function sort_play_dom(fn){
+		play_dom.sort(fn);
+		console.log(play_dom)
+		$("#all-plays").find(".play-image-block-wrapper").each(function(){
+			$(this).remove()
+		})
+		$(play_dom).each(function(){
+			console.log("in")
+			console.log($(this)[0].elem)
+			$("#all-plays").append($(this)[0].elem)
+		})
+	}
+
+
+
+	function edit_plays_mode(){
+		$(".not-editing").addClass("editing")
+		$(".not-editing").removeClass("not-editing")
+		$(".settings-button").hide()
+		// TODO: add class for deleting something
+		$(".play-img-full").addClass("editing-playlist")
+
+		$(".play-index-image").addClass("play-index-editing")
+		$('.play-link-text > a').each(function(){
+			$(this).attr("contenteditable", true)
+		})
+		$(".play-index-image").each(function(){
+			$(this).attr("onclick", "delete_play("+$(this).data("play-id")+")")
+		})
+		editing = true;
+
+		$(".play-link-text > a").addClass("play-link-text-highlighted")
+	}
+	function update_plays(){
+		exit_edit_plays_mode()
+		update_play_names()
+	}
+
+	function exit_edit_plays_mode(){
+		$(".editing").addClass("not-editing")
+		$(".editing").removeClass("editing")
+		$(".settings-button").show()
+		$(".play-img-full").removeClass("editing-playlist")
+		$(".play-index-image").removeClass("play-index-editing")
+		$('.play-link-text').each(function(){
+			$(this).attr("contenteditable", false)
+		})
+		//$(".new-playlist-play").find(".delete-svg").addClass("not-editing")
+		$(".play-index-image").each(function(){
+			$(this).attr("onclick", "")
+		})
+		$(".play-link-text > a").removeClass("play-link-text-highlighted")
+		editing = false;
+	}
+
+
+	//TODO
+	function update_play_names(){
+		$("#all-plays").find(".play-image-block-wrapper").each(function(){
+			var play_id = $(this).data("play-id")
+			var play_name = $(this).find(".play-link-text").find("a").text();
+			var patch_url = "/teams/"+ gon.team_id +"/plays/" + play_id + "/update_name"
+            $.ajax({
+              url: patch_url,
+              beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+              type: "PATCH",
+              data_type: 'json',
+              data: {play_name: play_name},
+              success: function(){
+                
+              }
+            });
+
+		})
+		
+	}
+
+	function removePlayFromAllPlays(play_id){
+		$("#play-all-"+play_id).remove()
+	}
+
+	// remove from recently viewed dom (if there) -- render all plays ordered by recently viewed in the recently viewed dom, and hide all of them beyond the first 4. When one is deleted, if there are only 3 plays visible, make the next one visible.
+	function removeFromRecentlyViewed(play_id){
+		$("#recently-viewed-"+play_id).remove()
+	}
+
+	function removeFromRecentlyUpdated(play_id){
+		$("#recently-updated-"+play_id).remove()
+	}
+
+
+
+	function addPlayToDeleted(result, play_id){
+		var play_image_block_wrapper = '<div class = "play-image-block-wrapper soft-deleted" id = "play-deleted-'+result.play_id+'" data-play-id = "'+result.play_id+'"></div>'
+		var play_block = '<div class ="play-image-block flex-row"></div>'
+		var button = '<button class= "play-index-image" id = "play-image-'+play_id+'" data-play-id = "'+play_id+'"></button>'
+		var link = '<a class="play-link" href="/teams/'+team_id+'/plays/'+play_id+'/edit"></a>'
+		var play_img = '<img alt="play" class="play-img-full playlist" src="'+result.progression_img+'">'
+		var play_link_text = '<div class = "play-link-text"><a href="/teams/'+team_id+'/plays/'+play_id+'/edit">'+result.play_name+'</a></div>'
+		var deleted_play_actions = '<div class = "flex-row deleted-play-actions"></div>'
+		var remove_play_button = '<button class = "remove-play-button deleted-play-action" onclick = "full_delete('+play_id+')">Full Delete</button>'
+		var recover_play_button = '<button class = "recover-play-button deleted-play-action" onclick = "recover_play('+play_id+')">Recover</button>'
+
+		$("#deleted-plays").append($(play_image_block_wrapper).append($(play_block).append($(button).append($(link)).append(play_img))).append(play_link_text).append($(deleted_play_actions).append(remove_play_button).append(recover_play_button)))
+		$('.play-link').click(function(e) {
+			if(editing){
+				e.preventDefault();
+			}
+		});
+	}
+
+	function removePlayFromDom(play_id){
+		removePlayFromAllPlays(play_id)
+		removeFromRecentlyViewed(play_id)
+		removeFromRecentlyUpdated(play_id)
+	}
+
+	function delete_play(play_id){
+		var delete_url = "/teams/" + gon.team_id +"/plays/" + play_id +"/soft_delete/";
+	 	$.ajax({
+	      url: delete_url,
+	      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+	      method: "post",
+	      data_type: 'json',
+	      success: function(result){
+	      	removePlayFromDom(play_id)
+	      	addPlayToDeleted(result, result.play_id)
+	      }
+	    });
+	}
+
+
+/*-------------------------------------------------------------------------*/
+/*	4.	Playlists
+/*-------------------------------------------------------------------------*/
+
+
+	function insertNewPlaylistDom(result){
+	 	var button = '<button class = "playlist-block" id = "playlist-full-block-'+result.playlist_id+'" onclick = "show_playlist_full('+result.playlist_id+')"></button>'
+	 	var playlist_icon = '<div class = "playlist-imgs playlist-style-'+result.color_scheme+'"></div>'
+	 	var playlist_name = '<div class = "playlist-link-text playlist-link-text-'+result.playlist_id+'" >'+result.playlist_name+'</div>'
+	 	$("#all-playlists").append($(button).append($(playlist_icon).append(playlist_name)))
+	 }
+
+	 // *********** TODO: Create wrapper for the back button, and align settings when playist is created **************
+	 function insertNewPlaylistFull(result){
+	 	var playlist_wrapper = '<div class = "playlist-solo-wrapper playlist-deactivated" id = "playlist-'+result.playlist_id+'"></div>'
+	 	var play_back_wrapper = '<div class = "play-back-wrapper"></div>'
+	 	var flex_back = "<div class = 'flex-row'></div>"
+	 	var back_to_previous = '<button class = "modal-back-button" onclick = "back_to_previous()"></button>'
+	 	var back_object = '<object data="<%=asset_path("back-arrow.svg")%>" type="image/svg+xml" class = "back-arrow-img"></object>'
+	 	var back_image = '<%= image_tag("back-arrow.png", :alt => "back-arrow", :class => "back-arrow-img") %>'
+	 	var playlist_buttons_wrapper = '<div class = "plays-buttons-wrapper"></div>'
+	 	var done_editing = '<button class = "done-button not-editing" onclick = "update_playlist('+result.playlist_id+')"> Done </button>'
+	 	var editing_button = '<button class = "modal-back-button settings-button" id = "playlist-settings-button-'+result.playlist_id+'" onclick = "expand_settings()"></button>'
+	 	var editing_object = '<object data="<%=asset_path("settings.svg")%>" type="image/svg+xml" class = "settings-img"></object>'
+	 	var editing_img = '<%= image_tag("settings.png", :alt => "back-arrow", :class => "settings-img") %>'
+	 	var settings_wrapper = '<div class = "toolbar-dropdown playlist-settings-wrapper" id = "playlist-settings-wrapper-'+result.playlist_id+'" style = "display: none;"></div>'
+	 	var edit_button = '<button class = "dropdown-action" onclick = "edit_playlist('+result.playlist_id+')">Edit playlist</button>'
+	 	var delete_button = '<button class = "dropdown-action" onclick = "delete_playlist()">Delete playlist</button>'
+	 	var playlist_heading = '<div class = "plays-full-heading" id = "playlist-heading-'+result.playlist_id+'" contenteditable="false">'+result.playlist_name+'</div>'
+	 	var add_to_playlist_wrapper = '<div class = "add-to-playlist-wrapper flex-row not-editing"></div>'
+	 	var add_to_playlist_button = '<button class = "add-to-playlist flex-row" onclick = "show_full_playlist_modal()"></button>'
+	 	var add_to_playlist_img = '<%= image_tag("add-filled.png", :alt => "delete-progression", :class => "add-filled-icon") %>'
+	 	var add_to_playlist_text = '<div class = "add-to-playlist-text">Add to Playlist</div>'
+	 	var playlist_block = '<div class = "playlist-solos plays-full" id = "playlist-solo-'+result.playlist_id+'"></div>'
+
+	 	//$("#playlists-full").append('<div class = "playlist-solo-wrapper playlist-deactivated" id = "playlist-'+result.playlist_id+'"></div>')
+	 	$("#playlists-full").append($(playlist_wrapper).append($(play_back_wrapper).append($(flex_back).append($(back_to_previous).append($(back_object).append(back_image)))).append($(playlist_buttons_wrapper).append(done_editing).append($(editing_button).append($(editing_object).append(editing_img)))).append($(settings_wrapper).append(edit_button).append(delete_button))).append(playlist_heading).append($(add_to_playlist_wrapper).append($(add_to_playlist_button).append(add_to_playlist_img).append(add_to_playlist_text))).append(playlist_block))
+
+	 	var len = result.playlist_imgs.length;
+	 	for(var i = 0; i < len; i++){
+	 		var play_image_wrapper = '<div class = "play-image-block-wrapper"></div>'
+	 		var play_image_block = '<div class ="play-image-block flex-row"></div>'
+	 		var button = '<button class= "play-index-image playlist-index-image" id = "play-image-'+result.playlist_imgs[i].play_id+'" data-play-id = '+result.playlist_imgs[i].play_id+'></button>'
+	 		var delete_object = '<object data=<%=asset_path("delete.svg")%> type="image/svg+xml" class = "delete-img delete-play delete-svg not-editing"></object>'
+	 		var delete_img = '<%= image_tag("delete.png", :alt => "delete-progression", :class => "delete-img delete-play") %>	'
+	 		var link = '<a class="play-link" href="/teams/<%=@team_id%>/plays/'+result.playlist_imgs[i].play_id+'/edit"></a>'
+	 		var play_img = '<img alt="play" class="play-img-full playlist" src="'+result.playlist_imgs[i].progression_img+'">'
+	 		var play_link_text = '<div class = "play-link-text"><a href="/teams/<%=@team_id%>/plays/'+result.playlist_imgs[i].play_id+'/edit">'+result.playlist_imgs[i].play_name+'</a></div>'
+	 		$('#playlist-solo-'+result.playlist_id).append($(play_image_wrapper).append($(play_image_block).append($(button).append($(delete_object).append(delete_img)).append($(link).append(play_img)))).append(play_link_text))
+	 	}
+	 	$('.play-link').click(function(e) {
+			if(editing){
+				e.preventDefault();
+			}
+		});
+	 }
+
+	 function insertNewPlaylistPlays(result){
+	 	var len = result.playlist_imgs.length;
+	 	for(var i = 0; i < len; i++){
+	 		var play_image_wrapper = '<div class = "play-image-block-wrapper"></div>'
+	 		var play_image_block = '<div class ="play-image-block flex-row"></div>'
+	 		var button = '<button class= "play-index-image playlist-index-image" id = "play-image-'+result.playlist_imgs[i].play_id+'" data-play-id = '+result.playlist_imgs[i].play_id+'></button>'
+	 		var delete_object = '<object data=<%=asset_path("delete.svg")%> type="image/svg+xml" class = "delete-img delete-play delete-svg not-editing"></object>'
+	 		var delete_img = '<%= image_tag("delete.png", :alt => "delete-progression", :class => "delete-img delete-play") %>	'
+	 		var link = '<a class="play-link" href="/teams/<%=@team_id%>/plays/'+result.playlist_imgs[i].play_id+'/edit"></a>'
+	 		var play_img = '<img alt="play" class="play-img-full playlist" src="'+result.playlist_imgs[i].progression_img+'">'
+	 		var play_link_text = '<div class = "play-link-text"><a href="/teams/<%=@team_id%>/plays/'+result.playlist_imgs[i].play_id+'/edit">'+result.playlist_imgs[i].play_name+'</a></div>'
+	 		$(playlist_block).append($(play_image_wrapper).append($(play_image_block).append($(button).append($(delete_object).append(delete_img)).append($(link).append(play_img)))).append(play_link_text))
+
+			$('.play-link').click(function(e) {
+				if(editing){
+					e.preventDefault();
+				}
+			});
+	 	}
+	 }
+
+	 function insertPlaylist(result){
+	 	//console.log(playlist);
+	 	insertNewPlaylistIcon(result)
+	 	insertNewPlaylistDom(result)
+	 	insertNewPlaylistFull(result)
+
+	 	close_playlist_modal()
+	 	// insert playlist dom
+	 }
+
+	 function go_to_playlist(playlist_id){
+	 	reset_play_page_info()
+	 	$("#view-playlists-wrapper").removeClass("plays-index-deactivated");;
+	 	$("#view-playlists-link").addClass("sidebar-link-active")
+		$("#view-playlists-link").find(".sidebar-link-text").addClass("underline")
+	 	back_to_playlists_home()
+	 	show_playlist_full(playlist_id)
+	 	previous_page = curr_page;
+	 }
+
+	 function back_to_playlists_home(){
+		$("#playlist-home-wrapper").show()
+		$(".playlist-solo-wrapper").addClass("playlist-deactivated");
+		//$("#playlist-"+playlist_id).removeClass("playlist-deactivated");
+	}
+
+
+		function hide_duplicate_plays_in_modal(playlist_id){
+			var curr_playlist_plays = []
+			$("#playlist-" + playlist_id).find(".playlist-index-image").each(function(e){
+				curr_playlist_plays.push($(this).data("play-id"))
+			})
+			$(".select-playlist-play-block-full").each(function(){
+				var play_id = $(this).data("play-id");
+				var len = curr_playlist_plays.length;
+				for(var i = 0; i < len;i++){
+					if(curr_playlist_plays[i] == play_id){
+						$(this).hide()
+						console.log(play_id)
+					}
+				}
+			})
+		}
+		function expandPlaylist(playlist_id){
+			show_playlist_full(playlist_id)
+			previous_page = "playlists";
+		}
+
+		function show_playlist_full(playlist_id){
+			$("#view-playlists-wrapper").scrollTop(0)
+			$("#playlist-home-wrapper").hide()
+			$(".playlist-solo-wrapper").addClass("playlist-deactivated");
+			$("#playlist-"+playlist_id).removeClass("playlist-deactivated");
+			setSettingsPos(playlist_id)
+			curr_playlist = playlist_id;
+			hide_duplicate_plays_in_modal(playlist_id)
+			set_delete_button_position()
+			window.location.hash = "playlists?"+playlist_id;
+		}
+
+		function expand_settings(){
+			$(".playlist-settings-wrapper").show()
+			$('#view-playlists-wrapper').on("mousedown", function(e){
+				console.log(e.target)
+				if(!$(e.target).hasClass("dropdown-action")){
+					collapse_settings()
+				}
+			})
+		}
+
+		function collapse_settings(){
+			$(".playlist-settings-wrapper").hide()
+			$('#view-playlists-wrapper').off()
+		}
+
+		function edit_playlist(playlist_id){
+			
+			$(".not-editing").addClass("editing")
+			$(".not-editing").removeClass("not-editing")
+			$(".playlist-settings-wrapper").hide()
+			$(".settings-button").hide()
+			$(".playlist").addClass("editing-playlist")
+			$(".playlist-index-image").addClass("play-index-editing")
+			$('#playlist-heading-'+playlist_id).attr('contenteditable','true');
+			$('#playlist-heading-'+playlist_id).select();
+			$(".playlist-index-image").each(function(){
+				$(this).attr("onclick", "delete_playlist_play("+$(this).data("play-id")+")")
+			})
+			editing = true;
+		}
+
+		function play_to_playlist_full(play_id, button){
+			var img;
+		 	var text;
+		 	if($(button).hasClass("play-to-playlist-button")){
+		 		var text = $(button).parents(".select-playlist-play-block").find(".play-link-name")
+		 		var img = $(button)
+		 	}
+		 	else{
+		 		var text = $(button).find(".play-link-name")
+		 		var img = $(button).parents(".select-playlist-play-block").find(".play-to-playlist-button")
+		 	}
+		 	if(!$(img).hasClass("play-added")){
+		 		plays_to_add.push(play_id)
+		 		$(img).addClass("play-added")
+		 		$(text).addClass("play-link-name-added")
+		 	}
+		 	else{
+		 		removeIndex = plays_to_add.map(function(item) { return item.id; }).indexOf(play_id);
+	        	~removeIndex && plays_to_add.splice(removeIndex, 1);
+		 		$(img).removeClass("play-added")
+		 		$(text).removeClass("play-link-name-added")
+		 	}
+		}
+
+		function reset_playlist_stuff(){
+			$(".editing").addClass("not-editing")
+			$(".editing").removeClass("editing")
+			$(".settings-button").show()
+			$(".playlist").removeClass("editing-playlist")
+			$(".play-index-image").removeClass("play-index-editing")
+			$('.plays-full-heading').attr('contenteditable','false');
+			$(".new-playlist-play").find(".delete-svg").addClass("not-editing")
+			$(".playlist-index-image").each(function(){
+				$(this).attr("onclick", "")
+			})
+			editing = false;
+		}
+
+		function update_playlist(){
+			reset_playlist_stuff()
+			update_playlist_name()
+		}
+
+		function show_full_playlist_modal(){
+		 	$("#full-playlist-modal").show()
+		 	$("#full-playlist-modal-overlay").show()
+		 }
+
+		function close_full_playlist_modal(){
+		 	$(".play-link-name").removeClass("play-link-name-added")
+		 	$(".play-to-playlist-button").removeClass("play-added")
+		 	plays_to_add = []
+		 	$("#full-playlist-modal-overlay").hide()
+		 	$("#full-playlist-modal").hide()
+		}
+
+
+		function insertPlaylistInFull(){
+			var len = plays_to_add.length;
+			for(var i = 0 ; i < len; i++){
+
+				var play_div = $("#play-all-"+plays_to_add[i]).clone().addClass("new-playlist-play")
+				play_div.find(".play-index-image").addClass("playlist-index-image play-index-editing").prepend($(".delete-svg").first().clone().addClass("editing"))
+				play_div.find(".play-img-full").addClass("editing-playlist").addClass("playlist")
+				
+				$("#playlist-solo-"+curr_playlist).append(play_div)
+				$(play_div).click(function(e) {
+					if(editing){
+						e.preventDefault();
+					}
+				});
+				$(play_div).find(".play-index-image").attr("onclick", "delete_playlist_play("+$(play_div).data("play-id")+")")
+			}
+			set_delete_button_position()
+		}
+
+		function remove_play_from_playlist_dom(play_id){
+			$("#playlist-solo-"+curr_playlist).find("#play-image-"+play_id).parents(".play-image-block-wrapper").remove()
+			$("#select-playlist-play-block-full-"+play_id).show()
+		}
+
+		function update_playlist_plays(){
+		 	var create_url = "/teams/" + gon.team_id +"/playlists/" + curr_playlist;
+		 	$.ajax({
+		      url: create_url,
+		      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		      method: "patch",
+		      data_type: 'json',
+		      data: {plays: plays_to_add, playlist_id: curr_playlist},
+
+		      success: function(result){
+		      	insertPlaylistInFull()
+		      	close_full_playlist_modal()
+		      	hide_duplicate_plays_in_modal(curr_playlist)
+		      }
+		    });
+		}
+
+		function update_playlist_name(){
+			console.log("updating playlist name")
+			var playlist_name = $("#playlist-heading-"+curr_playlist).text()
+			var create_url = "/teams/" + gon.team_id +"/playlists/" + curr_playlist;
+		 	$.ajax({
+		      url: create_url,
+		      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		      method: "patch",
+		      data_type: 'json',
+		      data: {playlist_name: playlist_name, playlist_id: curr_playlist},
+		      success: function(){
+		      	$(".playlist-link-text-"+curr_playlist).each(function(){
+		      		$(this).text(playlist_name)
+		      	})
+		      }
+		    });
+		}
+
+		function delete_playlist_play(play_id){
+			var create_url = "/teams/" + gon.team_id +"/playlists/" + curr_playlist +"/delete_association";
+		 	$.ajax({
+		      url: create_url,
+		      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		      method: "post",
+		      data_type: 'json',
+		      data: {play_id: play_id, playlist_id: curr_playlist},
+
+		      success: function(result){
+		      	remove_play_from_playlist_dom(play_id)
+		      }
+		    });
+		}
+
+		function delete_playlist(){
+			var create_url = "/teams/" + gon.team_id +"/playlists/" + curr_playlist;
+		 	$.ajax({
+		      url: create_url,
+		      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		      method: "delete",
+		      data_type: 'json',
+		      data: {playlist_id: curr_playlist},
+
+		      success: function(){
+		      	previous_page = "home"
+		      	$("#playlist-full-block-"+curr_playlist).remove()
+		      	$("#playlist-home-block-"+curr_playlist).remove()
+		      	view_playlists()
+		      	
+		      }
+		    });
+		}
+
+
+/*-------------------------------------------------------------------------*/
+/*	5.	Deleted Plays
+/*-------------------------------------------------------------------------*/
+
+function bulk_actions(){
+			$("#deleted-settings-wrapper").show()
+			$('#deleted-plays-wrapper').on("mousedown", function(e){
+				console.log(e.target)
+				if(!$(e.target).hasClass("dropdown-action")){
+					collapse_bulk_actions()
+				}
+			})
+		}
+
+		function collapse_bulk_actions(){
+			$("#deleted-settings-wrapper").hide()
+		}
+
+		function insertPlayInDom(result){
+			var play_image_block_wrapper = '<div class = "play-image-block-wrapper" id = "play-all-'+result.play_id+'" data-play-id = "'+result.play_id+'"></div>'
+			var play_image_block = '<div class ="play-image-block flex-row" ></div>'
+	 		var button = '<button class= "play-index-image" id = "play-image-'+result.play_id+'" data-play-id = "'+result.play_id+'"></button>'
+
+	 		var delete_object = '<object data="<%=asset_path("delete.svg")%>" type="image/svg+xml" class = "delete-img delete-play delete-svg not-editing"><%= image_tag("delete.png", :alt => "delete-progression", :class => "delete-img delete-play") %></object>'
+
+
+	 		var link = '<a class="play-link" href="/teams/<%=@team_id%>/plays/'+result.play_id+'/edit"></a>'
+	 		var play_img = '<img alt="play" class="play-img-full playlist" src="'+result.progression_img+'">'
+	 		var play_link_text = '<div class = "play-link-text"><a href="/teams/<%=@team_id%>/plays/'+result.play_id+'/edit">'+result.play_name+'</a></div>'
+	 		$("#all-plays").append($(play_image_block_wrapper).append($(play_image_block).append($(button).append($(delete_object)).append($(link).append(play_img)))).append(play_link_text))
+
+	 		$('.play-link').click(function(e) {
+				if(editing){
+					e.preventDefault();
+				}
+			});
+			set_delete_button_position()
+		}
+
+		function recover_all(){
+			var recover_all_url = "/teams/" + team_id +"/plays/recover_all"
+			$(".soft-deleted").each(function(){
+				$(this).remove()
+			})
+			collapse_bulk_actions()
+			$.ajax({
+		      url: recover_all_url,
+		      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		      method: "post",
+		      data_type: 'json',
+		      success: function(result){
+		      	console.log(result)
+		      	var recovered_plays = result.content
+		      	$(recovered_plays).each(function(){
+		      		console.log(this)
+		      		insertPlayInDom(this)
+		      	})
+		      }
+		    });
+		}
+
+		function delete_all(){
+			var delete_all_url = "/teams/" + team_id +"/plays/delete_all"
+			$(".soft-deleted").each(function(){
+				$(this).remove()
+			})
+			collapse_bulk_actions()
+			$.ajax({
+		      url: delete_all_url,
+		      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		      method: "post",
+		      data_type: 'json',
+		      success: function(result){
+		      	console.log("success")
+		      }
+		    });
+		}
+
+
+		function recover_play(play_id){
+			var delete_url = "/teams/" + team_id +"/plays/" + play_id + "/recover";
+		 	$.ajax({
+		      url: delete_url,
+		      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		      method: "post",
+		      data_type: 'json',
+		      success: function(result){
+		      	removeFromDeletedDom(result.play_id)
+		      	insertPlayInDom(result, result.play_id)
+		      }
+		    });
+		}
+
+		function removeFromDeletedDom(play_id){
+			$("#play-deleted-"+play_id).remove()
+		}
+
+		function setDeletedActionsPos(playlist_id){
+		 	$("#deleted-settings-wrapper").css("top", $("#deleted-settings-button").offset().top + $("#deleted-settings-button").height() + 5)
+		  	$("#deleted-settings-wrapper").css("left", $("#deleted-settings-button").offset().left - $("#deleted-settings-wrapper").outerWidth() + $("#deleted-settings-button").width())
+		 }
+
+		function full_delete(play_id){
+			var delete_url = "/teams/" + team_id +"/plays/" + play_id;
+		 	$.ajax({
+		      url: delete_url,
+		      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		      method: "delete",
+		      data_type: 'json',
+		      success: function(){
+		      	removeFromDeletedDom(play_id)
+		      }
+		    });
+		}
+

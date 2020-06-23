@@ -45,39 +45,7 @@
 	insert_order_links()
 	sort_lineups("#stat-link-16", 16, false)
 
-	function establish_hover_rules(){
-		$( ".expand-container" ).hover(
-		  function() {
-		  	console.log("hovering")
-		    $( this ).find(".more-text").css("color", "black") ;
-		    $( this ).find(".more-circle").css("stroke", "black") ;
-		    $( this ).find(".more-arrow").css("fill", "black") ;
-		  }, function() {
-		    $( this ).find(".more-text").css("color", "#868696") ;
-		    $( this ).find(".more-circle").css("stroke", "#868696") ;
-		    $( this ).find(".more-arrow").css("fill", "#868696") ;
-		  }
-		);
-
-		$( ".expand-container").click(function(){
-			var parent = $(this).parents(".lineup-module")
-			 if(parent.find(".non-default-stat").hasClass("lineup-stat-inactive")){
-			 	parent.find(".non-default-stat").removeClass("lineup-stat-inactive")
-			 	parent.find(".lineup-table-container").removeClass("lineup-stat-inactive")
-			 	parent.find(".flex-end-container").hide()
-				parent.find(".radar-w-minutes").css("height", "inherit")
-				parent.find(".less-link-container").removeClass("lineup-stat-inactive")
-			 }
-			 else{
-			 	parent.find(".non-default-stat").addClass("lineup-stat-inactive")
-			 	parent.find(".lineup-table-container").addClass("lineup-stat-inactive")
-			 	parent.find(".flex-end-container").show()
-				parent.find(".radar-w-minutes").css("height", "100%")
-				parent.find(".less-link-container").addClass("lineup-stat-inactive")
-			 }
-
-		});
-	}
+	
 	
 
 	

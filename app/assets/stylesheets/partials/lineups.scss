@@ -7,10 +7,12 @@
 	display: grid;
     grid-template-columns: 1fr 2.5fr;
     padding: 0 0 0 30px;
-    background: #e5e5e5;
+    background: #424242;
     border-radius: .625rem;
     min-height: 250px;
     width: 100%;
+    box-shadow: 0px 0px 5px #696969;
+    color: white;
 }
 
 .lineup-stat-inactive{
@@ -59,11 +61,11 @@
 }
 
 .lineup-def-rtg{
-	border-bottom: 3px solid #CD3D48 !important;
+	border-bottom: 3px solid #f51c40 !important;
 }
 
 .lineup-off-rtg{
-	border-bottom: 3px solid #0095B1 !important;
+	border-bottom: 3px solid #00c7ff !important;
 }
 
 .lineup-members{
@@ -90,12 +92,16 @@
 	display: block;
 }
 
-.lineup-stat{
+.stat-module{
 	display: inline-block;
-	background-color: white;
+	background-color: #2f2f2f;
     border-radius: 5px;
     font-family: eurostile, sans-serif;
-    font-size: 17px;
+
+}
+
+.lineup-stat{
+	font-size: 17px;
     font-weight: bold;
     margin-left: 7px;
     margin-right: 7px;
@@ -150,13 +156,13 @@
     font-size: 12px;
     margin-top: 3px;
     transition: color .3s ease;
-    color: #868696;
+    color: #ababbb;
 }
 
 
 
 .lineup-minutes{
-	color: #1D9601;
+	color: #18fb55;
 	margin-top: 10px;
     margin-right: 10px;
 }
@@ -186,9 +192,6 @@
 	margin-bottom: 20px;
 }
 
-.lineup-order-subheader{
-	font-size: 17px;
-}
 
 .lineup-order-links{
 	margin-left: 20px;
@@ -219,12 +222,12 @@
 
 .lineup-stat-table{
 	font-size: 10px;
-    background-color: white;
+   	background-color: #8b8c8b;
     white-space: nowrap;
     text-align: center;
     width: 90%;
     margin: auto;
-    margin-bottom: 15px;
+    margin-bottom: 15px !important;
 }
 
 .per-minute-link{
@@ -236,3 +239,21 @@
     top: 60px;
     height: 600px;
 }
+
+.lineup-radar .axisLabel, .lineup-radar .legend{
+	fill: white;
+}
+
+.lineup-radar .legend{
+	font-weight: 500;
+}
+
+
+.lineup-radar .gridCircle{
+	stroke: rgb(160, 160, 160) !important;
+}
+
+.lineup-radar .line {
+	stroke: #d8d8d8 !important;
+}
+

@@ -18,7 +18,7 @@
 }
 
 .portal-button{
-	width: 150px;
+	width: 135px;
     padding-top: 10px;
     padding-bottom: 10px;
     border-radius: 30px;
@@ -101,3 +101,27 @@
 	padding-left: 5px;
 	margin-top: 20%;
 }
+
+
+#header-buttons{
+    display: flex;
+}
+
+.player-dropdown-text{
+	color: white;
+	font-family: "Montserrat";
+	font-weight: 600;
+	line-height: 16px;
+}
+
+.player-dropdown{
+	padding-left: 10px;
+}
+
+
+.player-dropdown-dark{
+	color: #212121;
+}
+
+
+

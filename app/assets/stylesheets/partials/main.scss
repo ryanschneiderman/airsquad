@@ -12,13 +12,19 @@
     bottom: 0;
     left: 0;
 }
-
+.flex-row-important{
+    display: flex !important;
+}
 .flex-row{
 	display: flex;
 }
 
 .center-aligned{
 	align-items: center;
+}
+
+.end-justified{
+    justify-content: flex-end;
 }
 
 .center-justified{
@@ -38,8 +44,39 @@
     font-weight: 600;
     font-size: 15px;
     opacity: 1;
+    border: none !important;
 }
 
+.img-footer{
+    text-align: center;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.modal-heading{
+    font-size: 27px;
+    font-weight: 600;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #d6d6d6;
+}
+.modal-footing{
+    display: flex;
+    justify-content: flex-end;
+    background-color: #e8e8e8;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.modal-wrapper{
+    border-radius: 10px;
+    background: white;
+    box-shadow: grey 0px 0px 5px;
+}
+
+.modal-p{
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
 .modal-submit-button-deactivated{
     background-color: #848484!important;
     opacity: .7!important;
@@ -85,11 +122,13 @@
 
 
 .modal-back-button{
+    padding-left: 10px;
+    padding-right: 10px;
     margin-left: 5px;
-    width: 40px;
     height: 25px;
     background-color: #e8e8e8;
     border-radius: 10px;
+    min-width: 40px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -99,6 +138,26 @@
 
 .settings-button{
     justify-self: flex-end;
+}
+
+.dropdown-action{
+    width: 100%;
+    text-align: left;
+    padding: 10px;
+    cursor: pointer;
+    border: none;
+}
+
+.flex-row:hover > .dropdown-action{
+    background-color: #d2d2d2;
+}
+/*.dropdown-action:hover{
+    background-color: #e8e8e8;
+}*/
+
+.dropdown-action-selected{
+    background-color: #d2d2d2;
+    font-weight: 600;
 }
 
 
@@ -118,3 +177,42 @@
 svg, object{
     pointer-events: none;
 }
+
+.sidebar{
+    width: 11vw;
+    position: fixed;
+    bottom: 0;
+    align-items: center;
+}
+
+
+.grid{
+    display: grid;
+}
+
+.trend-dropdown-action, .lineup-dropdown-action{
+    text-align: left;
+    padding: 5px;
+    padding-left: 15px;
+    margin: 5px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.margin-5{
+    margin: 5px;
+}
+
+.toolbar-dropdown-button{
+    width: 100%;
+    border: none;
+}
+
+.modal-inner-content{
+    min-height: 55vh;
+}
+
+
+
+
+

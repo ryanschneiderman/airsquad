@@ -3,13 +3,16 @@
 		<div class = "plays-and-playlists">
 			<div class = "plays-row-wrapper">
 				<div class = "play-back-wrapper">
-					<button class = "modal-back-button" onclick = "back_to_previous()">
-	        			<object data='<%=asset_path("back-arrow.svg")%>' type="image/svg+xml" class = "back-arrow-img">
-	                          <%= image_tag("back-arrow.png", :alt => "back-arrow", :class => "back-arrow-img") %>	
-	                     </object>
-	        		</button>
+					<div class = "flex-row">
+						<button class = "modal-back-button" onclick = "back_to_previous()">
+		        			<object data='<%=asset_path("back-arrow.svg")%>' type="image/svg+xml" class = "back-arrow-img">
+		                          <%= image_tag("back-arrow.png", :alt => "back-arrow", :class => "back-arrow-img") %>	
+		                     </object>
+		        		</button>
+		        	</div>
 	        		<div class = "plays-buttons-wrapper flex-row">
-	        			<button class = "modal-back-button sort-button" onclick = "sort_plays_buton()">
+	        			<button class = "flex-row sort-button" id = "plays-sort-button" onclick = "sorting_dropdown()">
+	        				<div class = "sort-button-text" id = "plays-sort-button-text">Sort By</div>
 		        			<object data='<%=asset_path("sort.svg")%>' type="image/svg+xml" class = "sort-img">
 		                          <%= image_tag("sort.png", :alt => "sort", :class => "sort-img") %>	
 		                     </object>
@@ -21,12 +24,17 @@
 		                     </object>
 		        		</button>
 		        	</div>
+		        	<div class = "toolbar-dropdown plays-sort-by-wrapper" id = "plays-sort-by" style = "display: none;">
+	        			<button class = "dropdown-action" id = "plays-sort-alphabetical" onclick = "sort_button(this, 'alpha')">A-Z</button>
+	        			<button class = "dropdown-action" id = "plays-sort-viewed" onclick = "sort_button(this, 'viewed')">Recently Viewed</button>
+	        			<button class = "dropdown-action" id = "plays-sort-updated" onclick = "sort_button(this, 'updated')">Recently Updated</button>
+	        		</div>
 	        	</div>
 				<div class = "plays-full-heading">All Plays</div>
 				<div class = "plays-full" id = "all-plays">
 					<%counter = 0%>
 					<%@all_plays.each do |play| %>
-						<div class = "play-image-block-wrapper" id = "play-all-<%=play.id%>" data-play-id = "<%=play.id%>">
+						<div class = "play-image-block-wrapper" id = "play-all-<%=play.id%>" data-play-id = "<%=play.id%>" data-viewed = "<%=play.viewed%>" data-play-name = "<%=play.name%>" data-updated-at = "<%=play.updated_at%>">
 							<div class ="play-image-block flex-row">
 								<button class= "play-index-image" id = "play-image-<%=play.id%>" data-play-id = "<%=play.id%>">
 									<object data='<%=asset_path("delete.svg")%>' type="image/svg+xml" class = "delete-img delete-play delete-svg not-editing">
@@ -51,124 +59,8 @@
 
 
 <script>
-			
-	function edit_plays_mode(){
-
-		$(".not-editing").addClass("editing")
-		$(".not-editing").removeClass("not-editing")
-		$(".settings-button").hide()
-		// TODO: add class for deleting something
-		$(".play-img-full").addClass("editing-playlist")
-
-		$(".play-index-image").addClass("play-index-editing")
-		$('.play-link-text > a').each(function(){
-			$(this).attr("contenteditable", true)
-		})
-		$(".play-index-image").each(function(){
-			$(this).attr("onclick", "delete_play("+$(this).data("play-id")+")")
-		})
-		editing = true;
-
-		$(".play-link-text > a").addClass("play-link-text-highlighted")
-	}
-	function update_plays(){
-		exit_edit_plays_mode()
-		update_play_names()
-	}
-
-	function exit_edit_plays_mode(){
-		$(".editing").addClass("not-editing")
-		$(".editing").removeClass("editing")
-		$(".settings-button").show()
-		$(".play-img-full").removeClass("editing-playlist")
-		$(".play-index-image").removeClass("play-index-editing")
-		$('.play-link-text').each(function(){
-			$(this).attr("contenteditable", false)
-		})
-		//$(".new-playlist-play").find(".delete-svg").addClass("not-editing")
-		$(".play-index-image").each(function(){
-			$(this).attr("onclick", "")
-		})
-		$(".play-link-text > a").removeClass("play-link-text-highlighted")
-		editing = false;
-	}
 
 
-	//TODO
-	function update_play_names(){
-		$("#all-plays").find(".play-image-block-wrapper").each(function(){
-			var play_id = $(this).data("play-id")
-			var play_name = $(this).find(".play-link-text").find("a").text();
-			var patch_url = "/teams/"+ <%= @team_id %> +"/plays/" + play_id + "/update_name"
-            $.ajax({
-              url: patch_url,
-              beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-              type: "PATCH",
-              data_type: 'json',
-              data: {play_name: play_name},
-              success: function(){
-                
-              }
-            });
-
-		})
-		
-	}
-
-	function removePlayFromAllPlays(play_id){
-		$("#play-all-"+play_id).remove()
-	}
-
-	// remove from recently viewed dom (if there) -- render all plays ordered by recently viewed in the recently viewed dom, and hide all of them beyond the first 4. When one is deleted, if there are only 3 plays visible, make the next one visible.
-	function removeFromRecentlyViewed(play_id){
-		$("#recently-viewed-"+play_id).remove()
-	}
-
-	function removeFromRecentlyUpdated(play_id){
-		$("#recently-updated-"+play_id).remove()
-	}
-
-
-
-	function addPlayToDeleted(result, play_id){
-		var play_image_block_wrapper = '<div class = "play-image-block-wrapper soft-deleted" id = "play-deleted-'+result.play_id+'" data-play-id = "'+result.play_id+'"></div>'
-		var play_block = '<div class ="play-image-block flex-row"></div>'
-		var button = '<button class= "play-index-image" id = "play-image-'+play_id+'" data-play-id = "'+play_id+'"></button>'
-		var link = '<a class="play-link" href="/teams/<%=@team_id%>/plays/'+play_id+'/edit"></a>'
-		var play_img = '<img alt="play" class="play-img-full playlist" src="'+result.progression_img+'">'
-		var play_link_text = '<div class = "play-link-text"><a href="/teams/<%=@team_id%>/plays/'+play_id+'/edit">'+result.play_name+'</a></div>'
-		var deleted_play_actions = '<div class = "flex-row deleted-play-actions"></div>'
-		var remove_play_button = '<button class = "remove-play-button deleted-play-action" onclick = "full_delete('+play_id+')">Full Delete</button>'
-		var recover_play_button = '<button class = "recover-play-button deleted-play-action" onclick = "recover_play('+play_id+')">Recover</button>'
-
-		$("#deleted-plays").append($(play_image_block_wrapper).append($(play_block).append($(button).append($(link)).append(play_img))).append(play_link_text).append($(deleted_play_actions).append(remove_play_button).append(recover_play_button)))
-		$('.play-link').click(function(e) {
-			if(editing){
-				e.preventDefault();
-			}
-		});
-	}
-
-	function removePlayFromDom(play_id){
-		removePlayFromAllPlays(play_id)
-		removeFromRecentlyViewed(play_id)
-		removeFromRecentlyUpdated(play_id)
-		// add to deleted plays dom -- need to create a way to permanently delete and recover deleted plays.
-		// need to remove from all playlist DOMs as well.
-	}
-
-	function delete_play(play_id){
-		var delete_url = "/teams/" + <%= @team_id %> +"/plays/" + play_id +"/soft_delete/";
-	 	$.ajax({
-	      url: delete_url,
-	      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-	      method: "post",
-	      data_type: 'json',
-	      success: function(result){
-	      	removePlayFromDom(play_id)
-	      	addPlayToDeleted(result, result.play_id)
-	      }
-	    });
-	}
+	
 
 </script>

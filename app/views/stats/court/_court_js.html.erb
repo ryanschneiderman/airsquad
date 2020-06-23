@@ -1,4 +1,4 @@
-<script>
+
 function add_court_component(){
     var Basket = court_g.append('circle');
     var Backboard = court_g.append('rect');
@@ -37,7 +37,8 @@ function initCalibration(){
         .text(function(d) {return d[1]});
   }
 
-function draw_court(width){;
+function draw_court(width){
+
     court_g.attr("width", court_width)
            .attr("height", court_height)
 
@@ -48,68 +49,41 @@ function draw_court(width){;
 
     
 
-    /*var LongMR1 = [{"x" : innerWidth/8.3, "y" : innerWidth/4}, {"x" : innerWidth/4.03, "y" : innerWidth/5.3}]
-    var LongMR1Container = court_g.append("path")
-                            .attr("d", lineFunction(LongMR1))
-                            .attr("stroke", "black")
-                            .attr("stroke-width", 2)
-                            .attr("fill", "none");*/
-    /*var LongMR2 = [{"x" : innerWidth/3.2, "y" : innerWidth/2.19}, {"x" : innerWidth/2.63, "y" : innerWidth/3.15}]
-    var LongMR2Container = court_g.append("path")
-                            .attr("d", lineFunction(LongMR2))
-                            .attr("stroke", "black")
-                            .attr("stroke-width", 2)
-                            .attr("fill", "none");*/
 
-    /*var LongMR3 = [{"x" : innerWidth/1.45, "y" : innerWidth/2.18}, {"x" : innerWidth/1.595, "y" : innerWidth/3.15}]
-    var LongMR3Container = court_g.append("path")
-                            .attr("d", lineFunction(LongMR3))
-                            .attr("stroke", "black")
-                            .attr("stroke-width", 2)
-                            .attr("fill", "none");*/
-    /*var LongMR4 = [{"x" : innerWidth/1.13, "y" : innerWidth/4}, {"x" : innerWidth/1.32, "y" : innerWidth/5.3}]
-    var LongMR4Container = court_g.append("path")
-                            .attr("d", lineFunction(LongMR4))
-                            .attr("stroke", "black")
-                            .attr("stroke-width", 2)
-                            .attr("fill", "none");*/
-    
+  var leftCornerThreePath = "M " + (x_offset + 4) + "," + (5) + " L " + (inner_width/12.4) + " , " + (5) + " L " + (inner_width/12.4) + "," + (inner_width / 7.1) + " Q " + (inner_width/11.5) + "," + (inner_width / 5.5) + " " + (inner_width/ 10.5) + "," + (inner_width/4.82) + " L " + (x_offset + 4) + " , " + (inner_width/4.82) + " Z"
+
+  var leftWingThreePath = "M " + (x_offset + 4) + "," + (inner_width/4.72) + " L " + (inner_width/10.4) + "," + (inner_width/4.72) + " Q " + (inner_width / 6.3) + "," + (inner_width / 2.49) + " " + (inner_width/2.889) + "," + (inner_width/2.075) + " L " + (inner_width/2.889) + "," + (inner_height - 4) + " L " + (x_offset + 4) + "," + (inner_height - 4) + " Z";
+
+  var straightAwayThreePath = "M " + (inner_width / 2.857) + "," + (inner_width / 2.07) + " Q " + (inner_width / 1.99) + "," + (inner_width/1.85) + " " + (inner_width/1.525) + "," + (inner_width/2.07) + " L " + (inner_width / 1.525) + "," + (inner_height - 4) + " L " + (inner_width/2.857) +"," + (inner_height - 4) + "Z";
+
+  var rightWingThreePath = "M " + (inner_width / 1.1) + "," + (inner_width/4.72) + " L " + (inner_width -2) + "," + (inner_width/4.72) + " L " + (inner_width -2 ) + "," + (inner_height - 4) + " L " + (inner_width / 1.515) + "," + (inner_height - 4) + " L " + (inner_width / 1.515) + "," + (inner_width/2.08) + " Q " + (inner_width / 1.18) + "," + (inner_width / 2.495) + " " + (inner_width / 1.1) + "," + (inner_width/4.72);
+
+  var rightCornerThreePath = "M " + (inner_width / 1.098) + "," + (inner_width/4.82) + " Q " + (inner_width/1.089) + "," + (inner_width/5.6) + " " + (inner_width/1.081) + "," + (inner_width / 7.1) + " L " + (inner_width/1.081) + "," + (5) + " L " + (inner_width - 2) + "," + (5) + " L " + (inner_width - 2) + "," + (inner_width /4.82) + " Z"
 
 
-  var leftCornerThreePath = "M " + (x_offset + 4) + "," + (5) + " L " + (innerWidth/12.4) + " , " + (5) + " L " + (innerWidth/12.4) + "," + (innerWidth / 7.1) + " Q " + (innerWidth/11.5) + "," + (innerWidth / 5.5) + " " + (innerWidth/ 10.5) + "," + (innerWidth/4.82) + " L " + (x_offset + 4) + " , " + (innerWidth/4.82) + " Z"
+  var leftCornerLongPath = "M " + (inner_width/10.5) + "," + (5) + " L " + (inner_width/4.54) + "," + (5) + " Q " + (inner_width/4.88) + "," + (inner_width/9.7) + " " + (inner_width/4.07) + "," + (inner_width/5.33) + " L " + (inner_width/8.1) + ","  + (inner_width/4.06) + " Q " + (inner_width/9.9) + "," + (inner_width/5.2) + " " + (inner_width/10.5) + "," + (inner_width/7.1) + " Z"  
 
-  var leftWingThreePath = "M " + (x_offset + 4) + "," + (innerWidth/4.72) + " L " + (innerWidth/10.4) + "," + (innerWidth/4.72) + " Q " + (innerWidth / 6.3) + "," + (innerWidth / 2.49) + " " + (innerWidth/2.889) + "," + (innerWidth/2.075) + " L " + (innerWidth/2.889) + "," + (innerHeight - 4) + " L " + (x_offset + 4) + "," + (innerHeight - 4) + " Z";
+  var leftWingLongPath = "M " + (inner_width/8) + "," + (inner_width/3.98) + " L " + (inner_width/4.02) + "," + (inner_width/5.22) + " Q " + (inner_width /3.42) + "," + (inner_width/3.63) + " " + (inner_width/2.65) + "," + (inner_width/3.15) + " L " + (inner_width/3.2) + "," + (inner_width/2.215) + " Q " + (inner_width/5.5) + "," + (inner_width/2.63) + " " + (inner_width/8) + "," + (inner_width/3.98);
 
-  var straightAwayThreePath = "M " + (innerWidth / 2.857) + "," + (innerWidth / 2.07) + " Q " + (innerWidth / 1.99) + "," + (innerWidth/1.85) + " " + (innerWidth/1.525) + "," + (innerWidth/2.07) + " L " + (innerWidth / 1.525) + "," + (innerHeight - 4) + " L " + (innerWidth/2.857) +"," + (innerHeight - 4) + "Z";
+  var middleLongPath = "M " + (inner_width /2.623) + "," + (inner_width/3.13) + " Q " + (inner_width/1.98) + "," + (inner_width/2.68) + " " + (inner_width/1.598) +"," + (inner_width/3.135) + " L " + (inner_width/1.456) + "," + (inner_width/2.198) + " Q " + (inner_width/2) + "," + (inner_width/1.845) + " " + (inner_width/3.16) + "," + (inner_width/2.205) + " Z ";
 
-  var rightWingThreePath = "M " + (innerWidth / 1.1) + "," + (innerWidth/4.72) + " L " + (innerWidth -2) + "," + (innerWidth/4.72) + " L " + (innerWidth -2 ) + "," + (innerHeight - 4) + " L " + (innerWidth / 1.515) + "," + (innerHeight - 4) + " L " + (innerWidth / 1.515) + "," + (innerWidth/2.08) + " Q " + (innerWidth / 1.18) + "," + (innerWidth / 2.495) + " " + (innerWidth / 1.1) + "," + (innerWidth/4.72);
+  var rightWingLongPath = "M " + (inner_width/1.587) + "," +(inner_width/3.159) + " Q " + (inner_width/1.4) + "," + (inner_width/3.64) + " " + (inner_width/1.318) + ',' + (inner_width/5.24) + " L " + (inner_width/1.135) + "," + (inner_width/4) + " Q " + (inner_width/1.222) + "," + (inner_width/2.6) + " " + (inner_width/1.448) + "," + (inner_width/2.21) + " Z ";
 
-  var rightCornerThreePath = "M " + (innerWidth / 1.098) + "," + (innerWidth/4.82) + " Q " + (innerWidth/1.089) + "," + (innerWidth/5.6) + " " + (innerWidth/1.081) + "," + (innerWidth / 7.1) + " L " + (innerWidth/1.081) + "," + (5) + " L " + (innerWidth - 2) + "," + (5) + " L " + (innerWidth - 2) + "," + (innerWidth /4.82) + " Z"
+  var rightCornerLongPath = "M " + (inner_width/1.315) + "," + (inner_width/5.35) + " Q " + (inner_width/1.247) + "," + (inner_width/10) + " " + (inner_width/1.272) + "," + (5) + " L " + (inner_width/1.099) + "," + (5) + " L " + (inner_width/1.099) + "," + (inner_width/7.1) + " Q " + (inner_width/1.108) + "," + (inner_width/5.1) + " " + (inner_width/1.133) +"," + (inner_width/4.07) +  " Z ";
 
+  var leftShortPath = "M " + (inner_width/4.46) + "," + (5) + " C " + (inner_width/4.8) +"," + (inner_width/9.5) + " " + (inner_width/4.2) +"," + (inner_width/4.6) + " " + (inner_width/2.918) +"," + (inner_width/3.414) + " L " + (inner_width/2.375) +"," + (inner_width/5.64) + " C " + (inner_width/2.82) + "," + (inner_width/7.7) + " " + (inner_width/2.86) + "," + (inner_width/18) + " " + (inner_width/2.718) + "," + (5) + " Z ";
 
-  var leftCornerLongPath = "M " + (innerWidth/10.5) + "," + (5) + " L " + (innerWidth/4.54) + "," + (5) + " Q " + (innerWidth/4.88) + "," + (innerWidth/9.7) + " " + (innerWidth/4.07) + "," + (innerWidth/5.33) + " L " + (innerWidth/8.1) + ","  + (innerWidth/4.06) + " Q " + (innerWidth/9.9) + "," + (innerWidth/5.2) + " " + (innerWidth/10.5) + "," + (innerWidth/7.1) + " Z"  
+  var middleShortPath = "M " + (inner_width/2.355) +"," + (inner_width/5.575) + " C " + (inner_width/2.12) + "," + (inner_width/4.75) + " " + (inner_width/1.87) + "," + (inner_width/4.75) + " " + (inner_width/1.714) +"," + (inner_width/5.63) + " L " + (inner_width/1.514) + "," + (inner_width/3.39) +  " C " + (inner_width/1.78) + "," + (inner_width/2.795) + " " + (inner_width/2.26) + "," + (inner_width/2.795) + " " + (inner_width/2.89) + "," + (inner_width/3.39) + " Z"; 
 
-  var leftWingLongPath = "M " + (innerWidth/8) + "," + (innerWidth/3.98) + " L " + (innerWidth/4.02) + "," + (innerWidth/5.22) + " Q " + (innerWidth /3.42) + "," + (innerWidth/3.63) + " " + (innerWidth/2.65) + "," + (innerWidth/3.15) + " L " + (innerWidth/3.2) + "," + (innerWidth/2.215) + " Q " + (innerWidth/5.5) + "," + (innerWidth/2.63) + " " + (innerWidth/8) + "," + (innerWidth/3.98);
-
-  var middleLongPath = "M " + (innerWidth /2.623) + "," + (innerWidth/3.13) + " Q " + (innerWidth/1.98) + "," + (innerWidth/2.68) + " " + (innerWidth/1.598) +"," + (innerWidth/3.135) + " L " + (innerWidth/1.456) + "," + (innerWidth/2.198) + " Q " + (innerWidth/2) + "," + (innerWidth/1.845) + " " + (innerWidth/3.16) + "," + (innerWidth/2.205) + " Z ";
-
-  var rightWingLongPath = "M " + (innerWidth/1.587) + "," +(innerWidth/3.159) + " Q " + (innerWidth/1.4) + "," + (innerWidth/3.64) + " " + (innerWidth/1.318) + ',' + (innerWidth/5.24) + " L " + (innerWidth/1.135) + "," + (innerWidth/4) + " Q " + (innerWidth/1.222) + "," + (innerWidth/2.6) + " " + (innerWidth/1.448) + "," + (innerWidth/2.21) + " Z ";
-
-  var rightCornerLongPath = "M " + (innerWidth/1.315) + "," + (innerWidth/5.35) + " Q " + (innerWidth/1.247) + "," + (innerWidth/10) + " " + (innerWidth/1.272) + "," + (5) + " L " + (innerWidth/1.099) + "," + (5) + " L " + (innerWidth/1.099) + "," + (innerWidth/7.1) + " Q " + (innerWidth/1.108) + "," + (innerWidth/5.1) + " " + (innerWidth/1.133) +"," + (innerWidth/4.07) +  " Z ";
-
-  var leftShortPath = "M " + (innerWidth/4.46) + "," + (5) + " C " + (innerWidth/4.8) +"," + (innerWidth/9.5) + " " + (innerWidth/4.2) +"," + (innerWidth/4.6) + " " + (innerWidth/2.918) +"," + (innerWidth/3.414) + " L " + (innerWidth/2.375) +"," + (innerWidth/5.64) + " C " + (innerWidth/2.82) + "," + (innerWidth/7.7) + " " + (innerWidth/2.86) + "," + (innerWidth/18) + " " + (innerWidth/2.718) + "," + (5) + " Z ";
-
-  var middleShortPath = "M " + (innerWidth/2.355) +"," + (innerWidth/5.575) + " C " + (innerWidth/2.12) + "," + (innerWidth/4.75) + " " + (innerWidth/1.87) + "," + (innerWidth/4.75) + " " + (innerWidth/1.714) +"," + (innerWidth/5.63) + " L " + (innerWidth/1.514) + "," + (innerWidth/3.39) +  " C " + (innerWidth/1.78) + "," + (innerWidth/2.795) + " " + (innerWidth/2.26) + "," + (innerWidth/2.795) + " " + (innerWidth/2.89) + "," + (innerWidth/3.39) + " Z"; 
-
-  var rightShortPath = "M " + (innerWidth/1.705) + "," + (innerWidth/5.70) + " C " + (innerWidth/1.541) + "," + (innerWidth/7.7) + " " +  (innerWidth/1.526) + "," + (innerWidth/18) + " " + (innerWidth/1.573) + "," + (5) + " L " + (innerWidth/1.278) + ',' + (5) + " C " + (innerWidth/1.247) + "," + (innerWidth/8) + " " +  (innerWidth/1.327) + "," + (innerWidth/4.4) + " " + (innerWidth/1.505) + "," + (innerWidth/3.415) + " Z"
+  var rightShortPath = "M " + (inner_width/1.705) + "," + (inner_width/5.70) + " C " + (inner_width/1.541) + "," + (inner_width/7.7) + " " +  (inner_width/1.526) + "," + (inner_width/18) + " " + (inner_width/1.573) + "," + (5) + " L " + (inner_width/1.278) + ',' + (5) + " C " + (inner_width/1.247) + "," + (inner_width/8) + " " +  (inner_width/1.327) + "," + (inner_width/4.4) + " " + (inner_width/1.505) + "," + (inner_width/3.415) + " Z"
 
   var LeftCornerThreeCointainer = court_g.append("path")
                               .attr("d", leftCornerThreePath)
                               //.attr("fill", "#93b9ff") 
   var leftCornerThreeText = court_g.append("text")
                             .text("0/0")
-                            .attr("x", (innerWidth/36))
-                            .attr("y", (innerWidth/9))
+                            .attr("x", (inner_width/36))
+                            .attr("y", (inner_width/9))
 
   court_regions.push({"region" : LeftCornerThreeCointainer, "text" : leftCornerThreeText});
 
@@ -119,8 +93,8 @@ function draw_court(width){;
 
   var leftWingThreeText = court_g.append("text")
                             .text("0/0")
-                            .attr("x", (innerWidth/8))
-                            .attr("y", (innerWidth/2.2))
+                            .attr("x", (inner_width/8))
+                            .attr("y", (inner_width/2.2))
 
   court_regions.push({"region":LeftWingThreeContainer, "text" : leftWingThreeText});
   var StraightAwayThreeContainer = court_g.append("path")
@@ -129,24 +103,24 @@ function draw_court(width){;
 
   var straightAwayThreeText = court_g.append("text")
                             .text("0/0")
-                            .attr("x", (innerWidth/2.05))
-                            .attr("y", (innerWidth/1.7))                            
+                            .attr("x", (inner_width/2.05))
+                            .attr("y", (inner_width/1.7))                            
   court_regions.push({ "region" : StraightAwayThreeContainer, "text": straightAwayThreeText});  
   var RightWingThreeContainer = court_g.append("path")
                               .attr("d", rightWingThreePath)
                               //.attr("fill", "#ff6363") 
   var rightWingThreeText = court_g.append("text")
                             .text("0/0")
-                            .attr("x", (innerWidth/1.2))
-                            .attr("y", (innerWidth/2.2))  
+                            .attr("x", (inner_width/1.2))
+                            .attr("y", (inner_width/2.2))  
   court_regions.push({"region" : RightWingThreeContainer, "text" : rightWingThreeText});
   var RightCornerThreeContainer = court_g.append("path")
                               .attr("d", rightCornerThreePath)
                               //.attr("fill", "#93b9ff")
   var rightCornerThreeText = court_g.append("text")
                             .text("0/0")
-                            .attr("x", (innerWidth/1.06))
-                            .attr("y", (innerWidth/9)) 
+                            .attr("x", (inner_width/1.06))
+                            .attr("y", (inner_width/9)) 
 
   court_regions.push({ "region" : RightCornerThreeContainer, "text" : rightCornerThreeText});
   
@@ -155,73 +129,73 @@ function draw_court(width){;
                               //.attr("fill", "#93b9ff")
   var leftCornerLongText = court_g.append("text")
                             .text("0/0")
-                            .attr("x", (innerWidth/7.5))
-                            .attr("y", (innerWidth/8.5))
+                            .attr("x", (inner_width/7.5))
+                            .attr("y", (inner_width/8.5))
   court_regions.push({ "region" : LefCornerLongCointainer, "text":leftCornerLongText});
   var LefWingLongCointainer = court_g.append("path")
                               .attr("d", leftWingLongPath)
                               //.attr("fill", "#93b9ff")
   var leftWingLongText = court_g.append("text")
                             .text("0/0")
-                            .attr("x", (innerWidth/4.2))
-                            .attr("y", (innerWidth/3.1))                            
+                            .attr("x", (inner_width/4.2))
+                            .attr("y", (inner_width/3.1))                            
   court_regions.push({ "region" : LefWingLongCointainer, "text":leftWingLongText});
   var MiddleLongCointainer = court_g.append("path")
                               .attr("d", middleLongPath)
                               //.attr("fill", "#93b9ff")
   var middleLongText = court_g.append("text")
                             .text("0/0")
-                            .attr("x", (innerWidth/2.05))
-                            .attr("y", (innerWidth/2.4))
+                            .attr("x", (inner_width/2.05))
+                            .attr("y", (inner_width/2.4))
   court_regions.push({ "region" : MiddleLongCointainer, "text":middleLongText});
   var RightWingLongCointainer = court_g.append("path")
                               .attr("d", rightWingLongPath)
                               //.attr("fill", "#93b9ff") 
   var rightWingLongText = court_g.append("text")
                             .text("0/0")
-                            .attr("x", (innerWidth/1.35))
-                            .attr("y", (innerWidth/3.1))
+                            .attr("x", (inner_width/1.35))
+                            .attr("y", (inner_width/3.1))
   court_regions.push({ "region" : RightWingLongCointainer, "text" : rightWingLongText});
   var RightCornerLongCointainer = court_g.append("path")
                               .attr("d", rightCornerLongPath)
                               //.attr("fill", "#93b9ff") 
   var rightCornerLongText = court_g.append("text")
                             .text("0/0")
-                            .attr("x", (innerWidth/1.2))
-                            .attr("y", (innerWidth/8))
+                            .attr("x", (inner_width/1.2))
+                            .attr("y", (inner_width/8))
   court_regions.push({ "region" : RightCornerLongCointainer, "text": rightCornerLongText});
   var LeftShortCointainer = court_g.append("path")
                               .attr("d", leftShortPath)
                               //.attr("fill", "#ffaaaa") 
   var leftShortText = court_g.append("text")
                             .text("0/0")
-                            .attr("x", (innerWidth/3.5))
-                            .attr("y", (innerWidth/7.5))
+                            .attr("x", (inner_width/3.5))
+                            .attr("y", (inner_width/7.5))
   court_regions.push({ "region" : LeftShortCointainer, "text":leftShortText});
   var MiddleShortCointainer = court_g.append("path")
                               .attr("d", middleShortPath)
                               //.attr("fill", "#ffaaaa")
   var middleShortText = court_g.append("text")
                             .text("0/0")
-                            .attr("x", (innerWidth/2.05))
-                            .attr("y", (innerWidth/3.5)) 
+                            .attr("x", (inner_width/2.05))
+                            .attr("y", (inner_width/3.5)) 
   court_regions.push({ "region" : MiddleShortCointainer, "text":middleShortText});
   var RightShortCointainer = court_g.append("path")
                               .attr("d", rightShortPath)
                               //.attr("fill", "#ffaaaa") 
   var rightShortText = court_g.append("text")
                             .text("0/0")
-                            .attr("x", (innerWidth/1.45))
-                            .attr("y", (innerWidth/7.5)) 
+                            .attr("x", (inner_width/1.45))
+                            .attr("y", (inner_width/7.5)) 
   court_regions.push({ "region" : RightShortCointainer, "text": rightShortText});
 
-/*var ShortMR1 = [{"x" : innerWidth/2.9, "y" : innerWidth/3.4}, {"x" : innerWidth/2.3, "y" : innerWidth/6.2}]
+/*var ShortMR1 = [{"x" : inner_width/2.9, "y" : inner_width/3.4}, {"x" : inner_width/2.3, "y" : inner_width/6.2}]
     var ShortMR1Container = court_g.append("path")
                             .attr("d", lineFunction(ShortMR1))
                             .attr("stroke", "black")
                             .attr("stroke-width", 2)
                             .attr("fill", "none");*/
-    /*var ShortMR2 = [{"x" : innerWidth/1.51, "y" : innerWidth/3.4}, {"x" : innerWidth/1.74, "y" : innerWidth/6.2}]
+    /*var ShortMR2 = [{"x" : inner_width/1.51, "y" : inner_width/3.4}, {"x" : inner_width/1.74, "y" : inner_width/6.2}]
     var ShortMR2Container = court_g.append("path")
                             .attr("d", lineFunction(ShortMR2))
                             .attr("stroke", "black")
@@ -241,62 +215,47 @@ function draw_court(width){;
 
    
 
-    Basket.attr('cx', innerWidth /2 + x_offset)
-           .attr('cy', innerWidth / 17 + innerWidth / 66.67)
-           .attr('r', innerWidth / 66.67)
+    Basket.attr('cx', inner_width /2 + x_offset)
+           .attr('cy', inner_width / 17 + inner_width / 66.67)
+           .attr('r', inner_width / 66.67)
            .style('fill', 'None')
            .attr('stroke-width', '2px')
            .style('stroke', 'black');
 
-    Backboard.attr('x', innerWidth / 2 - innerWidth / 16.67 + x_offset)
-           .attr('y', innerWidth / 17)
-           .attr('width', innerWidth / 8.33)
+    Backboard.attr('x', inner_width / 2 - inner_width / 16.67 + x_offset)
+           .attr('y', inner_width / 17)
+           .attr('width', inner_width / 8.33)
            .attr('height', 0.25)
            .style('fill', 'none')
            .attr('stroke-width', '2px')
            .style('stroke', 'black');
 
-    BasketRegion.attr('cx', innerWidth /2 + x_offset)
-            .attr('cy', innerWidth / 17 )
-            .attr('r', innerWidth / 7.1)
+    BasketRegion.attr('cx', inner_width /2 + x_offset)
+            .attr('cy', inner_width / 17 )
+            .attr('r', inner_width / 7.1)
             .style('stroke', 'white')
             .attr('stroke-width', '3px')
 
     BasketRegionText = court_g.append("text")
                             .text("0/0")
-                            .attr("x", (innerWidth/2.05))
-                            .attr("y", (innerWidth/8))
+                            .attr("x", (inner_width/2.05))
+                            .attr("y", (inner_width/8))
     court_regions.push({"region": BasketRegion, "text": BasketRegionText})
 
-    /*MidRangeRegion.attr('cx', innerWidth /2 + x_offset)
-            .attr('cy', innerWidth / 17 )
-            .attr('r', innerWidth / 3.5)
-            .style('fill', 'None')
-            .style('stroke', 'red')*/
-
-    /*Innerbox
-           .attr('x', innerWidth /2.63 + x_offset)
-           .attr('y', y_offset)
-           .attr('width', innerWidth /4.17)
-           .attr('height', innerWidth / 2.63)
-           .style('fill', 'none')
-           .attr('stroke-width', '3px')
-           .style('stroke', 'black');*/
-
     CornerThreeLeft
-           .attr('x', innerWidth * 0.088)
+           .attr('x', inner_width * 0.088)
            .attr('y', y_offset)
            .attr('width', 0.2)
-           .attr('height', innerHeight * .202)
+           .attr('height', inner_height * .202)
            .style('fill', 'none')
            .attr('stroke-width', '3px')
            .style('stroke', 'black');
 
     CornerThreeRight
-           .attr('x', innerWidth *.9172)
+           .attr('x', inner_width *.9172)
            .attr('y', y_offset)
            .attr('width', 0.2)
-           .attr('height', innerHeight * .202)
+           .attr('height', inner_height * .202)
            .style('fill', 'none')
            .attr('stroke-width', '3px')
            .style('stroke', 'black');
@@ -304,35 +263,22 @@ function draw_court(width){;
     OuterLine
            .attr('x', x_offset)
            .attr('y', y_offset)
-           .attr('width', innerWidth)
-           .attr('height', innerHeight)
+           .attr('width', inner_width)
+           .attr('height', inner_height)
            .style('fill', 'none')
            .style('stroke', 'black')
            .style('stroke-width', '3px')
 
 
-    // LOOK UP
-   /*appendArcPath(TopFreeThrow, innerWidth / 8.33, (90)*(Math.PI/180), (270)*(Math.PI/180))
-        .attr('fill', 'none')
-        .attr("stroke", "black")
-        .attr('stroke-width', '3px')
-        .attr("transform", "translate(" + (innerWidth / 2 + x_offset) + ", " +innerWidth / 2.63 +")");*/
-
-    /*appendArcPath(BottomFreeThrow, court_xScale(6)-court_xScale(0), (-90)*(Math.PI/180), (90)*(Math.PI/180))
-        .attr('fill', 'none')
-        .attr("stroke", "black")
-        .attr("transform", "translate(" + innerWidth / 2 + ", " +innerWidth / 2.63 +")");*/
-
-
 
     var angle = Math.atan((10-0.75)/(70))* 180 / Math.PI
-    var dis = innerWidth / 2.39;
+    var dis = inner_width / 2.39;
     appendArcPath(ThreeLine, dis, (angle+90)*(Math.PI/180), (270-angle)*(Math.PI/180))
         .attr('fill', 'none')
         .attr("stroke", "black")
         .attr('stroke-width', '3px')
         .attr('class', 'shot-chart-court-3pt-line')
-        .attr("transform", "translate(" + (innerWidth / 1.99)  + ", " + innerWidth * 0.086 +")");
+        .attr("transform", "translate(" + (inner_width / 1.99)  + ", " + inner_width * 0.086 +")");
 }
 
 
@@ -361,9 +307,9 @@ function insert_shot_in_array(index, is_make, eff_fg_val){
 }
 
 function determine_three_region(x,y,is_make){
-  if (y < (innerWidth/4.82)){
+  if (y < (inner_width/4.82)){
     //left side of court
-    if (x < innerWidth/2){
+    if (x < inner_width/2){
       insert_shot_in_array(0, is_make, 1.5)
     }
     /*right corner */
@@ -371,10 +317,10 @@ function determine_three_region(x,y,is_make){
      insert_shot_in_array(4, is_make, 1.5)
     } 
   }
-  else if (x < (innerWidth/2.889)) {
+  else if (x < (inner_width/2.889)) {
     insert_shot_in_array(1, is_make, 1.5)
   }
-  else if (x < (innerWidth/1.525)){
+  else if (x < (inner_width/1.525)){
    insert_shot_in_array(2, is_make, 1.5)
   }
   /*right wing*/
@@ -384,40 +330,40 @@ function determine_three_region(x,y,is_make){
 }
 
 function determine_long_mr_region(x,y,is_make){
-  if(x < (innerWidth/4.03) && y < (-0.48 * (x - innerWidth/8.3) + innerWidth/4)){
+  if(x < (inner_width/4.03) && y < (-0.48 * (x - inner_width/8.3) + inner_width/4)){
     insert_shot_in_array(5, is_make, 1);
   }
-  else if (x < (innerWidth/2.63) && y < (-2.05 * (x - innerWidth/3.2) + innerWidth/2.19)){
+  else if (x < (inner_width/2.63) && y < (-2.05 * (x - inner_width/3.2) + inner_width/2.19)){
 
     insert_shot_in_array(6, is_make, 1);
   }
-  else if (x < (innerWidth/1.45) && y > (2.25 * (x - innerWidth/1.595) + innerWidth/3.15)) {
+  else if (x < (inner_width/1.45) && y > (2.25 * (x - inner_width/1.595) + inner_width/3.15)) {
     insert_shot_in_array(7, is_make, 1);
   }
-  else if (x < (innerWidth/1.13) && y > (0.48 * (x - innerWidth/1.32) + innerWidth/5.3)){
+  else if (x < (inner_width/1.13) && y > (0.48 * (x - inner_width/1.32) + inner_width/5.3)){
     insert_shot_in_array(8, is_make, 1);
   }
   else insert_shot_in_array(9, is_make, 1);
 }
 
 function determine_short_mr_region(x,y,is_make){
-  if(x < (innerWidth/2.3) && y < (-1.477 * (x - innerWidth/2.9) + innerWidth/3.4)){
+  if(x < (inner_width/2.3) && y < (-1.477 * (x - inner_width/2.9) + inner_width/3.4)){
     insert_shot_in_array(10, is_make, 1);
   }
-  else if (x < (innerWidth/1.51) && y > (1.517 * (x - innerWidth/1.74) + innerWidth/6.2)){
+  else if (x < (inner_width/1.51) && y > (1.517 * (x - inner_width/1.74) + inner_width/6.2)){
     insert_shot_in_array(11, is_make, 1);
   }
   else insert_shot_in_array(12, is_make, 1);
 }
 
 function determine_region(x, y, is_make){
-  if(determine_arc_region(x, y, innerWidth / 7.1, innerWidth / 7.1, innerWidth /2 + x_offset, innerWidth / 17)){
+  if(determine_arc_region(x, y, inner_width / 7.1, inner_width / 7.1, inner_width /2 + x_offset, inner_width / 17)){
     insert_shot_in_array(13, is_make, 1);
   }
-  else if (determine_arc_region(x, y, innerWidth / 3.5, innerWidth / 3.5, innerWidth /2 + x_offset, innerWidth / 17)){
+  else if (determine_arc_region(x, y, inner_width / 3.5, inner_width / 3.5, inner_width /2 + x_offset, inner_width / 17)){
     determine_short_mr_region(x,y,is_make);
   }
-  else if (determine_arc_region(x, y, innerWidth / 2.39, innerWidth / 2.39,(innerWidth / 1.99), innerWidth * 0.086) && determine_corner_three(x, y)){
+  else if (determine_arc_region(x, y, inner_width / 2.39, inner_width / 2.39,(inner_width / 1.99), inner_width * 0.086) && determine_corner_three(x, y)){
     determine_long_mr_region(x,y,is_make);
   }
   else {
@@ -427,10 +373,10 @@ function determine_region(x, y, is_make){
 }
 
 function determine_corner_three(x, y){
-  if (x < innerWidth * 0.088 && y < y_offset + innerHeight * .202){
+  if (x < inner_width * 0.088 && y < y_offset + inner_height * .202){
     return false;
   }
-  else if ( x > innerWidth *.9172 && y < y_offset + innerHeight * .202){
+  else if ( x > inner_width *.9172 && y < y_offset + inner_height * .202){
     return false;
   }
   else return true;
@@ -545,4 +491,3 @@ function initialize_shot_chart_data(){
 
 
 
-</script>

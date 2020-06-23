@@ -1,0 +1,517 @@
+
+	function initialize_stat_array(){
+		lineup_stats = gon.lineup_objs;
+		var num_lineups = lineup_stats.length
+		for(var i = 0; i < num_lineups;i++){
+			var num_stats = lineup_stats[i].stats.length;
+			for(var j = 0; j < num_stats; j++){
+				if(lineup_stats[i].stats[j].stat_list_id == 16){
+					lineup_stats[i].minutes = lineup_stats[i].stats[j].value
+					lineup_stats[i].stats[j].value = (lineup_stats[i].stats[j].value/60).toFixed(1)
+				}
+			}
+		}
+	}
+
+	function populate_basic_stat_table_columns(){
+		display_stats = gon.stat_table_columns
+		//console.log("display stats")
+	}
+
+	function is_desired_off_stat(stat){
+		return desired_off_stats.includes(stat.stat_list_id)
+	}
+
+	// inserts modules for each lineup into the parent html
+	function insert_lineup_modules(){
+		var len = lineup_stats.length
+		for (var i = 0; i < len; i++){
+			var module_html = create_lineup_module(lineup_stats[i], i)
+		}
+	}
+
+	function create_lineup_players_html(lineup_obj){
+		var lineup_members = $("<div class = 'lineup-members'></div>")
+		for(var i = 0; i < 5; i++){
+			var player_html = $("<div class = 'lineup-member'>"+ lineup_obj.lineup_members[i].name + ", &nbsp</div>")
+			lineup_members.append(player_html)
+		}
+		return lineup_members
+	}
+
+	function get_display_stat_name(stat_id){
+		switch(stat_id){
+			case 16 : return "Minutes";
+			case 18 : return "eFG%";
+			case 19 : return "TS%";
+			case 30 : return "Off Rating";
+			case 31 : return "Def Rating";
+			case 33 : return "OReb%";
+			case 34 : return "DReb%";
+		}
+	}
+
+	function find_stat(search_array, stat_id){
+		var len = search_array.length
+		for(var i = 0; i < len; i++){
+			if(search_array[i].stat_list_id == stat_id){
+				return search_array[i]
+			}
+		}
+	}
+
+	function create_stat_box(stat_array, stat_list_id, is_advanced, default_stat){
+		var stat_obj = find_stat(stat_array, stat_list_id)
+		var stat_container = $('<div class = "lineup-stat stat-module"></div>')
+		if(!default_stat){
+			stat_container.addClass("non-default-stat")
+			stat_container.addClass("lineup-stat-inactive")
+		} 
+		var stat_label = $('<div class = "lineup-stat-label">'+ get_display_stat_name(stat_list_id) +'</div>')
+		if(stat_list_id == 30) stat_label.addClass("lineup-off-rtg")
+		else if(stat_list_id == 31) stat_label.addClass("lineup-def-rtg")
+		else if (stat_list_id == 16) $(stat_container).addClass("lineup-minutes")
+		var stat_value = $('<div class = "lineup-stat-value">' + stat_obj.value + '</div>')
+		stat_container.append(stat_label).append(stat_value)
+		return stat_container
+	}
+
+	function adv_stat_exists(stat_id){
+		var len = lineup_stats[0].advanced_stats.length;
+		for(var i = 0; i < len; i++){
+			if(stat_id == lineup_stats[0].advanced_stats[i].stat_list_id){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function create_adv_html_arr(lineup_obj){
+		var adv_arr = []
+		if(adv_stat_exists(30)){
+			var off_eff_html = create_stat_box(lineup_obj.advanced_stats, 30, true, true);
+			adv_arr.push(off_eff_html)
+		} 
+		if(adv_stat_exists(31)) {
+			var def_eff_html = create_stat_box(lineup_obj.advanced_stats, 31, true, true);
+			adv_arr.push(def_eff_html)
+		}
+		if(adv_stat_exists(18)) {
+			var efg_html = create_stat_box(lineup_obj.advanced_stats, 18, true, false);
+			adv_arr.push(efg_html)
+		}
+		if(adv_stat_exists(19)) {
+			var ts_html = create_stat_box(lineup_obj.advanced_stats, 19, true, false);
+			adv_arr.push(ts_html)
+		}
+		if(adv_stat_exists(33)) {
+			var oreb_html = create_stat_box(lineup_obj.advanced_stats, 33, true, false);
+			adv_arr.push(oreb_html)
+		}
+		if(adv_stat_exists(34)) {
+			var dreb_html = create_stat_box(lineup_obj.advanced_stats, 34, true, false);
+			adv_arr.push(dreb_html)
+		}
+		return adv_arr
+	}
+
+	function create_stat_html(lineup_obj){
+		var lineup_stats = $('<div class = "lineup-stats"></div>')
+		var lineup_adv_row = $('<div class = "lineup-adv-row"></div>')
+		var adv_arr = create_adv_html_arr(lineup_obj)
+		for (var i = 0; i < adv_arr.length; i++){
+			if(i%2 == 0 && i != 0){
+				lineup_stats.append(lineup_adv_row)
+				lineup_adv_row = $('<div class = "lineup-adv-row"></div>')
+			}
+			lineup_adv_row.append(adv_arr[i])
+		}
+		lineup_stats.append(lineup_adv_row)
+
+		return lineup_stats;
+	}
+
+	function create_radar_chart(stat_array, color,id){
+		var margin_val = $(window).innerWidth() * .039
+		var margin = {top: margin_val, right: margin_val, bottom: margin_val, left: margin_val},
+		width = $(window).innerWidth() * .2 - margin.left - margin.right,
+		height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
+
+		var len = stat_array.length
+		var num_lineups = lineup_stats.length
+		var per_minute_data = [[]]
+		
+		var options = {
+		  w: width,
+		  h: height,
+		  margin: margin,
+		  maxValue: 1.0,
+		  levels: 5,
+		  roundStrokes: true,
+		  color: color
+		};
+
+		for(var i = 0; i < len; i++){
+			var rank = parseInt(stat_array[i].rank);
+			per_minute_data[0].push({axis: stat_array[i].stat, value: ((num_lineups-rank)/num_lineups).toFixed(2)})
+		}
+		RadarChart(id, per_minute_data, options);
+	}
+
+
+	function create_lineup_radar_charts(lineup_obj, index){
+		var color1 = d3.scaleOrdinal().range(["rgb(0, 199, 255)"]);
+		var color2 = d3.scaleOrdinal().range(["rgb(245, 30, 62)"]);
+		create_radar_chart(lineup_obj.off_stats.filter(is_desired_off_stat), color1, "#offensive-chart-"+index)
+		create_radar_chart(lineup_obj.def_stats, color2, "#defensive-chart-"+index)
+	}
+
+	function expand_module(){
+		//"rgb(10, 208, 228);"
+	}
+
+	function makeSVG(tag, attrs) {
+        var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
+        for (var k in attrs)
+            el.setAttribute(k, attrs[k]);
+        return el;
+    }
+
+    function create_less_link(index){
+		var circle= makeSVG('circle', {cx: 18, cy: 18, r:17, stroke: '#ababbb', 'stroke-width': 1.5, fill: 'none', class: "more-circle"});
+		var rect1 = makeSVG('rect', {x: 25.5, y: 15.9, width:1.5, height:8.15, transform: "translate(-11.63 18.6) rotate(-45)" , fill: '#ababbb', class: "more-arrow"})
+		var rect2 = makeSVG('rect', {x: 19.8, y: 10.6, width:8.15, height:1.5, transform: "translate(-9.81 22.99) rotate(-45)" , fill: '#ababbb', class: "more-arrow"})
+		var rect3 = makeSVG('rect', {x: 17.4, y: 10.75, width:1.5, height:15, fill: '#ababbb', class: "more-arrow"})
+		document.getElementById('less-link-'+index).appendChild(circle);
+		document.getElementById('less-link-'+index).appendChild(rect1);
+		document.getElementById('less-link-'+index).appendChild(rect2);
+		document.getElementById('less-link-'+index).appendChild(rect3);
+    }
+
+	function create_more_link(index){
+		var circle= makeSVG('circle', {cx: 18, cy: 18, r:17, stroke: '#ababbb', 'stroke-width': 1.5, fill: 'none', class: "more-circle"});
+		var rect1 = makeSVG('rect', {x: 14.89, y: 18.26, width:1.5, height:8.15, transform: "translate(-11.63 18.6) rotate(-45)" , fill: '#ababbb', class: "more-arrow"})
+		var rect2 = makeSVG('rect', {x: 17.77, y: 21.59, width:8.15, height:1.5, transform: "translate(-9.81 22.99) rotate(-45)" , fill: '#ababbb', class: "more-arrow"})
+		var rect3 = makeSVG('rect', {x: 17.6, y: 11.75, width:1.5, height:15, fill: '#ababbb', class: "more-arrow"})
+		document.getElementById('more-link-'+index).appendChild(circle);
+		document.getElementById('more-link-'+index).appendChild(rect1);
+		document.getElementById('more-link-'+index).appendChild(rect2);
+		document.getElementById('more-link-'+index).appendChild(rect3);
+	}
+
+	function toggle_table(index, is_per_minute){
+		var lineup_table_container = $("#lineup-tables-"+index);
+		var minutes_table = lineup_table_container.find(".minutes-table")
+		var totals_table = lineup_table_container.find(".totals-table")
+		var minutes_header = lineup_table_container.find(".per-minute-link")
+		var totals_header = lineup_table_container.find(".totals-link")
+		if(is_per_minute){
+			$(minutes_table).removeClass("inactive-table")
+			$(totals_table).addClass("inactive-table")
+			$(totals_header).css("font-weight", "normal")
+			$(minutes_header).css("font-weight", "bold")
+		}
+		else{
+			$(totals_table).removeClass("inactive-table")
+			$(minutes_table).addClass("inactive-table")
+			$(totals_header).css("font-weight", "bold")
+			$(minutes_header).css("font-weight", "normal")
+		}
+	}
+
+	function create_table_html(lineup_obj, index){
+		var table_container = $("<div class = 'lineup-table-container lineup-stat-inactive' id = 'lineup-tables-"+index+"'></div>");
+		var table_headers =  $("<div class = 'lineup-table-headers'></div>");
+		var per_minute_header =  $("<button class = 'lineup-table-link per-minute-link' onclick = 'toggle_table("+index+", true)'>Per "+gon.minutes_factor+" Minutes</button>");
+		var total_header =  $("<button class = 'lineup-table-link totals-link' onclick = 'toggle_table("+index+", false)'>Totals</button>");
+
+	
+		var per_minute_table = create_stat_table(lineup_obj, true)
+		var totals_table = create_stat_table(lineup_obj, false)
+		table_container.append(table_headers.append(per_minute_header).append(total_header)).append(per_minute_table).append(totals_table)
+		$(totals_table).addClass("inactive-table").addClass("totals-table")
+		$(per_minute_table).addClass("minutes-table")
+		return table_container
+	}
+
+	function create_radar_w_minutes(lineup_obj, index){
+		var radar_charts = $("<div class = 'radar-charts'></div>");
+
+		var radar_w_minutes = $("<div class = 'radar-w-minutes'></div>");
+
+		var empty_off_radar = $('<div class="offensive-chart lineup-radar" id = "offensive-chart-'+index+'"></div>')
+		var empty_def_radar = $('<div class="defensive-chart lineup-radar" id = "defensive-chart-'+index+'"></div>')
+
+		var minutes_container = $('<div class="minutes-container"></div>')
+		var minutes_stat_box = create_stat_box(lineup_obj.stats, 16, false, true);
+
+		var flex_end_container = $('<div class="flex-end-container"></div>')
+		var more_link_container = $('<div class="expand-container more-link-container"></div>')
+		var more_link = $('<svg class = "more-link" height="36px" width = "36px" id="more-link-'+index+'" xmlns="http://www.w3.org/2000/svg"/>')
+		var more_text = $('<div class="more-text">MORE</div>')
+		flex_end_container.append(more_link_container.append(more_link).append(more_text))
+
+
+
+		
+		radar_w_minutes.append(radar_charts.append(empty_off_radar).append(empty_def_radar)).append(minutes_container.append(minutes_stat_box).append(flex_end_container))
+		return radar_w_minutes
+	}
+
+	function create_right_module(lineup_obj, index){
+		var module_right = $("<div class = 'lineup-module-right'></div>");
+		var radar_w_minutes = create_radar_w_minutes(lineup_obj, index)
+
+		var table_container= create_table_html(lineup_obj, index)
+		var less_link_container = $('<div class="expand-container less-link-container lineup-stat-inactive"></div>')
+		var less_link = $('<svg class = "less-link" height="36px" width = "36px" id="less-link-'+index+'" xmlns="http://www.w3.org/2000/svg"/>')
+		var less_text = $('<div class="more-text">LESS</div>')
+		
+		module_right.append(radar_w_minutes).append(table_container).append(less_link_container.append(less_link).append(less_text))
+		return module_right
+	}
+
+	function create_lineup_module(lineup_obj, index){
+		var module_container = $("<div class = 'lineup-module' id = 'lineup-module-" + index + "'></div>") 
+		var module_left = $("<div class = 'lineup-module-left'></div>")
+		var lineup_members = create_lineup_players_html(lineup_obj)
+		var stat_html = create_stat_html(lineup_obj)
+
+		var module_right = create_right_module(lineup_obj, index)
+
+		$(module_container).append(module_left.append(lineup_members).append(stat_html)).append(module_right)
+		lineup_obj.html = $(module_container)
+		$("#lineups-container").append(module_container)
+		create_lineup_radar_charts(lineup_obj, index)
+		create_more_link(index)
+		create_less_link(index)
+	}
+
+	function is_sortable_advanced(stat_id){
+		switch(stat_id){
+			case 18 : return true;
+			case 19 : return true;
+			case 30 : return true;
+			case 31 : return true;
+			case 33 : return true;
+			case 34 : return true;
+		}
+		return false
+	}
+
+	function insert_lineup_advanced_links(){
+		var adv_len = lineup_stats[0].advanced_stats.length;
+		var advanced_links;
+		if(adv_len > 0){
+			var advanced_header = $("<div class = 'lineup-order-subheader'>Advanced Stats</div>")
+			advanced_links = $("<div class = 'lineup-dropdown-section'></div>")
+			$("#show-lineup-explorer-dropdown").append(advanced_header)
+		}
+		for (var i = 0; i < adv_len; i++){
+			if(is_sortable_advanced(lineup_stats[0].advanced_stats[i].stat_list_id)){
+				var link_string = get_display_stat_name(lineup_stats[0].advanced_stats[i].stat_list_id)
+				var advanced_link = "<button class = 'flex-row toolbar-dropdown-button' id = 'stat-link-"+lineup_stats[0].advanced_stats[i].stat_list_id+"' onclick = 'sort_lineups(this, "+lineup_stats[0].advanced_stats[i].stat_list_id+", true)'><div  class = 'dropdown-action lineup-dropdown-action' >"+link_string+"</div></button>"
+				advanced_links.append(advanced_link)
+			}
+			
+		}
+		$("#show-lineup-explorer-dropdown").append(advanced_links)
+	}
+
+	function insert_lineup_offensive_links(){
+		var off_len = lineup_stats[0].off_stats.length
+		var off_header = $("<div class = 'lineup-order-subheader'>Offensive Stats</div>")
+		var off_links = $("<div class = 'lineup-dropdown-section'></div>")
+		//$("#lineup-order-links").append(off_header)
+		for (var i =0; i<off_len; i++){
+			var link_string = lineup_stats[0].off_stats[i].stat;
+			var off_link = "<button class = 'flex-row toolbar-dropdown-button' id = 'stat-link-"+lineup_stats[0].off_stats[i].stat_list_id+"' onclick = 'sort_lineups(this, "+lineup_stats[0].off_stats[i].stat_list_id+", true)'><div class = 'dropdown-action lineup-dropdown-action' >"+link_string+"</div></button>"
+			off_links.append(off_link)
+		}
+		$("#show-lineup-explorer-dropdown").append(off_header)
+		$("#show-lineup-explorer-dropdown").append(off_links)
+	}
+
+	function insert_lineup_defensive_links(){
+		var def_len = lineup_stats[0].def_stats.length
+		var def_header = $("<div class = 'lineup-order-subheader'>Defensive Stats</div>")
+		var def_links = $("<div class = 'lineup-dropdown-section'></div>")
+		// $("#lineup-order-links").append(def_header)
+		for (var i =0; i<def_len; i++){
+			var link_string = lineup_stats[0].def_stats[i].stat
+			var def_link = "<button class = 'flex-row toolbar-dropdown-button' id = 'stat-link-"+lineup_stats[0].def_stats[i].stat_list_id+"' onclick = 'sort_lineups(this, "+lineup_stats[0].def_stats[i].stat_list_id+", true)'><div  class = 'dropdown-action lineup-dropdown-action' >"+link_string+"</div></button>"
+			def_links.append(def_link)
+		}
+		$("#show-lineup-explorer-dropdown").append(def_header)
+		$("#show-lineup-explorer-dropdown").append(def_links)
+	}
+
+	function insert_lineup_order_links(){
+		insert_lineup_advanced_links()
+		insert_lineup_offensive_links()
+		insert_lineup_defensive_links()
+	}
+
+
+	function find_stat_index(stat_id, is_advanced){
+		if(is_advanced){
+			var stat_array = lineup_stats[0].advanced_stats;
+		}
+		else{
+			var stat_array = lineup_stats[0].stats
+		}
+		var len = stat_array.length;
+		for(var i = 0; i < len; i++){
+			if(stat_array[i].stat_list_id==stat_id){
+				return i;
+			}
+		}
+	}
+
+	function sort_lineups(button, stat_id, is_advanced){
+		// $(".stat-link").removeClass("stat-link-selected")
+		// $(button).addClass("stat-link-selected")
+		// var top = $(button).position().top
+		// $(".basketball-bullet").css({"top" : top + 6})
+
+	    $("#show-lineup-explorer-dropdown").hide()
+	    $("#lineup-explorer-current").text($(button).find(".dropdown-action").text())
+
+		var stat_index = find_stat_index(stat_id, is_advanced)
+		if(is_advanced || stat_id == 16){
+			if(stat_id == 31){
+				lineup_stats.sort(function(a,b){
+					return a.advanced_stats[stat_index].value - b.advanced_stats[stat_index].value
+				})
+			}
+			else if (stat_id == 16){
+				lineup_stats.sort(function(a,b){
+					return b.stats[stat_index].value - a.stats[stat_index].value
+				})
+			}
+			else{
+				lineup_stats.sort(function(a,b){
+					return b.advanced_stats[stat_index].value - a.advanced_stats[stat_index].value
+				})
+			}
+
+			
+		}
+		else{
+			lineup_stats.sort(function(a,b){
+				return a.stats[stat_index].rank - b.stats[stat_index].rank
+			})
+		}
+
+		$("#lineups-container").empty()
+		var len = lineup_stats.length
+		for(var i = 0; i < len; i++){
+			$("#lineups-container").append(lineup_stats[i].html)
+		}
+		establish_hover_rules()
+	}
+
+	function create_stat_table(lineup_obj, is_per_minute){
+		var table = document.createElement("TABLE");
+		$(table).addClass("lineup-stat-table stats-table")
+		insert_basic_stat_header(table)
+		var row = table.insertRow(1)
+		insert_basic_data(row, lineup_obj, is_per_minute)
+		return table;
+	}
+
+	function insert_basic_stat_header(table){
+		var insert_index = 0;
+		var header = table.createTHead();
+		var row = header.insertRow(0);
+		row.classList.add("lineup-table-header")
+		var num_stats = display_stats.length
+		for(i = 0; i < num_stats; i++){
+			if(display_stats[i].stat_list_id!= 16){
+				var col = row.insertCell(insert_index)
+				col.innerHTML += "<div>" + display_stats[i].stat_name + "</div>";
+				if(display_stats[i].display_type == "fraction"){
+					insert_index++;
+					var pct_col = row.insertCell(insert_index);
+					pct_col.innerHTML = "<div>" + display_stats[i].percentage_string + "</div>"; 
+				}
+				insert_index++;
+			}
+		}
+	}
+
+	// this function is for inserting a row of data for a single lineup. 
+	// when doing this, we should be passing the lineup_obj so we can have access to important info on the lineup like minutes, games_played etc. 
+	function insert_basic_data(row, lineup_obj, is_per_minute){
+		var insert_index = 0;
+		var num_stats = display_stats.length
+
+		for(j = 0 ;j < num_stats; j++){
+			if (display_stats[j].display_type != "minutes"){
+				if(row.cells.length <= insert_index) var col = row.insertCell(insert_index);
+				else var col = row.cells[insert_index];
+
+				if(display_stats[j].display_type == "fraction"){
+					var pct = insert_fraction_data(row, col, display_stats[j].stat_list_id, ++insert_index, lineup_obj.stats, lineup_obj, true, false, is_per_minute, true);
+					insert_percentage_data(row, pct, insert_index)
+				}
+				else{
+					insert_standard_lineup_data(col, display_stats[j].stat_list_id, lineup_obj, is_per_minute)
+				}
+				insert_index++;
+			}	
+		}	
+	}
+
+
+	function insert_standard_lineup_data(col, stat_list_id,lineup_obj, is_per_minute){
+
+		var stat_total = find_lineup_stat(stat_list_id, lineup_obj)
+		var insert_value = (is_per_minute) ? (stat_total * (gon.minutes_factor/(lineup_obj.minutes/60))).toFixed(1) : stat_total;
+		col.innerHTML = insert_value;
+	}
+
+	function establish_hover_rules(){
+		$( ".expand-container" ).hover(
+		  function() {
+		    $( this ).find(".more-text").css("color", "white") ;
+		    $( this ).find(".more-circle").css("stroke", "white") ;
+		    $( this ).find(".more-arrow").css("fill", "white") ;
+		  }, function() {
+		    $( this ).find(".more-text").css("color", "#ababbb") ;
+		    $( this ).find(".more-circle").css("stroke", "#ababbb") ;
+		    $( this ).find(".more-arrow").css("fill", "#ababbb") ;
+		  }
+		);
+
+		$( ".expand-container").click(function(){
+			var parent = $(this).parents(".lineup-module")
+			 if(parent.find(".non-default-stat").hasClass("lineup-stat-inactive")){
+			 	parent.find(".non-default-stat").removeClass("lineup-stat-inactive")
+			 	parent.find(".lineup-table-container").removeClass("lineup-stat-inactive")
+			 	parent.find(".flex-end-container").hide()
+				parent.find(".radar-w-minutes").css("height", "inherit")
+				parent.find(".less-link-container").removeClass("lineup-stat-inactive")
+			 }
+			 else{
+			 	parent.find(".non-default-stat").addClass("lineup-stat-inactive")
+			 	parent.find(".lineup-table-container").addClass("lineup-stat-inactive")
+			 	parent.find(".flex-end-container").show()
+				parent.find(".radar-w-minutes").css("height", "100%")
+				parent.find(".less-link-container").addClass("lineup-stat-inactive")
+			 }
+
+		});
+	}
+
+	function find_lineup_stat(stat_list_id, lineup_obj){
+		var stat_arr = lineup_obj.stats;
+		var len = stat_arr.length
+		
+		for(var i = 0; i < len; i++){
+			if(stat_arr[i].stat_list_id == stat_list_id){
+				var return_value = stat_arr[i].value 
+				return return_value
+			}
+		}
+	}

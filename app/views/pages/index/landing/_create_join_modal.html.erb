@@ -1,0 +1,22 @@
+<div id = "join-create-team-wrapper" class = "signup-deactivated">
+              <div class = "flex-row">
+                <div class = "create-join-team-wrapper">
+                  <div class = "create-join-team-heading">Create Team</div>
+                  <button class = "create-join-team" id = "create-team" onclick = "create_team()">
+                    <object data='<%=asset_path("create-team.svg")%>' type="image/svg+xml" class = "create-join-team-img">
+                      <%= image_tag("create-team.png", :alt => "sort", :class => "create-join-team-img") %>  
+                    </object>
+                  </button>
+                  <div class = "create-join-team-footer">($119/year)</div>
+                </div>
+                <div class = "create-join-team-wrapper">
+                  <div class = "create-join-team-heading">Join Team</div>
+                  <button class = "create-join-team" id = "join-team">
+                      <object data='<%=asset_path("join-icon.svg")%>' type="image/svg+xml" class = "create-join-team-img">
+                        <%= image_tag("create-team.png", :alt => "sort", :class => "create-join-team-img") %>  
+                      </object>
+                  </button>
+                  <div class = "create-join-team-footer">(Free!)</div>
+                </div>
+              </div>
+            </div>
