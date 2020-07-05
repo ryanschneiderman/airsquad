@@ -10,7 +10,7 @@
 
 	function send_post(){
 		var url = "/teams/"+ <%=params[:id]%> +"/posts/"
-		var data = {content: $(".new-post").text(), team_id: <%=@team.id%>, member_id: <%=@current_member.id%>, author: "<%=@current_member.nickname%>"}
+		var data = {content: $(".new-post").text(), team_id: <%=@team_id%>, member_id: <%=@curr_member.id%>, author: "<%=@curr_member.nickname%>"}
 		$(".new-post").text("")
 		$.ajax({
 			url: url, 
@@ -77,12 +77,12 @@
 	}
 
 	function submit_comment(comment){
-		var comment_obj = {content: comment.text(), author: "<%=@current_member.nickname%>", dom: comment, post_id: comment.data("postId")}
+		var comment_obj = {content: comment.text(), author: "<%=@curr_member.nickname%>", dom: comment, post_id: comment.data("postId")}
 		comment.text("")
 		insert_comment(comment_obj)
 		//console.log(comment_obj.dom.data("postId"))
 		var url = "/teams/"+ <%=params[:id]%> +"/posts/" + comment_obj.post_id +"/comment"
-		var data = {content: comment_obj.content, team_id: <%=@team.id%>, member_id: <%=@current_member.id%>, author: "<%=@current_member.nickname%>"}
+		var data = {content: comment_obj.content, team_id: <%=@team_id%>, member_id: <%=@curr_member.id%>, author: "<%=@curr_member.nickname%>"}
 		$.ajax({
 			url: url, 
 			beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},

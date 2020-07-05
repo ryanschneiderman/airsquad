@@ -14,6 +14,7 @@ class Stats::ShootingStatsService
 		@season_three_point_att = params[:season_three_point_att]
 		@game_id = params[:game_id]
 		@member_id = params[:member_id]
+		@season_id = params[:season_id]
 	end
 
 	def call 
@@ -44,7 +45,8 @@ class Stats::ShootingStatsService
 			value: field_goal_pct,
 			game_id: @game_id,
 			stat_list_id: 27,
-			member_id: @member_id
+			member_id: @member_id,
+			season_id: @season_id
 		})
 	end
 
@@ -55,7 +57,7 @@ class Stats::ShootingStatsService
 			season_field_goal_pct = 100 * @season_field_goals/@season_field_goal_att
 		end
 
-		season_total = SeasonStat.where(member_id: @member_id, stat_list_id: 27).take
+		season_total = SeasonStat.where(member_id: @member_id, stat_list_id: 27, season_id: @season_id).take
 		if season_total 
 			season_total.value = season_field_goal_pct
 			season_total.save
@@ -63,7 +65,8 @@ class Stats::ShootingStatsService
 			SeasonStat.create({
 				value: season_field_goal_pct,
 				stat_list_id: 27,
-				member_id: @member_id
+				member_id: @member_id,
+				season_id: @season_id
 			})
 		end
 	end
@@ -79,7 +82,8 @@ class Stats::ShootingStatsService
 			value: free_throw_pct,
 			stat_list_id: 29,
 			member_id: @member_id,
-			game_id: @game_id
+			game_id: @game_id,
+			season_id: @season_id
 		})
 	end
 
@@ -89,7 +93,7 @@ class Stats::ShootingStatsService
 		else 
 			season_free_throw_pct = 100 * @season_free_throw_makes/@season_free_throw_att
 		end
-		season_total = SeasonStat.where(member_id: @member_id, stat_list_id: 29).take
+		season_total = SeasonStat.where(member_id: @member_id, stat_list_id: 29, season_id: @season_id).take
 		if season_total 
 			season_total.value = season_free_throw_pct
 			season_total.save
@@ -97,7 +101,8 @@ class Stats::ShootingStatsService
 			SeasonStat.create({
 				value: season_free_throw_pct,
 				stat_list_id: 29,
-				member_id: @member_id
+				member_id: @member_id,
+				season_id: @season_id
 			})
 		end
 	end
@@ -113,7 +118,8 @@ class Stats::ShootingStatsService
 			value: three_point_pct,
 			stat_list_id: 28,
 			member_id: @member_id,
-			game_id: @game_id
+			game_id: @game_id,
+			season_id: @season_id
 		})
 	end
 
@@ -123,7 +129,7 @@ class Stats::ShootingStatsService
 		else 
 			season_three_point_pct = 100 * @season_three_point_fg/@season_three_point_att
 		end
-		season_total = SeasonStat.where(member_id: @member_id, stat_list_id: 28).take
+		season_total = SeasonStat.where(member_id: @member_id, stat_list_id: 28, season_id: @season_id).take
 		if season_total 
 			season_total.value = season_three_point_pct
 			season_total.save
@@ -131,7 +137,8 @@ class Stats::ShootingStatsService
 			SeasonStat.create({
 				value: season_three_point_pct,
 				stat_list_id: 28,
-				member_id: @member_id
+				member_id: @member_id,
+				season_id: @season_id
 			})
 		end
 	end
@@ -141,11 +148,12 @@ class Stats::ShootingStatsService
 			value: @three_point_att,
 			stat_list_id: 49,
 			member_id: @member_id,
-			game_id: @game_id
+			game_id: @game_id,
+			season_id: @season_id
 		})
 	end
 	def season_three_point_att()
-		season_total = SeasonStat.where(member_id: @member_id, stat_list_id: 53).take
+		season_total = SeasonStat.where(member_id: @member_id, stat_list_id: 53, season_id: @season_id).take
 		if season_total 
 			season_total.value = @season_three_point_att
 			season_total.save
@@ -153,7 +161,8 @@ class Stats::ShootingStatsService
 			SeasonStat.create({
 				value: @season_three_point_att,
 				stat_list_id: 49,
-				member_id: @member_id
+				member_id: @member_id,
+				season_id: @season_id
 			})
 		end
 	end
@@ -163,12 +172,13 @@ class Stats::ShootingStatsService
 			value: @field_goal_att,
 			stat_list_id: 48,
 			member_id: @member_id,
-			game_id: @game_id
+			game_id: @game_id,
+			season_id: @season_id
 		})
 	end
 
 	def season_field_goal_att()
-		season_total = SeasonStat.where(member_id: @member_id, stat_list_id: 52).take
+		season_total = SeasonStat.where(member_id: @member_id, stat_list_id: 52, season_id: @season_id).take
 		if season_total 
 			season_total.value = @season_field_goal_att
 			season_total.save
@@ -176,7 +186,8 @@ class Stats::ShootingStatsService
 			SeasonStat.create({
 				value: @season_field_goal_att,
 				stat_list_id: 48,
-				member_id: @member_id
+				member_id: @member_id,
+				season_id: @season_id
 			})
 		end
 	end
@@ -186,12 +197,13 @@ class Stats::ShootingStatsService
 			value: @free_throw_att,
 			stat_list_id: 50,
 			member_id: @member_id,
-			game_id: @game_id
+			game_id: @game_id,
+			season_id: @season_id
 		})
 	end
 
 	def season_free_throw_att()
-		season_total = SeasonStat.where(member_id: @member_id, stat_list_id: 54).take
+		season_total = SeasonStat.where(member_id: @member_id, stat_list_id: 54, season_id: @season_id).take
 		if season_total 
 			season_total.value = @season_free_throw_att
 			season_total.save
@@ -199,7 +211,8 @@ class Stats::ShootingStatsService
 		SeasonStat.create({
 			value: @season_free_throw_att,
 			stat_list_id: 50,
-			member_id: @member_id
+			member_id: @member_id,
+			season_id: @season_id
 		})
 		end
 	end

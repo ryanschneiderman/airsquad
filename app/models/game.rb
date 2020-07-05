@@ -8,4 +8,5 @@ class Game < ApplicationRecord
 	belongs_to :schedule_event
 	has_many :posts, :as => :post_type
 	has_many :notifications, :as => :notif_type
+	belongs_to :season
 end

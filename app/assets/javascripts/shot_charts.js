@@ -1,10 +1,10 @@
-function init_shot_charts(court_width){
-    init_team_shot_chart(court_width)
-    init_player_shot_charts(court_width)
+function init_shot_charts(court_width, shot_chart_data, team_name){
+    init_team_shot_chart(court_width, shot_chart_data, team_name)
+    init_player_shot_charts(court_width, shot_chart_data)
 }
 
-function init_team_shot_chart(court_width){
-    var court = d3.select("#shot-trends-"+gon.team_name).append('svg');
+function init_team_shot_chart(court_width, shot_chart_data, team_name){
+    var court = d3.select("#shot-trends-"+team_name).append('svg');
     // 14 shot locations = length of array
     var make_array = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     var efg_array = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
@@ -17,17 +17,17 @@ function init_team_shot_chart(court_width){
          
     var heat_g = court.append('g')
     var court_g = court.append('g');
-    team_shot_chart = {"make_array": make_array, "court" : court, "court_g" : court_g, "efg_array": efg_array, "att_array": att_array, "court_regions": court_regions, "shot_chart_data": gon.shot_chart_data}
+    team_shot_chart = {"make_array": make_array, "court" : court, "court_g" : court_g, "efg_array": efg_array, "att_array": att_array, "court_regions": court_regions, "shot_chart_data": shot_chart_data}
 
     draw_court(court_width, team_shot_chart, inner_width, inner_height, x_offset, y_offset, region_spacing);
     insert_team_shot_chart_data(team_shot_chart, court_width);
     fill_regions(team_shot_chart);
 }
 
-function init_player_shot_charts(court_width){
-    var len = gon.shot_chart_data.length
+function init_player_shot_charts(court_width, shot_chart_data){
+    var len = shot_chart_data.length
     for(var i = 0; i < len; i++){
-      var court = d3.select("#shot-trends-"+gon.shot_chart_data[i].member_id).append('svg');
+      var court = d3.select("#shot-trends-"+shot_chart_data[i].member_id).append('svg');
       // 14 shot locations = length of array
       var make_array = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
       var efg_array = [0,0,0,0,0,0,0,0,0,0,0,0,0,0]
@@ -41,7 +41,7 @@ function init_player_shot_charts(court_width){
            
       var heat_g = court.append('g')
       var court_g = court.append('g');
-      shot_charts.push({"make_array": make_array, "court" : court, "court_g" : court_g, "efg_array": efg_array, "att_array": att_array, "court_regions": court_regions, "shot_chart_data": gon.shot_chart_data[i].data, "member_id": gon.shot_chart_data[i].member_id})
+      shot_charts.push({"make_array": make_array, "court" : court, "court_g" : court_g, "efg_array": efg_array, "att_array": att_array, "court_regions": court_regions, "shot_chart_data": shot_chart_data[i].data, "member_id": shot_chart_data[i].member_id})
       
       draw_court(court_width, shot_charts[i], inner_width, inner_height, x_offset, y_offset, region_spacing);
       insert_player_shot_chart_data(shot_charts[i], court_width);

@@ -5,11 +5,6 @@
       <div class = "modal-header-wrapper">
         <div class = "modal-header" id = "create-account-header">Create Account</div>
       </div>
-      <button class = "modal-back-button signup-deactivated" onclick = "back_to_signup()" id = "signup-back-button">
-        <object data='<%=asset_path("back-arrow.svg")%>' type="image/svg+xml" class = "back-arrow-img">
-            <%= image_tag("back-arrow.png", :alt => "back-arrow", :class => "back-arrow-img") %>  
-        </object>
-      </button>
       <%= bootstrap_form_for(resource, 
        :as => resource_name, 
        :url => registration_path(resource_name),

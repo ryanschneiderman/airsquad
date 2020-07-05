@@ -12,7 +12,7 @@ function get_player_profile(player_id, loading){
 	   beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
 	   method: "get",
 	   data_type: 'json',
-	   data: {player_id: player_id},
+	   data: {player_id: player_id, season_id: gon.season_id},
 	   success: function(result){
 	   		$("#player-profiles-index").addClass("stats-index-deactivated")
 	   		reset_player_profile_page()

@@ -233,7 +233,7 @@
 				<button class="flex-row toolbar-dropdown-button" onclick = "team_trend_button(this, 'opponents', true)"><div id="trend-player-link-opponents" class="dropdown-action lineup-dropdown-action" >Opponents</div></button>
 
 				<%@players.each do |player|%>
-					<button class="flex-row toolbar-dropdown-button" onclick = "player_trend_button(this, <%=player.member_id%>)"><div id="trend-player-link-<%=player.member_id%>" class="dropdown-action lineup-dropdown-action" ><%=player.nickname%></div></button>
+					<button class="flex-row toolbar-dropdown-button" onclick = "player_trend_button(this, <%=player.id%>)"><div id="trend-player-link-<%=player.id%>" class="dropdown-action lineup-dropdown-action" ><%=player.nickname%></div></button>
 				<%end%>
 			</div>
 			<div class = "toolbar-dropdown" id = "trend-player-stats" style = "display: none;">
@@ -255,7 +255,7 @@
 	<div class = "flex-row" id = "player-profile-links">
 		<%counter = 1%>
 		<%@players.each do |player|%>
-			<button class = "player-profile-block" onclick = "get_player_profile(<%=player.member_id%>, false)">
+			<button class = "player-profile-block" onclick = "get_player_profile(<%=player.id%>, false)">
 				<div class = "player-profile-link player-profile-link-style-<%=counter%>">
 					<div class = "player-profile-link-text" ><%=player.nickname%></div>
 				</div>
@@ -277,7 +277,7 @@
 		<div class = "team-stats-header" id = "player-profile-page-title"> Player Profile</div>
 		<div class = "toolbar-dropdown" id = "player-profile-dropdown" style = "display: none;">
 			<%@players.each do |player|%>
-				<button class="flex-row toolbar-dropdown-button" onclick = "get_player_profile(<%=player.member_id%>)"><div class="dropdown-action lineup-dropdown-action" ><%=player.nickname%></div></button>
+				<button class="flex-row toolbar-dropdown-button" onclick = "get_player_profile(<%=player.id%>)"><div class="dropdown-action lineup-dropdown-action" ><%=player.nickname%></div></button>
 			<%end%>
 		</div>
 	</div>
@@ -448,13 +448,5 @@
     $("#shot-trends-<%=@team_name%>").removeClass("shot-chart-deactivated")
 
 
-
-	function init_stat_tables(){
-		sort_basic_table(18, true);
-		populate_stat_tables(true, false, true);
-
-		$("#per-minute-table").hide();
-		$("#adv-player-stats-table").hide()
-	}
 </script>
 

@@ -1,0 +1,321 @@
+<%=render "layouts/small_header"%>
+<div id = "new-team-block" class = "flex-column">
+	<div class = "page-header" style = "text-align: center;">Team Settings</div>
+	<div class = "new-team-block-wrapper">
+		<div class = "new-team-block" id = "team-info-block">
+			<div class = "new-team-inner">
+				<div class = "page-subheader" id = "create-team-header">Team Info</div>
+				<div class = "new-form team-info-row">
+					<div class = "team-info-col-1">
+						<div class = "team-info-input">
+							<div class = "team-info-descr">Team name </div>
+							<input type = "text" class = "new-team-input" id = "enter-team-name" value = "<%=@team.name%>">
+							<div class = "needs-input" id = "needs-team-name" style= "display: none;">*Please enter a team name</div>
+						</div>
+						<div class = "team-info-input">
+							<div class = "team-info-descr">Period Type</div>
+							<div class = "flex-row">
+								<form>
+									<div class = "team-info-radio-wrapper">
+										<input type="radio" id="team-info-quarters" class = "new-team-input" name="period-type" value="4">
+				  						<label for="team-info-quarters">Quarters</label>
+				  					</div>
+				  					<div class = "team-info-radio-wrapper">
+										<input type="radio" id="team-info-halves" class = "new-team-input" name="period-type" value="2">
+				  						<label for="team-info-halves">Halves</label>
+				  					</div>
+				  				</form>
+							</div>
+							<div class = "needs-input" id = "needs-period-type" style= "display: none;">*Please enter a period type</div>
+						</div>
+						<div class = "team-info-input">
+							<div class = "team-info-descr">Period Length (min)</div>
+							<input type = "number" class = "new-team-input" id = "period-length" value = "<%=@team.period_length%>" >
+							<div class = "needs-input" id = "needs-period-length" style= "display: none;">*Please enter a period length</div>
+						</div>
+					</div>
+					<div class = "team-info-col-2">
+						<div class = "team-info-input">
+							<div class = "team-info-descr">Team Colors (primary)</div>
+							<div class = "color-picker-grid grid" id = "primary-color-picker">
+								
+							</div>
+							<div class = "needs-input" id = "needs-primary-color" style= "display: none;">*Please select a primary color</div>
+						</div>
+						<div class = "team-info-input">
+							<div class = "team-info-descr">Team Colors (secondary)</div>
+							<div class = "color-picker-grid grid" id = "secondary-color-picker">
+								
+							</div>
+							<div class = "needs-input" id = "needs-secondary-color" style= "display: none;">*Please select a secondary color</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class = "new-team-block-wrapper">
+		<div class = "new-team-block" id = "new-team-members">
+			<div class = "new-team-inner">
+				<div class = "page-subheader" id = "create-team-header">Team Members</div>
+				<div class = "flex-row">
+					<div class = "add-members-wrapper">
+						<div id = "add-members-block">
+							<div class = "add-members-form">
+								<div class = "add-members-input">
+									<div class = "team-info-descr">Name <span class = "team-info-parenthetical">(We recommend first name and last initial if necessary.)</span></div>
+									<input type = "text" class = "new-team-input" id = "enter-member-name" placeholder="Enter member name">
+								</div>
+								<div class = "add-members-input">
+									<div class = "team-info-descr">Email <span class = "team-info-parenthetical">(Needed to send invitation to join team.)</span></div>
+									<input type = "text" class = "new-team-input" id = "enter-member-email" placeholder="Enter member email">
+									<div class = "needs-input" id = "valid-email" style= "display: none;">*Please enter a valid email address</div>
+								</div>
+								<div class = "add-members-input" id = "member-role-input">
+									<div class = "team-info-descr flex-row">Role 
+										<span id = "role-info" class = "flex-row center-aligned"> 
+											<div class="tooltiptext">Roles grant team members access to certain pages among other things. <span class = "propagation-more-info-link" onclick = "show_role_modal()">Learn more about roles here</span>.</div>
+											<object data='<%=asset_path("info-dark.svg")%>' type="image/svg+xml" class = "role-info-icon">
+					                          <%= image_tag("info-dark.svg", :alt => "information", :class => "information-icon") %>
+					                        </object> 
+					                    </span> 
+				                    </div>
+									<div class = "flex-row">
+										<div class = "team-info-radio-wrapper">
+											<input type="radio" id="member-role-player" name="role" value="Player">
+					  						<label for="member-role-player">Player</label>
+					  					</div>
+					  					<div class = "team-info-radio-wrapper">
+											<input type="radio" id="member-role-coach" name="role" value="Coach">
+					  						<label for="member-role-coach">Coach</label>
+					  					</div>
+					  					<div class = "team-info-radio-wrapper">
+											<input type="radio" id="member-role-manager" name="role" value="Manager">
+					  						<label for="member-role-manager">Manager</label>
+					  					</div>
+					  					<div class = "team-info-radio-wrapper">
+											<input type="radio" id="member-role-other" name="role" value="Other">
+					  						<label for="member-role-other">Other</label>
+					  					</div>
+									</div>
+									<div class = "needs-input" id = "role-needs-input" style= "display: none;">*Please choose a role</div>
+								</div>
+								<div id = "custom-permissions" class = "flex-row" style = "display: none;">
+									<div class = "flex-column permissions-column" id = "view-access">
+										<div class = "permission-header">View Access</div>
+										<div class = "flex-row">
+											<input type="checkbox" id="plays_view" name="view-access" value="plays_view">
+											<label class = "permissions-label" for="plays_view"> Plays</label>
+										</div>
+										<div class = "flex-row">
+											<input type="checkbox" id="stats_view" name="view-access" value="stats_view">
+											<label class = "permissions-label" for="stats_view"> Stats</label>
+										</div>
+										<div class = "flex-row">
+											<input type="checkbox" id="schedule_view" name="view-access" value="schedule_view">
+											<label class = "permissions-label" for="schedule_view"> Schedule</label>
+										</div>
+										<div class = "flex-row">
+											<input type="checkbox" id="settings_view" name="view-access" value="settings_view">
+											<label class = "permissions-label" for="settings_view"> Settings</label>
+										</div>
+									</div>
+									<div class = "flex-column permissions-column" id = "edit-access">
+										<div class = "permission-header">Edit Access</div>
+										<div class = "flex-row">
+											<input type="checkbox" id="plays_edit" name="edit-access" value="plays_edit">
+											<label class = "permissions-label" for="plays_edit"> Plays</label>
+										</div>
+										<div class = "flex-row">
+											<input type="checkbox" id="stats_edit" name="edit-access" value="stats_edit">
+											<label class = "permissions-label" for="stats_edit"> Stats</label>
+										</div>
+										<div class = "flex-row">
+											<input type="checkbox" id="schedule_edit" name="edit-access" value="schedule_edit">
+											<label class = "permissions-label" for="schedule_edit"> Schedule</label>
+										</div>
+										<div class = "flex-row">
+											<input type="checkbox" id="settings_edit" name="edit-access" value="settings_edit">
+											<label class = "permissions-label" for="settings_edit"> Settings</label>
+										</div>
+									</div>
+									<div class = "flex-column permissions-column" id = "view-access">
+										<div class = "permission-header">Player</div>
+										<div class = "flex-row">
+											<input type="checkbox" id="is_player" name="is_player" value="is_player">
+											<label class = "permissions-label" for="is_player"> Yes</label>
+										</div>
+									</div>
+								</div>
+								<div id = "add-member-wrapper">
+									<button class = "add-member-button member-button" onclick = "add_settings_member()">Add Member</button>
+									<button class = "update-member-button member-button" style = "display: none">Update</button>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+					<div id = "added-members">
+						<div id = "added-players">
+							<div class = "added-members-header">Players</div>
+							<div id = "added-players-container"></div>
+						</div>
+						<div id = "added-coaches">
+							<div class = "added-members-header">Coaches</div>
+							<div id = "added-coaches-container"></div>
+						</div>
+						<div id = "added-managers">
+							<div class = "added-members-header">Managers/Other</div>
+							<div id = "added-managers-container"></div>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+	</div>
+
+	<div class = "new-team-block-wrapper">
+		<div class = "new-team-block" id = "choose-stats">
+			<div class = "new-team-inner">
+				<div class = "page-subheader" id = "create-team-header">Stats</div>
+				<div class = "create-team-note">Some stats are default and essential. Others you can choose to keep if you want. The more you keep, the more advanced stats you will have at your disposal. We recommend starting with more stats than less. </div>
+				<div id = "choose-stats-block">
+					<div class = "flex-row" id = "stat-selection-container">
+						<div class = "flex-column" id = "selection-stats">
+							<div id = "optional-stats-wrapper" class = "select-stats-wrapper" >
+								<div class = "team-info-descr">Optional Stats <span class = "team-info-parenthetical">(Click to add to your stats)</span></div>
+								<div id = "optional-stats">
+									<% @non_default_collectable_add.each do |stat| %>
+										<button class = "stat-choice stat-choice-active optional-stat-deactivated" type = "button" onclick="to_your_stats(this, 'basic', '<%= stat.stat %>', <%= stat.id %>)"> <%= stat.stat %> </button>
+									<% end %>
+								</div>
+							</div>
+							<div id = "your-stats-wrapper" class = "select-stats-wrapper">
+								<div class = "team-info-descr">Your Stats</div>
+								<div id = "your-stats">
+									<div class = "stat-choice stat-choice-active"> Field Goals </div>
+									<div class = "stat-choice stat-choice-active"> Free Throws </div>
+									<div class = "stat-choice stat-choice-active"> Points </div>
+									<div class = "stat-choice stat-choice-active"> Minutes </div>
+									<div class = "stat-choice stat-choice-active"> Fouls </div>
+									<% @non_default_collectable_belongs.each do |stat| %>
+										<button class = "stat-choice stat-choice-active" type = "button" id = "stat-<%=stat.stat_list_id%>" onclick="to_choose_stats(this, 'basic', '<%= stat.stat %>', <%= stat.stat_list_id %>)"> <%= stat.stat %> </button>
+
+									<% end %>
+								</div>
+							</div>
+						</div>
+						<div class = "flex-column" id = "advanced-stats">
+							<div id = "player-advanced-stats-wrapper" class = "select-stats-wrapper">
+								<div class = "team-info-descr">Player Advanced Stats</div>
+								<div id = "player-advanced-stats">
+									<%@default_indiv_advanced.each do |stat|%>
+										<button class = "stat-choice stat-choice-active" type = "button" id = "stat-<%=stat.id%>"> <%= stat.stat %> </button>
+									<%end%>
+
+									<%@non_default_advanced_belongs.each do |stat|%>
+										<button class = "stat-choice stat-choice-active" type = "button" id = "stat-<%=stat.stat_list_id%>"> <%= stat.stat %> </button>
+									<%end%>
+
+									
+
+									<%@non_default_advanced_add.each do |stat|%>
+										<button class = "stat-choice stat-choice-inactive" id = "stat-<%=stat.id%>"> <%= stat.stat %> </button>
+									<%end%>
+								</div>
+							</div>
+							<div id = "team-advanced-stats-wrapper" class = "select-stats-wrapper">
+								<div class = "team-info-descr">Team Advanced Stats</div>
+								<div id = "select-team-advanced-stats">
+									<%@default_team_advanced.each do |stat|%>
+										<button class = "stat-choice stat-choice-active" type = "button" id = "stat-<%=stat.id%>"> <%= stat.stat %> </button>
+									<%end%>
+									<%@non_default_team_advanced_belongs.each do |stat|%>
+										<button class = "stat-choice stat-choice-active" type = "button" id = "stat-<%=stat.stat_list_id%>"> <%= stat.stat %> </button>
+									<%end%>
+									
+									<%@non_default_team_advanced_add.each do |stat|%>
+										<button class = "stat-choice stat-choice-inactive" id = "stat-<%=stat.id%>"> <%= stat.stat %> </button>
+									<%end%>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class = "create-team-button-wrapper flex-column end-aligned">
+						<button class = "create-team-button" onclick = "submit_edit_team()">Update Team</button>
+						<div class = "needs-input" id = "check-team-input" style= "display: none;">*Please make sure you have entered all team info.</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+
+	
+
+</div>
+
+<%= render "/teams/role_modal"%>
+
+
+
+
+<script>
+
+	$("#new-team-block").css("padding-top", $("#header-outer").outerHeight())
+	var basic_stats = [];
+	var collection_stats = [];
+	var non_default_adv_stats = [];
+	var non_default_team_adv_stats = [];
+	var advanced_stats = [];
+	var team_stats = [];
+	var team_advanced_stats = [];
+	var members = []
+
+
+	var stats_to_add = []
+	var stats_to_remove = []
+	var non_default_adv_stats = []
+	var non_default_team_adv_stats = []
+	var non_default_team_adv_belongs = []
+	var non_default_adv_belongs = []
+
+	var curr_members = []
+	var update_members = []
+	var new_members = []
+	var remove_members = []
+	
+
+
+	$('.new-team-input').on('input', function() {
+	    $(this).removeClass('incorrect-input')
+	    $(this).parents(".team-info-input").find(".needs-input").hide()
+	    $("#check-team-input").hide()
+	});
+
+	$("#enter-member-email").on('input', function() {
+	    $("#valid-email").hide()
+	});
+
+
+	$('input:radio[name="role"]').change(function(){
+		$("#member-role-input .needs-input").hide()
+		if($("#member-role-other").prop("checked")){
+			$("#custom-permissions").show()
+		}
+		else{
+			$("#custom-permissions").hide()
+		}
+	});
+
+	$('input:checkbox[name="is_player"]').change(function(){
+		if($('input:checkbox[name="is_player"]').prop("checked")){
+			$('input:checkbox[name="view-access"]').prop("checked", true)
+		}
+	});
+	
+
+
+
+</script>

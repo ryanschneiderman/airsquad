@@ -6,15 +6,16 @@ class Stats::RollbackGameService
 
 	def initialize(params)
 		@game_id = params[:game_id]
-		@player_stats = Stat.where(game_id: @game_id).chunk{|e| e.member_id}
-		@team_stats = StatTotal.where(game_id: @game_id, is_opponent: false)
-		@lineup_stats = LineupGameStat.where(game_id: @game_id, is_opponent: false).chunk{|e| e.lineup_id}
-		@lineup_opponent_stats = LineupGameStat.where(game_id: @game_id, is_opponent: true)
-		@opponent_stats = StatTotal.where(game_id: @game_id, is_opponent: true)
-		@stat_granules = StatGranule.where(game_id: @game_id)
+		@season_id = params[:season_id]
+		@player_stats = Stat.where(game_id: @game_id, season_id: @season_id).chunk{|e| e.member_id}
+		@team_stats = StatTotal.where(game_id: @game_id, is_opponent: false, season_id: @season_id)
+		@lineup_stats = LineupGameStat.where(game_id: @game_id, is_opponent: false, season_id: @season_id).chunk{|e| e.lineup_id}
+		@lineup_opponent_stats = LineupGameStat.where(game_id: @game_id, is_opponent: true, season_id: @season_id)
+		@opponent_stats = StatTotal.where(game_id: @game_id, is_opponent: true, season_id: @season_id)
+		@stat_granules = StatGranule.where(game_id: @game_id, season_id: @season_id)
 		@member_id = nil
 		game = Game.find_by_id(@game_id)
-		@num_games = Game.where(team_id: params[:team_id], played: true).count
+		@num_games = Game.where(team_id: params[:team_id], played: true, season_id: @season_id).count
 		@team_id = game.team_id
 		@truncate = false;
 		if params[:submit] != true
@@ -37,7 +38,7 @@ class Stats::RollbackGameService
 
 	def call
 		if @truncate 
-			TruncateStatsService.new(team_id: @team_id).call
+			Stats::TruncateStatsService.new(team_id: @team_id, season_id: @season_id).call
 		else
 			rollback_team_stats
 			create_advanced_team_stats
@@ -53,7 +54,7 @@ class Stats::RollbackGameService
 
 	def rollback_team_stats
 		@team_stats.each do |team_stat|
-			team_season_stat = TeamSeasonStat.where(team_id: team_stat.team_id, stat_list_id: team_stat.stat_list_id, is_opponent: false)
+			team_season_stat = TeamSeasonStat.where(team_id: team_stat.team_id, stat_list_id: team_stat.stat_list_id, is_opponent: false, season_id: @season_id)
 			team_season_stat = team_season_stat.take
 			team_season_stat.value -= team_stat.value
 			team_season_stat.save
@@ -63,7 +64,7 @@ class Stats::RollbackGameService
 			team_stat.destroy
 		end
 		@opponent_stats.each do |opp_stat|
-			opp_season_stat = TeamSeasonStat.where(team_id: opp_stat.team_id, stat_list_id: opp_stat.stat_list_id, is_opponent: true)
+			opp_season_stat = TeamSeasonStat.where(team_id: opp_stat.team_id, stat_list_id: opp_stat.stat_list_id, is_opponent: true, season_id: @season_id)
 			opp_season_stat = opp_season_stat.take
 
 			opp_season_stat.value -= opp_stat.value
@@ -84,7 +85,7 @@ class Stats::RollbackGameService
 					#@lineup.games_played -=1
 				else
 					l_stat.each do |stat|
-						season_stat = LineupStat.where(lineup_id: @lineup_id, stat_list_id: stat.stat_list_id)
+						season_stat = LineupStat.where(lineup_id: @lineup_id, stat_list_id: stat.stat_list_id, season_id: @season_id)
 						season_stat = season_stat.take
 						if stat.stat_list_id == 16 
 							@lineup.season_minutes -= stat.value
@@ -97,9 +98,9 @@ class Stats::RollbackGameService
 						stat.destroy
 					end
 
-					Advanced::CalcLineupAdvancedStatsService.new({
+					Stats::Lineups::CalcLineupAdvancedStatsService.new({
 						lineup_id: @lineup_id,
-						team_id: @team_id
+						team_id: @team_id,
 					}).call
 				end
 				
@@ -109,8 +110,9 @@ class Stats::RollbackGameService
 
 	def create_advanced_team_stats
 		## create team advanced stats 
-		team_adv_stats = Advanced::SeasonTeamAdvancedStatsService.new({
+		team_adv_stats = Stats::Advanced::Team::SeasonTeamAdvancedStatsService.new({
 			team_id: @team_id,
+			season_id: @season_id
 		}).call
 
 		@defensive_efficiency = team_adv_stats["defensive_efficiency"]
@@ -133,7 +135,7 @@ class Stats::RollbackGameService
 					@member.games_played -=1
 				else
 					p_stat.each do |stat|
-						season_stat = SeasonStat.where(member_id: @member_id, stat_list_id: stat.stat_list_id)
+						season_stat = SeasonStat.where(member_id: @member_id, stat_list_id: stat.stat_list_id, season_id: @season_id)
 						season_stat = season_stat.take
 						if stat.stat_list_id == 16 
 							@member.season_minutes -= stat.value
@@ -145,9 +147,10 @@ class Stats::RollbackGameService
 						season_stat.save
 						stat.destroy
 					end
-					bpms = Advanced::SeasonAdvancedStatsService.new({
+					bpms = Stats::Advanced::Player::SeasonAdvancedStatsService.new({
 						member_id: @member_id,
 						team_id: @team_id.to_i,
+						season_id: @season_id
 					}).call
 					if(bpms["obpm"] && bpms["obpm"].value != nil)
 						@bpm_sums[0] += bpms["obpm"].value * (@minutes / (@team_minutes / 5))
@@ -180,7 +183,7 @@ class Stats::RollbackGameService
 			new_obpm = new_obpm.round / 100.0
 			
 
-			season_stat = SeasonAdvancedStat.where(stat_list_id: 42, member_id: bpm["member_id"]).take
+			season_stat = SeasonAdvancedStat.where(stat_list_id: 42, member_id: bpm["member_id"], season_id: @season_id).take
 			season_stat.value = new_bpm
 			season_stat.constituent_stats = {
 				"team_adjustment" => bpm_team_adjustment,
@@ -188,7 +191,7 @@ class Stats::RollbackGameService
 			}
 			season_stat.save
 
-			season_stat = SeasonAdvancedStat.where(stat_list_id: 40, member_id: bpm["member_id"]).take
+			season_stat = SeasonAdvancedStat.where(stat_list_id: 40, member_id: bpm["member_id"], season_id: @season_id).take
 			season_stat.value = new_obpm
 			season_stat.constituent_stats = {
 				"team_adjustment" => obpm_team_adjustment,

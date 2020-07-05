@@ -1,0 +1,160 @@
+	$(document).on('turbolinks:load ', function(){
+		if($("body").hasClass("games") && $("body").hasClass("index")){
+			alignCalendarDOM()
+			init_event_array()
+			initCalendar()
+
+		}
+	});
+
+	function alignCalendarDOM(){
+		$("#calendar").css("margin-top", $("#header-outer").outerHeight() +15)
+	}
+
+
+
+	function newGame(){
+		var opponent = $("#new-game-opponent").val()
+		var location = $("#new-game-location").val()
+		var date = $("#new-game-date").val()
+		var time = $("#new-game-time").val()
+		var data = {opponent: opponent, date: date, time: time, location: location}
+
+		var url =  "/teams/" + gon.team_id + "/games/" 
+		$.ajax({
+	        url: url,
+	        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+	        type: "POST",
+	        data_type: 'json',
+	        data: data
+	    });
+	}
+
+	function newPractice(){
+		var location = document.getElementById('new-practice-location').value
+		var date = document.getElementById('new-practice-date').value
+		var time = document.getElementById('new-practice-time').value
+
+
+		var url =  "/teams/" + gon.team_id + "/practices/" 
+		$.ajax({
+	        url: url,
+	        beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+	        type: "POST",
+	        data_type: 'json',
+	        data: {date: date, time: time, location: location}
+	    });
+	}
+
+	function show_new_game_modal(){
+		$("#new-game-overlay").show()
+		$("#new-game-modal").show()
+	}
+
+	function show_new_practice_modal(){
+		$("#new-practice-overlay").show()
+		$("#new-practice-modal").show()
+	}
+
+	function hide_practice_modal(){
+		$("#new-practice-overlay").hide()
+		$("#new-practice-modal").hide()
+	}
+
+	function hide_new_game_modal(){
+		$("#new-game-overlay").hide()
+		$("#new-game-modal").hide()
+	}
+
+	function parseTime(str){
+		var substring = str.substr(str.indexOf('T')+1); 
+		var military_time = substring.substr(0,substring.indexOf('.'));
+		console.log(military_time)
+		var length = military_time.length;
+		var seconds_stripped = military_time.substr(0,length - 3);
+		var military_hours = seconds_stripped.substr(0,seconds_stripped.indexOf(":"))
+		var minutes = seconds_stripped.substr(seconds_stripped.indexOf(":")+1)
+		var hours = military_hours % 12;
+		var suffix = (military_hours > 12) ? " PM" : " AM";
+		return hours + ":" + minutes + suffix
+	}
+
+	function initCalendar(){
+		var calendarEl = document.getElementById('calendar');
+		calendar = new FullCalendar.Calendar(calendarEl, {
+	        plugins: [ 'interaction', 'dayGrid' ],
+			defaultView: 'dayGridMonth',
+			aspectRatio : 2,
+			selectable: true,
+			dateClick: function(info) {
+			    
+			},
+			header: {
+			    left: 'title',
+			    center: 'newGame, newPractice',
+			    right: 'today prev,next'
+			},
+			events: event_arr,
+		    eventRender: function(info) {
+		    	if(info.event.extendedProps.kind == "practice" || info.event.title == "scrimmage"){
+		    		return $('<a href="/teams/' + gon.team_id + '/practices/'+ info.event.extendedProps.practice_id +'">' +info.event.title + '</a>');
+		    	}
+		    	else if (info.event.id != "new"){
+		    		return $('<a href="/teams/' + gon.team_id + '/games/'+ info.event.extendedProps.game_id +'">' +info.event.title + '</a>');
+		    	}
+			  }
+        });
+        if(gon.schedule_edit_permission){
+        	calendar.setOption('customButtons', {
+			    newGame: {
+			      text: 'Create New Game',
+			      click: function() {
+			        show_new_game_modal()
+			      }
+			    },
+			    newPractice: {
+			      text: "New Practice",
+			      click: function() {
+			        show_new_practice_modal()
+			      }
+			    }
+			})
+        }
+        
+        var evento = calendar.getEventById("new")
+        calendar.render();
+	}
+
+	function init_event_array(){
+		console.log(gon.game_events)
+		for (var i = gon.game_events.length - 1; i >= 0; i--) {
+			var time = parseTime(gon.game_events[i].time)
+			event_arr.push({id : gon.game_events[i].id, kind: "game", title: "Game vs "+gon.game_events[i].name+" @ "+gon.game_events[i].place+", " + time , start: gon.game_events[i].date, game_id: gon.game_events[i].game_id})
+			
+		}
+		for (var i = gon.practice_events.length - 1; i >= 0; i--) {
+			if(gon.practice_events[i].is_scrimmage){
+				event_arr.push({id : gon.practice_events[i].id, kind: "scrimmage", title: "Scrimmage", start: gon.practice_events[i].date, practice_id: gon.practice_events[i].practice_id})
+			}
+			else{
+				var time = parseTime(gon.practice_events[i].time)
+				event_arr.push({id : gon.practice_events[i].id, kind: "practice",  title: "Practice @ "+gon.practice_events[i].place+", " + time , start: gon.practice_events[i].date, practice_id: gon.practice_events[i].practice_id})
+			}
+		}
+	}
+
+        
+       
+
+       
+
+        
+
+
+
+
+        
+
+
+
+

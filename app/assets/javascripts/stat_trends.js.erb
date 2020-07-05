@@ -243,13 +243,12 @@ function init_trend_display_stats(){
 
 
   function get_trend_data(button, is_player){
-    console.log("in get trend data")
     var create_url = "/teams/" + gon.team_id +"/stats/trend_data";
     if(team_trend){
-      var data  = {is_opponent: team_is_opponent, is_team: true, stat: curr_stat}
+      var data  = {is_opponent: team_is_opponent, is_team: true, stat: curr_stat, season_id: gon.season_id}
     }
     else{
-      var data = {player_id: curr_player, is_team: false, stat: curr_stat}
+      var data = {player_id: curr_player, is_team: false, stat: curr_stat, season_id: gon.season_id}
     }
     
     $.ajax({

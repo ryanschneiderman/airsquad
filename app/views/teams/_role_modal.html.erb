@@ -1,0 +1,33 @@
+
+<div class = "modal-overlay" id = "role-modal-overlay" style = "display: none;"></div>
+<div class = "modal modal-positioning" id = "role-modal" style = "display: none;">
+  <div class = "modal-container" id = "role-modal-container">
+    <div class = "modal-wrapper">
+      <div class = "modal-inner-content" id = "play-modal-content">
+        <div class = "modal-heading">Roles</div>
+        <div class = "modal-body">
+          <div id = "propagation-description">
+          	<div class = "modal-section">
+	          	<div class = "modal-subheading">Coaches</div>
+	          	<p class = "modal-p">Coaches have full view and edit access. Coaches can enter stats for games, create and edit plays, and edit team settings.  </p>
+	        </div>
+	        <div class = "modal-section">
+	          	<div class = "modal-subheading">Players</div>
+	          	<p class = "modal-p">Players have full view access. Players cannot enter stats, create or edit plays, or edit team settings. Stats are collected for players.  </p>
+	        </div>
+	        <div class = "modal-section">
+	          	<div class = "modal-subheading">Manager</div>
+	          	<p class = "modal-p">Managers have full view access. Like players, they cannot enter stats, create or edit plays, or edit team settings. Unlike players, stats are not collected for managers.  </p>
+	        </div>
+	        <div class = "modal-section">
+	          	<div class = "modal-subheading">Other</div>
+	          	<p class = "modal-p">In some cases, it can be useful to create custom permissions. For example some coaches may want to give an outsider access to view stats, but not plays. Some coaches may trust their managers to enter stats. Player captains might have more access. Using custom permissions, you can create more specific roles for your team.</p>
+	        </div>
+        </div>
+      </div>
+    </div>
+    <div class = "modal-footing">
+        <button class = "modal-cancel-button" onclick = "close_role_modal()">Close</button>
+      </div>
+  </div>
+</div>

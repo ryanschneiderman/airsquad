@@ -1,41 +1,187 @@
-#team-info-block{
-	
+.page-header-note{
+	text-align: center;
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: 500;
 }
 
 #create-team-header{
-	padding-top: 30px;
-	padding-bottom: 20px;
+    padding-bottom: 30px;
+    color: black;
+    font-weight: 600;
+}
+
+.incorrect-input::placeholder{
+	color: red;
+}
+
+.incorrect-input{
+	border-color: red !important;
+}
+
+.needs-input{
+	color: red;
+	margin-top: 15px;
 }
 
 #new-team-block{
-	width: 90vw;
     margin: auto;
-    color: #eeffff;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    margin-top: 90px;
-    border-radius: 5px;
-    background-color: #152138;
-    box-shadow: 0px 0px 5px #00ffe7;
-    padding-bottom: 40px;
-    margin-bottom: 20px
+    background-color: #ededed;
+    color: black;
+}
+
+.new-team-row{
+	 display: grid;
+    grid-template-columns: 2fr 3fr;
+}
+
+.team-info-col-1{
+	display: flex;
+	flex-direction: column;
+	padding-left: 30px;
+}
+
+.team-info-col-2{
+	display: grid;
+	grid-template-rows: 1fr 1fr;
+}
+
+.team-info-row{
+	display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.new-team-block{
+	background-color: white;
+	border-radius: 1px;
+	padding: 20px;
+	padding-top: 35px;
+	padding-bottom: 35px;
+	display: flex;
+	height: 100%;
+	margin: 0px 60px 40px;
+}
+
+.new-team-inner{
+	flex-direction: column;
+    display: flex;
+    padding-bottom: 30px;
+}
+
+.new-team-block-wrapper{
+	display: flex;
+    flex-direction: column;
+}
+
+.team-info-descr, .added-members-header{
+	font-size: 19px;
+	font-weight: 600;
+	margin-bottom: 10px;
+}
+
+.added-members-header{
+	width: 130px;
+}
+
+.team-info-parenthetical{
+	color: #464646;
+	font-weight: 400;
+	font-size: 13px;
+    padding-left: 5px;
+}
+
+.team-info-radio-wrapper {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.color-picker-grid{
+	grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+	grid-template-rows: 1fr 1fr;
+	grid-row-gap: 5px;
+	grid-column-gap: 5px;
+}
+
+.color-picker-square{
+	width: 50px;
+	height: 50px;
+	box-shadow: 0px 0px 3px #ededed;
+	border-radius: 2px;
+	border: 1px solid #ededed;
+}
+
+.color-picker-selected{
+	border: 3px solid #2f2f2f;
+}
+
+.create-team-note{
+	font-size: 16px;
+	width: 65vw;
+}
+
+
+#role-info{
+	margin-left: 3px;
+	position: relative;
+	padding-right: 40px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.permission-header{
+	font-size: 16px; 
+	font-weight: 600;
+	padding-bottom: 10px;
+}
+
+#role-info .tooltiptext{
+	font-size: 12px;
+    width: 250px;
+    visibility: hidden;
+    position: absolute;
+    left: 30px;
+    bottom: 5px;
+    background: #e8e8e8;
+    border-radius: 3px;
+    padding: 5px;
+}
+
+.role-info-icon{
+	width: 13px;
+	margin-bottom: -3px;
+    margin-left: 5px;
+}
+
+#role-info:hover .tooltiptext{
+	transition-delay: .3s;
+	visibility: visible;
+}
+
+#stat-selection-container{
+	grid-template-columns: 2fr 3fr;
+    grid-column-gap: 8vw;
+    margin-top: 40px;
+    display: grid;
 }
 
 .new-team-input{
 	outline: none;
-    border: 2px solid #afc9ce;
+    border: none;
+    border-bottom: 1px solid grey;
     color: #152138;
-    padding: 5px;
-    border-radius: 5px;
+    padding-bottom: 4px;
 }
 
-.new-team-input:focus{
-	box-shadow: 0px 0px 5px #00ffe7;
+
+.add-members-form{
+	display: flex;
+	flex-direction: column;
 }
 
 .teams{
-	background-color: #000d23;
+	/*background-color: #ededed;*/
 }
 
 #background-color{
@@ -49,9 +195,6 @@
 
 }
 
-.page-subheader{
-	font-size: 35px;
-}
 
 .new-box{
 	overflow: hidden;
@@ -88,14 +231,112 @@
 }
 
 .new-form{
-	padding: 20px;
 	padding-top: 0;
 	padding-bottom: 0;
-	
 }
 
-.new-team-secondary-color{
-	color: #c7e3ff;
+#choose-stats-block, #add-members-block{
+	padding-left: 30px;
+    padding-right: 20px;
+}
+
+#added-members{
+	display: flex;
+	flex-direction: column;
+	padding-left: 20px;
+	height: 450px;
+}
+
+#added-players-container, #added-coaches-container, #added-managers-container{
+	display: flex;
+	flex-wrap: wrap;
+	min-height: 85px;
+	max-width: 650px;
+}
+
+
+.member-block{
+	border-radius: 10px;
+    color: black;
+    background-color: #efefef;
+    box-shadow: 0px 0px 3px #bbbbbb;
+    margin: 5px;
+}
+
+
+.member-block-top{
+	padding: 5px;
+}
+
+.member-block-name{
+	font-weight: 600;
+	font-size: 18px;
+}
+
+.member-block-name, .member-block-email{
+	font-weight: 500;
+}
+
+.delete-member{
+	border: 1px solid #ff0047;
+    color: #ff0047;
+}
+
+.edit-member{
+	border: 1px solid #0096ff;
+    color: #0096ff;
+}
+
+#member-role-input{
+	margin-bottom: 10px !important
+}
+
+#custom-permissions{
+	border: 1px solid #d4d4d4;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.permissions-column{
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.permissions-label{
+	margin-left: 5px;
+	font-weight: 500;
+}
+
+
+.add-members-wrapper{
+	border-right: 1px solid #d4d4d4;
+}
+
+.edit-member-radio-wrapper {
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+.edit-delete-member{
+	margin-left: 3px;
+    margin-right: 3px;
+    font-weight: 500;
+    position: relative;
+    font-size: 12px;
+    padding: 1px 0px 1px;
+    border-radius: 10px;
+    width: 50px;
+}
+
+
+.edit-delete-member-wrapper{
+    padding: 4px;
+}
+
+.member-block-hidden{
+	display: none;
 }
 
 #current-members{
@@ -176,6 +417,77 @@
 }
 
 .team-info-input{
-	margin-bottom: 15px;
+	margin-bottom: 30px;
 	text-align: left;
 }
+
+.add-members-input{
+	margin-bottom: 45px;
+	text-align: left;
+}
+
+#enter-member-email{
+	width: 200px;
+}
+
+.add-member-button {
+	background-color: #0cda71;
+    box-shadow: 0px 0px 5px #0cda71;
+}
+
+.member-button{
+	width: 140px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+	border-radius: 20px;
+	margin-top: 25px;
+}
+
+
+.update-member-button{
+	background-color: #0096ff;
+	box-shadow: 0px 0px 5px #0096ff;
+}
+
+
+
+.add-members-header{
+	font-size: 18px;
+	font-weight: 600;
+	margin-bottom: 10px;
+}
+
+.create-team-button{
+	width: 220px;
+    text-align: center;
+    background-color: #ff005f;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    border-radius: 30px;
+    color: white;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.create-team-button-wrapper{
+	margin-top: 50px;
+}
+
+.select-stats-wrapper{
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.optional-stat-deactivated{
+	border: 2px solid #ef8888 !important;
+    box-shadow: 0px 0px 2px #ef8888 !important;
+}
+
+#optional-stats-wrapper{
+	height: 150px;
+}
+
+

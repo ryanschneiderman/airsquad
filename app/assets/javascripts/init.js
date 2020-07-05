@@ -10743,7 +10743,7 @@ function condenseHeaderMobileOverride() {
 		if($('#header-outer[data-format="left-header"]').length > 0) return;
 
 		if($('#header-outer[data-small-header="true"]').length > 0){
-			$("#join-team-button").css("color", "#ff6c40")
+			$(".portal-button-2").css("color", "#ff6c40")
 			$('body #header-outer, .ascend #header-outer[data-full-width="true"][data-using-pr-menu="true"] header#top nav ul.buttons li.menu-item, .ascend #header-outer[data-full-width="true"][data-format="centered-menu"] header#top nav ul.buttons li#social-in-menu').stop(true,true).animate({
 				'padding-top' : Math.ceil(headerPadding / 1.8)
 			},{queue:false, duration:250, easing: 'easeOutCubic'});	
@@ -10755,9 +10755,15 @@ function condenseHeaderMobileOverride() {
 
 			$('header#top nav > ul > li.button_login > a').stop(true,true).animate({
 				'padding-bottom' :  Math.floor((((logoHeight-shrinkNum)/2) - ($('header#top nav > ul > li > a').height()/2)) + headerPadding / 1.8) ,
-				'padding-top' :  Math.floor(smallNavHeight / 2 - $('header#top nav > ul > li.button_login > a > button').height())
+				'padding-top' :  Math.floor(smallNavHeight / 2 - $('header#top nav > ul > li.button_login > a > button:not(.header-button-deactivated)').height())
+			},{queue:false, duration:250, easing: 'easeOutCubic'});	
+
+			$('header#top nav > ul > li.player-dropdown').stop(true,true).animate({
+				'padding-bottom' :  Math.floor(0) ,
+				'padding-top' :  Math.floor(smallNavHeight/2.5)
 			},{queue:false, duration:250, easing: 'easeOutCubic'});	
 		}
+
 
 		if($('body.material').length == 0) {
 			$('#header-outer #logo img').css({
@@ -10770,18 +10776,18 @@ function condenseHeaderMobileOverride() {
 			
 			if($('body.mobile').length == 0) {
 				$('header#top nav > ul > li.menu-item > a').css({
-					'padding-bottom' : Math.floor(((logoHeight/2) - ($('header#top nav > ul > li > a').height()/2)) + headerPadding),
+					'padding-bottom' : 0,
 					'padding-top' : Math.floor( (logoHeight/2) - ($('header#top nav > ul > li.menu-item > a').height()/2))
 				});	
 
 				$('header#top nav > ul > li.button_login > a').css({
 					'padding-bottom' : Math.floor(0),
-					'padding-top' : Math.floor((headerTopHeight + headerPadding)/2 - ($('header#top nav > ul > li.button_login > a > button').height() /2))
+					'padding-top' : Math.floor((headerTopHeight + headerPadding)/2 - ($('header#top nav > ul > li.button_login > a > button:not(.header-button-deactivated)').height() /2))
 				});	
 
 				$('header#top nav > ul > li.player-dropdown').css({
 					'padding-bottom' : Math.floor(0),
-					'padding-top' : Math.floor((headerTopHeight + headerPadding)/2 +5)
+					'padding-top' : Math.floor((headerTopHeight + headerPadding)/2)
 				});	
 				
 				var $socialInMenuHeight = ($('header#top nav > .sf-menu > li:not(#social-in-menu) a').length > 0 && $('header#top nav > .sf-menu > li:not(#social-in-menu) a').height() > 22) ? $('header#top nav > .sf-menu > li:not(#social-in-menu) a').height() : $('header#top nav > ul > li#social-in-menu > a i').height();
@@ -11123,7 +11129,7 @@ function condenseHeaderMobileOverride() {
 				},{queue:false, duration:310, easing: 'easeOutQuad'});	
 			}
 			if($('body.material').length == 0) {
-				$("#join-team-button").css("color", "#ff6c40")
+				$(".portal-button-2").css("color", "#ff6c40")
 				$('#header-outer #logo img').stop(true,true).animate({
 					'height' : logoHeight - shrinkNum
 				},{queue:false, duration:250, easing: 'easeOutCubic'});	
@@ -11139,6 +11145,10 @@ function condenseHeaderMobileOverride() {
 					},{queue:false, duration:250, easing: 'easeOutCubic'});	
 				}
 
+
+
+
+
 				$('header#top nav > ul > li.menu-item > a').stop(true,true).animate({
 					'padding-bottom' :  Math.floor((((logoHeight-shrinkNum)/2) - ($('header#top nav > ul > li.menu-item > a').height()/2)) + headerPadding / 1.8) ,
 					'padding-top' :  Math.floor(((logoHeight-shrinkNum)/2) - ($('header#top nav > ul > li.menu-item > a').height()/2)) 
@@ -11146,15 +11156,17 @@ function condenseHeaderMobileOverride() {
 
 				$('header#top nav > ul > li.button_login > a').stop(true,true).animate({
 					'padding-bottom' :  Math.floor((((logoHeight-shrinkNum)/2) - ($('header#top nav > ul > li > a').height()/2)) + headerPadding / 1.8) ,
-					'padding-top' :  Math.floor(smallNavHeight / 2 - $('header#top nav > ul > li.button_login > a > button').height())
+					'padding-top' :  Math.floor(smallNavHeight / 2 - $('header#top nav > ul > li.button_login > a > button:not(.header-button-deactivated)').height()/2)
 				},{queue:false, duration:250, easing: 'easeOutCubic'});	
 
 				$('header#top nav > ul > li.player-dropdown').stop(true,true).animate({
 					'padding-bottom' :  Math.floor(0) ,
-					'padding-top' :  Math.floor(smallNavHeight/2 -$('header#top nav > ul > li.player-dropdown > .player-dropdown-text').height()/4)
+					'padding-top' :  Math.floor(smallNavHeight/1.8)
 				},{queue:false, duration:250, easing: 'easeOutCubic'});	
 
-				$('header#top nav > ul > li.player-dropdown > .player-dropdown-text').addClass("player-dropdown-dark")
+				$('header#top nav > ul > li.player-dropdown .player-dropdown-text').addClass("player-dropdown-dark")
+				$('header#top nav > ul > li.player-dropdown #player-dropdown-arrow').hide()
+				$('header#top nav > ul > li.player-dropdown #player-dropdown-arrow-dark').show()
 
 				// $('header#top nav > ul > li.player-dropdown > a').css({
 				// 	'padding-bottom' : Math.floor(0),
@@ -11324,7 +11336,7 @@ function condenseHeaderMobileOverride() {
 			}
 
 			if($('body.material').length == 0) {
-				$("#join-team-button").css("color", "white")
+				$(".portal-button-2").css("color", "white")
 				
 
 				$('#header-outer #logo img').stop(true,true).animate({
@@ -11345,12 +11357,13 @@ function condenseHeaderMobileOverride() {
 
 
 				$('header#top nav > ul > li.menu-item > a').stop(true,true).animate({
-					'padding-bottom' : Math.floor(((logoHeight/2) - ($('header#top nav > ul > li > a').height()/2)) + headerPadding),
+					'padding-bottom' : 0,
 					'padding-top' : Math.floor((logoHeight/2) - ($('header#top nav > ul > li.menu-item > a').height()/2))
 				},{queue:false, duration:250, easing: 'easeOutCubic'});	
+
 				$('header#top nav > ul > li.button_login > a').stop(true,true).animate({
 					'padding-bottom' :  0 ,
-					'padding-top' :  Math.floor(bigNavHeight / 2 - $('header#top nav > ul > li.button_login > a > button').height()/2)
+					'padding-top' :  Math.floor(bigNavHeight / 2 - $('header#top nav > ul > li.button_login > a > button:not(.header-button-deactivated)').height()/2)
 				},{queue:false, duration:250, easing: 'easeOutCubic'});	
 				
 				$('header#top nav > ul > li.player-dropdown').stop(true,true).animate({
@@ -11358,9 +11371,10 @@ function condenseHeaderMobileOverride() {
 					'padding-top' :  Math.floor(bigNavHeight/2) + 5
 				},{queue:false, duration:250, easing: 'easeOutCubic'});	
 
-				$('header#top nav > ul > li.player-dropdown > .player-dropdown-text').removeClass("player-dropdown-dark")
+				$('header#top nav > ul > li.player-dropdown .player-dropdown-text').removeClass("player-dropdown-dark")
 
-
+				$('header#top nav > ul > li.player-dropdown #player-dropdown-arrow').show()
+				$('header#top nav > ul > li.player-dropdown #player-dropdown-arrow-dark').hide()
 
 
 

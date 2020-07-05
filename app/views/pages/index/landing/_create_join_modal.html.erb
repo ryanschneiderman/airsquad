@@ -1,22 +1,46 @@
-<div id = "join-create-team-wrapper" class = "signup-deactivated">
-              <div class = "flex-row">
-                <div class = "create-join-team-wrapper">
-                  <div class = "create-join-team-heading">Create Team</div>
-                  <button class = "create-join-team" id = "create-team" onclick = "create_team()">
+
+
+
+<div class = "modal-overlay" id = "create-join-team-overlay" style = "display: none;"></div>
+<div class = "modal modal-positioning" id = "create-join-team-modal" style = "display: none;">
+  <div id = "signup-initializer" class = "modal-container">
+    <div class = "GM-modal-wrapper">
+      <div class = "modal-header-wrapper">
+        <div class = "modal-header" id = "create-join-team-header">Create or Join Team</div>
+      </div>
+      <div class = "modal-inner-content" id = "create-join-modal-content">
+        <div class = "modal-body ">
+          
+          <div id = "join-create-team-wrapper">
+            <div class = "flex-row">
+              <div class = "create-join-team-wrapper">
+                <div class = "create-join-team-heading">Create Team</div>
+                <%=link_to new_team_path do %>
+                  <button class = "create-join-team" id = "create-team" >
                     <object data='<%=asset_path("create-team.svg")%>' type="image/svg+xml" class = "create-join-team-img">
                       <%= image_tag("create-team.png", :alt => "sort", :class => "create-join-team-img") %>  
                     </object>
                   </button>
-                  <div class = "create-join-team-footer">($119/year)</div>
-                </div>
-                <div class = "create-join-team-wrapper">
-                  <div class = "create-join-team-heading">Join Team</div>
-                  <button class = "create-join-team" id = "join-team">
-                      <object data='<%=asset_path("join-icon.svg")%>' type="image/svg+xml" class = "create-join-team-img">
-                        <%= image_tag("create-team.png", :alt => "sort", :class => "create-join-team-img") %>  
-                      </object>
-                  </button>
-                  <div class = "create-join-team-footer">(Free!)</div>
-                </div>
+                <%end%>
+                <div class = "create-join-team-footer">($119/year)</div>
+              </div>
+              <div class = "create-join-team-wrapper">
+                <div class = "create-join-team-heading">Join Team</div>
+                <button class = "create-join-team" id = "join-team">
+                    <object data='<%=asset_path("join-icon.svg")%>' type="image/svg+xml" class = "create-join-team-img">
+                      <%= image_tag("create-team.png", :alt => "sort", :class => "create-join-team-img") %>  
+                    </object>
+                </button>
+                <div class = "create-join-team-footer">(Free!)</div>
               </div>
             </div>
+          </div>
+
+        </div>
+      </div>
+      <div class = "modal-footing">
+        <button class = "modal-cancel-button" id = "signup-cancel" onclick = "closeCreateJoinModal()">Not Now</button>
+      </div>
+    </div>
+  </div>
+</div>

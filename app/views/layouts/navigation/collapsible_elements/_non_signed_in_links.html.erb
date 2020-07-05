@@ -10,6 +10,28 @@
         <button class = "portal-button" id = "join-team-button" style = "color: #ff6c40;">Log in</button>
       <%end%>  
     </li>
+    <li class="button_login button_logged_in " id = "create-team-button" style = "display: none;">
+      <%=link_to new_team_path do %>
+                <button class = "portal-button portal-button-1" onclick = "create_team()">Create Team</button>
+              <%end%>
+    </li> 
+    <li class="button_login button_logged_in " id = "join-team-button" style = "display: none;">
+      <a>
+        <button class = "portal-button portal-button-2 header-button-deactivated" >Join Team</button>
+      </a>
+    </li>
+
+    <li class = "player-dropdown" style = "display: none">
+      <div class = "player-dropdown-wrapper flex-row">
+        <div class = "player-dropdown-text" ></div> 
+        <object data='<%=asset_path("down-arrow.svg")%>' type="image/svg+xml" class = "sort-img player-dropdown-arrow" id = "player-dropdown-arrow">
+            <%= image_tag("down-arrow.png", :alt => "sort", :class => "sort-img") %>  
+        </object>
+        <object data='<%=asset_path("down-dark.svg")%>' type="image/svg+xml" class = "sort-img player-dropdown-arrow" id = "player-dropdown-arrow-dark" style = "display: none;">
+            <%= image_tag("down-dark.png", :alt => "sort", :class => "sort-img") %> 
+        </object>
+       </div>
+    </li>
    
   </ul>
   <ul class="sf-menu">  

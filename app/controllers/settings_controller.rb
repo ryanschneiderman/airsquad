@@ -1,11 +1,9 @@
 class SettingsController < ApplicationController
 	def index
-		@curr_member =  Assignment.joins(:role).joins(:member).select("roles.name as role_name, members.*").where("members.user_id" => current_user.id, "members.team_id" => params[:team_id])
+		@curr_member =  Assignment.joins(:role).joins(:member).select("roles.name as role_name, members.*").where("members.user_id" => current_user.id, "members.team_id" => params[:team_id]).take
 		@settings_permission = false
-		@curr_member.each do |member_obj|
-			if member_obj.role_name == "Admin" || member_obj.role_name == "Manager"
-				@settings_permission = true
-			end
+		if(@curr_member.permissions["settings_edit"])
+			@settings_permission = true
 		end
 		@team_id = params[:team_id]
 
@@ -21,7 +19,7 @@ class SettingsController < ApplicationController
 		end
 
 		@non_default_advanced_belongs = TeamStat.joins(:stat_list).select("stat_lists.*, team_stats.*").where("stat_lists.default_stat" => false, "stat_lists.advanced" => true, "stat_lists.team_stat" => false, "team_stats.team_id" => @team_id).sort_by{|e| e.stat_list_id}
-		non_default_advanced = StatList.where(advanced: true, team_stat: false, default_stat: false)
+		non_default_advanced = StatList.where(advanced: true, team_stat: false, default_stat: false, hidden: false)
 		@non_default_advanced_add = []
 		non_default_advanced.each do |stat|
 			add_stat = @non_default_advanced_belongs.none?{|s| s.stat_list_id == stat.id}
@@ -42,99 +40,79 @@ class SettingsController < ApplicationController
 			end
 		end
 
-		puts "non defualt team advanced add"
-		puts @non_default_team_advanced_add
 
 		@default_collectable = StatList.where(default_stat: true, collectable: true)
 		@default_basic = StatList.where(default_stat: true, rankable: true, advanced: false).sort_by{|stat| stat.id}
 		@default_application_basic = StatList.where(default_stat: true, collectable: false, advanced: false)
 		@default_indiv_advanced = StatList.where(default_stat: true, advanced: true)
 		@default_team_advanced = StatList.where(default_stat: true, advanced: true, team_stat: true)
-		@non_default_indiv_advanced = StatList.where(advanced: true, team_stat: false, default_stat: false)
-		@non_default_team_advanced = StatList.where(advanced: true, team_stat: true, default_stat: false)
+		@non_default_indiv_advanced = StatList.where(advanced: true, team_stat: false, default_stat: false, hidden: false)
+		@non_default_team_advanced = StatList.where(advanced: true, team_stat: true, default_stat: false, hidden: false)
 
 		@advanced_stats = AdvStatDependenciesService.new({adv_stats: @non_default_indiv_advanced}).call
 
 		@team_advanced_stats = TeamAdvStatDependenciesService.new({adv_stats: @non_default_team_advanced}).call
 
 
+		gon.default_collectable = @default_collectable
+		gon.default_application_basic = @default_application_basic
+		gon.default_indiv_advanced = @default_indiv_advanced
+		gon.advanced_stats = @advanced_stats
+		gon.team_advanced_stats = @team_advanced_stats
+		gon.non_default_collectable_belongs = @non_default_collectable_belongs
+
+
 		######## MEMBERS ########
 		@team = Team.find_by_id(@team_id)
+		gon.team = @team
 
-		@players = Assignment.joins(:role).joins(:member).select("roles.name as name, members.*").where("members.team_id" => @team_id, "roles.id" => 1)
-		@coaches = Assignment.joins(:role).joins(:member).select("roles.name as name, members.*").where("members.team_id" => @team_id, "roles.id" => 2)
+		members = Assignment.joins(:role).joins(:member).select("roles.id as role_id, roles.name as role_name, members.*, members.nickname as name").where("members.team_id" => @team_id)
+
+		gon.members = members
 	end
 
 	def update
 		stats_to_add = params[:stats_to_add]
 		stats_to_remove = params[:stats_to_remove]
-		new_players = params[:new_players]
-		remove_players = params[:remove_players]
-		new_coaches = params[:new_coaches]
-		remove_coaches = params[:remove_coaches]
+
+		new_members = params[:new_members]
+		remove_members = params[:remove_members]
+		update_members = params[:update_members]
+
 		team_id = params[:team_id]
 		team = Team.find_by_id(team_id)
-		team.update(name: params[:team_name], minutes_p_q: params[:minutes_p_q], username: params[:username], password: params[:password])
-		if new_players
-			new_players.each do |player|
-				member = Member.create({
-					nickname: player,
-					team_id: team.id,
-					season_minutes: 0,
-					games_played: 0,
-				})
-				Assignment.create({
-					member_id: member.id,
-					role_id: 1
-				})
-			end
-		end
-		if new_coaches
-			new_coaches.each do |coach|
-				member = Member.create({
-					nickname: coach,
-					team_id: team.id,
-					season_minutes: 0,
-					games_played: 0,
-				})
-				Assignment.create({
-					member_id: member.id,
-					role_id: 2
-				})
-			end
-		end
+		team.update(name: params[:team_name], num_periods: params[:period_type], period_length: params[:period_length], primary_color: params[:primary_color], secondary_color: params[:secondary_color])
 		
-		if remove_coaches
-			remove_coaches.each do |coach|
-				assignment = Assignment.where(member_id: coach).take
-				assignment.destroy()
+		Teams::CreateTeamMembersService.new({
+			members: new_members,
+			team_id: team_id
+		}).call
+
+		Teams::UpdateMembersService.new({
+			members: params[:update_members],
+			team_id: team_id
+		}).call
+		
+		(remove_members || []).each do |member|
+			assignment = Assignment.where(member_id: member[1][:id]).take
+			assignment.destroy()
+		end
+
+
+		Teams::TeamStatService.new({
+			team_stats: stats_to_add,
+			team_id: team_id
+		}).call
+
+		(stats_to_remove || []).each do |stat_id|
+			puts "STAT ID"
+			puts stat_id
+			team_stat = TeamStat.where(stat_list_id: stat_id, team_id: team_id).take
+			if team_stat 
+				TeamStat.destroy(team_stat.id)
 			end
 		end
 
-		if remove_players
-			remove_players.each do |player|
-				assignment = Assignment.where(member_id: player).take
-				assignment.destroy()
-			end
-		end
-		if stats_to_add
-			stats_to_add.each do |stat_id|
-				team_stat = TeamStat.create(
-					stat_list_id: stat_id,
-					team_id: team_id,
-					show: true,
-				)
-			end
-		end
-		if stats_to_remove
-			stats_to_remove.each do |stat_id|
-				team_stat = TeamStat.where(stat_list_id: stat_id, team_id: team_id)
-				puts team_stat
-				if team_stat 
-					TeamStat.destroy(team_stat.take.id)
-				end
-			end
-		end
 		redirect_to team_settings_path(team_id)
 	end
 end

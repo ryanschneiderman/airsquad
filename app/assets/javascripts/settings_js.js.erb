@@ -1,0 +1,181 @@
+	$(document).on('turbolinks:load ', function(){
+		if($("body").hasClass("settings")){
+			initialize_adv_stats();
+			initialize_stat_arr();
+			initialize_members()
+			initialize_stats_kept()
+			populate_color_pickers();
+			setPeriodType()
+			setColorPicker()
+		}
+	});
+	
+	function setPeriodType(){
+		switch(gon.team.num_periods){
+			case 4 :
+				$("#team-info-quarters").prop('checked', true);
+				break;
+			case 2 :
+				$("#team-info-halves").prop('checked', true);
+				break;
+		}
+	}
+
+	function setColorPicker(){
+		$("#primary-color-picker .color-picker-square[data-color-id='"+gon.team.primary_color+"']").addClass("color-picker-selected")
+		$("#secondary-color-picker .color-picker-square[data-color-id='"+gon.team.secondary_color+"']").addClass("color-picker-selected")
+	}
+
+
+	function initialize_stats_kept(){
+		for (var i = gon.non_default_collectable_belongs.length - 1; i >= 0; i--) {
+			adv_stat_add_check(gon.non_default_collectable_belongs[i].stat_list_id, true)
+			team_adv_stat_add_check(gon.non_default_collectable_belongs[i].stat_list_id, true)
+		}
+	}
+
+	function initialize_adv_belongs(){
+		non_default_team_adv_belongs = gon.non_default_team_adv_belongs.map(x => x.stat_list_id)
+		non_default_adv_belongs = gon.non_default_adv_belongs.map(x => x.stat_list_id)
+	}
+
+	function team_adv_stat_belongs(stat_id){
+		var len = non_default_team_adv_belongs.length;
+		for(var i = 0; i < len; i++){
+			if(stat_id == non_default_team_adv_belongs[i]){
+				return true
+			}
+		}
+		return false;
+	}
+
+	function adv_stat_belongs(stat_id){
+		var len = non_default_adv_belongs.length;
+		for(var i = 0; i < len; i++){
+			if(stat_id == non_default_adv_belongs[i]){
+				return true
+			}
+		}
+		return false;
+	}
+
+
+
+
+	function initialize_members(){
+		for (var i = gon.members.length - 1; i >= 0; i--) {
+			if(!gon.members[i].is_admin){
+				var container = get_role_container(gon.members[i])
+				add_member_dom(gon.members[i].id, gon.members[i].nickname, container)
+			}
+		}
+		for (var i = gon.members.length - 1; i >= 0; i--) {
+			var member = gon.members[i]
+			member.curr_member = true;
+			curr_members.push(member)
+		}
+	}
+
+
+	function add_settings_member(){
+		var member_name = $("#enter-member-name").val();
+		var member_email = $("#enter-member-email").val();
+		var member_role = $("input:radio[name='role']:checked").val()
+		var permissions = {"plays_view" : false, "plays_edit" : false, "schedule_view" : false, "schedule_edit" : false, "stats_view" : false, "stats_edit" : false, "settings_view" : false, "settings_edit" : false, "is_player" : false}
+		$('input:checkbox:checked').each(function(){
+			var permission = $(this).val()
+			permissions[permission] = true;
+		});
+		var is_email = validateEmail(member_email)
+		var is_player = $("#is_player").is(':checked')
+		
+		// next id is one greater than the last member in the array. Useful when a member is deleted.
+		var member_id = (new_members.length > 0) ? new_members[new_members.length-1].id+1 : 0;
+		if(member_name && member_email && member_role && is_email){
+			var member = {"name" : member_name , "email" : member_email, "role_name" : member_role, "id" : member_id, "permissions" : permissions, "is_player" : is_player}
+			if(member_role == "Player"){
+				member.is_player = true;
+			}
+			new_members.push(member)
+			var container = get_role_container(member)
+			add_member_dom(member_id, member_name, container)
+			resetAddMember()
+		}
+		else{
+			if(!member_name){
+				$("#enter-member-name").addClass("incorrect-input")
+			}
+			if (!member_email){
+				$("#enter-member-email").addClass("incorrect-input")
+			}
+			if (!member_role){
+				$("#role-needs-input").show()
+			}
+			if(!is_email){
+				$("#valid-email").show()
+				$("#enter-member-email").addClass("incorrect-input")
+			}
+		}
+	}
+
+	function find_and_delete_member(member_id){
+		var found = false;
+		for (var i = curr_members.length - 1; i >= 0; i--) {
+			if(curr_members[i].id == member_id){
+				remove_members.push(curr_members[i])
+				found = true;
+			}
+		}
+		if(!found){
+			for (var i = new_members.length - 1; i >= 0; i--) {
+				if(new_members[i].id == member_id){
+					var removeIndex = new_members.map(function(item) { return item.id;}).indexOf(member_id);
+					~removeIndex && new_members.splice(removeIndex, 1);
+				}
+			}
+		}
+	}
+
+
+	function delete_settings_member(member_id){
+		var r = confirm("Are you sure you want to remove this member? All stats and information will be deleted.");
+		if (r == true) {
+			// remove button
+			$("#member-block-"+member_id).remove()
+			find_and_delete_member(member_id)
+		}
+	}
+
+
+
+	function submit_edit_team(){
+		var team_name = $("#enter-team-name").val()
+		var period_type = $("input:radio[name='period-type']:checked").val()
+		var period_length = $("#period-length").val()
+		var primary_color = $("#primary-color-picker .color-picker-selected").data("color-id")
+		var secondary_color = $("#secondary-color-picker .color-picker-selected").data("color-id")
+		if(checkTeamInput(team_name, period_type, period_length, primary_color, secondary_color)){
+			var url = "/teams/" + gon.team.id + "/settings/"
+			$.ajax({
+			  url: url,
+			  beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+			  type: "post",
+			  data_type: 'json',
+			  data: {stats_to_add: stats_to_add, stats_to_remove: stats_to_remove, new_members: new_members, remove_members: remove_members, update_members: update_members, team_name: team_name, period_type: period_type, period_length: period_length, primary_color: primary_color, secondary_color: secondary_color}
+			});
+		}
+		else{
+			$("#check-team-input").show()
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+

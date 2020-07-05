@@ -12,4 +12,6 @@ class Team < ApplicationRecord
 	has_many :lineups
 	has_many :schedule_events
 	has_many :playlists
+	belongs_to :sport
+	has_many :seasons
 end

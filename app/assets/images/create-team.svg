@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="228" height="228" viewBox="0 0 228 228">
-  <g id="Component_2_1" data-name="Component 2 – 1" transform="translate(12.5 12.5)">
-    <line id="Line_10" data-name="Line 10" y2="203" transform="translate(101.5)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="25"/>
-    <line id="Line_11" data-name="Line 11" y2="203" transform="translate(203 101.5) rotate(90)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="25"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="218" height="218" viewBox="0 0 218 218">
+  <g id="Component_2_1" data-name="Component 2 – 1" transform="translate(7.5 7.5)">
+    <line id="Line_10" data-name="Line 10" y2="203" transform="translate(101.5)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="15"/>
+    <line id="Line_11" data-name="Line 11" y2="203" transform="translate(203 101.5) rotate(90)" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="15"/>
   </g>
 </svg>

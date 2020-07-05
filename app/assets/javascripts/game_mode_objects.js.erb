@@ -1,0 +1,257 @@
+fabric.Basket = fabric.util.createClass(fabric.Circle, {
+        type: 'Basket',
+        initialize(options) {
+            options || (options = { });
+            this.callSuper('initialize', options);
+            this.set({
+              hasControls: false,
+              selectable: false,
+              hasBorders: false,
+              evented: false,
+              perPixelTargetFind: true,
+            });
+        },
+
+        _render(ctx) {
+            this.callSuper('_render', ctx);
+        }, 
+
+        toObject() {
+            return fabric.util.object.extend(this.callSuper('toObject'), {
+              customProps: this.customProps,
+              color: this.color,
+              hasControls: this.hasControls,
+              selectable: this.selectable,
+              hasBorders: this.hasBorders,
+              evented: this.evented,
+              perPixelTargetFind: this.perPixelTargetFind,
+              id: this.id,
+            });
+        },
+
+    });
+
+    function plotBasket(basket_left, basket_top, r, canvas_width, canvas){
+      var basket = new fabric.Basket({
+        left: basket_left - r,
+        top: basket_top,
+        strokeWidth: 2,
+        radius: r,
+        fill: "white",
+        stroke: "black",
+        canvas_width: canvas_width,
+      });
+      canvas.add(basket);
+      return basket;
+    }
+
+    fabric.Basket.fromObject = function(object, callback) {
+        return fabric.Object._fromObject('Basket', object, callback);
+    };
+
+    fabric.MakeSymbol = fabric.util.createClass(fabric.Circle, {
+        type: 'MakeSymbol',
+        initialize(options) {
+            options || (options = { });
+            this.callSuper('initialize', options);
+            this.set({
+              hasControls: false,
+              selectable: true,
+              hasBorders: false,
+              evented: true,
+              perPixelTargetFind: true,
+            });
+        },
+
+        _render(ctx) {
+            this.callSuper('_render', ctx);
+        }, 
+
+        toObject() {
+            return fabric.util.object.extend(this.callSuper('toObject'), {
+              customProps: this.customProps,
+              color: this.color,
+              hasControls: this.hasControls,
+              selectable: this.selectable,
+              hasBorders: this.hasBorders,
+              evented: this.evented,
+              perPixelTargetFind: this.perPixelTargetFind,
+              id: this.id,
+            });
+        },
+
+    });
+
+    fabric.MakeSymbol.fromObject = function(object, callback) {
+        return fabric.Object._fromObject('MakeSymbol', object, callback);
+    };
+
+    fabric.SmallMissSymbol = fabric.util.createClass(fabric.Line, {
+      type: 'SmallMissSymbol',
+
+      initialize(element, options) {
+        options || (options = {});
+        this.callSuper('initialize', element, options);
+
+        // Set default options
+        this.set({
+          hasControls: false,
+          selectable: true,
+          hasBorders: false,
+          evented: true,
+          perPixelTargetFind: true,
+        });
+      },
+
+      _render(ctx) {
+        this.callSuper('_render', ctx);
+        ctx.save();
+        ctx.beginPath();
+        // Move 5px in front of line to start the arrow so it does not have the square line end showing in front (0,0)
+        ctx.rotate(0.785398)
+        ctx.moveTo(0, -5);
+        ctx.lineTo(0, 5);
+        ctx.rotate(1.5708)
+        ctx.moveTo(0, -5);
+        ctx.lineTo(0, 5);
+
+        ctx.stroke();
+        ctx.closePath();
+        ctx.strokeStyle = this.stroke;
+        ctx.restore();
+      },
+
+      toObject() {
+        return fabric.util.object.extend(this.callSuper('toObject'), {
+          customProps: this.customProps,
+          hasControls: this.hasControls,
+          selectable: this.selectable,
+          hasBorders: this.hasBorders,
+          evented: this.evented,
+          perPixelTargetFind: this.perPixelTargetFind,
+          objectCaching: this.objectCaching,
+          id: this.id,
+        });
+      },
+
+
+    });
+
+    fabric.SmallMissSymbol.fromObject = function(object, callback) {
+      callback && callback(new fabric.SmallMissSymbol([object.x1, object.y1, object.x2, object.y2], object));
+    };
+
+    function plot_small_miss(points, id, player, point_value, index, player_index, canvas_width, canvas) {
+      var miss = new fabric.SmallMissSymbol(points, {
+        strokeWidth: 2,
+        stroke: "red",
+        objectCaching: false,
+        selectable: false,
+        padding: 15,
+        id: id,
+        player: player,
+        point_value: point_value,
+        index: index,
+        player_index: player_index,
+        canvas_width: canvas_width,
+      });
+      canvas.add(miss);
+      return miss;
+    }
+
+    fabric.MissSymbol = fabric.util.createClass(fabric.Line, {
+      type: 'MissSymbol',
+
+      initialize(element, options) {
+        options || (options = {});
+        this.callSuper('initialize', element, options);
+
+        // Set default options
+        this.set({
+          hasControls: false,
+          selectable: true,
+          hasBorders: false,
+          evented: true,
+          perPixelTargetFind: true,
+        });
+      },
+
+      _render(ctx) {
+        this.callSuper('_render', ctx);
+        ctx.save();
+        ctx.beginPath();
+        // Move 5px in front of line to start the arrow so it does not have the square line end showing in front (0,0)
+        ctx.rotate(0.785398)
+        ctx.moveTo(0, -7);
+        ctx.lineTo(0, 7);
+        ctx.rotate(1.5708)
+        ctx.moveTo(0, -7);
+        ctx.lineTo(0, 7);
+
+        ctx.stroke();
+        ctx.closePath();
+        ctx.strokeStyle = this.stroke;
+        ctx.restore();
+      },
+
+      toObject() {
+        return fabric.util.object.extend(this.callSuper('toObject'), {
+          customProps: this.customProps,
+          hasControls: this.hasControls,
+          selectable: this.selectable,
+          hasBorders: this.hasBorders,
+          evented: this.evented,
+          perPixelTargetFind: this.perPixelTargetFind,
+          objectCaching: this.objectCaching,
+          id: this.id,
+        });
+      },
+
+
+    });
+
+    fabric.MissSymbol.fromObject = function(object, callback) {
+      callback && callback(new fabric.MissSymbol([object.x1, object.y1, object.x2, object.y2], object));
+    };
+
+    function plot_miss(points, id, player, point_value, index, player_index, canvas_width, canvas) {
+      var miss = new fabric.MissSymbol(points, {
+        strokeWidth: 2,
+        stroke: "red",
+        objectCaching: false,
+        selectable: false,
+        padding: 15,
+        id: id,
+        player: player,
+        point_value: point_value,
+        index: index,
+        player_index: player_index,
+        canvas_width: canvas_width,
+      });
+      canvas.add(miss);
+      return miss;
+    }
+
+    function plot_make(top, left, r, id, player, point_value, index, player_index, canvas_width, canvas){
+      var m = new fabric.MakeSymbol({
+        left: left,
+        top: top,
+        strokeWidth: 2,
+        radius: r,
+        fill: "white",
+        stroke: "blue",
+        selectable: false,
+        id: id,
+        player: player,
+        point_value: point_value,
+        index: index,
+        player_index: player_index, 
+        canvas_width: canvas_width,
+      });
+      canvas.add(m);
+      return m;
+    }
+
+    function edit_shot_value(obj, new_value){
+      obj.point_value = new_value;
+    }

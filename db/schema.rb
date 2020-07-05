@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_06_23_160617) do
+ActiveRecord::Schema.define(version: 2020_07_02_034033) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,8 +44,10 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.bigint "game_id"
     t.float "value"
     t.json "constituent_stats"
+    t.bigint "season_id"
     t.index ["game_id"], name: "index_advanced_stats_on_game_id"
     t.index ["member_id"], name: "index_advanced_stats_on_member_id"
+    t.index ["season_id"], name: "index_advanced_stats_on_season_id"
     t.index ["stat_list_id"], name: "index_advanced_stats_on_stat_list_id"
   end
 
@@ -76,7 +78,9 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.boolean "played"
     t.bigint "schedule_event_id"
     t.json "game_state"
+    t.bigint "season_id"
     t.index ["schedule_event_id"], name: "index_games_on_schedule_event_id"
+    t.index ["season_id"], name: "index_games_on_season_id"
     t.index ["team_id"], name: "index_games_on_team_id"
   end
 
@@ -114,7 +118,9 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "is_opponent"
+    t.bigint "season_id"
     t.index ["lineup_id"], name: "index_lineup_adv_stats_on_lineup_id"
+    t.index ["season_id"], name: "index_lineup_adv_stats_on_season_id"
     t.index ["stat_list_id"], name: "index_lineup_adv_stats_on_stat_list_id"
   end
 
@@ -127,8 +133,10 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "is_opponent"
+    t.bigint "season_id"
     t.index ["game_id"], name: "index_lineup_game_advanced_stats_on_game_id"
     t.index ["lineup_id"], name: "index_lineup_game_advanced_stats_on_lineup_id"
+    t.index ["season_id"], name: "index_lineup_game_advanced_stats_on_season_id"
     t.index ["stat_list_id"], name: "index_lineup_game_advanced_stats_on_stat_list_id"
   end
 
@@ -140,8 +148,10 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "is_opponent"
+    t.bigint "season_id"
     t.index ["game_id"], name: "index_lineup_game_stats_on_game_id"
     t.index ["lineup_id"], name: "index_lineup_game_stats_on_lineup_id"
+    t.index ["season_id"], name: "index_lineup_game_stats_on_season_id"
     t.index ["stat_list_id"], name: "index_lineup_game_stats_on_stat_list_id"
   end
 
@@ -153,7 +163,9 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "is_opponent"
+    t.bigint "season_id"
     t.index ["lineup_id"], name: "index_lineup_stats_on_lineup_id"
+    t.index ["season_id"], name: "index_lineup_stats_on_season_id"
     t.index ["stat_list_id"], name: "index_lineup_stats_on_stat_list_id"
   end
 
@@ -193,6 +205,12 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.bigint "team_id"
     t.integer "season_minutes"
     t.integer "games_played"
+    t.jsonb "permissions"
+    t.boolean "is_player"
+    t.string "email"
+    t.boolean "is_admin"
+    t.bigint "season_id"
+    t.index ["season_id"], name: "index_members_on_season_id"
     t.index ["team_id"], name: "index_members_on_team_id"
     t.index ["user_id"], name: "index_members_on_user_id"
   end
@@ -288,8 +306,10 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.bigint "stat_list_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "season_id"
     t.index ["member_id"], name: "index_practice_stat_granules_on_member_id"
     t.index ["practice_id"], name: "index_practice_stat_granules_on_practice_id"
+    t.index ["season_id"], name: "index_practice_stat_granules_on_season_id"
     t.index ["stat_list_id"], name: "index_practice_stat_granules_on_stat_list_id"
   end
 
@@ -301,7 +321,9 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.boolean "is_opponent"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "season_id"
     t.index ["practice_id"], name: "index_practice_stat_totals_on_practice_id"
+    t.index ["season_id"], name: "index_practice_stat_totals_on_season_id"
     t.index ["stat_list_id"], name: "index_practice_stat_totals_on_stat_list_id"
     t.index ["team_id"], name: "index_practice_stat_totals_on_team_id"
   end
@@ -313,8 +335,10 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.bigint "member_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "season_id"
     t.index ["member_id"], name: "index_practice_stats_on_member_id"
     t.index ["practice_id"], name: "index_practice_stats_on_practice_id"
+    t.index ["season_id"], name: "index_practice_stats_on_season_id"
     t.index ["stat_list_id"], name: "index_practice_stats_on_stat_list_id"
   end
 
@@ -387,7 +411,9 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "team_rank"
+    t.bigint "season_id"
     t.index ["member_id"], name: "index_season_advanced_stats_on_member_id"
+    t.index ["season_id"], name: "index_season_advanced_stats_on_season_id"
     t.index ["stat_list_id"], name: "index_season_advanced_stats_on_stat_list_id"
   end
 
@@ -399,7 +425,9 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.datetime "updated_at", null: false
     t.integer "per_game_rank"
     t.integer "per_minute_rank"
+    t.bigint "season_id"
     t.index ["member_id"], name: "index_season_stats_on_member_id"
+    t.index ["season_id"], name: "index_season_stats_on_season_id"
     t.index ["stat_list_id"], name: "index_season_stats_on_stat_list_id"
   end
 
@@ -411,8 +439,25 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.json "constituent_stats"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "season_id"
+    t.index ["season_id"], name: "index_season_team_adv_stats_on_season_id"
     t.index ["stat_list_id"], name: "index_season_team_adv_stats_on_stat_list_id"
     t.index ["team_id"], name: "index_season_team_adv_stats_on_team_id"
+  end
+
+  create_table "seasons", force: :cascade do |t|
+    t.bigint "team_id"
+    t.integer "year1"
+    t.integer "year2"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["team_id"], name: "index_seasons_on_team_id"
+  end
+
+  create_table "sports", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "stat_granules", force: :cascade do |t|
@@ -422,8 +467,11 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "member_id"
+    t.bigint "season_id"
+    t.boolean "is_opponent"
     t.index ["game_id"], name: "index_stat_granules_on_game_id"
     t.index ["member_id"], name: "index_stat_granules_on_member_id"
+    t.index ["season_id"], name: "index_stat_granules_on_season_id"
     t.index ["stat_list_id"], name: "index_stat_granules_on_stat_list_id"
   end
 
@@ -440,6 +488,7 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.boolean "is_percent"
     t.integer "stat_kind"
     t.text "stat_description"
+    t.boolean "hidden", default: false
   end
 
   create_table "stat_totals", force: :cascade do |t|
@@ -450,7 +499,9 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "is_opponent"
+    t.bigint "season_id"
     t.index ["game_id"], name: "index_stat_totals_on_game_id"
+    t.index ["season_id"], name: "index_stat_totals_on_season_id"
     t.index ["stat_list_id"], name: "index_stat_totals_on_stat_list_id"
     t.index ["team_id"], name: "index_stat_totals_on_team_id"
   end
@@ -462,8 +513,10 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "member_id"
+    t.bigint "season_id"
     t.index ["game_id"], name: "index_stats_on_game_id"
     t.index ["member_id"], name: "index_stats_on_member_id"
+    t.index ["season_id"], name: "index_stats_on_season_id"
     t.index ["stat_list_id"], name: "index_stats_on_stat_list_id"
   end
 
@@ -475,7 +528,9 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.datetime "updated_at", null: false
     t.float "value"
     t.boolean "is_opponent"
+    t.bigint "season_id"
     t.index ["game_id"], name: "index_team_advanced_stats_on_game_id"
+    t.index ["season_id"], name: "index_team_advanced_stats_on_season_id"
     t.index ["stat_list_id"], name: "index_team_advanced_stats_on_stat_list_id"
   end
 
@@ -495,6 +550,8 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.boolean "is_opponent"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "season_id"
+    t.index ["season_id"], name: "index_team_season_stats_on_season_id"
     t.index ["stat_list_id"], name: "index_team_season_stats_on_stat_list_id"
     t.index ["team_id"], name: "index_team_season_stats_on_team_id"
   end
@@ -521,7 +578,10 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.integer "division"
     t.string "primary_color"
     t.string "secondary_color"
-    t.integer "minutes_p_q"
+    t.integer "num_periods"
+    t.integer "period_length"
+    t.bigint "sport_id"
+    t.index ["sport_id"], name: "index_teams_on_sport_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -534,6 +594,8 @@ ActiveRecord::Schema.define(version: 2020_06_23_160617) do
     t.datetime "updated_at", null: false
     t.string "first_name", default: ""
     t.string "last_name", default: ""
+    t.boolean "subscribed", default: false
+    t.boolean "joined", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

@@ -1,0 +1,136 @@
+
+
+    function initialize_gm_court(width_m, height_m, canvas_id, line_width){
+        var canvas = new fabric.Canvas(canvas_id,{
+            targetFindTolerance: 15,
+            perPixelTargetFind: true,
+            preserveObjectStacking: true,
+        }); 
+
+        var canvas_width = window.innerWidth * width_m;
+        var canvas_height = canvas_width * height_m;
+
+        set_gm_court_dimensions(canvas, canvas_height, canvas_width);
+
+        var angle = Math.atan((10-0.75)/(70))* 180 / Math.PI
+        var start_angle = (angle+90)*(Math.PI/180)
+        var end_angle = (270-angle)*(Math.PI/180)
+
+
+        var arc = new fabric.Circle({
+            radius: canvas_width / 2.39,
+            left: canvas_width * 0.085,
+            top: canvas_width* .51,
+            angle: 270,
+            startAngle: start_angle,
+            endAngle: end_angle,
+            stroke: '#000',
+            strokeWidth: line_width,
+            fill: '',
+            hasControls: false,
+            selectable: false,
+            hasBorders: false,
+            evented: false,
+            perPixelTargetFind: true,
+            objectCaching: false,
+        });
+
+        var corner_three_left = new fabric.Rect({
+          left: canvas_width * 0.089,
+          top: -1,
+          stroke: 'black',
+          strokeWidth: line_width,
+          fill: 'transparent',
+          height: canvas_width * .1456,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+        var corner_three_right = new fabric.Rect({
+          left: canvas_width  *.9181,
+          top: -1,
+          stroke: 'black',
+          strokeWidth: line_width,
+          fill: 'transparent',
+          height: canvas_width * .1456,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+        var paint = new fabric.Rect({
+          left: canvas_width / 2.6,
+          top: line_width * -1,
+          stroke: 'black',
+          strokeWidth: line_width,
+          fill: 'transparent',
+          width: canvas_width / 4.17,
+          height: canvas_width / 2.63 + line_width,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+        var key_circle =  new fabric.Circle({
+            radius: canvas_width / 8.33, 
+            fill: 'transparent', 
+            stroke: 'black',
+            strokeWidth: line_width,
+            left: canvas_width / 2.6, 
+            top: canvas_width / 3.8,
+            hasControls: false,
+            selectable: false,
+            hasBorders: false,
+            evented: false,
+            perPixelTargetFind: true,
+            objectCaching: false,
+        });
+
+        var backboard = new fabric.Rect({
+          left: canvas_width / 2.242,
+          top: canvas_width/17,
+          fill: 'black',
+          width: canvas_width / 8.33,
+          height: line_width,
+          hasControls: false,
+          selectable: false,
+          hasBorders: false,
+          evented: false,
+          perPixelTargetFind: true,
+          objectCaching: false,
+        });
+
+        canvas.add(backboard)
+        canvas.add(corner_three_left);
+        canvas.add(paint);
+        canvas.add(corner_three_right);
+        canvas.add(arc);
+        canvas.add(key_circle);
+
+
+        return {"canvas":canvas, "canvas_height" : canvas_height, "canvas_width": canvas_width}
+    }
+
+
+    /**********************************************************************/
+    /****************************** NEW COURT******************************/
+    /**********************************************************************/
+    
+
+    
+    function set_gm_court_dimensions(canvas, canvas_height, canvas_width){
+      canvas.setDimensions({width: canvas_width, height: canvas_height});
+    }
+
+
+

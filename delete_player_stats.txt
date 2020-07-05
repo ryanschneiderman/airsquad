@@ -1,17 +1,22 @@
-delete from advanced_stats A using members B where B.id = A.member_id AND B.team_id = 12;
-delete from season_advanced_stats A using members B where B.id = A.member_id AND B.team_id = 12;
-delete from season_stats A using members B where B.id = A.member_id AND B.team_id = 12;
-delete from stat_granules A using members B where B.id = A.member_id AND B.team_id = 12;
-delete from stats A using members B where B.id = A.member_id AND B.team_id = 12;
+delete from advanced_stats A using members B where B.id = A.member_id AND B.team_id =1;
+delete from season_advanced_stats A using members B where B.id = A.member_id AND B.team_id =1;
+delete from season_stats A using members B where B.id = A.member_id AND B.team_id =1;
+delete from stat_granules A using members B where B.id = A.member_id AND B.team_id =1;
+delete from stats A using members B where B.id = A.member_id AND B.team_id =1;
 
-delete from lineup_stats A using lineups B where B.id = A.lineup_id and B.team_id = 12;
-delete from lineup_game_stats A using lineups B where B.id = A.lineup_id and B.team_id = 12;
-delete from lineup_game_advanced_stats A using lineups B where B.id = A.lineup_id and B.team_id = 12;
-delete from lineup_adv_stats A using lineups B where B.id = A.lineup_id and B.team_id = 12;
+delete from lineup_stats A using lineups B where B.id = A.lineup_id and B.team_id =1;
+delete from lineup_game_stats A using lineups B where B.id = A.lineup_id and B.team_id =1;
+delete from lineup_game_advanced_stats A using lineups B where B.id = A.lineup_id and B.team_id =1;
+delete from lineup_adv_stats A using lineups B where B.id = A.lineup_id and B.team_id =1;
 
-update members set season_minutes = 0 where team_id = 12;
-update members set games_played = 0 where team_id = 12;
+delete from season_team_adv_stats * where team_id =1;
+delete from stat_totals * where team_id =1;
+delete from team_season_stats * where team_id =1;
+delete from team_advanced_stats A using games B where B.id = A.game_id AND B.team_id =1;
 
-delete from lineups * where team_id = 12;
+update members set season_minutes = 0 where team_id =1;
+update members set games_played = 0 where team_id =1;
 
-update games set played = false where team_id = 12;
+delete from lineups * where team_id =1;
+
+update games set played = false where team_id =1;

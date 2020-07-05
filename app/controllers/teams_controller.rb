@@ -7,55 +7,41 @@ class TeamsController < ApplicationController
 
 		##InsertStatDescriptionsService.new().call()
 		#Stats::FixFtRateService.new(team_id: params[:id]).call
-		@curr_member =  Assignment.joins(:role).joins(:member).select("roles.name as role_name, roles.id as role_id, members.*").where("members.user_id" => current_user.id, "members.team_id" => params[:id]).take
-		@non_user_members = nil
-		@joined_team = params[:joined_team]
-		param_team = Team.find_by_id(params[:id])
-		user_members = Member.where(user_id: current_user.id) ## gets all members
-		if params[:joined_team]
-			@non_user_players = Assignment.joins(:role).joins(:member).select("roles.name as name, members.*").where("members.team_id" => params[:id], "members.user_id" => nil, "roles.id" => 1)
-			@non_user_coaches = Assignment.joins(:role).joins(:member).select("roles.name as name, members.*").where("members.team_id" => params[:id], "members.user_id" => nil, "roles.id" => 2)
-			@team = param_team
+		team = Team.find_by_id(params[:id])
+		if(team.nil?)
+			redirect_to root_path
 		else
-			user_teams = []
-			user_members.each do |member|
-				user_teams.push(Team.find(member.team_id))  ## accumulates teams belonging to user
-			end
-			user_teams.each do |userteam|
-				@team = param_team if param_team == userteam
-			end
-		end
-		@date = Date.today
-		@day_of_week = day_of_week(@date.wday)
-		@month_string = month_string(@date.month).upcase
-		@day_number = @date.day
-		@year = @date.year
-		@is_game = false
-		@is_practice = false
-		@team_id = params[:id]
+			@curr_member =  Assignment.joins(:role).joins(:member).select("roles.name as role_name, roles.id as role_id, members.*").where("members.user_id" => current_user.id, "members.team_id" => params[:id]).take
+			
+			@non_user_members = nil
 
-		@schedule_event = ScheduleEvent.where(date: @date).take
-		if @schedule_event
-			@schedule_event_place = @schedule_event.place
-			@schedule_event_time = @schedule_event.time
-			@schedule_time_parsed = convert_time_readable(@schedule_event_time)
-			@game = Game.where(schedule_event_id: @schedule_event.id).take
-			if @game 
-				@opponent = Opponent.find_by_id(@game.opponent_id)
-				@opponent_name = @opponent.name
-				@is_game = true
-			end
-			@practice = Practice.where(schedule_event_id: @schedule_event.id)
-			@is_practice = true
-		else
-			puts "no event"
-		end
+			@date = Date.today
+			@day_of_week = day_of_week(@date.wday)
+			@month_string = month_string(@date.month).upcase
+			@day_number = @date.day
+			@year = @date.year
+			@is_game = false
+			@is_practice = false
 
-		@current_member = user_members.select{|member| member.team_id == @team.id}.first
-		
-		if @team.nil?
-			redirect_to root_path 
-		else
+			@team_id = params[:id]
+
+			@schedule_event = ScheduleEvent.where(date: @date).take
+			if @schedule_event
+				@schedule_event_place = @schedule_event.place
+				@schedule_event_time = @schedule_event.time
+				@schedule_time_parsed = convert_time_readable(@schedule_event_time)
+				@game = Game.where(schedule_event_id: @schedule_event.id).take
+				if @game 
+					@opponent = Opponent.find_by_id(@game.opponent_id)
+					@opponent_name = @opponent.name
+					@is_game = true
+				end
+				@practice = Practice.where(schedule_event_id: @schedule_event.id)
+				@is_practice = true
+			else
+				puts "no event"
+			end
+			
 			@post_objs = []
 			@posts = Role.joins(members: [:posts, :assignments]).select("members.*,  posts.id as post_id, posts.created_at as post_created_at, posts.content as content, roles.id as role_id, roles.name as role_name").where("members.team_id" => params[:id], "roles.id" => [1,2]).uniq { |item| item.post_id }.sort_by{|post| post.post_id}
 			
@@ -63,17 +49,19 @@ class TeamsController < ApplicationController
 				comments = Role.joins(members: [:comments, :assignments]).select("members.*, comments.id as comment_id, comments.post_id as post_id, comments.created_at as comment_created_at, comments.content as content, roles.id as role_id, roles.name as role_name").where("comments.post_id" => post.post_id, "roles.id" => [1,2]).uniq { |item| item.comment_id }.sort_by{|comment|  comment.comment_created_at}
 				@post_objs.push({post: post, comments: comments})
 			end
-			@post_objs = @post_objs.reverse
-		end			
+			@post_objs = @post_objs.reverse	
+		end
 	end
 
 	def new
 		@team = Team.new
 		@new_member = Member.new
 
+
 		@team_stat = TeamStat.new()
 		## stats that user has to collect in order for the app to perform its basic functions
 		@default_collectable = StatList.where(default_stat: true, collectable: true)
+		gon.default_collectable = @default_collectable
 
 		## stats the user may collect but arent required
 		@non_default_collectable = StatList.where(default_stat: false, collectable: true)
@@ -82,77 +70,74 @@ class TeamsController < ApplicationController
 
 		## basic stats that the application automatically collects based on the default stats
 		@default_application_basic = StatList.where(default_stat: true, collectable: false, advanced: false)
+		gon.default_application_basic = @default_application_basic
 
 		##advanced stats the application automatically collects based on the default stats
 		@default_indiv_advanced = StatList.where(default_stat: true, advanced: true)
+		gon.default_indiv_advanced = @default_indiv_advanced
 
 		## should be nil
 		@default_team_advanced = StatList.where(default_stat: true, advanced: true, team_stat: true)
 
 		## advanced stats the application may collect depending on non default stats collected
-		@non_default_indiv_advanced = StatList.where(advanced: true, team_stat: false, default_stat: false)
+		@non_default_indiv_advanced = StatList.where(advanced: true, team_stat: false, default_stat: false, hidden: false)
 
 		## advanced stats the application may collect depending on non default stats collected
 		@non_default_team_advanced = StatList.where(advanced: true, team_stat: true, default_stat: false)
 
 		@advanced_stats = AdvStatDependenciesService.new({adv_stats: @non_default_indiv_advanced}).call
+		gon.advanced_stats = @advanced_stats
 
 		@team_advanced_stats = TeamAdvStatDependenciesService.new({adv_stats: @non_default_team_advanced}).call
+		gon.team_advanced_stats = @team_advanced_stats
 
 		## advanced team stats the application may collect depending on non default stats collected
 		@team_advanced = StatList.where(advanced: true, team_stat: true)
 	end
 
 	def create
-		@team = Team.create({
+		team = Team.create({
 			name: params[:team_name],
-			username: params[:username],
-			password: params[:password],
-			minutes_p_q: params[:minutes_p_q],
+			num_periods: params[:period_type],
+			period_length: params[:period_length],
+			sport_id: 1,
+			primary_color: params[:primary_color],
+			secondary_color: params[:secondary_color],
 		})
-		members = params[:players]
 
-		members.each do |new_member|
-			member = Member.create({
-				nickname: new_member,
-				team_id: @team.id,
-				season_minutes: 0,
-				games_played: 0,
-			})
-			Assignment.create({
-				member_id: member.id,
-				role_id: 1
-			})
-		end
-		## is_player = params[:isPlayer]
-		@coach = Member.create({
-			nickname: current_user.name,
-			team_id: @team.id,
+
+		season = Season.create({
+			team_id: team.id,
+			year1: Date.current.year
+		})
+
+		Teams::CreateTeamMembersService.new({
+			members: params[:members],
+			team_id: team.id,
+			season_id: season.id
+		}).call
+
+
+		admin = Member.create({
+			nickname: "Coach " + current_user.first_name,
+			team_id: team.id,
 			user_id: current_user.id,
+			permissions: {"plays_view" => true, "plays_edit" => true, "schedule_view" => true, "schedule_edit" => true, "stats_view" => true, "stats_edit" => true, "settings_view" => true, "settings_edit" => true },
+			is_admin: true,
+			season_id: season.id
 		})
 
-		## Coach
 		Assignment.create({
-			member_id: @coach.id,
+			member_id: admin.id,
 			role_id: 2
 		})
-		## Team owner
-		Assignment.create({
-			member_id: @coach.id,
-			role_id: 4
-		})
 
-		@team_stats = params[:team_stats]
-		@team_stats.each do |stat_id|
-			@team_stat = TeamStat.new(
-				stat_list_id: stat_id,
-				team_id: @team.id,
-				show: true,
-			)
-			@team_stat.save
-		end
+		Teams::TeamStatService.new({
+			team_stats: params[:team_stats],
+			team_id: team.id
+		}).call
 
-		redirect_to team_path(@team.id)
+		redirect_to team_path(team.id)
 	end	
 
 	def join

@@ -1,6 +1,6 @@
 class Member < ApplicationRecord
 	belongs_to :user, optional: true
-	has_many :teams
+	belongs_to :team
 	has_many :stats
 	has_many :stat_granules
 	has_many :practice_stats
@@ -14,4 +14,5 @@ class Member < ApplicationRecord
 	has_many :notifications, through: :member_notifs
 	has_many :comments
 	has_many :play_views
+	belongs_to :season
 end

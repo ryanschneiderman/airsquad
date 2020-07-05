@@ -23,11 +23,11 @@ a:hover{
 #schedule-info{
 	display: grid;
     grid-template-columns: 2fr 3fr;
-    color: #dafff8;
+    color: white;
     border-radius: 10px;
     text-align: left;
-    box-shadow: 0px 0px 8px #57d5bd;
-    border: 1px solid #57d5bd;
+    box-shadow: 0px 0px 8px #d57857;
+    border: 1px solid #d57857;
     margin-top: 10px;
     margin-bottom: 25px;
 }
@@ -195,9 +195,9 @@ a:hover{
 
 .new-post-wrapper{
 	margin-bottom: 10px;
-	border: 1px solid #bbb9b9;
+	border: 1px solid #e8e8e8;
     border-radius: 10px;
-    box-shadow: 0px 0px 8px #bbb9b9;
+    box-shadow: 0px 0px 8px #e8e8e8;
     padding: 15px;
 }
 
@@ -318,7 +318,7 @@ a:hover{
 }
 
 #content-grid{
-	background: #040b27;
+	background: #171717;
 	display: grid;
 	grid-template-columns: 1.5fr 1fr 1fr;
 	padding-bottom: 5px;

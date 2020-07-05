@@ -14,11 +14,34 @@ function receiveAJAXData(event, data){
 	$("#sign-up-overlay").hide()
  	$("#sign-up-modal").hide()
 	if(event.detail[0].success){
-		insertUserInHeader()
+		insertUserInHeader();
+		loggedInHeaderButtons();
+		createJoinTeamModal()
 	}
 }
 
+function closeCreateJoinModal(){
+	$("#create-join-team-overlay").hide()
+	$("#create-join-team-modal").hide()
+}
+
+function createJoinTeamModal(){
+	$("#create-join-team-overlay").show()
+	$("#create-join-team-modal").show()
+}
+
+
+
 function insertUserInHeader(){
+	$(".player-dropdown-text").text($("#user_first_name").val())
+	$(".player-dropdown").show()
+}
+
+function loggedInHeaderButtons(){
+	$(".button_logged_out").hide()
+	$(".button_logged_in").show()
+	$(".button_logged_out button").addClass("header-button-deactivated")
+	$(".button_logged_in button").removeClass("header-button-deactivated")
 
 }
 

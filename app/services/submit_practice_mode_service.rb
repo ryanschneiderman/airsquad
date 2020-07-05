@@ -9,6 +9,7 @@ class SubmitPracticeModeService
 
 	def initialize(params)
 		@player_stats = params[:player_stats]
+		@season_id = params[:season_id]
 		@team_id = params[:team_id]
 		@game_id = params[:game_id]
 		@team_stats = params[:team_stats]
@@ -40,7 +41,8 @@ class SubmitPracticeModeService
 				stat_list_id: stat[1]["id"],
 				practice_id: @practice_id,
 				team_id: @team_id,
-				is_opponent: false
+				is_opponent: false,
+				season_id: @season_id
 			)
 			puts stat_total.errors.full_messages
 
@@ -54,7 +56,8 @@ class SubmitPracticeModeService
 				stat_list_id: stat[1]["id"],
 				practice_id: @practice_id,
 				team_id: @team_id,
-				is_opponent: true
+				is_opponent: true,
+				season_id: @season_id
 			)
 			puts stat_total.errors.full_messages
 		end
@@ -76,6 +79,7 @@ class SubmitPracticeModeService
 						member_id: player_id.to_i,
 						practice_id: @practice_id,
 						stat_list_id: stat_list_id.to_i,
+						season_id: @season_id
 					})
 					puts stat_gran.errors.full_messages
 				end
@@ -92,6 +96,7 @@ class SubmitPracticeModeService
 						practice_id: @practice_id,
 						stat_list_id: stat_id,
 						member_id: player_id,
+						season_id: @season_id
 					})
 
 				end

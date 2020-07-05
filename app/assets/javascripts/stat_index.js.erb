@@ -15,7 +15,6 @@
 /*-------------------------------------------------------------------------*/
 
 $(document).on('turbolinks:load ', function(){
-	alignStatIndexDOM()
 	$( window ).on( "load", function() {
 		console.log("window loaded")
 	    
@@ -31,41 +30,10 @@ $(document).on('turbolinks:load ', function(){
     }
 
     if($("body").hasClass("stats")){
-		populate_display_stats_basic();
-		populate_display_stats_adv();
-		populate_opponent_stats();
-		populate_team_display_stats_adv()
-		populate_team_advanced_stats();
-		populate_stat_array();
-		populate_team_stats();
-
-		init_stat_tables()
-
-		initCalibration()
-    	init_shot_charts(court_width)
-
-    	init_trend_display_stats()
-
-    	insert_trends_order_links()
-		initialize_trends_chart()
-		initialize_stat_array()
-		establish_hover_rules()
-		populate_basic_stat_table_columns()
-		insert_lineup_modules()
-		insert_lineup_order_links()
-		sort_lineups("#stat-link-16", 16, false)
-		teamStatsPercentageCircles(gon.team_stats, gon.team_advanced_stats)
-		insertBasicTeamPercentageCircles(gon.team_stats)
-		populate_team_stat_tables(true);
-		init_stats_page()
-	    testScrollTo()
-	    getPlayerCourtWidth()
-	    //observeStickyHeaderChanges(document.querySelector('#team-stats-wrapper'));
-	    align_sticky_elements()
-		$(document).scroll(function(){
-		    testScrollTo()
-		    testTeamStickyOff()
-		});
+    	stats_index_init()
+	}
+	else if ($("body").hasClass("games") && $("body").hasClass("show")){
+		game_review_init()
 	}
 
 	document.addEventListener('sticky-change', e => {
@@ -77,6 +45,73 @@ $(document).on('turbolinks:load ', function(){
 	});
 });
 
+function game_review_init(){
+	alignStatIndexDOM()
+	populate_display_stats_basic(gon.stat_table_columns);
+	populate_display_stats_adv(gon.adv_stat_table_columns);
+	populate_opponent_stats(gon.opponent_stats);
+	populate_team_display_stats_adv(gon.team_adv_stat_table_columns)
+	populate_team_advanced_stats(gon.team_advanced_stats);
+	populate_stat_array(gon.player_stats, gon.advanced_stats);
+	populate_team_stats(gon.team_stats);
+
+	init_stat_tables()
+
+	initCalibration()
+	init_shot_charts(court_width, gon.shot_chart_data, gon.team_name)
+	teamStatsPercentageCircles(gon.team_stats, gon.team_advanced_stats)
+	insertBasicTeamPercentageCircles(gon.team_stats)
+	populate_team_stat_tables(true);
+	init_game_review_page()
+	testScrollTo()
+	$(document).scroll(function(){
+	    testScrollTo()
+	});
+}
+
+function stats_index_init(){
+	alignStatIndexDOM()
+	populate_display_stats_basic(gon.stat_table_columns);
+	populate_display_stats_adv(gon.adv_stat_table_columns);
+	populate_opponent_stats(gon.opponent_stats);
+	populate_team_display_stats_adv(gon.team_adv_stat_table_columns)
+	populate_team_advanced_stats(gon.team_advanced_stats);
+	populate_stat_array(gon.player_stats, gon.advanced_stats);
+	populate_team_stats(gon.team_stats);
+
+	init_stat_tables()
+
+	populate_team_stat_tables(true);
+
+	initCalibration()
+	init_shot_charts(court_width, gon.shot_chart_data, gon.team_name)
+
+	init_trend_display_stats()
+
+	insert_trends_order_links()
+	initialize_trends_chart()
+
+	initialize_lineup_stat_array()
+
+	insert_lineup_modules()
+	insert_lineup_order_links()
+	sort_lineups("#stat-link-16", 16, false)
+	teamStatsPercentageCircles(gon.team_stats, gon.team_advanced_stats)
+	insertBasicTeamPercentageCircles(gon.team_stats)
+	
+
+	init_stats_page()
+
+	//TODO: CHECK
+    testScrollTo()
+    //TODO: CHECK
+    getPlayerCourtWidth()
+
+	$(document).scroll(function(){
+	    testScrollTo()
+	});
+}
+
 function getPlayerCourtWidth(){
 	var x = window.matchMedia("(max-device-width : 1024px) and (max-device-width : 1024px) and (orientation : portrait)")
 	if (x.matches){
@@ -85,53 +120,21 @@ function getPlayerCourtWidth(){
 	else return $(window).width()*.4
 }
 
-function observeStickyHeaderChanges(container) {
-  observeHeaders(container);
-  observeFooters(container);
+function init_stat_tables(){
+	sort_basic_table(18, true);
+	populate_stat_tables(true, false, true);
+
+	$("#per-minute-table").hide();
+	$("#adv-player-stats-table").hide()
 }
+
+
 
 /**
  * Sets up an intersection observer to notify when elements with the class
  * `.sticky_sentinel--top` become visible/invisible at the top of the container.
  * @param {!Element} container
  */
-function observeHeaders(container) {
-  const observer = new IntersectionObserver((records, observer) => {
-    for (const record of records) {
-      const targetInfo = record.boundingClientRect;
-      const stickyTarget = record.target.parentElement.querySelector('.sticky');
-      const rootBoundsInfo = record.rootBounds;
-
-      // Started sticking.
-      if (targetInfo.bottom < rootBoundsInfo.top) {
-        fireEvent(true, stickyTarget);
-      }
-
-      // Stopped sticking.
-      if (targetInfo.bottom >= rootBoundsInfo.top &&
-          targetInfo.bottom < rootBoundsInfo.bottom) {
-       fireEvent(false, stickyTarget);
-      }
-    }
-  }, {threshold: [0], root: container});
-
-  // Add the top sentinels to each section and attach an observer.
-  const sentinels = addSentinels(container, 'sticky_sentinel-top');
-  sentinels.forEach(el => observer.observe(el));
-}
-
-function addSentinels(container, className) {
-  return Array.from(container.querySelectorAll('.sticky')).map(el => {
-    const sentinel = document.createElement('div');
-    sentinel.classList.add('sticky_sentinel', className);
-    return el.parentElement.appendChild(sentinel);
-  });
-}
-
-function fireEvent(stuck, target) {
-  const e = new CustomEvent('sticky-change', {detail: {stuck, target}});
-  document.dispatchEvent(e);
-}
 
 /**
  * Sets up an intersection observer to notify when elements with the class
@@ -139,36 +142,9 @@ function fireEvent(stuck, target) {
  * container.
  * @param {!Element} container
  */
-function observeFooters(container) {
-  const observer = new IntersectionObserver((records, observer) => {
-    for (const record of records) {
-      const targetInfo = record.boundingClientRect;
-      const stickyTarget = record.target.parentElement.querySelector('.sticky');
-      const rootBoundsInfo = record.rootBounds;
-      const ratio = record.intersectionRatio;
 
-      // Started sticking.
-      if (targetInfo.bottom > rootBoundsInfo.top && ratio === 1) {
-        fireEvent(true, stickyTarget);
-      }
 
-      // Stopped sticking.
-      if (targetInfo.top < rootBoundsInfo.top &&
-          targetInfo.bottom < rootBoundsInfo.bottom) {
-        fireEvent(false, stickyTarget);
-      }
-    }
-  }, {threshold: [1], root: container});
 
-  // Add the bottom sentinels to each section and attach an observer.
-  const sentinels = addSentinels(container, 'sticky_sentinel-bottom');
-  sentinels.forEach(el => observer.observe(el));
-}
-
-function testTeamStickyOff(){
-	//var st = $(this).scrollTop();
-	//console.log(st)
-}
 
 function testScrollTo(){
 	var st = $(this).scrollTop();
@@ -222,6 +198,7 @@ function alignStatIndexDOM(){
 	$(".stats-index-content-wrapper").css("padding-left", $("#stats-index-sidebar").width())
 }
 
+
 function reset_player_profile_page(){
 	$(".player-percentage-circle").empty()
 	$(".player-game-log-body").empty()
@@ -243,6 +220,14 @@ function reset_stats_page_content(){
 	$(".sidebar-link-text").removeClass("underline")
 }
 
+function init_game_review_page(){
+	$("#team-stats-index").removeClass("stats-index-deactivated");
+	$("#stat-tables-index").removeClass("stats-index-deactivated")
+	setStatTableButtons()
+	$("#shot-charts-index").removeClass("stats-index-deactivated")
+	setShotChartButtons()
+	$("#shot-charts-wrapper").css("top",$("#shot-chart-index-header").offset().top + $("#shot-chart-index-header").outerHeight()+10)
+}
 
 function init_stats_page(){
 	// reset_stats_page_content()
@@ -258,7 +243,6 @@ function init_stats_page(){
 	$("#lineup-explorer-index").removeClass("stats-index-deactivated")
 	d3.selectAll(".legend").call(wrap, 60)
 	setLineupExplorerButtons()
-
 }
 
 

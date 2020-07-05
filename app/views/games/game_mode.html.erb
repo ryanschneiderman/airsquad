@@ -119,266 +119,128 @@
 	</div>	
 </div>
 
-
-
-<div class = "modal-overlay"></div>
-<div class = "GM-modal modal-overlay">
-	<div id = "GM-initializer" style = "display: none;" class = "modal-container">
-		<div id = "GM-init-wrapper" class = "GM-modal-wrapper">
-			<div id = "GM-init-header" class = "GM-modal-header">Welcome to Game Mode!</div>
-			<div id = "GM-init-body" class = "GM-modal-body">
-				
-				<div id = "personel-selection-wrapper">
-					<div id = "personel-selection-header" class = "GM-modal-content">Select Inactives</div>
-					<div id = "personel-selection-body">
-
-					</div>
-				</div>
-			</div>
-			<div id = "GM-init-footer" class = "GM-init">Next</div>
-		</div>
-	</div>
-	<div id = "GM-submit" class = "modal-container">
-		<div id = "GM-submit-wrapper" class = "GM-modal-wrapper">
-			<div id = "GM-submit-header" class = "GM-modal-header"> Are you sure you want to submit? </div>
-			<div id = "GM-submit-body" class = "GM-modal-body">
-				<div id = "confirm-message" class = "GM-modal-content"> Once you submit, all data from this game will be final.</div>
-				<div id = "confirm-buttons">
-					<button id = "dont-submit" class = "confirm-buttons" onclick = "close_game_mode()">I'm not finished</button>
-					<button id = "confirm-submit" class = "confirm-buttons" onclick = "submit_game_mode()">Yes, Submit</button>
-				</div>
-			</div>
-			<div id = "loader-container"><span class="loader" style = "display:none;"><span class="loader-inner"></span></span></div>
-		</div>
-	</div>
-	<div id = "GM-load" style = "display: none;"class = "modal-container">
-		<div id = "GM-submit-wrapper" class = "GM-modal-wrapper">
-			<div id = "GM-submit-header" class = "GM-modal-header"> It appears you already have some data for this game, would you like to load this data? </div>
-			<div id = "GM-submit-body" class = "GM-modal-body">
-				<div id = "confirm-buttons">
-					<button id = "confirm-submit" class = "confirm-buttons" onclick = "load_game()">Yes, load</button>
-					<button id = "dont-submit" class = "confirm-buttons" onclick = "pre_game_mode()">No, start from scratch</button>
-					
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
+<%=render 'games/game_mode/game_mode_modals'%>
 
 <%= content_tag :div, class: "game-mode-id", data: {game_id: @game_id} do %>
 <% end %>
 
 
 <%= render 'game_mode_channel_js' %>
-<%= render 'canvas_js' %>
-<%= render 'game_mode_js' %>
-<%= render 'game_mode_js_objects' %>
 
 <script>
+	var fg_index = 1;
+	var two_pt_fg_index = 3;
+	var three_pt_fg_index = 3;
+	var ft_index = 5;
+	var ft_pct_index = 6;
+	var game_mode_state;
+
+
+	var curr_player = null; 
+	var curr_player_button = null;
+	var curr_stat = null;
+	var curr_stat_button = null;
+	var curr_player_is_opponent = false;
+	var on_game_page = false;
+
+	var player_stats_table = document.getElementById("player-stats-table");
+	var team_stats_table = document.getElementById("team-stats-table");
+	var first_half_table = document.getElementById("half-1-table");
+	var second_half_table = document.getElementById("half-2-table");
+	var first_quarter_table = document.getElementById("quarter-1-table");
+	var second_quarter_table = document.getElementById("quarter-2-table");
+	var third_quarter_table = document.getElementById("quarter-3-table");
+	var fourth_quarter_table = document.getElementById("quarter-4-table");
+
+	var game_log = document.getElementById("gm-log");
+	var make_radius = 7;
+
+	var make_selected = false
+	var miss_selected = false;
+	var horiz_offset;
+	var vert_offset;
+
+	var submitted = false;
+// TODO - set in initializer
+	var arc_vert_radius;
+	var arc_horiz_radius; 
+
+	var canvas;
+	var gm_canvas_width;
+	var gm_canvas_height;
+	var minutes;
+	var seconds;
+
+	var basket_x;
+	var basket_y;
+
+	// TODO - set in initializer
+	var basket_radius; 
+
+	var player_is_selected = false;
+
+	var stat_array = [];
+	var stat_array_counter = 0;
+	var display_stats = [];
+
+	var all_stat_granules = [];
+
+	var all_players = [];
+	var active_players = [];
+
+	var players_in_game = 0;
+
+	var curr_lineup;
+	var lineups_arr = [];
+
+
+	var home_score = 0;
+	var opponent_score = 0;
+
+	var opponent_obj;
+
+	var team_stat_totals = [];
+
+	var quarter_1_totals = [];
+	var quarter_2_totals = [];
+	var quarter_3_totals = [];
+	var quarter_4_totals = [];
+
+	var half_1_totals = [];
+	var half_2_totals = [];
+
+
+	var player_charts_toggle = false;
+
+	var periods = 4;
+	var curr_period = 1;
+
+	var minutes_per_period = <%=@per_minutes%>;
+
+
+	var minutes_index;
+	var points_index;
+
+	var total_minutes = 0;
+
+	var select_inactives_html = "";
+
+	var scoreboard_clock = new ScoreboardClock();
+
+	var game_mode_initialized = false;
+
+	var collectable_stats = [];
 	var canvas_vars;
 	var curr_aspect_ratio = 0;
 	var update_canvas = false;
-	
-	var scoreboard_height = $("#scoreboard-wrapper").outerHeight()
-	
-	$("#top-grid").css("min-height", $(window).height() - scoreboard_height);
-	var height_log_tables = $(window).height() - scoreboard_height - 60;
+	var height_log_tables;
+	var scoreboard_height;
 
-	var max_w = window.matchMedia("(max-device-width : 1024px) ");
-	var min_w = window.matchMedia("(min-device-width : 768px)");
-	var orientation = window.matchMedia("(orientation: portrait)");
-	var portrait = false;
-	if(window.innerHeight > window.innerWidth){
-    	portrait = true;
-	}
-	myFunction(max_w, min_w, portrait) // Call listener function at run time
-	//x.addListener(myFunction) // Attach listener function on state changes
-	layout()
-	$(".navbar").hide()
-	
-	initialize_globals(canvas_vars.canvas, canvas_vars.canvas_width, canvas_vars.canvas_height)
-	var game_state = JSON.parse(<%= @game_state.to_json.html_safe%>)
-	if ('<%= raw @game_state%>' != ''){
-		prompt_load_game_state()
-	}
-	else{
-		$("#GM-initializer").show();
-		$(".modal-overlay").css("display", "block");
-		$(".GM-modal").css("display", "flex");
-		populate_players();
-		populate_inactive_selection(false);
-	}
-
-	plotBasket(canvas_vars.canvas_width/1.978, canvas_vars.canvas_width/16.43, 14, canvas_vars.canvas_width, canvas_vars.canvas);
-
-	$( window ).on("load", function() {
-		var gm_middle_width = $("#gm-middle").width();
+	var game_state;
 
 
-	$("#gm-toggle-buttons").width(gm_middle_width)
-
-	var gm_toggle_buttons_height = $("#gm-toggle-buttons").height()
-
-	$("#gm-log-wrapper").height(height_log_tables)
-
-	$("#gm-stat-tables").height(height_log_tables)
-
-	$("#gm-middle").css("min-height", $(window).height() - scoreboard_height)
-         
-	});
 	
 
-	canvas_vars.canvas.on('object:moving', function (e) {
-		var obj = e.target
-        var type = obj.get('type');
-        var point = canvas_vars.canvas.getPointer(e);
-        if(type == "MakeSymbol"){
-        	move_make(obj, point)
-        }
-        else if (type == "MissSymbol"){
-         move_miss(obj, point);
-        }
-    });
-
-    $(".show-canvas").on("click", function(e) {
-		if(make_selected && curr_player != null){
-			if(total_minutes > 0){
-				un_grey_out_stats()
-				make(e);
-			}
-			else{
-				alert("Make sure you start the clock!")
-			}
-			
-		}
-		else if (miss_selected && curr_player != null){
-			if (total_minutes > 0){
-				un_grey_out_stats()
-				miss(e);
-			}
-			else{
-				alert("Make sure you start the clock!")
-			}
-		}
-	}); 	
-
-    $(window).resize(function(){
-    	$("#top-grid").css("min-height", $(window).height() - scoreboard_height);
-    	$("#gm-middle").css("min-height", $(window).height() - scoreboard_height);
-    	$("#gm-log-wrapper").height(height_log_tables);
-		$("#gm-stat-tables").height(height_log_tables);
-        canvas_vars.canvas.getObjects().forEach(function(o){
-        	switch(o.type){
-        		case "MakeSymbol" :
-	        		old_canvas_width = o.canvas_width;
-	        		change_ratio = old_canvas_width/canvas_vars.canvas.width;
-
-	        		o.set({left: o.left/ change_ratio, top: o.top / change_ratio, canvas_width: canvas_vars.canvas.width});
-	        		o.setCoords();
-	        		canvas.calcOffset();
-	  				canvas.renderAll();
-        		break;
-        		case "Basket" :
-        			old_canvas_width = o.canvas_width;
-	        		change_ratio = old_canvas_width/canvas_vars.canvas.width;
-	        		basket_radius = o.radius /change_ratio
-
-	        		o.set({left: o.left/ change_ratio, top: o.top / change_ratio, canvas_width: canvas_vars.canvas.width, radius: basket_radius});
-	        		o.setCoords();
-	        		canvas.calcOffset();
-	  				canvas.renderAll();
-	  			break;
-        		case "MissSymbol" :
-        			old_canvas_width = o.canvas_width;
-	        		change_ratio = old_canvas_width/canvas_vars.canvas.width;
-	        		o.set({x1: o.x1 / change_ratio, y1: o.y1 / change_ratio, x2: o.x2 / change_ratio, y2: o.y2 / change_ratio, canvas_width: canvas_vars.canvas.width});
-	        		o.setCoords();
-	        		canvas.calcOffset();
-	        		canvas.renderAll();
-        		break
-        	}
-    	})
-    });
-
-
-    function pre_game_mode(){
-
-    	$("#GM-load").hide();
-    	$("#GM-initializer").show();
-    	$(".modal-overlay").css("display", "block");
-		$(".GM-modal").css("display", "flex");
-		
-		populate_players();
-		populate_inactive_selection(false);
-    }
-
-    function prompt_load_game_state(){
-    	$("#GM-load").show();
-    }
-
-    function load_game(){
-    	$("#GM-load").hide();
-    	load_game_state(game_state)
-		start_game_mode(true)
-    }
-
-    function myFunction(max_w, min_w, portrait) {
-	  if (max_w.matches && min_w.matches && portrait) { // If media query matches
-	    canvas_vars = initialize_canvas(0.6, 0.635, 'c', 3)
-	  } else {
-	   canvas_vars = initialize_canvas(0.6, 0.635, 'c', 3)
-	  }
-	}
-
-	function layout(){
-		var screen_height = window.innerHeight
-		var screen_width = window.innerWidth
-		var aspect_ratio = screen_width/screen_height;
-		if(aspect_ratio <= 1.6 && aspect_ratio >=1){
-			var new_aspect_ratio = 1;
-			$(".in-game-players").css("grid-template-columns", "repeat(1, 12vw)")
-			if(curr_aspect_ratio!= new_aspect_ratio){
-				update_canvas = true;
-			}
-			curr_aspect_ratio = 1;
-		}
-		else if (aspect_ratio >= 1.6){
-			var new_aspect_ratio = 2;
-			$(".in-game-players").css("grid-template-columns", "repeat(2, 8vw)")
-			if(curr_aspect_ratio!= new_aspect_ratio){
-				update_canvas = true;
-			}
-			curr_aspect_ratio = 2;
-
-		}
-		else if (aspect_ratio < 1){
-			var new_aspect_ratio = 3;
-			$(".in-game-players").css("grid-template-columns", "repeat(2, 12vw)")
-			if(curr_aspect_ratio!= new_aspect_ratio){
-				update_canvas = true;
-			}
-			curr_aspect_ratio = 3;
-		}
-	}
-
-    function to_shot_chart(){
-    	$("#canvas-wrapper").show()
-    	$("#gm-stat-tables").hide()
-    	$("#gm-log-wrapper").hide()
-    }
-
-    function to_stat_tables(){
-    	$("#canvas-wrapper").hide()
-    	$("#gm-stat-tables").show()
-    	$("#gm-log-wrapper").hide()
-    }
-
-    function to_log(){
-    	$("#gm-stat-tables").hide()
-		$("#canvas-wrapper").hide()
-		$("#gm-log-wrapper").show()
-		updateScroll()
-    }
 
 	
 </script>

@@ -24,6 +24,7 @@ class SubmitGameModeService
 		@bpm_sums = [0, 0]
 		@season_bpm_sums = [0, 0]
 		@all_bpms = []
+		@season_id = params[:season_id]
 	end
 
 
@@ -46,10 +47,11 @@ class SubmitGameModeService
 				stat_list_id: stat[1]["id"],
 				game_id: @game_id,
 				team_id: @team_id,
-				is_opponent: false
+				is_opponent: false,
+				season_id: @season_id
 			)
 
-			season_total = TeamSeasonStat.where(team_id: @team_id, stat_list_id: stat[1]["id"], is_opponent: false).take
+			season_total = TeamSeasonStat.where(team_id: @team_id, stat_list_id: stat[1]["id"], is_opponent: false, season_id: @season_id).take
 
 			if season_total 
 				season_total.value += stat_total.value
@@ -59,7 +61,8 @@ class SubmitGameModeService
 					value: stat_total.value,
 					stat_list_id: stat[1]["id"],
 					team_id: @team_id,
-					is_opponent: false
+					is_opponent: false,
+					season_id: @season_id
 				})
 			end
 			if stat[1]["id"] == "16"
@@ -79,7 +82,7 @@ class SubmitGameModeService
 				team_id: @team_id,
 				is_opponent: true
 			)
-			season_total = TeamSeasonStat.where(team_id: @team_id, stat_list_id: stat[1]["id"], is_opponent: true).take
+			season_total = TeamSeasonStat.where(team_id: @team_id, stat_list_id: stat[1]["id"], is_opponent: true, season_id: @season_id).take
 
 			if season_total 
 				season_total.value += stat_total.value
@@ -89,7 +92,8 @@ class SubmitGameModeService
 					value: stat_total.value,
 					stat_list_id: stat[1]["id"],
 					team_id: @team_id,
-					is_opponent: true
+					is_opponent: true,
+					season_id: @season_id
 				})
 			end			
 			instantiate_stat_variable(stat_total, true, true, false, false)
@@ -99,7 +103,7 @@ class SubmitGameModeService
 
 	def create_advanced_team_stats()
 		## create team advanced stats 
-		team_adv_stats = Advanced::TeamAdvancedStatsService.new({
+		team_adv_stats = Stats::Advanced::Team::TeamAdvancedStatsService.new({
 			team_field_goals: @team_field_goals,
 			opp_field_goals: @opp_field_goals,
 			team_field_goal_misses: @team_field_goal_misses,
@@ -123,7 +127,8 @@ class SubmitGameModeService
 			team_three_point_misses: @team_three_point_miss,
 			opp_def_reb: @opp_def_reb,
 			team_def_reb: @team_def_reb,
-			opp_three_point_makes: @opp_three_point_fg
+			opp_three_point_makes: @opp_three_point_fg,
+			season_id: @season_id
 		}).call
 
 		## TODO: Rethink this -- using this return variable seems weird. I think its okay for now. 
@@ -171,10 +176,11 @@ class SubmitGameModeService
 					stat_list_id: stat_id,
 					lineup_id: lineup_obj.id,
 					is_opponent: false,
-					game_id: @game_id
+					game_id: @game_id,
+					season_id: @season_id
 				})
 
-				season_stat = LineupStat.where(lineup_id: lineup_obj.id, stat_list_id: stat_id, is_opponent: false).take
+				season_stat = LineupStat.where(lineup_id: lineup_obj.id, stat_list_id: stat_id, is_opponent: false, season_id: @season_id).take
 
 				if season_stat 
 					season_stat.value += stat_total
@@ -190,6 +196,7 @@ class SubmitGameModeService
 							stat_list_id: stat_id,
 							lineup_id: lineup_obj.id,
 							is_opponent: false,
+							season_id: @season_id
 						})
 					else 
 						season_stat = LineupStat.create({
@@ -197,6 +204,7 @@ class SubmitGameModeService
 							stat_list_id: stat_id,
 							lineup_id: lineup_obj.id,
 							is_opponent: false,
+							season_id: @season_id
 						})
 					end
 				end
@@ -220,10 +228,11 @@ class SubmitGameModeService
 					stat_list_id: stat_id,
 					lineup_id: lineup_obj.id,
 					is_opponent: true,
-					game_id: @game_id
+					game_id: @game_id,
+					season_id: @season_id
 				})
 
-				season_stat = LineupStat.where(lineup_id: lineup_obj.id, stat_list_id: stat_id, is_opponent: true).take
+				season_stat = LineupStat.where(lineup_id: lineup_obj.id, stat_list_id: stat_id, is_opponent: true, season_id: @season_id).take
 
 				if season_stat 
 					season_stat.value += stat_total
@@ -238,21 +247,23 @@ class SubmitGameModeService
 							value: stat_total + 1,
 							stat_list_id: stat_id,
 							lineup_id: lineup_obj.id,
-							is_opponent: true
+							is_opponent: true,
+							season_id: @season_id
 						})
 					else 
 						season_stat = LineupStat.create({
 							value: stat_total,
 							stat_list_id: stat_id,
 							lineup_id: lineup_obj.id,
-							is_opponent: true
+							is_opponent: true,
+							season_id: @season_id
 						})
 					end
 				end
 				instantiate_stat_variable(season_stat, false, true, true, false)
 			end
 
-			Stats::LineupAdvancedService.new({
+			Stats::Lineups::LineupAdvancedService.new({
 				field_goal_att: @lineup_field_goals + @lineup_field_goal_misses,
 				free_throw_att: @lineup_free_throw_makes + @lineup_free_throw_misses,
 				turnovers: @lineup_turnovers,
@@ -272,10 +283,11 @@ class SubmitGameModeService
 				opp_points:  @lineup_opp_points,
 				lineup_id: lineup_obj.id,
 				team_id: @team_id,
-				game_id: @game_id
+				game_id: @game_id,
+				season_id: @season_id
 			}).call
 
-			Stats::LineupShootingStatsService.new({
+			Stats::Lineups::LineupShootingStatsService.new({
 				field_goals: @lineup_field_goals,
 				field_goal_att: @lineup_field_goals + @lineup_field_goal_misses,
 				free_throw_makes: @lineup_free_throw_makes,
@@ -283,6 +295,7 @@ class SubmitGameModeService
 				three_point_fg: @lineup_three_point_fg,
 				three_point_att: @lineup_three_point_fg + @lineup_three_point_miss,
 				lineup_id: lineup_obj.id,
+				season_id: @season_id
 			}).call
 
 		end
@@ -307,6 +320,7 @@ class SubmitGameModeService
 						member_id: player_id.to_i,
 						game_id: @game_id,
 						stat_list_id: stat_list_id.to_i,
+						season_id: @season_id
 					})
 					puts stat_gran.errors.full_messages
 				end
@@ -326,9 +340,10 @@ class SubmitGameModeService
 						game_id: @game_id,
 						stat_list_id: stat_id,
 						member_id: player_id,
+						season_id: @season_id
 					})
 
-					season_total = SeasonStat.where(member_id: player_id, stat_list_id: stat_id).take
+					season_total = SeasonStat.where(member_id: player_id, stat_list_id: stat_id, season_id: @season_id).take
 
 					if season_total 
 						season_total.value += stat_total
@@ -343,12 +358,14 @@ class SubmitGameModeService
 								value: stat_total + 1,
 								stat_list_id: stat_id,
 								member_id: player_id,
+								season_id: @season_id
 							})
 						else 
 							season_total = SeasonStat.create({
 								value: stat_total,
 								stat_list_id: stat_id,
 								member_id: player_id,
+								season_id: @season_id
 							})
 						end
 					end
@@ -389,9 +406,10 @@ class SubmitGameModeService
 					season_three_point_att: @season_three_point_makes + @season_three_point_misses,
 					game_id: @game_id,
 					member_id: player_id,
+					season_id: @season_id
 				}).call
 
-				bpms = Advanced::AdvancedStatsService.new({
+				bpms = Stats::Advanced::Player::AdvancedStatsService.new({
 					field_goals: @field_goals,
 					team_field_goals: @team_field_goals,
 					opp_field_goals: @opp_field_goals,
@@ -442,6 +460,7 @@ class SubmitGameModeService
 					member_id: player_id.to_i,
 					game_id: @game_id.to_i,
 					team_id: @team_id.to_i,
+					season_id: @season_id
 				}).call
 
 				## TODO: RETHINK HOW THIS WORKS -- come back to later
@@ -478,7 +497,8 @@ class SubmitGameModeService
 					"team_adjustment" => bpm_team_adjustment,
 					"raw_bpm" => bpm["bpm"].value
 				},
-				value: new_bpm
+				value: new_bpm,
+				season_id: @season_id
 			})
 
 			obpm_team_adjustment = (@team_rating * 1.2 - @bpm_sums[1])/5
@@ -493,7 +513,8 @@ class SubmitGameModeService
 					"team_adjustment" => obpm_team_adjustment,
 					"raw_bpm" => bpm["bpm"].value
 				},
-				value: new_obpm
+				value: new_obpm,
+				season_id: @season_id
 			})
 			
 			bpm_season_adjustment = (@season_team_rating * 1.2 - @season_bpm_sums[1])/5
@@ -504,7 +525,7 @@ class SubmitGameModeService
 			new_season_bpm = new_season_bpm * 100 
 			new_season_bpm = new_season_bpm.round / 100.0
 
-			season_stat = SeasonAdvancedStat.where(stat_list_id: 42, member_id: bpm["member_id"]).take
+			season_stat = SeasonAdvancedStat.where(stat_list_id: 42, member_id: bpm["member_id"], season_id: @season_id).take
 			if season_stat
 				season_stat.value = new_season_bpm
 				season_stat.constituent_stats = {
@@ -520,7 +541,8 @@ class SubmitGameModeService
 						"team_adjustment" => bpm_season_adjustment,
 						"raw_bpm" =>  bpm["new_bpm"].value
 					},
-					value: new_season_bpm
+					value: new_season_bpm,
+					season_id: @season_id
 				})
 			end
 
@@ -529,7 +551,7 @@ class SubmitGameModeService
 			new_season_obpm = new_season_obpm * 100
 			new_season_obpm = new_season_obpm.round / 100.0
 
-			season_stat = SeasonAdvancedStat.where(stat_list_id: 40, member_id: bpm["member_id"]).take
+			season_stat = SeasonAdvancedStat.where(stat_list_id: 40, member_id: bpm["member_id"], season_id: @season_id).take
 			if season_stat
 				season_stat.value = new_season_obpm
 				season_stat.constituent_stats = {
@@ -545,7 +567,8 @@ class SubmitGameModeService
 						"team_adjustment" => obpm_season_adjustment,
 						"raw_bpm" =>  bpm["new_obpm"].value
 					},
-					value: new_season_obpm
+					value: new_season_obpm,
+					season_id: @season_id
 				})
 			end
 

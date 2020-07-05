@@ -234,20 +234,23 @@
     border-radius: 2px;
     font-size: 19px;
     font-weight: 300;
+    width: 100px;
+    height: 70px;
+    margin: 5px;
 }
 
 .inactive-selection-button{
-	background: #fbe0e0;
-    color: #ff100c;
+	background: #ffcdd6;
+    color: #ff0c37;
 }
 
 .inactive-selection-button:hover{
-	background: #ff100c;
+	background: #ff0c37;
     color: white;
 }
 
 .inactive-selected{
-	background: #ff100c;
+	background: #ff0c37;
     color: white;
 }
 
@@ -266,11 +269,19 @@
 }
 
 #personel-selection-body{
-	display: grid;
-	grid-template-columns: repeat(5, 100px);
-	grid-template-rows: repeat(3, 60px);
-	grid-row-gap: 5px;
-	grid-column-gap: 5px;
+	display: flex;
+    width: 45vw;
+    flex-wrap: wrap;
+}
+
+#personel-selection-header{
+	margin-bottom: 20px;
+}
+
+#personel-next-button{
+	width: 95px !important;
+    height: 40px !important;
+    border-radius: 10px;
 }
 
 #GM-initializer{
@@ -307,7 +318,8 @@
 
 .confirm-buttons{
 	font-size: 17px;
-	width: 200px;
+	font-weight: 600;
+	width: 220px;
 	padding-top: 10px;
 	padding-bottom: 10px;
 	color: white;
@@ -317,11 +329,24 @@
 }
 
 #confirm-submit{
-	background-color: #4ce895;
+	background-color: #0095ff;
 }
 
 #dont-submit{
 	background-color: red;
+}
+
+#load-game-state{
+	width: 45vw;
+	padding-bottom: 20px;
+}
+
+#game-mode-modal-content{
+	margin: 30px;
+}
+
+#game-mode-modal-body{
+	min-height: 205px;
 }
 
 /********************** <SUBMIT> ***********************/

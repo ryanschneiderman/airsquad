@@ -1,85 +1,517 @@
+<!doctype html>
+ <% content_for(:body_attributes) do %>
+    data-turbolinks="false"
+ <% end %>
+<html lang="en-US" class="no-js">
+<head>
+<%= stylesheet_link_tag  'particles' %>
+<%= stylesheet_link_tag  'salient_main' %>
+<%= stylesheet_link_tag  'salient_old' %>
+<%= stylesheet_link_tag  'salient_child' %>
+<%= stylesheet_link_tag  'font_awesome' %>
+<%= stylesheet_link_tag  'front_adds' %>
+<%= stylesheet_link_tag  'responsive' %>
+<!-- Meta Tags -->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
 
 
-<style>
-	#sprite{
-		background: url(<%= asset_path 'Sprite-Grid.png' %>); 1px -3px;
-	}
-	#background{
-		width: 100vw;
-		height: 100vw;
-		background-color: black;
-	}
-</style>
-
-<div id = "main">
-	<div id = "grey-canvas">
-		<div id = "sprite"></div>
-		<div id = "slogan">Hello, <%= current_user.name %>.</div>
-		<div id = "portal">
-			<%= link_to new_team_path do %>
-				<button class = "portal-button" id = "create-team-button">Create Team</button>
-			<%end%>
-			<button class = "portal-button" id = "join-team-button" onclick = "show_join_team_box()">Join Team</button>
-			<%= link_to 'Log out', destroy_user_session_path, method: :delete %>
-		</div>
-	</div>
-	<div id = "main-grid">
-		<div id = "teams">
-			<div class = "team-grid">
-				<%= render @teams %>
-			</div>
-		</div>
-	</div>	
-</div>
-<div class = "modal-overlay" style= "display: none;"></div>
-<div class = "new-overlay modal-overlay" style= "display: none;">
-	<div class = "new-box join-team-box" style= "display: none;">
-		<div class = "join-team-header">
-			<button class = "close-button" onclick="hide_join_team_form()">x</button>
-			<div id = "new-play-header-text">Join Team</div>
-		</div>
-		<div id = "join-team-body">
-			<div id = "username-body">
-				<label for="enter-username">Enter username. This should have been provided by your coach.</label><br>
-				<input type = "text" id = "enter-username" placeholder="Enter username">
-			</div>
-			<div id = "password-body">
-				<label for="enter-password">Enter Password. This also should have been provided by your coach.</label><br>
-				<input type = "password" id = "enter-password" placeholder="Enter password">
-			</div>
-			<button class = "bar-button join-team-submit" id = "submit-button" onclick = "submit_join_team()">Submit</button>
-		</div>
-	</div>
-</div>
 
 
-<%= render 'pages/index/landing/sprite_js' %>
 
-<script>
-	function submit_join_team(){
-		var username = $("#enter-username").val()
-		var password = $("#enter-password").val()
-		var url = "/join_team/"
-		$.ajax({
-	      url: url,
-	      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
-	      type: "post",
-	      data_type: 'json',
-	      data: {username: username, password: password}
-	    });
-	}
 
-	function show_join_team_box(){
-		$(".modal-overlay").show()
-		$(".new-overlay").show()
-		$(".new-box").show()
-	}
+<!-- <link rel="stylesheet" id="nectar-element-testimonial-css" href="http://localhost:8080/wp-content/themes/salient/css/elements/element-testimonial.css?ver=12.0" type="text/css" media="all">
+<link rel="stylesheet" id="nectar-element-fancy-box-css" href="http://localhost:8080/wp-content/themes/salient/css/elements/element-fancy-box.css?ver=12.0" type="text/css" media="all">
+<link rel="stylesheet" id="nectar-element-wpb-column-border-css" href="http://localhost:8080/wp-content/themes/salient/css/elements/element-wpb-column-border.css?ver=12.0" type="text/css" media="all">
+<link rel="stylesheet" id="magnific-css" href="http://localhost:8080/wp-content/themes/salient/css/plugins/magnific.css?ver=8.6.0" type="text/css" media="all"> -->
 
-	function hide_join_team_form(){
-		$(".modal-overlay").hide()
-		$(".new-overlay").hide()
-		$(".new-box").hide()
-	}
+<!-- <link rel="stylesheet" id="responsive-css" href="http://localhost:8080/wp-content/themes/salient/css/responsive.css?ver=12.0" type="text/css" media="all">
+<link rel="stylesheet" id="select2-css" href="http://localhost:8080/wp-content/themes/salient/css/plugins/select2.css?ver=6.2" type="text/css" media="all">
+<link rel="stylesheet" id="skin-ascend-css" href="http://localhost:8080/wp-content/themes/salient/css/ascend.css?ver=12.0" type="text/css" media="all">
+<link rel="stylesheet" id="nectar-widget-posts-css" href="http://localhost:8080/wp-content/themes/salient/css/elements/widget-nectar-posts.css?ver=12.0" type="text/css" media="all"> -->
+<!-- <link rel="stylesheet" id="js_composer_front-css" href="http://localhost:8080/wp-content/plugins/js_composer_salient/assets/css/js_composer.min.css?ver=6.1" type="text/css" media="all">  -->
+
+
+
+
+
+
+
+<!-- TODO: IE8 COMPATABILITY!!! -->
+
+
+<!--Typekit custom fonts IMPORTANT!!!!!!-->
+<script src="https://use.typekit.net/jeg3uxg.js"></script>
+<script>try{Typekit.load({ async: true });}catch(e){}</script>
+
+
+
+
+</style><style type="text/css" data-type="vc_shortcodes-custom-css">.vc_custom_1479418982621{margin-top: 0px !important;padding-top: 0px !important;}</style><noscript><style type="text/css"> .wpb_animate_when_almost_visible { opacity: 1; }</style></noscript> 
+</head>
+
+
+<body class="home page-template-default page page-id-3166 nectar-auto-lightbox ascend wpb-js-composer js-comp-ver-5.7 vc_responsive" data-footer-reveal="1" data-footer-reveal-shadow="small" data-header-format="centered-menu" data-body-border="off" data-boxed-style="" data-header-breakpoint="1000" data-dropdown-style="classic" data-cae="linear" data-cad="650" data-megamenu-width="contained" data-aie="none" data-ls="magnific" data-apte="standard" data-hhun="0" data-fancy-form-rcs="default" data-form-style="default" data-form-submit="default" data-is="minimal" data-button-style="default" data-header-inherit-rc="false" data-header-search="false" data-animated-anchors="true" data-ajax-transitions="true" data-full-width-header="true" data-slide-out-widget-area="true" data-slide-out-widget-area-style="fullscreen" data-user-set-ocm="1" data-loading-animation="none" data-bg-header="true" data-responsive="1" data-ext-responsive="true" data-header-resize="1" data-header-color="light" data-cart="false" data-remove-m-parallax="" data-remove-m-video-bgs="" data-force-header-trans-color="light" data-smooth-scrolling="0" data-permanent-transparent="false" >
+
+<script type="text/javascript"> if(navigator.userAgent.match(/(Android|iPod|iPhone|iPad|BlackBerry|IEMobile|Opera Mini)/)) { document.body.className += " using-mobile-browser "; } </script>
+
+<div id="header-space" data-header-mobile-fixed='1'></div> 
+
 	
+<div id="header-outer"  data-has-menu="true" data-has-buttons="yes" data-using-pr-menu="false" data-mobile-fixed="1" data-ptnm="false" data-lhe="animated_underline" data-user-set-bg="#ffffff" data-format="centered-menu" data-permanent-transparent="false" data-megamenu-rt="0" data-remove-fixed="0" data-header-resize="1" data-cart="false" data-transparency-option="" data-box-shadow="small" data-shrink-num="6" data-full-width="true" data-condense="false" data-using-secondary="0" data-using-logo="1" data-logo-height="45" data-m-logo-height="24" data-padding="32" data-transparent-header="true" data-transparent-shadow-helper="false" data-remove-border="true" class="transparent">
+	
+	
+<header id="top">
+  <div class="container">
+	<div class="row">
+	  <div class="col span_3">
+		<%= link_to root_path, {:id => "logo"} do %> 
+				<img class="stnd default-logo" alt="ATeam" src="<%= asset_path 'logo-grey.png' %>" srcset="<%= asset_path 'logo-grey.png' %> 1x,<%= asset_path 'logo-grey.png' %> 2x" />
+				<img class="starting-logo default-logo"  alt="ATeam" src="<%= asset_path 'logo-white.png' %>" srcset="<%= asset_path 'logo-white.png' %> 1x, <%= asset_path 'logo-white.png' %> 2x" />
+				<img class="starting-logo dark-version default-logo"  alt="ATeam" src="<%= asset_path 'logo-grey.png' %>" srcset="<%= asset_path 'logo-grey.png' %> 1x, <%= asset_path 'logo-grey.png' %> 2x" /> 
+		<%end %> 
+		</div><!--/span_3-->
+	   
+	  <div class="col span_9 col_last">
+		<nav>
+			<ul class="buttons" data-user-set-ocm="1" id = "header-buttons">
+				<li class="button_login button_logged_in " id = "create-team-button">
+					<%=link_to new_team_path do %>
+	                  <button class = "portal-button portal-button-1" onclick = "create_team()">Create Team</button>
+	                <%end%>
+				</li>	
+				<li class="button_login button_logged_in " id = "join-team-button">
+					<a>
+						<button class = "portal-button portal-button-2" >Join Team</button>
+					</a>
+				</li>
+
+				<li class = "player-dropdown">
+					<div class = "player-dropdown-wrapper flex-row">
+						<div class = "player-dropdown-text" ><%= current_user.first_name %></div> 
+						<object data='<%=asset_path("down-arrow.svg")%>' type="image/svg+xml" class = "sort-img player-dropdown-arrow" id = "player-dropdown-arrow">
+	                    	<%= image_tag("down-arrow.png", :alt => "sort", :class => "sort-img") %>	
+	                 	</object>
+	                 	<object data='<%=asset_path("down-dark.svg")%>' type="image/svg+xml" class = "sort-img player-dropdown-arrow" id = "player-dropdown-arrow-dark" style = "display: none;">
+	                    	<%= image_tag("down-dark.png", :alt => "sort", :class => "sort-img") %>	
+	                 	</object>
+	                 </div>
+				</li>
+			 
+			</ul>
+			<ul class="sf-menu">	
+				<li id="menu-item-8559" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home current-menu-item page_item page-item-3166 current_page_item menu-item-8559"><%= link_to 'Home', root_path %>
+				</li>
+				<li id="menu-item-9626" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%= link_to 'Product', product_path %> 
+				</li>
+				<li id="menu-item-9627" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9627"><%= link_to 'Tutorials', tutorial_path %> 
+				</li>
+				<li id="menu-item-9626" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-9626"><%= link_to 'About', about_path %> 
+				</li>
+				
+			</ul>	   
+		</nav>		
+	  </div><!--/span_9-->
+
 		
+	</div><!--/row-->
+  </div><!--/container-->
+</header>
+			
+	 
+</div><!--/header-outer-->
+
+
+<div id="ajax-content-wrap">
+
+<div class="blurred-wrap"><div id="page-header-wrap" data-animate-in-effect="none" data-midnight="light" class="fullscreen-header" >	    <div class=" fullscreen-header"  data-padding-amt="normal" data-animate-in-effect="none" id="page-header-bg" data-midnight="light" data-text-effect="none" data-bg-pos="center" data-alignment="center" data-alignment-v="middle" data-parallax="1" data-height="350" style="background-color: #2b2b2b;   ">
+			
+
+			<div class="scroll-down-wrap">
+				<a href="#" class="section-down-arrow ">
+					<i class = "default-down-arrow"></i>
+			 	</a>
+			 </div>
+			 <div class=" nectar-particles" data-disable-explosion="off" data-rotation-timing="">
+				<div class="canvas-bg">
+					<canvas id="canvas" data-active-index="0">
+						
+					</canvas></div><div class="container">
+						<div class="row">
+							<div class="col span_6" >
+								<div class="shape" data-src="<%= asset_path 'Basketball-Rev5.png' %>" data-max-size="" data-alpha="original" data-density="14" data-color-mapping="original" data-color="" data-bg-color="">
+									
+								</div>
+								<div class="inner-wrap shape-1">
+									<h1>Welcome, <%= current_user.first_name %>.</h1> <span class="subheader">Are you ready to take your team to the next level?</span>
+								</div>
+								<div class="shape" data-src="<%= asset_path 'Basketball-Rev5.png' %>" data-max-size="" data-alpha="" data-density="14" data-color-mapping="" data-color="" data-bg-color="">
+									
+								</div>
+								<div class="inner-wrap shape-2">
+									<h1>Everything your team needs, all in one place.</h1> <span class="subheader">Track stats, diagram plays, communicate with your players.</span></div>
+					    		</div>
+					    	</div>
+					    </div>
+
+				<div class="pagination-navigation">
+					<div class="pagination-current"></div>
+					<div class="pagination-dots">
+						<button class="pagination-dot"></button><button class="pagination-dot"></button>
+					</div>
+				</div>
+			</div> <!--/nectar particles-->	
+
+			
+		</div>
+
+	   </div>
+<div class="container-wrap">
+	<div class="container main-content">
+		<div class="row">
+			
+		<div id="locations" data-column-margin="90px" data-midnight="dark" data-top-percent="8%" data-bottom-percent="8%" class="wpb_row vc_row-fluid vc_row full-width-content  vc_row-o-equal-height vc_row-flex  vc_row-o-content-middle standard_section " style="padding-top: 128px; padding-bottom: 128px; left: 0px; margin-left: -250px; width: 1600px; visibility: visible;"><div class="row-bg-wrap" data-bg-animation="none" data-bg-overlay="true"><div class="inner-wrap"><div class="row-bg" style=""></div></div><div class="row-bg-overlay" style="background: #fff0ed; background: linear-gradient(90deg,#fff0ed 0%,#ffffff 100%);  opacity: 1; "></div></div><div class="row_col_wrap_12 col span_12 dark left">
+	<div class="vc_col-sm-6 wpb_column column_container vc_column_container col padding-4-percent inherit_tablet inherit_phone  instance-18" data-t-w-inherits="default" data-bg-cover="" data-padding-pos="top-bottom" data-has-bg-color="false" data-bg-color="" data-bg-opacity="1" data-hover-bg="" data-hover-bg-opacity="1" data-animation="" data-delay="0">
+		<div class="vc_column-inner"><div class="column-bg-overlay-wrap" data-bg-animation="none"><div class="column-bg-overlay"></div></div>
+			<div class="wpb_wrapper">
+				<div id="fws_5ea85055965b8" data-midnight="" data-column-margin="none" class="wpb_row vc_row-fluid vc_row inner_row  vc_row-o-content-middle standard_section   " style="padding-top: 0px; padding-bottom: 0px; "><div class="row-bg-wrap"> <div class="row-bg"></div> </div><div class="row_col_wrap_12_inner col span_12  left">
+	<div class="vc_col-sm-12 wpb_column column_container vc_column_container col child_column no-extra-padding inherit_tablet inherit_phone  instance-19" data-t-w-inherits="default" data-bg-cover="" data-padding-pos="all" data-has-bg-color="false" data-bg-color="" data-bg-opacity="1" data-hover-bg="" data-hover-bg-opacity="1" data-animation="" data-delay="0">
+		<div class="vc_column-inner"><div class="column-bg-overlay-wrap" data-bg-animation="none"><div class="column-bg-overlay"></div></div>
+		<div class="wpb_wrapper">
+			<div class="col span_12 section-title text-align-center extra-padding"><h2>
+</h2><h2 style="text-align: left">Clear the whiteboard. <br>Play Diagramming has changed.</h2>
+</div><div class="clear"></div>
+		</div> 
+	</div>
+	</div> 
+</div></div><div id="fws_5ea8505597445" data-midnight="" data-column-margin="default" class="wpb_row vc_row-fluid vc_row inner_row  vc_row-o-content-middle standard_section   " style="padding-top: 0px; padding-bottom: 0px; "><div class="row-bg-wrap"> <div class="row-bg"></div> </div><div class="row_col_wrap_12_inner col span_12  left">
+	<div class="vc_col-sm-12 wpb_column column_container vc_column_container col child_column has-animation no-extra-padding inherit_tablet inherit_phone  instance-20" data-t-w-inherits="default" data-bg-cover="" data-padding-pos="all" data-has-bg-color="false" data-bg-color="" data-bg-opacity="1" data-hover-bg="" data-hover-bg-opacity="1" data-animation="fade-in-from-bottom" data-delay="0">
+		<div class="vc_column-inner"><div class="column-bg-overlay-wrap" data-bg-animation="none"><div class="column-bg-overlay"></div></div>
+		<div class="wpb_wrapper">
+			
+<div class="wpb_text_column wpb_content_element  vc_custom_1587757601805" style=" max-width: 500px; display: inline-block;">
+	<div class="wpb_wrapper">
+		<p>ATeam play diagramming makes it easy to build plays and share them with your players. You’ll never have to worry about a messy whiteboard again.</p>
+	</div>
+</div>
+
+
+
+
+		</div> 
+	</div>
+	</div> 
+</div></div><div id="fws_5ea85055978e0" data-midnight="" data-column-margin="default" class="wpb_row vc_row-fluid vc_row inner_row  vc_row-o-content-middle standard_section   " style="padding-top: 20px; padding-bottom: 0px; "><div class="row-bg-wrap"> <div class="row-bg"></div> </div><div class="row_col_wrap_12_inner col span_12  left">
+	<div class="vc_col-sm-6 wpb_column column_container vc_column_container col child_column has-animation no-extra-padding inherit_tablet inherit_phone  instance-21" data-t-w-inherits="default" data-bg-cover="" data-padding-pos="all" data-has-bg-color="false" data-bg-color="" data-bg-opacity="1" data-hover-bg="" data-hover-bg-opacity="1" data-animation="fade-in-from-bottom" data-delay="0">
+		<div class="vc_column-inner"><div class="column-bg-overlay-wrap" data-bg-animation="none"><div class="column-bg-overlay"></div></div>
+		<div class="wpb_wrapper">
+			<div class="nectar-fancy-ul" data-list-icon="dot" data-animation="false" data-animation-delay="0" data-spacing="20px" data-alignment="left"> 
+<ul>
+<li>Separate your plays into progressions for readable plays.</li>
+<li>Annotate plays for more complex concepts.</li>
+<li>Categorize plays into custom groupings.</li>
+</ul>
+ </div>
+		</div> 
+	</div>
+	</div> 
+
+	<div class="vc_col-sm-6 wpb_column column_container vc_column_container col child_column has-animation no-extra-padding inherit_tablet inherit_phone  instance-22" data-t-w-inherits="default" data-bg-cover="" data-padding-pos="all" data-has-bg-color="false" data-bg-color="" data-bg-opacity="1" data-hover-bg="" data-hover-bg-opacity="1" data-animation="fade-in-from-bottom" data-delay="100">
+		<div class="vc_column-inner"><div class="column-bg-overlay-wrap" data-bg-animation="none"><div class="column-bg-overlay"></div></div>
+		<div class="wpb_wrapper">
+			<div class="nectar-fancy-ul" data-list-icon="dot" data-animation="false" data-animation-delay="0" data-spacing="20px" data-alignment="left"> 
+<ul>
+<li>Animation between progressions</li>
+<li>Access plays during games with Game Mode.</li>
+<li>Edit, create, and delete plays at any time.</li>
+</ul>
+ </div>
+		</div> 
+	</div>
+	</div> 
+</div></div><div class="nectar-cta " data-style="material" data-alignment="left" data-display="block" data-text-color="custom"><h4> <span class="text"> </span><span class="link_wrap" style="color: #ff1053;">
+	<%= link_to play_demo_path, {:class => "link_text"} do %> 
+		Explore Play Demo<span class="circle" style="background-color: #ff1053;"></span><span class="arrow"></span>
+	<%end%>
+	
+</span></h4></div>
+			</div> 
+		</div>
+	</div>  
+
+	<div class="vc_col-sm-6 wpb_column column_container vc_column_container col padding-5-percent inherit_tablet inherit_phone  instance-23" data-t-w-inherits="default" data-bg-cover="" data-padding-pos="top-bottom" data-has-bg-color="false" data-bg-color="" data-bg-opacity="1" data-hover-bg="" data-hover-bg-opacity="1" data-animation="" data-delay="0">
+		<div class="vc_column-inner"><div class="column-bg-overlay-wrap" data-bg-animation="none"><div class="column-bg-overlay"></div></div>
+			<div class="wpb_wrapper">
+				<div class="img-with-aniamtion-wrap " data-max-width="100%" data-max-width-mobile="default" data-border-radius="5px" data-shadow="large_depth" data-animation="fade-in">
+      <div class="inner">
+        <div class="hover-wrap" data-hover-animation="none" style="opacity: 1;"> 
+          <div class="hover-wrap-inner">
+            <img class="img-with-animation skip-lazy  animated-in" data-delay="0" height="932" width="1432" data-animation="fade-in" src="http://localhost:8080/wp-content/uploads/2020/04/play.png" alt="" srcset="http://localhost:8080/wp-content/uploads/2020/04/play.png 1432w, http://localhost:8080/wp-content/uploads/2020/04/play-300x195.png 300w, http://localhost:8080/wp-content/uploads/2020/04/play-1024x666.png 1024w, http://localhost:8080/wp-content/uploads/2020/04/play-768x500.png 768w" sizes="(min-width: 1450px) 75vw, (min-width: 1000px) 85vw, 100vw" data-pagespeed-url-hash="465850692">
+          </div>
+        </div>
+      </div>
+    </div>
+			</div> 
+		</div>
+	</div> 
+</div></div>
+
+<!--HERE -->
+
+
+		<div id="locations" data-column-margin="90px" data-midnight="dark" data-top-percent="8%" data-bottom-percent="8%" class="wpb_row vc_row-fluid vc_row full-width-content  vc_row-o-equal-height vc_row-flex  vc_row-o-content-middle standard_section " style="padding-top: 128px; padding-bottom: 128px; left: 0px; margin-left: -250px; width: 1600px; visibility: visible;"><div class="row-bg-wrap" data-bg-animation="none" data-bg-overlay="true"><div class="inner-wrap"><div class="row-bg" style=""></div></div><div class="row-bg-overlay" style="background: #ffffff; background: linear-gradient(90deg,#ffffff 0%,#edf9ff 100%);  opacity: 1; "></div></div><div class="row_col_wrap_12 col span_12 dark left">
+	<div class="vc_col-sm-6 wpb_column column_container vc_column_container col padding-5-percent inherit_tablet inherit_phone instance-24" data-t-w-inherits="default" data-bg-cover="" data-padding-pos="top-bottom" data-has-bg-color="false" data-bg-color="" data-bg-opacity="1" data-hover-bg="" data-hover-bg-opacity="1" data-animation="" data-delay="0" style = "padding-left: 0;">
+		<div class="vc_column-inner"><div class="column-bg-overlay-wrap" data-bg-animation="none"><div class="column-bg-overlay"></div></div>
+			<div class="wpb_wrapper">
+				<div class="nectar_video_player_self_hosted wpb_video_widget wpb_content_element vc_clearfix vc_video-aspect-ratio-169 vc_video-el-width-100 vc_video-align-center" data-border-radius="5px" data-shadow="large_depth">
+<div class="wpb_wrapper"><video  preload="auto" loop="" autoplay="" muted="" playsinline="" poster="" style="visibility: visible; width: 45vw;"><source src="http://localhost:8080/wp-content/uploads/2020/06/stats.mp4" type="video/mp4"></video></div></div>
+			</div> 
+		</div>
+	</div> 
+
+	<div class="vc_col-sm-6 wpb_column column_container vc_column_container col padding-4-percent inherit_tablet inherit_phone instance-25" data-t-w-inherits="default" data-bg-cover="" data-padding-pos="top-bottom" data-has-bg-color="false" data-bg-color="" data-bg-opacity="1" data-hover-bg="" data-hover-bg-opacity="1" data-animation="" data-delay="0">
+		<div class="vc_column-inner"><div class="column-bg-overlay-wrap" data-bg-animation="none"><div class="column-bg-overlay"></div></div>
+			<div class="wpb_wrapper">
+				<div id="fws_5ea850559dbd6" data-midnight="" data-column-margin="none" class="wpb_row vc_row-fluid vc_row inner_row  vc_row-o-content-middle standard_section   " style="padding-top: 0px; padding-bottom: 0px; "><div class="row-bg-wrap"> <div class="row-bg"></div> </div><div class="row_col_wrap_12_inner col span_12  left">
+	<div class="vc_col-sm-12 wpb_column column_container vc_column_container col child_column no-extra-padding inherit_tablet inherit_phone instance-26 no-left-margin" data-t-w-inherits="default" data-bg-cover="" data-padding-pos="all" data-has-bg-color="false" data-bg-color="" data-bg-opacity="1" data-hover-bg="" data-hover-bg-opacity="1" data-animation="" data-delay="0">
+		<div class="vc_column-inner"><div class="column-bg-overlay-wrap" data-bg-animation="none"><div class="column-bg-overlay"></div></div>
+		<div class="wpb_wrapper">
+			<div class="col span_12 section-title text-align-center extra-padding"><h2>
+</h2><h2 style="text-align: left">Stat collection made easy.</h2>
+</div>
+		</div> 
+	</div>
+	</div> 
+</div></div><div id="fws_5ea850559e218" data-midnight="" data-column-margin="default" class="wpb_row vc_row-fluid vc_row inner_row  vc_row-o-content-middle standard_section   " style="padding-top: 0px; padding-bottom: 0px; "><div class="row-bg-wrap"> <div class="row-bg"></div> </div><div class="row_col_wrap_12_inner col span_12  left">
+	<div class="vc_col-sm-12 wpb_column column_container vc_column_container col child_column has-animation no-extra-padding inherit_tablet inherit_phone instance-27 no-left-margin" data-t-w-inherits="default" data-bg-cover="" data-padding-pos="all" data-has-bg-color="false" data-bg-color="" data-bg-opacity="1" data-hover-bg="" data-hover-bg-opacity="1" data-animation="fade-in-from-bottom" data-delay="0">
+		<div class="vc_column-inner"><div class="column-bg-overlay-wrap" data-bg-animation="none"><div class="column-bg-overlay"></div></div>
+		<div class="wpb_wrapper">
+			
+<div class="wpb_text_column wpb_content_element  vc_custom_1588014951116" style=" max-width: 500px; display: inline-block;">
+	<div class="wpb_wrapper">
+		<p>Gain next level stat insights with ATeam Game Mode. Easily track stats for your team during the game for in game insights, or afterward with film.</p>
+	</div>
+</div>
+
+
+
+
+		</div> 
+	</div>
+	</div> 
+</div></div><div id="fws_5ea850559e8b6" data-midnight="" data-column-margin="20px" class="wpb_row vc_row-fluid vc_row inner_row  vc_row-o-content-middle standard_section   " style="padding-top: 20px; padding-bottom: 0px; "><div class="row-bg-wrap"> <div class="row-bg"></div> </div><div class="row_col_wrap_12_inner col span_12  left">
+	<div class="vc_col-sm-6 wpb_column column_container vc_column_container col child_column has-animation no-extra-padding inherit_tablet inherit_phone instance-28 no-left-margin" data-t-w-inherits="default" data-bg-cover="" data-padding-pos="all" data-has-bg-color="false" data-bg-color="" data-bg-opacity="1" data-hover-bg="" data-hover-bg-opacity="1" data-animation="fade-in-from-bottom" data-delay="0">
+		<div class="vc_column-inner"><div class="column-bg-overlay-wrap" data-bg-animation="none"><div class="column-bg-overlay"></div></div>
+		<div class="wpb_wrapper">
+			<div class="nectar-fancy-ul" data-list-icon="dot" data-animation="false" data-animation-delay="0" data-spacing="20px" data-alignment="left"> 
+<ul>
+<li><i class="icon-default-style dot undefined"></i> Customize stats you want to keep for your team</li>
+<li><i class="icon-default-style dot undefined"></i> Shot charts for players and team.</li>
+<li><i class="icon-default-style dot undefined"></i> Stat tables for game and period totals</li>
+</ul>
+ </div>
+		</div> 
+	</div>
+	</div> 
+
+	<div class="vc_col-sm-6 wpb_column column_container vc_column_container col child_column has-animation no-extra-padding inherit_tablet inherit_phone instance-29" data-t-w-inherits="default" data-bg-cover="" data-padding-pos="all" data-has-bg-color="false" data-bg-color="" data-bg-opacity="1" data-hover-bg="" data-hover-bg-opacity="1" data-animation="fade-in-from-bottom" data-delay="100">
+		<div class="vc_column-inner"><div class="column-bg-overlay-wrap" data-bg-animation="none"><div class="column-bg-overlay"></div></div>
+		<div class="wpb_wrapper">
+			<div class="nectar-fancy-ul" data-list-icon="dot" data-animation="false" data-animation-delay="0" data-spacing="20px" data-alignment="left"> 
+<ul>
+<li><i class="icon-default-style dot undefined"></i> Easily modify stats with the game log</li>
+<li><i class="icon-default-style dot undefined"></i> Submit at the end of the game to add to season stats</li>
+<li><i class="icon-default-style dot undefined"></i> Come back to game mode any time to make changes</li>
+</ul>
+ </div>
+		</div> 
+	</div>
+	</div> 
+</div></div><div class="nectar-cta " data-style="material" data-alignment="left" data-display="block" data-text-color="custom"><h4> <span class="text"> </span><span class="link_wrap" style="color: #ff1053;"><a class="link_text" href="#">Explore Game Mode Demo<span class="circle" style="background-color: #ff1053;"></span><span class="arrow"></span></a></span></h4></div>
+			</div> 
+		</div>
+	</div> 
+</div></div>
+	<div id="locations" data-column-margin="90px" data-midnight="dark" data-top-percent="8%" data-bottom-percent="8%" class="wpb_row vc_row-fluid vc_row full-width-content  vc_row-o-equal-height vc_row-flex  vc_row-o-content-middle standard_section " style="padding-top: 128px; padding-bottom: 128px; left: 0px; margin-left: -250px; width: 1600px; visibility: visible;"><div class="row-bg-wrap" data-bg-animation="none" data-bg-overlay="true"><div class="inner-wrap"><div class="row-bg" style=""></div></div><div class="row-bg-overlay" style="background: #f3edff; background: linear-gradient(90deg,#f3edff 0%,#ffffff 100%);  opacity: 1; "></div></div><div class="row_col_wrap_12 col span_12 dark left">
+	<div class="vc_col-sm-6 wpb_column column_container vc_column_container col padding-4-percent inherit_tablet inherit_phone  instance-30" data-t-w-inherits="default" data-bg-cover="" data-padding-pos="top-bottom" data-has-bg-color="false" data-bg-color="" data-bg-opacity="1" data-hover-bg="" data-hover-bg-opacity="1" data-animation="" data-delay="0">
+		<div class="vc_column-inner"><div class="column-bg-overlay-wrap" data-bg-animation="none"><div class="column-bg-overlay"></div></div>
+			<div class="wpb_wrapper">
+				<div id="fws_5ea850559f582" data-midnight="" data-column-margin="none" class="wpb_row vc_row-fluid vc_row inner_row  vc_row-o-content-middle standard_section   " style="padding-top: 0px; padding-bottom: 0px; "><div class="row-bg-wrap"> <div class="row-bg"></div> </div><div class="row_col_wrap_12_inner col span_12  left">
+	<div class="vc_col-sm-12 wpb_column column_container vc_column_container col child_column no-extra-padding inherit_tablet inherit_phone  instance-31" data-t-w-inherits="default" data-bg-cover="" data-padding-pos="all" data-has-bg-color="false" data-bg-color="" data-bg-opacity="1" data-hover-bg="" data-hover-bg-opacity="1" data-animation="" data-delay="0">
+		<div class="vc_column-inner"><div class="column-bg-overlay-wrap" data-bg-animation="none"><div class="column-bg-overlay"></div></div>
+		<div class="wpb_wrapper">
+			<div class="col span_12 section-title text-align-center extra-padding"><h2>
+</h2><h2 style="text-align: left">Pro level analytics meet the eye test.</h2>
+</div><div class="clear"></div>
+		</div> 
+	</div>
+	</div> 
+</div></div><div id="fws_5ea850559f910" data-midnight="" data-column-margin="default" class="wpb_row vc_row-fluid vc_row inner_row  vc_row-o-content-middle standard_section   " style="padding-top: 0px; padding-bottom: 0px; "><div class="row-bg-wrap"> <div class="row-bg"></div> </div><div class="row_col_wrap_12_inner col span_12  left">
+	<div class="vc_col-sm-12 wpb_column column_container vc_column_container col child_column has-animation no-extra-padding inherit_tablet inherit_phone  instance-32" data-t-w-inherits="default" data-bg-cover="" data-padding-pos="all" data-has-bg-color="false" data-bg-color="" data-bg-opacity="1" data-hover-bg="" data-hover-bg-opacity="1" data-animation="fade-in-from-bottom" data-delay="0">
+		<div class="vc_column-inner"><div class="column-bg-overlay-wrap" data-bg-animation="none"><div class="column-bg-overlay"></div></div>
+		<div class="wpb_wrapper">
+			
+<div class="wpb_text_column wpb_content_element  vc_custom_1588023892236" style=" max-width: 500px; display: inline-block;">
+	<div class="wpb_wrapper">
+		<p>Gain next level insight with ATeam stat analytics. Track performance with basic and advanced stats. Explore different data visualizations. Make decisions with confidence.</p>
+	</div>
+</div>
+
+
+
+
+		</div> 
+	</div>
+	</div> 
+</div></div><div id="fws_5ea85055a004f" data-midnight="" data-column-margin="default" class="wpb_row vc_row-fluid vc_row inner_row  vc_row-o-content-middle standard_section   " style="padding-top: 20px; padding-bottom: 0px; "><div class="row-bg-wrap"> <div class="row-bg"></div> </div><div class="row_col_wrap_12_inner col span_12  left">
+	<div class="vc_col-sm-6 wpb_column column_container vc_column_container col child_column has-animation no-extra-padding inherit_tablet inherit_phone  instance-33" data-t-w-inherits="default" data-bg-cover="" data-padding-pos="all" data-has-bg-color="false" data-bg-color="" data-bg-opacity="1" data-hover-bg="" data-hover-bg-opacity="1" data-animation="fade-in-from-bottom" data-delay="0">
+		<div class="vc_column-inner"><div class="column-bg-overlay-wrap" data-bg-animation="none"><div class="column-bg-overlay"></div></div>
+		<div class="wpb_wrapper">
+			<div class="nectar-fancy-ul" data-list-icon="dot" data-animation="false" data-animation-delay="0" data-spacing="20px" data-alignment="left"> 
+<ul>
+<li>Track 25+ basic and advanced stats for players and team</li>
+<li>Lineup stats based on real data</li>
+<li>Effective field goal percentage shot charts</li>
+</ul>
+ </div>
+		</div> 
+	</div>
+	</div> 
+
+	<div class="vc_col-sm-6 wpb_column column_container vc_column_container col child_column has-animation no-extra-padding inherit_tablet inherit_phone  instance-34" data-t-w-inherits="default" data-bg-cover="" data-padding-pos="all" data-has-bg-color="false" data-bg-color="" data-bg-opacity="1" data-hover-bg="" data-hover-bg-opacity="1" data-animation="fade-in-from-bottom" data-delay="100">
+		<div class="vc_column-inner"><div class="column-bg-overlay-wrap" data-bg-animation="none"><div class="column-bg-overlay"></div></div>
+		<div class="wpb_wrapper">
+			<div class="nectar-fancy-ul" data-list-icon="dot" data-animation="false" data-animation-delay="0" data-spacing="20px" data-alignment="left"> 
+<ul>
+<li>Visualize player stat profiles with radar charts</li>
+<li>Game reports</li>
+<li>Analyze trends throughout the season</li>
+</ul>
+ </div>
+		</div> 
+	</div>
+	</div> 
+</div></div><div id="fws_5ea85055a057f" data-midnight="" data-column-margin="default" class="wpb_row vc_row-fluid vc_row inner_row standard_section   " style="padding-top: 0px; padding-bottom: 0px; "><div class="row-bg-wrap"> <div class="row-bg"></div> </div><div class="row_col_wrap_12_inner col span_12  left">
+	<div class="vc_col-sm-12 wpb_column column_container vc_column_container col child_column no-extra-padding inherit_tablet inherit_phone  instance-35" data-t-w-inherits="default" data-bg-cover="" data-padding-pos="all" data-has-bg-color="false" data-bg-color="" data-bg-opacity="1" data-hover-bg="" data-hover-bg-opacity="1" data-animation="" data-delay="0">
+		<div class="vc_column-inner"><div class="column-bg-overlay-wrap" data-bg-animation="none"><div class="column-bg-overlay"></div></div>
+		<div class="wpb_wrapper">
+			<div class="nectar-cta " data-style="material" data-alignment="left" data-display="block" data-text-color="custom"><h4> <span class="text"> </span><span class="link_wrap" style="color: #ff1053;"><a class="link_text" href="#">Explore Lineup Demo<span class="circle" style="background-color: #ff1053;"></span><span class="arrow"></span></a></span></h4></div>
+		</div> 
+	</div>
+	</div> 
+</div></div>
+			</div> 
+		</div>
+	</div> 
+
+	<div class="vc_col-sm-6 wpb_column column_container vc_column_container col padding-5-percent inherit_tablet inherit_phone  instance-36" data-t-w-inherits="default" data-bg-cover="" data-padding-pos="top-bottom" data-has-bg-color="false" data-bg-color="" data-bg-opacity="1" data-hover-bg="" data-hover-bg-opacity="1" data-animation="" data-delay="0">
+		<div class="vc_column-inner"><div class="column-bg-overlay-wrap" data-bg-animation="none"><div class="column-bg-overlay"></div></div>
+			<div class="wpb_wrapper">
+				
+			</div> 
+		</div>
+	</div> 
+</div></div>
+		
+		
+		<div id="fws_5e99d0fc40436"  data-midnight="light"  data-bg-mobile-hidden="" class="wpb_row vc_row-fluid vc_row full-width-content  vc_row-o-equal-height vc_row-flex standard_section  margin-bottom "  style="padding-top: 0px; padding-bottom: 0px; ">
+			<div class="row-bg-wrap" data-bg-animation="none">
+				<div class="inner-wrap ">
+					<div class="row-bg    "  style=""></div>
+				</div>
+				<div class="row-bg-overlay" ></div>
+			</div>
+			<div class="col span_12 light center">
+				<div style="" class="flex-row-important vc_col-sm-6 vc_col-lg-offset-0 vc_col-lg-6 vc_col-md-offset-0 vc_col-md-6 vc_col-sm-offset-0 vc_col-xs-12 view_more_section wpb_column column_container vc_column_container col padding-3-percent" data-using-bg="true" data-t-w-inherits="default" data-border-radius="none" data-shadow="none" data-border-animation="" data-border-animation-delay="" data-border-width="none" data-border-style="solid" data-border-color="" data-bg-cover="" data-padding-pos="top-bottom" data-has-bg-color="true" data-bg-color="#ffffff" data-bg-opacity="1" data-hover-bg="#f7f7f7" data-hover-bg-opacity="0.9" data-animation="" data-delay="0"><a class="column-link" target="_self" href="/demos"></a>
+					<div class="column-image-bg-wrap" data-bg-animation="none">
+						<div class="inner-wrap">
+							<div class="column-image-bg" style=" background-image: url(''); "></div>
+						</div>
+					</div>
+					<div class="column-bg-overlay" style="opacity: 1; background-color: #ffffff;"></div>
+					<div class="vc_column-inner flex-column center-justified">
+						<div class="wpb_wrapper">
+							<div class="morphing-outline" data-starting-color="#ff7526" data-hover-color="#ff4c00" data-border-thickness="11">
+								<div class="inner">
+									<h5><i>Like what you see?</i></h5>
+									<h2 style="font-size: 33px; letter-spacing: -0.5px;">Sign Up for ATeam</h2>
+								</div>
+							</div>
+						</div> 
+					</div>
+				</div> 
+				<div style="" class="flex-row-important vc_col-sm-6 vc_col-lg-offset-0 vc_col-lg-6 vc_col-md-offset-0 vc_col-md-6 vc_col-sm-offset-0 vc_col-xs-12 request-strategy wpb_column column_container vc_column_container col padding-3-percent" data-using-bg="true" data-t-w-inherits="default" data-border-radius="none" data-shadow="none" data-border-animation="" data-border-animation-delay="" data-border-width="none" data-border-style="solid" data-border-color="" data-bg-cover="" data-padding-pos="top-bottom" data-has-bg-color="true" data-bg-color="#ff7526" data-bg-opacity="1" data-hover-bg="#ff4300" data-hover-bg-opacity="1" data-animation="" data-delay="0">
+					<a class="column-link" target="_self" href="/request-strategy"></a><div class="column-bg-overlay" style="opacity: 1; background-color: #ff7526;"></div>
+					<div class="vc_column-inner flex-column center-justified">
+						<div class="wpb_wrapper">
+							<div class="morphing-outline" data-starting-color="#ffffff" data-hover-color="#ffffff" data-border-thickness="11">
+								<div class="inner">
+									<div style="cursor: pointer;">
+										<h5><i>Want to see more?</i></h5>
+										<h2 style="font-size: 33px; letter-spacing: -0.5px;">Explore Demos</h2>
+									</div>
+								</div>
+							</div>
+						</div> 
+					</div>
+				</div> 
+			</div>
+		</div>
+
+		</div><!--/row-->
+	</div><!--/container-->
+</div><!--/container-wrap-->
+
+
+<div id="footer-outer"  data-cols="3" data-custom-color="true" data-disable-copyright="false" data-matching-section-color="true" data-copyright-line="true" data-using-bg-img="false" data-bg-img-overlay="0.8" data-full-width="false" data-using-widget-area="true" >
+  	<div class="row" id="copyright" data-layout="default">
+		<div class="container">
+			<div class="col span_5">
+				<p>© 2020 ATeam Sports Technologies. All rights reserved.</p>			   
+			</div><!--/span_5-->
+			   
+	  		<div class="col span_7 col_last">
+				<ul class="social">
+					<li><a target="_blank" href="#"><i class="fa fa-twitter"></i></a></li>
+					<li><a target="_blank" href="#"><i class="fa fa-facebook"></i> </a></li> 		  		  		  			 
+					<li><a target="_blank" href="#"><i class="fa fa-linkedin"></i> </a></li> 		  			 
+					<li><a target="_blank" href="#"><i class="fa fa-youtube-play"></i> </a></li> 		  		  		  		  		  		  	
+					<li><a target="_blank" href="#"><i class="fa fa-instagram"></i></a></li>
+				</ul>
+	  		</div><!--/span_7-->
+		</div><!--/container-->
+	
+  	</div><!--/row-->
+  
+</div><!--/footer-outer-->
+
+</div><!--blurred-wrap-->
+
+</div> <!--/ajax-content-wrap-->
+
+<a id="to-top" class=""><i class="fa fa-angle-up"></i></a>
+
+
+<script type='text/javascript'>
+/* <![CDATA[ */
+var nectarLove = {};
+/* ]]> */
 </script>
+<!--   <script type="text/html" id="wpb-modifications"></script><link rel="stylesheet" id="iconsmind-css" href="http://localhost:8080/wp-content/themes/salient/css/iconsmind.css?ver=7.6" type="text/css" media="all"> -->
+
+<script type="text/javascript">//<![CDATA[
+var nectarLove={"ajaxurl":"http:\/\/localhost:8080\/wp-admin\/admin-ajax.php","postID":"5811","rooturl":"http:\/\/localhost:8080","loveNonce":"d728a928f7"};
+//]]></script>
+
+
+<%=render 'pages/index/landing/sign_up_modal'%>
+<%=render 'pages/index/landing/create_join_modal'%>
+
+
+
+
+
+
+</body>
+</html>

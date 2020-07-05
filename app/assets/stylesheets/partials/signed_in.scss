@@ -22,18 +22,18 @@
     padding-top: 10px;
     padding-bottom: 10px;
     border-radius: 30px;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
-    font-family: system-ui;
-    letter-spacing: 1px;
+    font-family: helvetica neue;
+    box-shadow: 0px 0px 3px #ff7a31;
 }
 
-#join-team-button{
+.portal-button-2{
 	border: 1px solid #ff6c40;
 	color: white;
 }
 
-#create-team-button{
+.portal-button-1{
 	background-color: #ff6c40;
 	color: white;
 }
@@ -121,6 +121,14 @@
 
 .player-dropdown-dark{
 	color: #212121;
+}
+
+.player-dropdown-arrow{
+	margin-left: 5px;
+}
+
+.header-button-deactivated{
+	display: none;
 }
 
 

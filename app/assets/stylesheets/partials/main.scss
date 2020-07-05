@@ -23,6 +23,10 @@
 	align-items: center;
 }
 
+.end-aligned{
+    align-items: flex-end;
+}
+
 .end-justified{
     justify-content: flex-end;
 }
@@ -36,6 +40,7 @@
     padding-left: 10px;
     padding-right: 10px;
     margin-right: 20px;
+    margin-left: 20px;
     margin-top: 15px;
     margin-bottom: 15px;
     border-radius: 5px;
@@ -60,6 +65,7 @@
     border-bottom: 1px solid #d6d6d6;
 }
 .modal-footing{
+    min-height: 50px;
     display: flex;
     justify-content: flex-end;
     background-color: #e8e8e8;
@@ -209,8 +215,123 @@ svg, object{
 }
 
 .modal-inner-content{
-    min-height: 55vh;
+    min-width: 40vw;
+
 }
+
+.modal-header{
+    font-weight: 600;
+    font-size: 28px;
+    padding: 0px !important;
+    border-bottom: none !important;
+    color: black;
+}
+
+.modal-subheader{
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.modal-subheading{
+    font-size: 19px;
+    font-weight: 600;
+}
+
+
+.modal-section{
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#role-modal-container{
+    margin-top: 18vh;
+}
+
+.page-header{
+    font-size: 50px;
+    font-weight: 600;
+    padding-bottom: 0px;
+}
+
+.page-subheader{
+    font-size: 40px;
+}
+
+
+.team-color-1{
+    background-color: #EF0000;
+}
+
+.team-color-2{
+    background-color: #FF861D;
+}
+
+.team-color-3{
+    background-color: #F5CF50;
+}
+
+.team-color-4{
+    background-color: #FFE93C;
+}
+
+.team-color-5{
+    background-color: #DDF23C;
+}
+
+.team-color-6{
+    background-color: #2DC320;
+}
+
+.team-color-7{
+    background-color: #008E16;
+}
+
+.team-color-8{
+    background-color: #00C396;
+}
+
+.team-color-9{
+    background-color: #00BAFF;
+}
+
+.team-color-10{
+    background-color: #0062FF;
+}
+
+.team-color-11{
+    background-color: #004F9F;
+}
+
+.team-color-12{
+    background-color: #6532D5;
+}
+
+.team-color-13{
+    background-color: #D51A62;
+}
+
+.team-color-14{
+    background-color: white;
+}
+
+.team-color-15{
+    background-color: #B7B7B7;
+}
+
+.team-color-16{
+    background-color: #6E6E6E;
+}
+
+.team-color-17{
+    background-color: #000000;
+}
+
+.team-color-18{
+    background-color: #7B5B31;
+}
+
+
+
 
 
 

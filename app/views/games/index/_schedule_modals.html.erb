@@ -1,0 +1,81 @@
+
+
+<div class = "modal-overlay" id = "new-game-overlay" style = "display: none;"></div>
+<div class = "modal modal-positioning" id = "new-game-modal" style = "display: none;">
+  <div id = "signup-initializer" class = "modal-container">
+    <div class = "GM-modal-wrapper">
+      <div class = "modal-header-wrapper">
+        <div class = "modal-header" id = "new-game-header">New Game</div>
+      </div>
+      <div class = "modal-inner-content" id = "new-game-modal-content">
+        <div class = "modal-body ">
+            <div id = "create-account-wrapper">
+                <div class = "new-game-form">
+					<div class="form-group">
+						<div class = "new-game-input-label">Opponent</div>
+						<input type="text" name="opponent" id = "new-game-opponent" >
+					</div>
+					<div class="form-group">
+						<div class = "new-game-input-label">Location</div>
+						<input type="text" name="location" id = "new-game-location" >
+					</div>
+					<div class="form-group">
+						<div class = "new-game-input-label">Game Date</div>
+						<input type="date" name="date" id = "new-game-date">
+					</div>
+					<div class="form-group">
+						<div class = "new-game-input-label">Game Time</div>
+						<input type="time" name="time" id = "new-game-time">
+					</div>
+				</div>
+            </div>
+
+        </div>
+      </div>
+      <div class = "modal-footing">
+      	<button class = "modal-cancel-button" onclick = "hide_new_game_modal()">Cancel</button>
+      	<button class = "modal-submit-button" onclick = "newGame()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class = "modal-overlay" id = "new-practice-overlay" style = "display: none;"></div>
+<div class = "modal modal-positioning" id = "new-practice-modal" style = "display: none;">
+  <div id = "signup-initializer" class = "modal-container">
+    <div class = "GM-modal-wrapper">
+      <div class = "modal-header-wrapper">
+        <div class = "modal-header" id = "new-practice-header">New Practice</div>
+      </div>
+      <div class = "modal-inner-content" id = "new-practice-modal-content">
+        <div class = "modal-body ">
+            <div id = "create-account-wrapper">
+                <div class = "new-game-form">
+					<div class="form-group">
+						<div class = "new-game-input-label">Location</div>
+						<input type="text" name="location" id = "new-practice-location" >
+					</div>
+					<div class="form-group">
+						<div class = "new-game-input-label">Practice Date</div>
+						<input type="date" name="date" id = "new-practice-date">
+					</div>
+					<div class="form-group">
+						<div class = "new-game-input-label">Practice Time</div>
+						<input type="time" name="time" id = "new-practice-time">
+					</div>
+				</div>
+            </div>
+
+        </div>
+      </div>
+      <div class = "modal-footing">
+      	<button class = "modal-cancel-button" onclick = "hide_practice_modal()">Cancel</button>
+      	<button class = "modal-submit-button" onclick = "newPractice()()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+

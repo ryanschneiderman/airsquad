@@ -1,0 +1,706 @@
+	
+
+	function add_player(){
+		var player = $("#enter-member-name").val()
+		$("#add_player").val("")
+		if(player != ""){
+			players.push(player);
+			$("#current-members").append("<button class = 'new-player' onclick = 'remove_player(this)'><div class = 'new-player-name'>" + player + "</div><div class = 'remove-player-x'> x </div></button>")
+		}
+		else {
+			alert("Enter player name")
+		}
+	}
+
+	function permissionsIsPlayer(member){
+		return member.is_player;
+	}
+
+	function get_role_container(member){
+		switch(member.role_name){
+			case "Player" :
+				return $("#added-players-container");
+			case "Coach" :
+				return  $("#added-coaches-container");
+			case "Manager" :
+				return $("#added-managers-container");
+			case "Other" :
+				if(permissionsIsPlayer(member)){
+					return $("#added-players-container");
+				}
+				else{
+					return $("#added-managers-container");
+				}
+		}
+	}
+
+
+
+	function resetAddMember(){
+		$("#enter-member-name").val('');
+		$("#enter-member-email").val('');
+		$("input:radio[name='role']").prop("checked", false);
+		$('input:checkbox').prop("checked", false);
+		$("#custom-permissions").hide()
+
+	}
+
+	function insert_member_radio(role){
+		$("input:radio[name='role']").prop("checked", false);
+		switch(role){
+			case "Player" :
+				$("#member-role-player").prop("checked", true);
+				break;
+			case "Coach" :
+				 $("#member-role-coach").prop("checked", true);
+				 break;
+			case "Manager" :
+				$("#member-role-manager").prop("checked", true);
+				break;
+			case "Other" :
+				$("#member-role-other").prop("checked", true);
+				break;
+		}
+	}
+
+	function showPermissions(member){
+		if(member.role_name == "Other"){
+			$("#custom-permissions").show()
+			var permissions_len = member.permissions.length;
+			for(var i = 0; i < permissions_len;i++){
+				$("#"+member.permissions[i]).prop("checked", true)
+			}
+
+			for (const property in member.permissions) {
+				$("#"+`${property}`).prop("checked", (`${member.permissions[property]}` == "true") )
+			}
+			if(member.is_player){
+				$("#is_player").prop("checked", true)
+			}
+		}
+	}
+
+	function edit_member(id){
+		var member = find_member_by_id(id)
+		$("#enter-member-name").val(member.name);
+		$("#enter-member-email").val(member.email);
+		insert_member_radio(member.role_name)
+		showPermissions(member)
+		$(".add-member-button").hide()
+		$(".update-member-button").show()
+		$(".update-member-button")[0].onclick = function(){updateMember(id)}
+	}
+
+
+	function addToUpdateArray(member){
+		var exists = false;
+		for (var i = update_members.length - 1; i >= 0; i--) {
+			if(update_members[i].id == member.id){
+				exists = true;
+			}
+		}
+		if(!exists) update_members.push(member)
+	}
+
+	function setPermissionsHtml(permissions){
+
+	}
+
+	function updateMember(i){
+		var member = find_member_by_id(i)
+		$("#member-block-name-"+i).text($("#enter-member-name").val())
+		var old_elem = $("#member-block-"+i).clone()
+		var old_role = member.role_name;
+		
+		member.name = $("#enter-member-name").val()
+		member.email = $("#enter-member-email").val()
+		member.role_name = $("input:radio[name='role']:checked").val()
+
+		var was_player = permissionsIsPlayer(member)
+		var permissions = {"plays_view" : false, "plays_edit" : false, "schedule_view" : false, "schedule_edit" : false, "stats_view" : false, "stats_edit" : false, "settings_view" : false, "settings_edit" : false, "is_player" : false}
+
+
+		$('input:checkbox:checked').each(function(){
+			var permission = $(this).val()
+			permissions[permission] = true;
+		});
+
+
+		member.permissions = permissions
+
+		var is_player = $("#is_player").is(":checked")
+		console.log(is_player)
+		if((member.role_name == "Other" && is_player) || member.role_name == "Player"){
+			member.is_player = true
+		}
+		else{
+			member.is_player = false;
+		}
+		
+		if(old_role!= member.role_name || was_player != is_player){
+			var container = get_role_container(member)
+			$("#member-block-"+i).remove()
+			container.append(old_elem)
+			// accounts for the case when member goes from a player to non player or vice versa but remains an "Other"
+			if(old_role == "Other" && member.role_name != "Other"){
+				member.permissions = {"plays_view" : false, "plays_edit" : false, "schedule_view" : false, "schedule_edit" : false, "stats_view" : false, "stats_edit" : false, "settings_view" : false, "settings_edit" : false}
+			}
+		}
+		if(member.curr_member){
+			addToUpdateArray(member)
+		}
+		
+		resetAddMember()
+		$(".add-member-button").show()
+		$(".update-member-button").hide()
+	}
+
+
+
+
+	function validateEmail(email) {
+	    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	    return re.test(String(email).toLowerCase());
+	}
+
+	function find_member_in_settings(id){
+		for (var i = curr_members.length - 1; i >= 0; i--) {
+			if(curr_members[i].id == id){
+				return curr_members[i]
+			}
+		}
+		for (var i = new_members.length - 1; i >= 0; i--) {
+			if(new_members[i].id == id){
+				return new_members[i]
+			}
+		}
+	}
+
+	function find_member_by_id(id){
+		if($("body").hasClass("settings")){
+			return find_member_in_settings(id)
+		}
+		else{
+			var len = members.length;
+			for(var i = 0; i < len; i++){
+				if(members[i].id == id){
+					return members[i]
+				}
+			}
+		}
+	}
+
+	function add_member_dom(member_id, member_name, container){
+		var member_block_wrapper = "<div class = 'member-block-wrapper' id = 'member-block-"+ member_id+"'></div>"
+		var member_block = "<div class = 'member-block' ></div>"
+		var member_block_top = "<div class = 'member-block-top flex-row center-justified'></div>"
+		
+		var name = "<div class = 'member-block-name' id = 'member-block-name-"+member_id+"'>"+member_name+"</div>"
+		
+		var member_buttons_wrapper = "<div class = 'flex-row center-justified edit-delete-member-wrapper'></div>" 
+		var edit_member = "<button class = 'edit-delete-member edit-member' onclick = 'edit_member("+member_id+")'>Edit</button>"
+		var delete_member = "<button class = 'edit-delete-member delete-member' onclick = 'delete_member("+member_id+")'>Delete</button>"
+		
+		//var done_editing = "<button class = 'done-member'>Done</button>"
+		container.append($(member_block_wrapper).append($(member_block).append($(member_block_top).append(name)).append($(member_buttons_wrapper).append(edit_member).append(delete_member))))
+	}
+
+	function add_member(){
+		var member_name = $("#enter-member-name").val();
+		var member_email = $("#enter-member-email").val();
+		var member_role = $("input:radio[name='role']:checked").val()
+		var permissions = {"plays_view" : false, "plays_edit" : false, "schedule_view" : false, "schedule_edit" : false, "stats_view" : false, "stats_edit" : false, "settings_view" : false, "settings_edit" : false, "is_player" : false}
+		$('input:checkbox:checked').each(function(){
+			var permission = $(this).val()
+			permissions[permission] = true;
+		});
+		var is_email = validateEmail(member_email)
+		var is_player = $("#is_player").is(':checked')
+		
+		// next id is one greater than the last member in the array. Useful when a member is deleted.
+		var member_id = (members.length > 0) ? members[members.length-1].id+1 : 0;
+		if(member_name && member_email && member_role && is_email){
+			var member = {"name" : member_name , "email" : member_email, "role_name" : member_role, "id" : member_id, "permissions" : permissions, "is_player" : is_player}
+			if(member_role == "Player"){
+				member.is_player = true;
+			}
+			members.push(member)
+			var container = get_role_container(member)
+			add_member_dom(member_id, member_name, container)
+			resetAddMember()
+		}
+		else{
+			if(!member_name){
+				$("#enter-member-name").addClass("incorrect-input")
+			}
+			if (!member_email){
+				$("#enter-member-email").addClass("incorrect-input")
+			}
+			if (!member_role){
+				$("#role-needs-input").show()
+			}
+			if(!is_email){
+				$("#valid-email").show()
+				$("#enter-member-email").addClass("incorrect-input")
+			}
+		}
+	}
+
+	function delete_member(member_id){
+		if($("body").hasClass("settings")){
+			delete_settings_member(member_id)
+		}
+		else{
+			// not necessarily the case here;
+			members.splice(member_id, 1)
+			$("#member-block-"+member_id).remove()
+		}
+		
+	}
+
+
+	function populate_color_pickers(){
+		var primary_color_grid = $("#primary-color-picker")
+		var secondary_color_grid = $("#secondary-color-picker")
+		for(var i = 0; i < 18; i++){
+			primary_color_grid.append("<button onclick = 'setPrimaryColor("+i+", this)' data-color-id = '"+i+"' class = 'color-picker-square team-color-"+(i+1)+"'></button>")
+			secondary_color_grid.append("<button onclick = 'setSecondaryColor("+i+", this)' data-color-id = '"+i+"' class = 'color-picker-square team-color-"+(i+1)+"'></button>")
+		}
+	}
+
+	function setPrimaryColor(i, button){
+		$("#primary-color-picker .color-picker-square").removeClass("color-picker-selected")
+		$(button).addClass("color-picker-selected")
+		$("#needs-primary-color").hide()
+	}
+
+	function setSecondaryColor(i, button){
+		$("#secondary-color-picker .color-picker-square").removeClass("color-picker-selected")
+		$(button).addClass("color-picker-selected")
+		$("#needs-secondary-color").hide()
+	}
+
+
+	function show_team_stat_block(){
+		$("#team-info-block").hide()
+		$("#team-stat-grid").show()
+	}
+
+	function show_team_info_block(){
+		$("#team-info-block").show()
+		$("#team-stat-grid").hide()
+	}
+
+	function show_info(button){
+		var parent = $(button).parent()
+		var description = parent.find(".stat-info")
+		var position = parent.offset()
+		description.offset({top: position.top -55, left: position.left -8})
+	}
+	
+	function hide_info(button){
+		$(".stat-description").hide()
+		$(".stat-info-show").show()
+	}
+
+	function show_role_modal(){
+		$("#role-modal-overlay").show()
+		$("#role-modal").show()
+	}
+
+	function close_role_modal(){
+		$("#role-modal-overlay").hide()
+		$("#role-modal").hide()
+	}
+
+	function checkTeamInput(team_name, period_type, period_length, primary_color, secondary_color){
+		var return_val = true;
+		if(!team_name){
+			$("#needs-team-name").show()
+			return_val = false;
+		}
+		if(!period_type){
+			$("#needs-period-type").show()
+			return_val = false;
+		}
+		if(!period_length){
+			$("#needs-period-length").show()
+			return_val = false;
+		}
+		if(primary_color == null){
+			$("#needs-primary-color").show()
+			return_val = false;
+		}
+		if(secondary_color == null){
+			$("#needs-secondary-color").show()
+			return_val = false;
+		}
+		return return_val
+	}
+
+	// TODO: just need to submit!!!! Should be good to go.
+	function submit_new_team(){
+		var team_name = $("#enter-team-name").val()
+		var period_type = $("input:radio[name='period-type']:checked").val()
+		var period_length = $("#period-length").val()
+		var primary_color = $("#primary-color-picker .color-picker-selected").data("color-id")
+		var secondary_color = $("#secondary-color-picker .color-picker-selected").data("color-id")
+		if(checkTeamInput(team_name, period_type, period_length, primary_color, secondary_color)){
+			var stat_arr = collection_stats.concat(basic_stats).concat(advanced_stats).concat(team_advanced_stats);
+			var url = "/teams/"
+			$.ajax({
+		      url: url,
+		      beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+		      type: "post",
+		      data_type: 'json',
+		      data: {members: members, team_name: team_name, team_stats: stat_arr, period_type: period_type, period_length: period_length, primary_color: primary_color, secondary_color: secondary_color}
+		    });
+		}
+		else{
+			$("#check-team-input").show()
+		}
+	}
+	
+
+
+
+	/*********************************************************************************************************************************************/
+	/*********************************************************************************************************************************************/
+	/************************************************************* STAT SELECTION ****************************************************************/
+	/*********************************************************************************************************************************************/
+	/*********************************************************************************************************************************************/
+
+
+	function settings_add_basic_stat(stat_id){
+		if(stats_to_remove.includes(stat_id)){
+			var removeIndex = stats_to_remove.map(function(item) { return item;}).indexOf(stat_id);
+			~removeIndex && stats_to_remove.splice(removeIndex, 1);
+		}
+		else{
+			stats_to_add.push(stat_id)
+		}
+	}
+
+	function settings_remove_basic_stat(stat_id){
+		if(stats_to_add.includes(stat_id)){
+			var removeIndex = stats_to_add.map(function(item) { return item;}).indexOf(stat_id);
+			~removeIndex && stats_to_add.splice(removeIndex, 1);
+		}
+		else{
+			stats_to_remove.push(stat_id)
+		}
+	}
+
+	function new_team_remove_basic_stat(stat_id){
+		var removeIndex = collection_stats.map(function(item) { return item;}).indexOf(stat_id);
+       	~removeIndex && collection_stats.splice(removeIndex, 1);
+	}
+
+
+	function add_basic_stat(stat_name, stat_id, destination){
+		switch(destination){
+			case "your_stats" :
+				if($("body").hasClass("settings")){
+					settings_add_basic_stat(stat_id)
+				}
+				else{
+					collection_stats.push(stat_id);
+				}
+				$("#your-stats").append('<button class = "stat-choice stat-choice-active" type = "button" onclick = "to_choose_stats(this, \'basic\', \''+ stat_name +'\', '+ stat_id +')">' + stat_name +'</button>')
+				adv_stat_add_check(stat_id)
+				team_adv_stat_add_check(stat_id)
+				break;
+			case "choose_stats" :
+				if($("body").hasClass("settings")){
+					settings_remove_basic_stat(stat_id)
+				}
+				else{
+					new_team_remove_basic_stat(stat_id)
+				}
+				$("#optional-stats").append('<button class = "stat-choice stat-choice-active" type = "button" onclick = "to_your_stats(this, \'basic\', \''+ stat_name +'\', '+ stat_id +')">' + stat_name +'</button>')
+				adv_stat_remove_check(stat_id)
+				team_adv_stat_remove_check(stat_id)
+				break;
+		}
+	}
+
+	function add_advanced_stat(stat_name, stat_id, destination){
+		switch(destination){
+			case "your_stats" :
+				advanced_stats.push(stat_id);
+				break;
+			case "choose_stats" :
+				var removeIndex = advanced_stats.map(function(item) { return item;}).indexOf(stat_id);
+        		~removeIndex && advanced_stats.splice(removeIndex, 1);
+				break;
+		}
+		
+	}
+
+
+	// TODO: Review whats going on here. Doesnt seem right.
+	function add_team_stat(stat_name, stat_id, destination){
+		switch(destination){
+			case "your_stats" :
+				team_stats.push(stat_id);
+				$("#team-stats").append('<button class = "stat-choice" type = "button" onclick = "to_choose_stats(this, \'team\', \''+ stat_name +'\', '+ stat_id +')">' + stat_name +'</button>')
+				break;
+			case "choose_stats" :
+				var removeIndex = team_stats.map(function(item) { return item;}).indexOf(stat_id);
+        		~removeIndex && team_stats.splice(removeIndex, 1);
+				$("#choose-team-stats").append('<button class = "stat-choice" type = "button" onclick = "to_your_stats(this, \'team\', \''+ stat_name +'\', '+ stat_id +')">' + stat_name +'</button>')
+				break;
+		}
+	}
+
+
+	function to_your_stats(button, stat_type, stat_name, stat_id){
+		$(button).remove();
+		switch(stat_type){
+			case "basic" :
+				add_basic_stat(stat_name, stat_id, "your_stats");
+				break;
+			case "advanced" :
+				add_advanced_stat(stat_name, stat_id, "your_stats");
+				break;
+			case "team" :
+				add_team_stat(stat_name, stat_id, "your_stats");
+				break;
+		}
+	}
+
+
+	function to_choose_stats(button, stat_type, stat_name, stat_id){
+		$(button).remove();
+		switch(stat_type){
+			case "basic" :
+				add_basic_stat(stat_name, stat_id, "choose_stats");
+				break;
+			case "advanced" :
+				add_advanced_stat(stat_name, stat_id, "choose_stats");
+				break;
+			case "team" :
+				add_team_stat(stat_name, stat_id, "choose_stats");
+				break;
+		}
+	}
+
+
+	function initialize_stat_arr(){
+		collection_stats = gon.default_collectable.map(x => x.id)
+		basic_stats = gon.default_application_basic.map(x => x.id)
+		advanced_stats = gon.default_indiv_advanced.map(x=> x.id)
+	}
+
+	function initialize_adv_stats(){
+		non_default_adv_stats = gon.advanced_stats.slice()
+		non_default_team_adv_stats = gon.team_advanced_stats.slice()
+	}
+
+
+	function new_team_adv_stat_add(i){
+		if(non_default_adv_stats[i].stats_needed.length == 0){
+			advanced_stats.push(non_default_adv_stats[i].stat_id)
+			$("#stat-" + non_default_adv_stats[i].stat_id).removeClass("stat-choice-inactive")
+			$("#stat-" + non_default_adv_stats[i].stat_id).addClass("stat-choice-active")
+		}
+	}
+
+	function settings_adv_stat_add(i, init){
+		if(non_default_adv_stats[i].stats_needed.length == 0 && !adv_stat_belongs(non_default_adv_stats[i].id)){
+			if(!init){
+				if(stats_to_remove.includes(non_default_adv_stats[i].id)){
+					var removeIndex = stats_to_remove.map(function(item) { return item;}).indexOf(non_default_adv_stats[i].id);
+					~removeIndex && stats_to_remove.splice(removeIndex, 1);
+				}
+				else{
+					stats_to_add.push(non_default_adv_stats[i].id)
+				}
+			}
+			$("#stat-" + non_default_adv_stats[i].stat_id).removeClass("stat-choice-inactive")
+			$("#stat-" + non_default_adv_stats[i].stat_id).addClass("stat-choice-active")
+		}
+	}
+
+
+	function adv_stat_add_check(stat_id, init){
+		var len = non_default_adv_stats.length
+		for(var i = 0; i < len; i++){
+			var stats_needed_len = non_default_adv_stats[i].stats_needed.length
+			if(stats_needed_len > 0){
+				for(var j = 0; j < stats_needed_len; j++){
+					if (non_default_adv_stats[i].stats_needed[j] == stat_id){
+						non_default_adv_stats[i].stats_needed.splice(j, 1);
+						non_default_adv_stats[i].stats_satisfied.push(stat_id)
+						if($("body").hasClass("settings")){
+							settings_adv_stat_add(i, init)
+						}
+						else{
+							new_team_adv_stat_add(i)
+						}
+						
+					}
+				}
+			}
+		}
+	}
+
+	function new_team_adv_team_stat_add(i){
+		if(non_default_team_adv_stats[i].stats_needed.length == 0){
+
+			team_advanced_stats.push(non_default_team_adv_stats[i].stat_id)
+			$("#stat-" + non_default_team_adv_stats[i].stat_id).removeClass("stat-choice-inactive")
+			$("#stat-" + non_default_team_adv_stats[i].stat_id).addClass("stat-choice-active")
+		}
+	}
+
+	function settings_team_adv_stat_add(i, init){
+		if(non_default_team_adv_stats[i].stats_needed.length == 0 && !team_adv_stat_belongs(non_default_team_adv_stats[i].id)){
+			if(!init){
+				if(stats_to_remove.includes(non_default_team_adv_stats[i].id)){
+					var removeIndex = stats_to_remove.map(function(item) { return item;}).indexOf(non_default_team_adv_stats[i].id);
+					~removeIndex && stats_to_remove.splice(removeIndex, 1);
+				}
+				else{
+					stats_to_add.push(non_default_team_adv_stats[i].id)
+				}
+			}
+			$("#stat-" + non_default_team_adv_stats[i].stat_id).removeClass("stat-choice-inactive")
+			$("#stat-" + non_default_team_adv_stats[i].stat_id).addClass("stat-choice-active")
+		}
+	}
+
+	function team_adv_stat_add_check(stat_id, init){
+		var len = non_default_team_adv_stats.length
+		for(var i = 0; i < len; i++){
+			var stats_needed_len = non_default_team_adv_stats[i].stats_needed.length
+			if(stats_needed_len > 0){
+				for(var j = 0; j < stats_needed_len; j++){
+					if (non_default_team_adv_stats[i].stats_needed[j] == stat_id){
+						non_default_team_adv_stats[i].stats_needed.splice(j, 1);
+						non_default_team_adv_stats[i].stats_satisfied.push(stat_id)
+						if($("body").hasClass("settings")){
+							settings_team_adv_stat_add(i, init)
+						}
+						else{
+							new_team_adv_team_stat_add(i)
+						}
+					}
+				}
+			}
+		}
+	}
+
+	function new_team_adv_stat_remove(i){
+		var removeIndex = advanced_stats.map(function(item) { return item;}).indexOf(non_default_adv_stats[i].id);
+        ~removeIndex && advanced_stats.splice(removeIndex, 1);
+	}
+
+	function settings_adv_stat_remove(i){
+		if(stats_to_add.includes(non_default_adv_stats[i].id)){
+			var removeIndex = stats_to_add.map(function(item) { return item;}).indexOf(non_default_adv_stats[i].id);
+			~removeIndex && stats_to_add.splice(removeIndex, 1);
+		}
+		else{
+			stats_to_remove.push(non_default_adv_stats[i].stat_id)
+		}
+	}
+
+
+
+	function adv_stat_remove_check(stat_id){
+		var len = non_default_adv_stats.length
+		for(var i = 0; i < len; i++){
+			var stats_satisfied_len = non_default_adv_stats[i].stats_satisfied.length
+			if(stats_satisfied_len > 0){
+				for(var j = 0; j < stats_satisfied_len; j++){
+					if (non_default_adv_stats[i].stats_satisfied[j] == stat_id){
+						non_default_adv_stats[i].stats_satisfied.splice(j, 1);
+						non_default_adv_stats[i].stats_needed.push(stat_id)
+						if(non_default_adv_stats[i].stats_needed.length == 1){
+							if($("body").hasClass("settings")){
+								settings_adv_stat_remove(i)
+							}
+							else{
+								new_team_adv_stat_remove(i)
+							}
+							console.log(non_default_adv_stats[i])
+	    					$("#stat-" + non_default_adv_stats[i].stat_id).addClass("stat-choice-inactive")
+							$("#stat-" + non_default_adv_stats[i].stat_id).removeClass("stat-choice-active")
+						}
+
+					}
+				}
+			}
+		}
+	}
+
+	function new_team_adv_team_stat_remove(i){
+		var removeIndex = team_advanced_stats.map(function(item) { return item;}).indexOf(non_default_team_adv_stats[i].id);
+        ~removeIndex && team_advanced_stats.splice(removeIndex, 1);
+	}
+
+	function settings_team_adv_stat_remove(i){
+		if(stats_to_add.includes(non_default_team_adv_stats[i].id)){
+			var removeIndex = stats_to_add.map(function(item) { return item;}).indexOf(non_default_team_adv_stats[i].id);
+			~removeIndex && stats_to_add.splice(removeIndex, 1);
+		}
+		else{
+			stats_to_remove.push(non_default_team_adv_stats[i].stat_id)
+		}
+	}
+
+	function team_adv_stat_remove_check(stat_id){
+		var len = non_default_team_adv_stats.length
+		for(var i = 0; i < len; i++){
+			var stats_satisfied_len = non_default_team_adv_stats[i].stats_satisfied.length
+			if(stats_satisfied_len > 0){
+				for(var j = 0; j < stats_satisfied_len; j++){
+					if (non_default_team_adv_stats[i].stats_satisfied[j] == stat_id){
+						non_default_team_adv_stats[i].stats_satisfied.splice(j, 1);
+						non_default_team_adv_stats[i].stats_needed.push(stat_id)
+						if(non_default_team_adv_stats[i].stats_needed.length == 1){
+							if($("body").hasClass("settings")){
+								settings_team_adv_stat_remove(i)
+							}
+							else{
+								new_team_adv_team_stat_remove(i)
+							}
+							
+	    					$("#stat-" + non_default_team_adv_stats[i].stat_id).addClass("stat-choice-inactive")
+							$("#stat-" + non_default_team_adv_stats[i].stat_id).removeClass("stat-choice-active")
+						}
+					}
+				}
+			}
+		}
+	}
+
+	function print_advanced_stats(){
+		var advanced_stats_len = advanced_stats.length
+		for(var i = 0; i < advanced_stats_len; i++){
+			console.log(advanced_stats[i])
+		}
+
+	}
+
+	// function submit_team_stats(){
+	// 	var url = "/teams/";
+
+	// 	//print_advanced_stats();
+	// 	var stat_arr = collection_stats.concat(basic_stats).concat(advanced_stats).concat(team_advanced_stats);
+	// 	var json_data = {"team_stats": stat_arr}
+	// 	 $.ajax({
+	// 		url: url,
+	// 		beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+	// 		type: "post",
+	// 		data_type: 'json',
+	// 		data: json_data
+	// 	});
+	// }
+
+
+
+
+
+

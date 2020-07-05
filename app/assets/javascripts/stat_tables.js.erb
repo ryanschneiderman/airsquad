@@ -1,31 +1,32 @@
-	function populate_display_stats_basic(){
-		display_stats = gon.stat_table_columns
+	
+	function populate_display_stats_basic(stat_table_columns){
+		display_stats = stat_table_columns
 	}
 
-	function populate_display_stats_adv(){
-		display_stats_adv = gon.adv_stat_table_columns
+	function populate_display_stats_adv(stat_table_columns){
+		display_stats_adv = stat_table_columns
 	}
 
 
-	function populate_team_display_stats_adv(){
-		display_stats_team_adv = gon.team_adv_stat_table_columns
+	function populate_team_display_stats_adv(stat_table_columns){
+		display_stats_team_adv = stat_table_columns
 	}
 
-	function populate_stat_array(single_game){
-		player_stats = gon.player_stats
-		advanced_stats = gon.advanced_stats
+	function populate_stat_array(player_stats_param, advanced_stats_param){
+		player_stats = player_stats_param
+		advanced_stats = advanced_stats_param
 	}
 
-	function populate_team_stats(){
-		team_stats = gon.team_stats
+	function populate_team_stats(team_stats_param){
+		team_stats = team_stats_param
 	}
 
-	function populate_opponent_stats(){
-		opponent_stats = gon.opponent_stats
+	function populate_opponent_stats(opponent_stats_param){
+		opponent_stats = opponent_stats_param
 	}
 
-	function populate_team_advanced_stats(){
-		team_advanced_stats = gon.team_advanced_stats
+	function populate_team_advanced_stats(team_advanced){
+		team_advanced_stats = team_advanced
 	}
 
 

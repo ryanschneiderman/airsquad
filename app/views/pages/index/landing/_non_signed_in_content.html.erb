@@ -76,21 +76,38 @@
 	  <div class="col span_9 col_last">
 		<nav>
 			<ul class="buttons" data-user-set-ocm="1" id = "header-buttons">
-				<li class="button_login" id = "signup-button">
+				<li class="button_login button_logged_out " id = "signup-button">
 					<a>
-						<button class = "portal-button" id = "create-team-button" onclick = "sign_up_modal()">Sign Up</button>
+						<button class = "portal-button portal-button-1" id = "" onclick = "sign_up_modal()">Sign Up</button>
 					</a>
 				</li>	
-				<li class="button_login" id = "login-button">
+				<li class="button_login button_logged_out login-button" id = "login-button">
 					<a>
-						<button class = "portal-button" id = "join-team-button">Log in</button>
+						<button class = "portal-button portal-button-2" id = "login-user-button">Login</button>
 					</a>
 				</li>
-				<li class = "player-dropdown flex-row">
-					<div class = "player-dropdown-text" >Alexander</div> 
-					<object data='<%=asset_path("down-arrow.svg")%>' type="image/svg+xml" class = "sort-img">
-                    	<%= image_tag("down-arrow.png", :alt => "sort", :class => "sort-img") %>	
-                 	</object>
+
+				<li class="button_login button_logged_in " id = "create-team-button" style = "display: none;">
+					<%=link_to new_team_path do %>
+	                  <button class = "portal-button portal-button-1" onclick = "create_team()">Create Team</button>
+	                <%end%>
+				</li>	
+				<li class="button_login button_logged_in " id = "join-team-button" style = "display: none;">
+					<a>
+						<button class = "portal-button portal-button-2 header-button-deactivated" >Join Team</button>
+					</a>
+				</li>
+
+				<li class = "player-dropdown" style = "display: none">
+					<div class = "player-dropdown-wrapper flex-row">
+						<div class = "player-dropdown-text" ></div> 
+						<object data='<%=asset_path("down-arrow.svg")%>' type="image/svg+xml" class = "sort-img player-dropdown-arrow" id = "player-dropdown-arrow">
+	                    	<%= image_tag("down-arrow.png", :alt => "sort", :class => "sort-img") %>	
+	                 	</object>
+	                 	<object data='<%=asset_path("down-dark.svg")%>' type="image/svg+xml" class = "sort-img player-dropdown-arrow" id = "player-dropdown-arrow-dark" style = "display: none;">
+	                    	<%= image_tag("down-dark.png", :alt => "sort", :class => "sort-img") %>	
+	                 	</object>
+	                 </div>
 				</li>
 			 
 			</ul>
@@ -500,6 +517,7 @@ var nectarLove={"ajaxurl":"http:\/\/localhost:8080\/wp-admin\/admin-ajax.php","p
 
 
 <%=render 'pages/index/landing/sign_up_modal'%>
+<%=render 'pages/index/landing/create_join_modal'%>
 
 
 
