@@ -55,13 +55,13 @@ function game_review_init(){
 	populate_stat_array(gon.player_stats, gon.advanced_stats);
 	populate_team_stats(gon.team_stats);
 
-	init_stat_tables()
+	init_stat_tables(true)
 
 	initCalibration()
-	init_shot_charts(court_width, gon.shot_chart_data, gon.team_name)
+	init_shot_charts(court_width, gon.shot_chart_data, gon.team_name, gon.opponent_shot_chart_data, gon.opponent_name)
 	teamStatsPercentageCircles(gon.team_stats, gon.team_advanced_stats)
 	insertBasicTeamPercentageCircles(gon.team_stats)
-	populate_team_stat_tables(true);
+	populate_team_stat_tables(true, false);
 	init_game_review_page()
 	testScrollTo()
 	$(document).scroll(function(){
@@ -79,12 +79,12 @@ function stats_index_init(){
 	populate_stat_array(gon.player_stats, gon.advanced_stats);
 	populate_team_stats(gon.team_stats);
 
-	init_stat_tables()
+	init_stat_tables(false)
 
-	populate_team_stat_tables(true);
+	populate_team_stat_tables(true, true);
 
 	initCalibration()
-	init_shot_charts(court_width, gon.shot_chart_data, gon.team_name)
+	init_shot_charts(court_width, gon.shot_chart_data, gon.team_name, gon.opponent_shot_chart_data, "Opponents")
 
 	init_trend_display_stats()
 
@@ -100,7 +100,7 @@ function stats_index_init(){
 	insertBasicTeamPercentageCircles(gon.team_stats)
 	
 
-	init_stats_page()
+	init_stats_page(false)
 
 	//TODO: CHECK
     testScrollTo()
@@ -120,9 +120,9 @@ function getPlayerCourtWidth(){
 	else return $(window).width()*.4
 }
 
-function init_stat_tables(){
+function init_stat_tables(single_game){
 	sort_basic_table(18, true);
-	populate_stat_tables(true, false, true);
+	populate_stat_tables(true, single_game, true);
 
 	$("#per-minute-table").hide();
 	$("#adv-player-stats-table").hide()

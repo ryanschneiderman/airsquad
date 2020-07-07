@@ -412,6 +412,10 @@
 	width: 100%;
 }
 
+.gm-stat-table-header{
+	font-weight: 600;
+}
+
 #gm-table-buttons{
 	margin-top: 20px;
 	margin-bottom: 10px;
@@ -449,26 +453,50 @@
 
 
 .gm-log th {
-	background-color: #bee6fd;
-    border-top: 2px solid;
-	border-bottom: 2px solid;
-	border-right: 2px solid;
+	background-color: #b9dfff;
+    border-top: 1px solid #8c8c8c;
+    border-bottom: 1px solid #8c8c8c;
     text-align: center;
     padding: 2px;
     position: sticky;
     top: 0;
+    font-size: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .gm-log td {
 	border: none;
-    border-bottom: 2px solid #ddd;
-    border-right: 2px solid #ddd;
+	border-bottom: 1px solid #ddd;
     text-align: center;
-    height: 35px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-weight: 500;
+}
+
+.stat-granule input {
+    margin-left: 3px;
+    margin-right: 3px;
+    border-radius: 5px;
+    border: 1px solid #757575;
+}
+
+.stat-granule select {
+    border-radius: 5px;
+    margin-left: 3px;
+    margin-right: 3px;
 }
 
 .gm-log-header{
 
+}
+
+.gm-log-row-0{
+	background-color: #f1f1f1;
+}
+
+.gm-log-row-1{
+	background-color: white;
 }
 
 .gm-log{
@@ -476,6 +504,30 @@
 	margin: auto;
 	width: 100%;
 	border-collapse: separate;
+}
+
+.save-stat-granule{
+	background-color: #20ce6d;
+}
+
+.edit-stat-granule{
+    background-color: #359cff;
+}
+
+.delete-stat-granule{
+    background-color: #f51c40;
+}
+
+.gm-log-button{
+	border: none;
+	color: white;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 #gm-log-wrapper{

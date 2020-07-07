@@ -13,8 +13,18 @@
 	}
 
 	function populate_stat_array(player_stats_param, advanced_stats_param){
+
 		player_stats = player_stats_param
 		advanced_stats = advanced_stats_param
+		for (var i = player_stats.length - 1; i >= 0; i--) {
+			for (var j = player_stats[i].stats.length - 1; j >= 0; j--) {
+				if(player_stats[i].stats[j].stat_list_id == 16){
+					player_stats[i].minutes = player_stats[i].stats[j].value
+				}
+			}
+
+		}
+		console.log(player_stats)
 	}
 
 	function populate_team_stats(team_stats_param){
@@ -23,6 +33,8 @@
 
 	function populate_opponent_stats(opponent_stats_param){
 		opponent_stats = opponent_stats_param
+		console.log("printing opponent stats")
+		console.log(opponent_stats)
 	}
 
 	function populate_team_advanced_stats(team_advanced){
@@ -44,17 +56,17 @@
 	}
 
 
-	function populate_team_stat_tables(opponent){
+	function populate_team_stat_tables(opponent, per_game){
 		populate_basic_team_stat_header(team_stats_table);
 		var team_row = team_stats_table.insertRow(1);
 		team_row.classList.add("team-table-row1");
 		team_row.classList.add("team-table-row")
-		populate_basic_row(team_row, 1, false, team_stats);
+		populate_basic_row(team_row, 1, false, team_stats, per_game);
 		if(opponent){
 			var opponent_row = team_stats_table.insertRow(2);
 			opponent_row.classList.add("team-table-row0")
 			opponent_row.classList.add("team-table-row")
-			populate_basic_row(opponent_row, 2, false, opponent_stats);
+			populate_basic_row(opponent_row, 2, false, opponent_stats, per_game);
 		}
 		
 	}
@@ -88,7 +100,7 @@
 				populate_advanced_row(advanced_row, i);
 			}
 			// TODO: this is where we will add an extra boolean to account for extra case !!!
-			populate_basic_row(per_game_row, i, true, null, is_stat_index, false);	
+			populate_basic_row(per_game_row, i, true, null, single_game, false);	
 			populate_basic_row(per_minute_row, i, true, null, false, true);	
 			
 		}
@@ -146,6 +158,7 @@
 				if(is_player){
 					column_header = player_stats[i-1].nickname;
 				}else{
+					console.log(team)
 					if(team[0].is_opponent){
 						column_header = "Opponents"
 					}
@@ -184,6 +197,7 @@
 	}
 
 	function standard_table_data(col, stat_list_id, stat_array, player, is_player, is_advanced, is_per_game, is_per_minute){
+
 		var stat =  find_player_stat(stat_list_id, stat_array)
 		stat = get_adjusted_stat_value(stat, player, is_player, is_advanced, is_per_game, is_per_minute)
 		insert_standard_data(col, stat)
@@ -207,7 +221,9 @@
 		}
 		// Team Case
 		else {
-			stat = (stat / total_games).toFixed(1)
+			if(is_per_game){
+				stat = (stat / total_games).toFixed(1)
+			}
 		}
 		return stat;
 	}
@@ -240,15 +256,18 @@
 		var player_seconds;
 		var seconds_str;
 		if(is_per_game) {
+			console.log("in per game")
 			stat = stat/player.games_played;
 			player_minutes = Math.floor(stat / 60)
 			player_seconds = (stat - player_minutes * 60).toFixed(1);
 		}
 		else if (is_per_minute){
+			console.log("in per minute")
 			player_minutes = minutes_factor;
 			player_seconds = 0;
 		}
 		else {
+			console.log("in neither")
 			player_minutes = Math.floor(stat / 60)
 			player_seconds = (stat - player_minutes * 60)
 		}
@@ -297,8 +316,6 @@
 
 	function sort_advanced_table(display_priority){
 		var sort_index = find_player_stat_index(display_priority, advanced_stats[0].stats)
-		console.log(advanced_stats)
-		console.log(sort_index)
 		advanced_stats.sort(function(a,b){
 			return (b.stats[sort_index].value) - (a.stats[sort_index].value)
 		})

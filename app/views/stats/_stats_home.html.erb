@@ -36,7 +36,7 @@
 					</div>
 					<div class = "team-stats-heading team-basic-heading">Basic Stats</div>
 					<div class = "team-stat-table-wrapper">
-						<table class = "stats-table stats-table-1" id = "team-stats-table">
+						<table class = "stats-table" id = "team-stats-table">
 							
 						</table>
 					</div>
@@ -177,7 +177,7 @@
 		
 		<div class = "toolbar-dropdown" id = "show-shot-chart-dropdown" style = "display: none;">
 			<button class="flex-row toolbar-dropdown-button" onclick = "show_shot_chart(this, '<%=@team_name%>')"><div id="show-shot-chart-<%=@team_name%>" class="dropdown-action lineup-dropdown-action" ><%=@team_name%></div></button>
-			<button class="flex-row toolbar-dropdown-button" onclick = "show_shot_chart(this, 'opponents')"><div id="show-shot-chart-opponents" class="dropdown-action lineup-dropdown-action" >Opponents</div></button>
+			<button class="flex-row toolbar-dropdown-button" onclick = "show_shot_chart(this, 'opponent')"><div id="show-shot-chart-opponents" class="dropdown-action lineup-dropdown-action" >Opponents</div></button>
 		<%@shot_chart_data.each do |data|%>
 			<button class="flex-row toolbar-dropdown-button" onclick = "show_shot_chart(this, <%=data[:member_id]%>)"><div id="show-shot-chart-<%=data[:member_id]%>" class="dropdown-action lineup-dropdown-action" ><%=data[:name]%></div></button>
 		<%end%>
@@ -186,7 +186,7 @@
 	<div class = " flex-row center-justified center-aligned" id = "shot-charts-wrapper">
 		<div class = "shot-charts">
 			<div id = "shot-trends-<%=@team_name%>" class = "index-shot-chart"></div>
-			<div id = "shot-trends-opponents" class = "index-shot-chart"></div>
+			<div id = "shot-trends-opponent" class = "index-shot-chart"></div>
 			<%@shot_chart_data.each do |data|%>
 			<div id = "shot-trends-<%=data[:member_id]%>" class = "index-shot-chart"></div>
 			<%end%>

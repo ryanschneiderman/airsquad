@@ -15,15 +15,16 @@
 			});
 
 			$(window).resize(function(){
-				horiz_offset = $(".canvas-container").offset().left + parseInt($(".canvas-container").css("margin-left"));
-				vert_offset  = $(".canvas-container").offset().top;
+				if($("body").hasClass("games") && $("body").hasClass("game_mode")){
+					horiz_offset = $(".canvas-container").offset().left + parseInt($(".canvas-container").css("margin-left"));
+					vert_offset  = $(".canvas-container").offset().top;
+				}
 			})
 
 			canvasVarRules()
 			loadGamestate()
 
 			$(".show-canvas").on("click", function(e) {
-				console.log("clicking on show canvas")
 				if(make_selected && curr_player != null){
 					if(total_minutes > 0){
 						un_grey_out_stats()
@@ -82,18 +83,23 @@
     	this.parentElement.removeChild(this);
 	}
 
+	function init_clock(){
+		if(gon.num_periods == 4){
+			$("#period").text("1Q")
+		}
+		else{
+			$("#period").text("1H")
+		}
+		
+	}
+
 	function loadGamestate(){
-		console.log(gon.game_state)
 		game_state = JSON.parse(JSON.parse(gon.game_state))
 		if (game_state){
 			prompt_load_game_state()
 		}
 		else{
-			$("#GM-initializer").show();
-			$(".modal-overlay").css("display", "block");
-			$(".GM-modal").css("display", "flex");
-			populate_players();
-			populate_inactive_selection(false);
+			pre_game_mode()
 		}
 	}	
 
@@ -160,6 +166,7 @@
     	});
 	}
 
+
 	function initCollectableStats(){
 		for (var i = gon.collection_stats.length - 1; i >= 0; i--) {
 			if(gon.collection_stats[i].id == 1 || gon.collection_stats[i].id == 2){
@@ -169,6 +176,9 @@
 				collectable_stats.push({"stat_id" : gon.collection_stats[i].id, "stat_name" : gon.collection_stats[i].display_name})
 			}
 		}
+		collectable_stats.sort((a,b) => (a.stat_id - b.stat_id));
+		console.log("collectable_stats")
+		console.log(collectable_stats)
 	}
 
 
@@ -198,17 +208,14 @@
 	})
 
 	function pre_game_mode(){
-		$("#load-game-state-wrapper").hide()
+		$("#game-mode-overlay").show();
+		$("#game-mode-modal").show();
+		$(".GM-modal-inner-block").hide()
 		$("#personel-selection-wrapper").show()
-		$("#personel-selection-next").show()
-
-  //   	$("#GM-load").hide();
-  //   	$("#GM-initializer").show();
-  //   	$(".modal-overlay").css("display", "block");
-		// $(".GM-modal").css("display", "flex");
-		
 		populate_players();
 		populate_inactive_selection(false);
+
+		init_clock()
     }
 
     function prompt_load_game_state(){
@@ -293,15 +300,15 @@
 
 
 
-	/**************************************************************/
-	/************************* </GLOBALS> *************************/
-	/**************************************************************/
+	/************************************************************************************************************************************************/
+	/****************************************************************** </GLOBALS> ******************************************************************/
+	/************************************************************************************************************************************************/
 
 
 
-	/**************************************************************/
-	/*********************** <INITIALIZERS> ***********************/
-	/**************************************************************/
+	/***********************************************************************************************************************************************/
+	/****************************************************************** <INITIALIZERS> *************************************************************/
+	/***********************************************************************************************************************************************/
 
 	function initialize_globals(c, canvas_width, canvas_height){
 		canvas = c;
@@ -363,9 +370,7 @@
 		}
 	}
 
-	// TODO: come back to this
 	function populate_display_stats(){
-		console.log(gon.stat_table_columns)
 		var index = 0;
 		for (var i = gon.stat_table_columns.length - 1; i >= 0; i--) {
 			display_stats.push({"stat": gon.stat_table_columns[i].stat_name, "display_priority": gon.stat_table_columns[i].display_priority, "display_type" : gon.stat_table_columns[i].display_type, "percentage_string" : gon.stat_table_columns[i].percentage_string, "stat_list_id" : gon.stat_table_columns[i].stat_list_id})
@@ -500,7 +505,6 @@
 		populate_stat_table();
 		setPlayerTimesInTable();
 		load_lineups_arr(game_state.lineups_arr)
-		console.log(lineups_arr)
 		loadStatGranules(all_stat_granules)
 		to_team_shot_chart()
 		//console.log("game_state lineups")
@@ -519,6 +523,7 @@
 		else{
 			scoreboard_clock.stop_timer()
 		}
+		console.log(team_stat_totals)
 	}
 
 	function start_game_mode(game_state_exists){
@@ -535,7 +540,7 @@
 		$("#opponent").html(opponent_button_html);
 		on_game_page = true;
 		update_curr_lineup(true);
-		
+		initCollectableStats()
 		if(!game_state_exists){
 			minutes = minutes_per_period;
 			seconds = 0;
@@ -566,15 +571,15 @@
 		vert_offset  = $(".canvas-container").offset().top;
 	}
 
-	/**************************************************************/
-	/*********************** </INITIALIZERS> ***********************/
-	/**************************************************************/
+	/***********************************************************************************************************************************************/
+	/**************************************************************** </INITIALIZERS> **************************************************************/
+	/***********************************************************************************************************************************************/
 
 
 
-	/**************************************************************/
-	/*************** <STARTER AND INACTIVE SELECTION> *************/
-	/**************************************************************/
+	/***********************************************************************************************************************************************/
+	/******************************************************* <STARTER AND INACTIVE SELECTION> ******************************************************/
+	/***********************************************************************************************************************************************/
 
 	function populate_starter_selection(){
 		$("#personel-selection-header").html("Select Starters");
@@ -620,7 +625,6 @@
 	function splice_active(player_id){
 		removeIndex = active_players.map(function(item) { return item.id; }).indexOf(player_id);
         ~removeIndex && active_players.splice(removeIndex, 1);
-        console.log(active_players)
 	}
 
 	function deselect_starter(button, player_id){
@@ -682,24 +686,21 @@
 				break;
 		}
 	}
-	/**************************************************************/
-	/*************** </STARTER AND INACTIVE SELECTION> ************/
-	/**************************************************************/
+	/***********************************************************************************************************************************************/
+	/******************************************************** </STARTER AND INACTIVE SELECTION> ****************************************************/
+	/***********************************************************************************************************************************************/
 
 
 
 
-	/**************************************************************/
-	/************************* <LINEUPS>***************************/
-	/**************************************************************/
+	/***********************************************************************************************************************************************/
+	/****************************************************************** <LINEUPS>*******************************************************************/
+	/***********************************************************************************************************************************************/
 
 	function load_lineups_arr(new_lineups_arr){
 		var len = new_lineups_arr.length;
 		for(var i=0; i < len; i++){
-			console.log(new_lineups_arr)
 			var lineup = lineup_exists(new_lineups_arr[i].ids)
-			console.log("this lineup")
-			console.log(lineup)
 			if(lineup){
 				var timer = new_lineups_arr[i].timer;
 				lineup.timer.clock_moving = timer.clock_moving;
@@ -725,8 +726,6 @@
 				}
 			}
 		}
-		console.log("curr_lineup")
-		console.log(curr_lineup)
 		lineups_arr = new_lineups_arr;
 	}
 
@@ -823,9 +822,9 @@
 	}
 
 
-	/**************************************************************/
-	/************************* </LINEUPS>**************************/
-	/**************************************************************/
+	/************************************************************************************************************************************************/
+	/****************************************************************** </LINEUPS>*******************************************************************/
+	/************************************************************************************************************************************************/
 
 
 
@@ -833,9 +832,9 @@
 
 
 
-	/**************************************************************/
-	/************************* <TOOLBAR>***************************/
-	/**************************************************************/
+	/************************************************************************************************************************************************/
+	/****************************************************************** <TOOLBAR>********************************************************************/
+	/************************************************************************************************************************************************/
 
 
 	function populate_player_buttons(is_in_game){
@@ -1101,16 +1100,16 @@
 			$(button).addClass("player-button-highlight")
 		}
 	}
-	/**************************************************************/
-	/************************* </TOOLBAR>**************************/
-	/**************************************************************/
+	/************************************************************************************************************************************************/
+	/****************************************************************** </TOOLBAR>*******************************************************************/
+	/************************************************************************************************************************************************/
 
 
 
 
-	/**************************************************************/
-	/************************* <SHOT CHART>************************/
-	/**************************************************************/
+	/************************************************************************************************************************************************/
+	/****************************************************************** <SHOT CHART>*****************************************************************/
+	/************************************************************************************************************************************************/
 
 	
 	function determine_3_or_2(x_loc, y_loc){
@@ -1318,7 +1317,6 @@
 	    		undo_table_cell(old_index, shot_result, period_rows.half_row)
 	    	}
     	}
-    	console.log(lineups_arr)
     }
 
 
@@ -1397,14 +1395,14 @@
 		canvas.renderAll();
 		
 	}
-	/**************************************************************/
-	/************************* </SHOT CHART>***********************/
-	/**************************************************************/
+	/************************************************************************************************************************************************/
+	/****************************************************************** </SHOT CHART>****************************************************************/
+	/************************************************************************************************************************************************/
 
 
-	/**************************************************************/
-	/************************ <GAME LOG> **************************/
-	/**************************************************************/
+	/************************************************************************************************************************************************/
+	/***************************************************************** <GAME LOG> *******************************************************************/
+	/************************************************************************************************************************************************/
 
 	function save_granule_player(granule_row, player){
 		var player_col = $(granule_row).find(".stat-granule-player")
@@ -1490,6 +1488,8 @@
 		var sel = $('<select>');
 
 		var normal_stats = collectable_stats.slice()
+		console.log("normal_stats")
+		console.log(normal_stats)
 		normal_stats.splice(0, 2)
 		removeIndex = normal_stats.map(function(item) { return item.stat_id; }).indexOf(13);
         ~removeIndex && normal_stats.splice(removeIndex, 2);
@@ -1498,6 +1498,7 @@
 			sel = fg_log_html(stat_col)
 		}
 		else{
+			console.log(normal_stats)
 			$(normal_stats).each(function() {
 				if(stat_col.attr("stat-id") == this.stat_id){
 					sel.append($("<option selected = 'selected'>").attr('value',this.stat_id).text(this.stat_name));
@@ -1512,7 +1513,8 @@
 
 	function save_granule_timestamp(granule_row, timestamp){
 		var timestamp_col = $(granule_row).find(".stat-granule-timestamp")
-		var time_string = "Q" + timestamp.quarter + "-" + timestamp.minutes + ":" + timestamp.seconds;
+		var period_string = (gon.num_periods == 4) ? "Q" : "H" 
+		var time_string = period_string + timestamp.period + "-" + timestamp.minutes + ":" + timestamp.seconds;
 		timestamp_col.html(time_string)
 	}
 
@@ -1527,8 +1529,8 @@
 
 
 		var sel = $('<select>')
-		var quarter_str_arr = ["Q1", "Q2", "Q3", "Q4"]
-		$(quarter_str_arr).each(function(){
+		var period_str_arr = (gon.num_periods == 4) ? ["Q1", "Q2", "Q3", "Q4"] : ["H1", "H2"]
+		$(period_str_arr).each(function(){
 			if(this == timestamp_splice[0]){
 				sel.append($("<option selected = 'selected'>").attr('value', this).text(this))
 			}
@@ -1570,12 +1572,18 @@
 
 	function get_timestamp_from_row(granule_row){
 		var timestamp_col = $(granule_row).find(".stat-granule-timestamp")
-		var quarter_col = timestamp_col.find("select")
-		var selected_quarter = quarter_col.find(":selected").val().split("Q");
+		var period_col = timestamp_col.find("select")
+		if(gon.num_periods == 4){
+			var selected_period = period_col.find(":selected").val().split("Q");
+		}
+		else{
+			var selected_period = period_col.find(":selected").val().split("H");
+		}
+
 		var minutes = timestamp_col.find(".minutes").val()
 		var seconds = timestamp_col.find(".seconds").val()
 
-		return {"quarter" : parseInt(selected_quarter[1]), "minutes" : minutes, "seconds" : seconds}
+		return {"period" : parseInt(selected_period[1]), "minutes" : minutes, "seconds" : seconds}
 
 	}
 
@@ -1912,17 +1920,17 @@
 
 	function print_log_info(){
 		// console.log(team_stat_totals)
-		 console.log(stat_array)
+		console.log(stat_array)
 		// console.log(all_stat_granules)
 		// console.log(opponent_obj)
 		// console.log(quarter_1_totals)
 		// console.log(quarter_2_totals)
 		//console.log(half_1_totals)
-		console.log(lineups_arr)
+		//console.log(lineups_arr)
 	}
 
 	function compare_timestamps(row_time, granule_time){
-		if(parseInt(row_time.minutes) != granule_time.minute || parseInt(row_time.seconds) != granule_time.second || row_time.quarter != granule_time.period){
+		if(parseInt(row_time.minutes) != granule_time.minute || parseInt(row_time.seconds) != granule_time.second || row_time.period != granule_time.period){
 			return true;
 		}
 		else return false;
@@ -1932,9 +1940,14 @@
 		var length = player.gran_stat_arr.length;
 		for(var i = 0; i < length; i++){
 			if(player.gran_stat_arr[i].granule_id == granule_id){
-				player.gran_stat_arr[i].metadata.period = row_time.quarter;
+				player.gran_stat_arr[i].metadata.period = row_time.period;
 				player.gran_stat_arr[i].metadata.minute = parseInt(row_time.minutes)
 				player.gran_stat_arr[i].metadata.second = parseInt(row_time.seconds)
+				if(player.gran_stat_arr[i].stat == 9 || player.gran_stat_arr[i].stat == 10 || player.gran_stat_arr[i].stat == 11|| player.gran_stat_arr[i].stat == 12){
+					player.gran_stat_arr[i-1].metadata.period = row_time.period;
+					player.gran_stat_arr[i-1].metadata.minute = parseInt(row_time.minutes)
+					player.gran_stat_arr[i-1].metadata.second = parseInt(row_time.seconds)
+				}
 			}
 		}
 	}
@@ -1943,7 +1956,7 @@
 		var length = all_stat_granules.length;
 		for(var i = 0; i < length; i++){
 			if(all_stat_granules[i].granule_id == granule_id){
-				all_stat_granules[i].metadata.period = row_time.quarter;
+				all_stat_granules[i].metadata.period = row_time.period;
 				all_stat_granules[i].metadata.minute = parseInt(row_time.minutes)
 				all_stat_granules[i].metadata.second = parseInt(row_time.seconds)
 			}
@@ -2220,83 +2233,84 @@
 		}
 	}
 
-	function rollback_period_stat(stat, is_opponent, old_quarter){
+	function rollback_period_stat(stat, is_opponent, old_period){
 		var stat_i = find_stat_in_player_arr(stat)
 		var table_i = find_gm_stat_index(stat_array[0].cumulative_arr[stat_i])
-		period_stats(is_opponent, stat_i, -1, old_quarter)
-		update_period_table(is_opponent, old_quarter, table_i, -1)
+		period_stats(is_opponent, stat_i, -1, old_period)
+		update_period_table(is_opponent, old_period, table_i, -1)
 	}
 
-	function add_period_stat(stat, is_opponent, new_quarter){
+	function add_period_stat(stat, is_opponent, new_period){
 		var stat_i = find_stat_in_player_arr(stat)
 		var table_i = find_gm_stat_index(stat_array[0].cumulative_arr[stat_i])
-		period_stats(is_opponent, stat_i, 1, new_quarter)
-		update_period_table(is_opponent, new_quarter, table_i, 1)
+		period_stats(is_opponent, stat_i, 1, new_period)
+		update_period_table(is_opponent, new_period, table_i, 1)
 	}
 
 
-	function rollback_period_fg(stat, is_opponent, old_quarter, rollback_points){
+	function rollback_period_fg(stat, is_opponent, old_period, rollback_points){
 		var stat_i = find_stat_in_player_arr(stat)
 		switch(stat){
     		case 11:
-    			if(rollback_points) period_points(is_opponent, -3, old_quarter)
-				period_stats(is_opponent, 0, -1, old_quarter)
-				period_fg_in_table(stat, is_opponent, three_pt_fg_index, fg_index, "Make", old_quarter, true)
+    			if(rollback_points) period_points(is_opponent, -3, old_period)
+				period_stats(is_opponent, 0, -1, old_period)
+				period_fg_in_table(stat, is_opponent, three_pt_fg_index, fg_index, "Make", old_period, true)
     			break;
     		case 9:
-    			if(rollback_points) period_points(is_opponent, -2, old_quarter)
-				period_stats(is_opponent, 0, -1, old_quarter)
-				period_fg_in_table(stat, is_opponent, null, fg_index, "Make", old_quarter, true)
+    			if(rollback_points) period_points(is_opponent, -2, old_period)
+				period_stats(is_opponent, 0, -1, old_period)
+				period_fg_in_table(stat, is_opponent, null, fg_index, "Make", old_period, true)
     			break;
     		case 12 :
-				period_stats(is_opponent, 1, -1, old_quarter)
-				period_fg_in_table(stat, is_opponent, three_pt_fg_index, fg_index, "Miss", old_quarter, true)
+				period_stats(is_opponent, 1, -1, old_period)
+				period_fg_in_table(stat, is_opponent, three_pt_fg_index, fg_index, "Miss", old_period, true)
     			break;
     		case 10 :
-				period_stats(is_opponent, 1, -1, old_quarter)
-				period_fg_in_table(stat, is_opponent, null, fg_index, "Miss", old_quarter, true)		
+				period_stats(is_opponent, 1, -1, old_period)
+				period_fg_in_table(stat, is_opponent, null, fg_index, "Miss", old_period, true)		
     			break;
     		case 13 :
-    			if(rollback_points) period_points(is_opponent, -1, old_quarter)
-				period_fg_in_table(stat, is_opponent, null, ft_index, "Make", old_quarter, true)
+    			if(rollback_points) period_points(is_opponent, -1, old_period)
+				period_fg_in_table(stat, is_opponent, null, ft_index, "Make", old_period, true)
     			break;
     		case 14:
-				period_fg_in_table(stat, is_opponent, null, ft_index, "Miss", old_quarter, true)				
+				period_fg_in_table(stat, is_opponent, null, ft_index, "Miss", old_period, true)				
     			break;
 	    }
-	    period_stats(is_opponent, stat_i, -1, old_quarter)
+	    period_stats(is_opponent, stat_i, -1, old_period)
 	}
 
-	function add_period_fg(stat, is_opponent, new_quarter){
+	// TODO: Check how period stats work with new period param
+	function add_period_fg(stat, is_opponent, new_period){
 		var stat_i = find_stat_in_player_arr(stat)
 		switch(stat){
     		case 11:
-    			period_points(is_opponent, 3, new_quarter)
-				period_stats(is_opponent, 0, 1, new_quarter)
-				period_fg_in_table(stat, is_opponent, three_pt_fg_index, fg_index, "Make", new_quarter, false)
+    			period_points(is_opponent, 3, new_period)
+				period_stats(is_opponent, 0, 1, new_period)
+				period_fg_in_table(stat, is_opponent, three_pt_fg_index, fg_index, "Make", new_period, false)
     			break;
     		case 9:
-    			period_points(is_opponent, 2, new_quarter)
-				period_stats(is_opponent, 0, 1, new_quarter) 
-				period_fg_in_table(stat, is_opponent, null, fg_index, "Make", new_quarter, false)	
+    			period_points(is_opponent, 2, new_period)
+				period_stats(is_opponent, 0, 1, new_period) 
+				period_fg_in_table(stat, is_opponent, null, fg_index, "Make", new_period, false)	
     			break;
     		case 12 :
-				period_stats(is_opponent, 1, 1, new_quarter) 
-				period_fg_in_table(stat, is_opponent, three_pt_fg_index, fg_index, "Miss", new_quarter, false)
+				period_stats(is_opponent, 1, 1, new_period) 
+				period_fg_in_table(stat, is_opponent, three_pt_fg_index, fg_index, "Miss", new_period, false)
     			break;
     		case 10 :
-				period_stats(is_opponent, 1, 1, new_quarter) 	
-				period_fg_in_table(stat, is_opponent, null, fg_index, "Miss", new_quarter, false)		
+				period_stats(is_opponent, 1, 1, new_period) 	
+				period_fg_in_table(stat, is_opponent, null, fg_index, "Miss", new_period, false)		
     			break;
     		case 13 :
-    			period_points(is_opponent, 1, new_quarter)
-				period_fg_in_table(stat, is_opponent, null, ft_index, "Make", new_quarter, false)	
+    			period_points(is_opponent, 1, new_period)
+				period_fg_in_table(stat, is_opponent, null, ft_index, "Make", new_period, false)	
     			break;
     		case 14:
-				period_fg_in_table(stat, is_opponent, null, ft_index, "Miss", new_quarter, false)  				
+				period_fg_in_table(stat, is_opponent, null, ft_index, "Miss", new_period, false)  				
     			break;
 	    }
-		period_stats(is_opponent, stat_i, 1, new_quarter)
+		period_stats(is_opponent, stat_i, 1, new_period)
 	}
 
 	function handle_standard_stat_changes(player, granule, row_info, granule_id, period_change){
@@ -2340,7 +2354,7 @@
 
 	function save_granule(granule_id, button){
 		update_fg_locations()
-		var granule_row = button.parentElement.parentElement.parentElement
+		var granule_row = $(button).parents(".stat-granule")
 		var granule = find_stat_granule(granule_id)
 
 		var old_player = find_player(granule.player)
@@ -2349,7 +2363,7 @@
 		var new_player = find_player_by_id(row_info.player.player_id)
 		var change_period = false;
 		var old_period = parseInt(granule.metadata.period);
-		var new_period = parseInt(row_info.timestamp.quarter);
+		var new_period = parseInt(row_info.timestamp.period);
 		var old_stat = granule.stat
 		if(new_period != old_period){
 			change_period = true;
@@ -2423,20 +2437,20 @@
 	}
 
 	function edit_granule_button(granule_row, granule_id, stat_id){
-		var edit_col = $(granule_row).find(".edit-delete-granule")
-		var edit_button = "<button class = 'edit-stat-granule' id = 'edit-stat-" + granule_id + "' onclick = 'edit_stat_granule(this, " + granule_id +")'>Edit</button> / <button class = 'edit-stat-granule' id = 'delete-stat-" + granule_id + "' onclick = 'delete_stat_prompt(this, " + granule_id +")'>Delete</button>"
+		var edit_col = $(granule_row).find(".stat-granule-edit")
+		var edit_button = "<button class = 'gm-log-button edit-stat-granule' id = 'edit-stat-" + granule_id + "' onclick = 'edit_stat_granule(this, " + granule_id +")'>Edit</button>"
 		edit_col.html(edit_button)
 	}
 
 	function save_granule_button(granule_row, granule_id){
-		var edit_col = $(granule_row).find(".edit-delete-granule")
-		var save_button = "<button onclick = 'save_granule(" + granule_id + ", this  )'>Save</button>"
+		var edit_col = $(granule_row).find(".stat-granule-edit")
+		var save_button = "<button class = 'gm-log-button save-stat-granule' onclick = 'save_granule(" + granule_id + ", this  )'>Save</button>"
 		edit_col.html(save_button)
 	}
 
 	function edit_stat_granule(button, granule_id){
 		update_fg_locations()
-		var granule_row = button.parentElement.parentElement.parentElement
+		var granule_row = $(button).parents(".stat-granule")
 		edit_granule_player(granule_row)
 		edit_granule_stat(granule_row)
 		edit_granule_timestamp(granule_row, granule_id)
@@ -2448,16 +2462,20 @@
         ~removeIndex && all_stat_granules.splice(removeIndex, 1);
 	}
 
-	function delete_stat_granule(button, granule_id){
-		var granule_row = button.parentElement.parentElement.parentElement
-		var granule = find_stat_granule(granule_id)
-		undo_player_array_stat(granule)
-		remove_granule(granule)
-		print_log_info()
+	function remove_granule_html(granule_id){
+		var granule_row = $(".stat-granule-"+granule_id)
 		while (granule_row.firstChild) {
 		    granule_row.removeChild(granule_row.firstChild);
 		}
 		granule_row.remove()
+	}
+
+	function delete_stat_granule(button, granule_id){
+		var granule = find_stat_granule(granule_id)
+		undo_player_array_stat(granule)
+		remove_granule(granule)
+		print_log_info()
+		remove_granule_html(granule_id)
 	}
 
 	function delete_stat_prompt(button, granule_id){
@@ -2483,7 +2501,10 @@
 
 	function logStat(stat_name, player, stat_object){
 		var new_row = game_log.insertRow()
+		var row_style = $('#gm-log tr').length % 2;
 		$(new_row).addClass("stat-granule-"+stat_object.granule_id)
+		$(new_row).addClass("stat-granule")
+		$(new_row).addClass("gm-log-row-"+row_style)
 		var player_col = new_row.insertCell()
 		player_col.innerHTML = player.name
 		if(stat_object.is_opponent){
@@ -2507,7 +2528,11 @@
 
 		var edit_col = new_row.insertCell()
 		$(edit_col).addClass("stat-granule-edit")
-		edit_col.innerHTML = "<div class = 'edit-delete-granule'><button class = 'edit-stat-granule' id = 'edit-stat-" + stat_object.granule_id + "' onclick = 'edit_stat_granule(this, "+ stat_object.granule_id +")'>Edit</button> / <button class = 'edit-stat-granule' id = 'delete-stat-" + stat_object.granule_id + "' onclick = 'delete_stat_prompt(this, "+ stat_object.granule_id +")'>Delete</button></div>"
+		edit_col.innerHTML = "<button class = 'gm-log-button edit-stat-granule' id = 'edit-stat-" + stat_object.granule_id + "' onclick = 'edit_stat_granule(this, "+ stat_object.granule_id +")'>Edit</button>"
+
+		var delete_col = new_row.insertCell()
+		$(edit_col).addClass("stat-granule-delete")
+		delete_col.innerHTML = "<button class = 'gm-log-button delete-stat-granule' id = 'delete-stat-" + stat_object.granule_id + "' onclick = 'delete_stat_prompt(this, "+ stat_object.granule_id +")'>Delete</button>"
 
 		if(stat_object.metadata.minute != null){
 			var second = stat_object.metadata.second 
@@ -2518,7 +2543,8 @@
 			(second < 10) ? seconds_str = "0" + second.toString() : seconds_str = second.toString();
 			var minutes_str = minute.toString();
 			var time_string = minutes_str + ":" + seconds_str
-			var period_string =  "Q"+ period.toString()
+			var period_abbr = (gon.num_periods == 4) ? "Q" : "H" 
+			var period_string =  period_abbr+ period.toString()
 
 			time_stamp_col.innerHTML = period_string + "-" + time_string 
 		}
@@ -2528,7 +2554,8 @@
 			(seconds < 10) ? seconds_str = "0" + seconds.toString() : seconds_str = seconds.toString();
 			(minutes < 10) ? minutes_str = "0" + minutes.toString() : minutes_str = minutes.toString();
 			var time_string = minutes.toString() + ":" + seconds_str
-			var period_string = "Q" + curr_period.toString()
+			var period_abbr = (gon.num_periods == 4) ? "Q" : "H" 
+			var period_string = period_abbr + curr_period.toString()
 
 			time_stamp_col.innerHTML = period_string + "-" + time_string 
 		}
@@ -2541,14 +2568,14 @@
 	}
 
 
-	/**************************************************************/
-	/************************ </GAME LOG> **************************/
-	/**************************************************************/
+	/******************************************************************************************************************************************/
+	/************************************************************** </GAME LOG> ***************************************************************/
+	/******************************************************************************************************************************************/
 
 
-	/**************************************************************/
-	/************************ <PERIOD TABLES> *********************/
-	/**************************************************************/
+	/******************************************************************************************************************************************/
+	/************************************************************** <PERIOD TABLES> ***********************************************************/
+	/******************************************************************************************************************************************/
 
 	function get_period_table(i){
 		switch(i){
@@ -2568,7 +2595,13 @@
 	}
 
 	function populate_period_tables(){
-		for (var i = 1; i <= 6; i++){
+		if(gon.num_periods == 4){
+			var num_tables = 6;
+		}
+		else{
+			num_tables = 2
+		}
+		for (var i = 1; i <= 2; i++){
 			var table = get_period_table(i)
 			var stats_row = table.insertRow(0);
 			var team_row = table.insertRow(1);
@@ -2586,8 +2619,7 @@
 		col.innerHTML = parseInt(col.innerHTML) + increment_value;
 	}
 
-
-	function update_period_table(is_opponent, period, index, increment_value){
+	function update_quarter_table(is_opponent, period, index, increment_value){
 		if(period <=2 ){
 			if (period == 1) {
 				update_period_col(first_quarter_table, index, is_opponent, increment_value)
@@ -2608,8 +2640,27 @@
 		}
 	}
 
-	// works for undo -- set increment_value negative 
-	function period_stats(is_opponent, stat_i, increment_value, period){
+	function update_half_table(is_opponent, period, index, increment_value){
+		if(period ==1 ){
+			update_period_col(first_half_table, index, is_opponent, increment_value)
+		}
+		else{
+			update_period_col(second_half_table, index, is_opponent, increment_value)
+		}
+			
+	}
+
+
+	function update_period_table(is_opponent, period, index, increment_value){
+		if(gon.num_periods == 4){
+			update_quarter_table(is_opponent, period, index, increment_value)
+		}
+		else{
+			update_half_table(is_opponent, period, index, increment_value)
+		}
+	}
+
+	function update_quarter_stats(is_opponent, stat_i, increment_value, period){
 		if(period <=2 ){
 			if (period == 1) {
 				(is_opponent) ? quarter_1_totals[stat_i].opponent_total.total+= increment_value : quarter_1_totals[stat_i].team_total.total+= increment_value;
@@ -2630,7 +2681,38 @@
 		}
 	}
 
-	function determine_period_rows(period, is_opponent){
+	function update_half_stats(is_opponent, stat_i, increment_value, period){
+		if(period ==1 ){
+			(is_opponent) ? half_1_totals[stat_i].opponent_total.total+= increment_value : half_1_totals[stat_i].team_total.total+= increment_value;
+		}
+		else{
+			(is_opponent) ? half_2_totals[stat_i].opponent_total.total+= increment_value : half_2_totals[stat_i].team_total.total+= increment_value;
+		}
+	}
+
+	// works for undo -- set increment_value negative 
+	function period_stats(is_opponent, stat_i, increment_value, period){
+		if(gon.num_periods == 4){
+			update_quarter_stats(is_opponent, stat_i, increment_value, period)
+		}
+		else{
+			update_half_stats(is_opponent, stat_i, increment_value, period)
+		}
+	}
+
+
+	function determine_half_row(period, is_opponent){
+		var half_row;
+		if(period ==1 ){
+			(is_opponent) ? half_row = first_half_table.rows[2]: half_row = first_half_table.rows[1];
+		}
+		else{
+			(is_opponent) ? half_row = second_half_table.rows[2]: half_row = second_half_table.rows[1];
+		}
+		return half_row
+	}
+
+	function determine_quarter_rows(period, is_opponent){
 		var period_row;
 		var half_row;
 		if(period <=2 ){
@@ -2654,8 +2736,24 @@
 		return {"period_row": period_row, "half_row" : half_row}
 	}
 
-	function period_fg_in_table(stat, is_opponent, index, result_index, shot_result, period, undo){
-		var period_rows = determine_period_rows(period, is_opponent)
+	function half_fg_in_table(stat, is_opponent, index, result_index, shot_result, period, undo){
+		var half_row = determine_half_row(period, is_opponent)
+		if(undo){
+			if(stat == 11 || stat ==12){
+				undo_table_cell(index, shot_result, half_row)
+			}
+			undo_table_cell(result_index, shot_result, half_row)
+		}
+		else{
+			if(stat == 11 || stat ==12){
+				fg_in_table(index, shot_result, half_row)
+			}
+			fg_in_table(result_index, shot_result, half_row);
+		}
+	}
+
+	function quarter_fg_in_table(stat, is_opponent, index, result_index, shot_result, period, undo){
+		var period_rows = determine_quarter_rows(period, is_opponent)
 		
 		if(undo){
 			if(stat == 11 || stat ==12){
@@ -2675,12 +2773,24 @@
 		}
 	}
 
-	function period_points(is_opponent, shot_value, period){
+
+
+	function period_fg_in_table(stat, is_opponent, index, result_index, shot_result, period, undo){
+		if(gon.num_periods == 4){
+			quarter_fg_in_table(stat, is_opponent, index, result_index, shot_result, period, undo)
+		}
+		else{
+			half_fg_in_table(stat, is_opponent, index, result_index, shot_result, period, undo)
+		}	
+	}
+
+	function increment_quarter_points(is_opponent, shot_value, period){
 		var period_row;
 		var half_row;
 		var period_array;
 		var half_array;
 		var point_index = find_stat_in_player_arr(15);
+
 		if(period <=2 ){
 			if (period == 1) {
 				(is_opponent) ?  period_row = first_quarter_table.rows[2]: period_row = first_quarter_table.rows[1];
@@ -2717,14 +2827,45 @@
 		}
 	}
 
-	function toggle_table(table_case, button){
+	function increment_half_points(is_opponent, shot_value, period){
+		var half_row;
+		var half_array;
+		var point_index = find_stat_in_player_arr(15);
+
+		if(period ==1 ){
+			(is_opponent) ? half_row = first_half_table.rows[2]: half_row = first_half_table.rows[1];
+			half_array = half_1_totals;
+		}
+		else{
+			(is_opponent) ? half_row = second_half_table.rows[2]: half_row = second_half_table.rows[1];
+			half_array = half_2_totals
+		}
+		points_in_table(half_row, shot_value);
+		if(is_opponent){
+			half_array[point_index].opponent_total.total += shot_value
+		}
+		else{
+			half_array[point_index].team_total.total += shot_value
+		}
+	}
+
+	function period_points(is_opponent, shot_value, period){
+		if(gon.num_periods == 4){
+			increment_quarter_points(is_opponent, shot_value, period)
+		}
+		else{
+			increment_half_points(is_opponent, shot_value, period)
+		}
+	}
+
+	function toggle_gm_table(table_case, button){
 		$(".active-table").removeClass("active-table")
 		$(".gm-table-button").addClass("inactive-table-label")
 		$(button).removeClass("inactive-table-label")
 		$(button).addClass("active-table")
 		switch(table_case){
 			case 0 :
-				$("#team-stats-table").show()
+				$("#gm-team-stats-table").show()
 				$("#half-1-table").hide()
 				$("#half-2-table").hide()
 				$("#quarter-1-table").hide()
@@ -2733,7 +2874,7 @@
 				$("#quarter-4-table").hide()
 				break;
 			case 1 :
-				$("#team-stats-table").hide()
+				$("#gm-team-stats-table").hide()
 				$("#half-1-table").show()
 				$("#half-2-table").hide()
 				$("#quarter-1-table").hide()
@@ -2742,7 +2883,7 @@
 				$("#quarter-4-table").hide()
 				break;
 			case 2 :
-				$("#team-stats-table").hide()
+				$("#gm-team-stats-table").hide()
 				$("#half-1-table").hide()
 				$("#half-2-table").show()
 				$("#quarter-1-table").hide()
@@ -2751,7 +2892,7 @@
 				$("#quarter-4-table").hide()
 				break;
 			case 3 :
-				$("#team-stats-table").hide()
+				$("#gm-team-stats-table").hide()
 				$("#half-1-table").hide()
 				$("#half-2-table").hide()
 				$("#quarter-1-table").show()
@@ -2760,7 +2901,7 @@
 				$("#quarter-4-table").hide()
 				break;
 			case 4 :
-				$("#team-stats-table").hide()
+				$("#gm-team-stats-table").hide()
 				$("#half-1-table").hide()
 				$("#half-2-table").hide()
 				$("#quarter-1-table").hide()
@@ -2769,7 +2910,7 @@
 				$("#quarter-4-table").hide()
 				break;
 			case 5 :
-				$("#team-stats-table").hide()
+				$("#gm-team-stats-table").hide()
 				$("#half-1-table").hide()
 				$("#half-2-table").hide()
 				$("#quarter-1-table").hide()
@@ -2778,7 +2919,7 @@
 				$("#quarter-4-table").hide()
 				break;
 			case 6 :
-				$("#team-stats-table").hide()
+				$("#gm-team-stats-table").hide()
 				$("#half-1-table").hide()
 				$("#half-2-table").hide()
 				$("#quarter-1-table").hide()
@@ -2788,19 +2929,20 @@
 				break;
 		}
 	}
-	/**************************************************************/
-	/*********************** </PERIOD TABLES> *********************/
-	/**************************************************************/
+	/******************************************************************************************************************************************/
+	/************************************************************* </PERIOD TABLES> ***********************************************************/
+	/******************************************************************************************************************************************/
 
 
 
-	/**************************************************************/
-	/************************ <STAT TABLE> ************************/
-	/**************************************************************/
+	/******************************************************************************************************************************************/
+	/************************************************************** <STAT TABLE> **************************************************************/
+	/******************************************************************************************************************************************/
 
 	function populate_stat_table(){
 		// Insert fields for opponent
 		var stats_row = team_stats_table.insertRow(0);
+		stats_row.classList.add("gm-stat-table-header")
 		var team_row = team_stats_table.insertRow(1);
 		var opponent_row = team_stats_table.insertRow(2);
 
@@ -2814,6 +2956,9 @@
 		var i = 0;
 		for(i; i < cumulative_array_len + 1; i++){
 			var row = player_stats_table.insertRow(i);
+			if(i==0){
+				row.classList.add("gm-stat-table-header")
+			}
 			populate_row(row, i, true);	
 		}
 	}
@@ -3074,7 +3219,7 @@
 		var stat_object;
 		stat_array_counter++;
 		if(curr_player_is_opponent){
-			stat_object = {"player": opponent_obj.player_obj, "stat": stat, "metadata" : metadata, "is_opponent": true, "index": index, "sent_by": gon.current_user.name, "granule_id" : all_stat_granules.length +1, "lineup_index": curr_lineup.index};
+			stat_object = {"player": opponent_obj.player_obj, "stat": stat, "metadata" : metadata, "is_opponent": true, "index": index, "sent_by": gon.current_member.nickname, "granule_id" : all_stat_granules.length +1, "lineup_index": curr_lineup.index};
 			all_stat_granules.push(stat_object);
 			var stat_i = find_stat_in_player_arr(stat_object.stat)
 			++curr_lineup.opponent_stats[stat_i].total
@@ -3085,7 +3230,7 @@
 			while(!player_found){
 				var curr_player_obj = stat_array[player_i];
 				if(curr_player_obj.player_obj.id == player.id){
-					stat_object = {"player": player, "stat": stat, "metadata" : metadata, "is_opponent": false, "index": index, "sent_by": gon.current_user.name, "granule_id":all_stat_granules.length + 1,  "lineup_index": curr_lineup.index};
+					stat_object = {"player": player, "stat": stat, "metadata" : metadata, "is_opponent": false, "index": index, "sent_by": gon.current_member.nickname, "granule_id":all_stat_granules.length + 1,  "lineup_index": curr_lineup.index};
 					all_stat_granules.push(stat_object);
 					var stat_i = find_stat_in_player_arr(stat_object.stat)
 					++curr_lineup.cumulative_arr[stat_i].total;
@@ -3095,8 +3240,6 @@
 				player_i++;
 			}
 		}
-		console.log(all_stat_granules)
-		console.log(lineups_arr)
 	}
 
 	function fg_in_table(index, shot_result, row){
@@ -3431,13 +3574,13 @@
 	    			if(stat_object.is_opponent){
 	    				var stat_index = find_gm_stat_index(opponent_obj.cumulative_arr[player_stat_index]);
 	    				undo_stat_in_table(stat_object, stat_index, --opponent_obj.cumulative_arr[player_stat_index].total);
-	    				lineups_arr[stat_object.lineup_id].opponent_stats[player_stat_index].total--
+	    				lineups_arr[stat_object.lineup_index].opponent_stats[player_stat_index].total--
 	    			}
 	    			else {
 	    				var stat_index = find_gm_stat_index(stat_array[stat_object.player.stat_index -1].cumulative_arr[player_stat_index]);
 	    				team_stat_totals[player_stat_index].total--
 	    				undo_stat_in_table(stat_object, stat_index, --stat_array[stat_object.player.stat_index -1].cumulative_arr[player_stat_index].total);
-	    				lineups_arr[stat_object.lineup_id].cumulative_arr[player_stat_index].total--
+	    				lineups_arr[stat_object.lineup_index].cumulative_arr[player_stat_index].total--
 	    			}
 	    			rollback_period_stat(stat_object.stat, stat_object.is_opponent, stat_object.metadata.period)
 	    			
@@ -3450,18 +3593,18 @@
 	function undo_stat(){
 		var top_index = all_stat_granules.length-1
 		stat_object = all_stat_granules[top_index];
-
 		//console.log(stat_object)
 	    undo_player_array_stat(stat_object);
 	    gameModeChannel.send({sent_by: gon.current_user.id, game_state: {"all_stat_granules": all_stat_granules, "active_players" : active_players, "lineups_arr" : lineups_arr, "clock" : {"minutes" : minutes, "seconds" : seconds, "period": curr_period, "clock_moving": scoreboard_clock.isRunning}}, undo_stat: stat_object})
 	    statRemoved(stat_object)
+	    remove_granule_html(stat_object.granule_id)
 	}
 
 	
 
-	/**************************************************************/
-	/********************** </STAT TABLE> *************************/
-	/**************************************************************/
+	/******************************************************************************************************************************************/
+	/************************************************************ </STAT TABLE> ***************************************************************/
+	/******************************************************************************************************************************************/
 
 
 
@@ -3472,9 +3615,9 @@
 
 
 
-	/**************************************************************/
-	/************************ <SCOREBOARD> ************************/
-	/**************************************************************/	
+	/******************************************************************************************************************************************/
+	/************************************************************** <SCOREBOARD> **************************************************************/
+	/******************************************************************************************************************************************/	
 
 	function update_score(value, is_opponent){
 		if(is_opponent){
@@ -3620,11 +3763,15 @@
 				return minutes.toString() + ":" + seconds_str
 			});
 		}
+
 		this.set_period = function(){
+			var period_string = (gon.num_periods == 4) ? "Q" : "H"
 			$("#period").text(function(){
-				return  "Q" + curr_period.toString()
+
+				return  period_string + curr_period.toString()
 			});
 		}
+
 		this.interval = setInterval(function() {
 		    if (self.isRunning == true) {
 		        seconds--;
@@ -3731,18 +3878,18 @@
 
 
 
-	/**************************************************************/
-	/************************** </TIMER> **************************/
-	/**************************************************************/
+	/******************************************************************************************************************************************/
+	/**************************************************************** </TIMER> ****************************************************************/
+	/******************************************************************************************************************************************/
 
 	
 
 
 
 
-	/**************************************************************/
-	/************************* <SUBMIT>****************************/
-	/**************************************************************/
+	/******************************************************************************************************************************************/
+	/*************************************************************** <SUBMIT>******************************************************************/
+	/******************************************************************************************************************************************/
 
 	function set_minutes_in_player_array(){
 		var arr_minutes_index;
@@ -3853,6 +4000,9 @@
 	    }, 12000);
 	}
 
-	/**************************************************************/
-	/************************* </SUBMIT>***************************/
-	/**************************************************************/
+	/******************************************************************************************************************************************/
+	/*************************************************************** </SUBMIT>*****************************************************************/
+	/******************************************************************************************************************************************/
+
+
+

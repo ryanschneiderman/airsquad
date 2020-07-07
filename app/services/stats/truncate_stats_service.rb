@@ -1,9 +1,11 @@
-class TruncateStatsService
+class Stats::TruncateStatsService
 	def initialize(params)
 		@team_id = params[:team_id]
-		@members = Member.where(team_id: @team_id)
-		@games = Game.where(team_id: @team_id)
 		@season_id = params[:season_id]
+		@members = Member.where(team_id: @team_id, season_id: @season_id)
+		@games = Game.where(team_id: @team_id, season_id: @season_id)
+		@lineups = Lineup.where(team_id: @team_id, season_id: @season_id)
+
 	end
 
 	def call()
@@ -21,9 +23,17 @@ class TruncateStatsService
 			Stat.where(game_id: game.id, season_id: @season_id).destroy_all
 		end
 
+		@lineups.each do |lineup|
+			LineupGameStat.where(lineup_id: lineup.id, season_id: @season_id).destroy_all
+			LineupGameAdvancedStat.where(lineup_id: lineup.id, season_id: @season_id).destroy_all
+			LineupStat.where(lineup_id: lineup.id)
+			Lineup.find_by_id(lineup.id).destroy
+		end
+
 		Member.where(:team_id => @team_id, season_id: @season_id).update_all(games_played: 0)
 		Member.where(:team_id => @team_id, season_id: @season_id).update_all(season_minutes: 0)
 	end
 end
 
 
+#9.92

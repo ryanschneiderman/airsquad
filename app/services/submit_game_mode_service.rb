@@ -19,6 +19,8 @@ class SubmitGameModeService
 		@team_stats = params[:team_stats]
 		@opponent_obj = params[:opponent_stats]
 		@opponent_stats =  @opponent_obj["cumulative_arr"]
+		@opponent_granules = @opponent_obj["gran_stat_arr"]
+		@opponent_id = @opponent_obj["player_obj"]["id"]
 		@team_id = params[:team_id]
 		@minutes_p_q = params[:minutes_p_q]
 		@bpm_sums = [0, 0]
@@ -51,7 +53,7 @@ class SubmitGameModeService
 				season_id: @season_id
 			)
 
-			season_total = TeamSeasonStat.where(team_id: @team_id, stat_list_id: stat[1]["id"], is_opponent: false, season_id: @season_id).take
+			season_total = TeamSeasonStat.where(team_id: @team_id, stat_list_id: stat[1]["id"], is_opponent: false, season_id: @season_id).select(:value).take
 
 			if season_total 
 				season_total.value += stat_total.value
@@ -80,9 +82,10 @@ class SubmitGameModeService
 				stat_list_id: stat[1]["id"],
 				game_id: @game_id,
 				team_id: @team_id,
-				is_opponent: true
+				is_opponent: true,
+				season_id: @season_id
 			)
-			season_total = TeamSeasonStat.where(team_id: @team_id, stat_list_id: stat[1]["id"], is_opponent: true, season_id: @season_id).take
+			season_total = TeamSeasonStat.where(team_id: @team_id, stat_list_id: stat[1]["id"], is_opponent: true, season_id: @season_id).select(:value).take
 
 			if season_total 
 				season_total.value += stat_total.value
@@ -98,6 +101,17 @@ class SubmitGameModeService
 			end			
 			instantiate_stat_variable(stat_total, true, true, false, false)
 			instantiate_stat_variable(season_total, true, true, false, true)
+		end
+		@opponent_granules.each do |granule|
+			metadata = granule[1]["metadata"]
+			stat_list_id = granule[1]["stat"]
+			stat_gran = OpponentGranule.create({
+				metadata: metadata,
+				opponent_id: @opponent_id,
+				game_id: @game_id,
+				stat_list_id: stat_list_id.to_i,
+				season_id: @season_id,
+			})
 		end
 	end
 
@@ -146,8 +160,6 @@ class SubmitGameModeService
 			@season_team_rating = @season_offensive_efficiency - @season_defensive_efficiency
 			@team_rating = @offensive_efficiency - @defensive_efficiency
 		end
-		puts "TEAM RATING"
-		puts @team_rating
 	end
 
 	def create_lineup_stats()
@@ -155,9 +167,9 @@ class SubmitGameModeService
 			lineup_stats = lineup[1]["cumulative_arr"]
 			lineup_opponent_stats = lineup[1]["opponent_stats"]
 			lineup_player_ids = lineup[1]["ids"]
-			lineup_obj = FindLineupService.new(ids: lineup_player_ids).call()
+			lineup_obj = FindLineupService.new(ids: lineup_player_ids, season_id: @season_id).call()
 			if(lineup_obj == nil)
-				lineup_obj = Lineup.create( team_id: @team_id)
+				lineup_obj = Lineup.create(team_id: @team_id, season_id: @season_id)
 				lineup_player_ids.each do |member_id|
 					member = Member.find_by_id(member_id)
 					lineup_obj.members << member
@@ -180,33 +192,19 @@ class SubmitGameModeService
 					season_id: @season_id
 				})
 
-				season_stat = LineupStat.where(lineup_id: lineup_obj.id, stat_list_id: stat_id, is_opponent: false, season_id: @season_id).take
+				season_stat = LineupStat.where(lineup_id: lineup_obj.id, stat_list_id: stat_id, is_opponent: false, season_id: @season_id).select(:value).take
 
 				if season_stat 
 					season_stat.value += stat_total
 					season_stat.save
 				else 
-					if stat_id == 16
-						## solves divide by 0 bug in ranking service for when minutes played is 0.
-						## doesnt affect ranking because if player has no minutes played his stats will be 0,
-						## thus ranking below all those with minutes. Later minutes won't be affected in a meaningful way
-						## because the +1 is seconds
-						season_stat = LineupStat.create({
-							value: stat_total + 1,
-							stat_list_id: stat_id,
-							lineup_id: lineup_obj.id,
-							is_opponent: false,
-							season_id: @season_id
-						})
-					else 
-						season_stat = LineupStat.create({
-							value: stat_total,
-							stat_list_id: stat_id,
-							lineup_id: lineup_obj.id,
-							is_opponent: false,
-							season_id: @season_id
-						})
-					end
+					season_stat = LineupStat.create({
+						value: stat_total,
+						stat_list_id: stat_id,
+						lineup_id: lineup_obj.id,
+						is_opponent: false,
+						season_id: @season_id
+					})
 				end
 				if stat_id == 16
 					lineup_obj.season_minutes = season_stat.value
@@ -232,33 +230,19 @@ class SubmitGameModeService
 					season_id: @season_id
 				})
 
-				season_stat = LineupStat.where(lineup_id: lineup_obj.id, stat_list_id: stat_id, is_opponent: true, season_id: @season_id).take
+				season_stat = LineupStat.where(lineup_id: lineup_obj.id, stat_list_id: stat_id, is_opponent: true, season_id: @season_id).select(:value).take
 
 				if season_stat 
 					season_stat.value += stat_total
 					season_stat.save
 				else 
-					if stat_id == 16
-						## solves divide by 0 bug in ranking service for when minutes played is 0.
-						## doesnt affect ranking because if player has no minutes played his stats will be 0,
-						## thus ranking below all those with minutes. Later minutes won't be affected in a meaningful way
-						## because the +1 is seconds
-						season_stat = LineupStat.create({
-							value: stat_total + 1,
-							stat_list_id: stat_id,
-							lineup_id: lineup_obj.id,
-							is_opponent: true,
-							season_id: @season_id
-						})
-					else 
-						season_stat = LineupStat.create({
-							value: stat_total,
-							stat_list_id: stat_id,
-							lineup_id: lineup_obj.id,
-							is_opponent: true,
-							season_id: @season_id
-						})
-					end
+					season_stat = LineupStat.create({
+						value: stat_total,
+						stat_list_id: stat_id,
+						lineup_id: lineup_obj.id,
+						is_opponent: true,
+						season_id: @season_id
+					})
 				end
 				instantiate_stat_variable(season_stat, false, true, true, false)
 			end
@@ -312,7 +296,6 @@ class SubmitGameModeService
 			cumulative_arr = stat[1]["cumulative_arr"]
 			if granule_arr 
 				granule_arr.each do |granule|
-					puts "IN GRANULE TEST"
 					metadata = granule[1]["metadata"]
 					stat_list_id = granule[1]["stat"]
 					stat_gran = StatGranule.create({
@@ -320,14 +303,14 @@ class SubmitGameModeService
 						member_id: player_id.to_i,
 						game_id: @game_id,
 						stat_list_id: stat_list_id.to_i,
-						season_id: @season_id
+						season_id: @season_id,
 					})
 					puts stat_gran.errors.full_messages
 				end
 			end
 			if cumulative_arr 
 				player = Member.find_by_id(player_id)
-				player.games_played +=1
+				
 
 				counter = 0
 				cumulative_arr.each do |cumulative_stat|
@@ -343,35 +326,25 @@ class SubmitGameModeService
 						season_id: @season_id
 					})
 
-					season_total = SeasonStat.where(member_id: player_id, stat_list_id: stat_id, season_id: @season_id).take
+					season_total = SeasonStat.where(member_id: player_id, stat_list_id: stat_id, season_id: @season_id).select(:value).take
 
 					if season_total 
 						season_total.value += stat_total
 						season_total.save
 					else 
-						if stat_id == 16
-							## solves divide by 0 bug in ranking service for when minutes played is 0.
-							## doesnt affect ranking because if player has no minutes played his stats will be 0,
-							## thus ranking below all those with minutes. Later minutes won't be affected in a meaningful way
-							## because the minutes tally is actually seconds.
-							season_total = SeasonStat.create({
-								value: stat_total + 1,
-								stat_list_id: stat_id,
-								member_id: player_id,
-								season_id: @season_id
-							})
-						else 
-							season_total = SeasonStat.create({
-								value: stat_total,
-								stat_list_id: stat_id,
-								member_id: player_id,
-								season_id: @season_id
-							})
-						end
+						season_total = SeasonStat.create({
+							value: stat_total,
+							stat_list_id: stat_id,
+							member_id: player_id,
+							season_id: @season_id
+						})
 					end
 
 					if stat_id == 16
 						@season_minutes = season_total.value / 60.0
+						if stat_total > 0
+							player.games_played +=1
+						end
 					elsif stat_id == 1
 						@season_makes = season_total.value
 					elsif stat_id == 2 
@@ -409,7 +382,7 @@ class SubmitGameModeService
 					season_id: @season_id
 				}).call
 
-				bpms = Stats::Advanced::Player::AdvancedStatsService.new({
+				bpms = Stats::Advanced::AdvancedStatsService.new({
 					field_goals: @field_goals,
 					team_field_goals: @team_field_goals,
 					opp_field_goals: @opp_field_goals,
@@ -463,17 +436,12 @@ class SubmitGameModeService
 					season_id: @season_id
 				}).call
 
-				## TODO: RETHINK HOW THIS WORKS -- come back to later
-				puts "TEAM_MINUTES_NEW"
-				puts @team_minutes
-				if(bpms["obpm"] && bpms["obpm"].value != nil)
-					@bpm_sums[0] += bpms["obpm"].value * (@minutes / (@team_minutes / 5))
-					puts "adding_bpm"
-					puts bpms["bpm"].value * (@minutes / (@team_minutes / 5))
-					@bpm_sums[1] += bpms["bpm"].value * (@minutes / (@team_minutes / 5))
+				if(bpms["obpm"])
+					@bpm_sums[0] += bpms["obpm"] * (@minutes / (@team_minutes / 5))
+					@bpm_sums[1] += bpms["bpm"]* (@minutes / (@team_minutes / 5))
 
-					@season_bpm_sums[0] += bpms["new_obpm"].value * (@season_minutes / (@season_team_minutes / 5))
-					@season_bpm_sums[1] += bpms["new_bpm"].value * (@season_minutes / (@season_team_minutes / 5))
+					# @season_bpm_sums[0] += bpms["new_obpm"].value * (@season_minutes / (@season_team_minutes / 5))
+					# @season_bpm_sums[1] += bpms["new_bpm"].value * (@season_minutes / (@season_team_minutes / 5))
 					@all_bpms.push(bpms)
 				end
 			end
@@ -484,9 +452,7 @@ class SubmitGameModeService
 	def adjust_bpm()
 		@all_bpms.each do |bpm|
 			bpm_team_adjustment = (@team_rating * 1.2 - @bpm_sums[1])/5
-			puts "bpm_team_adjustment"
-			puts bpm_team_adjustment
-			new_bpm = bpm["bpm"].value + bpm_team_adjustment
+			new_bpm = bpm["bpm"] + bpm_team_adjustment
 			new_bpm = new_bpm * 100 
 			new_bpm = new_bpm.round / 100.0
 			AdvancedStat.create({
@@ -495,14 +461,14 @@ class SubmitGameModeService
 				game_id: @game_id,
 				constituent_stats: {
 					"team_adjustment" => bpm_team_adjustment,
-					"raw_bpm" => bpm["bpm"].value
+					"raw_bpm" => bpm["bpm"]
 				},
-				value: new_bpm,
+				value: bpm["bpm"],
 				season_id: @season_id
 			})
 
 			obpm_team_adjustment = (@team_rating * 1.2 - @bpm_sums[1])/5
-			new_obpm = bpm["obpm"].value + obpm_team_adjustment
+			new_obpm = bpm["obpm"] + obpm_team_adjustment
 			new_obpm = new_obpm * 100
 			new_obpm = new_obpm.round / 100.0
 			AdvancedStat.create({
@@ -511,66 +477,64 @@ class SubmitGameModeService
 				game_id: @game_id,
 				constituent_stats: {
 					"team_adjustment" => obpm_team_adjustment,
-					"raw_bpm" => bpm["bpm"].value
+					"raw_bpm" => bpm["obpm"]
 				},
-				value: new_obpm,
+				value: bpm["obpm"],
 				season_id: @season_id
 			})
 			
-			bpm_season_adjustment = (@season_team_rating * 1.2 - @season_bpm_sums[1])/5
+			# bpm_season_adjustment = (@season_team_rating * 1.2 - @season_bpm_sums[1])/5
 
-			puts "@season_bpm_sums[1]"
-			puts @season_bpm_sums[1]
-			new_season_bpm = bpm["new_bpm"].value + bpm_season_adjustment
-			new_season_bpm = new_season_bpm * 100 
-			new_season_bpm = new_season_bpm.round / 100.0
+			# new_season_bpm = bpm["new_bpm"].value + bpm_season_adjustment
+			# new_season_bpm = new_season_bpm * 100 
+			# new_season_bpm = new_season_bpm.round / 100.0
 
-			season_stat = SeasonAdvancedStat.where(stat_list_id: 42, member_id: bpm["member_id"], season_id: @season_id).take
-			if season_stat
-				season_stat.value = new_season_bpm
-				season_stat.constituent_stats = {
-					"team_adjustment" => bpm_season_adjustment,
-					"raw_bpm" => bpm["new_bpm"].value
-				}
-				season_stat.save
-			else
-				SeasonAdvancedStat.create({
-					stat_list_id: 42,
-					member_id: bpm["member_id"],
-					constituent_stats: {
-						"team_adjustment" => bpm_season_adjustment,
-						"raw_bpm" =>  bpm["new_bpm"].value
-					},
-					value: new_season_bpm,
-					season_id: @season_id
-				})
-			end
+			# season_stat = SeasonAdvancedStat.where(stat_list_id: 42, member_id: bpm["member_id"], season_id: @season_id).take
+			# if season_stat
+			# 	season_stat.value = bpm["new_bpm"].value
+			# 	season_stat.constituent_stats = {
+			# 		"team_adjustment" => bpm_season_adjustment,
+			# 		"raw_bpm" => bpm["new_bpm"].value
+			# 	}
+			# 	season_stat.save
+			# else
+			# 	SeasonAdvancedStat.create({
+			# 		stat_list_id: 42,
+			# 		member_id: bpm["member_id"],
+			# 		constituent_stats: {
+			# 			"team_adjustment" => bpm_season_adjustment,
+			# 			"raw_bpm" =>  bpm["new_bpm"].value
+			# 		},
+			# 		value: bpm["new_bpm"].value,
+			# 		season_id: @season_id
+			# 	})
+			# end
 
-			obpm_season_adjustment = (@season_team_rating * 1.2 - @season_bpm_sums[1])/5
-			new_season_obpm = bpm["new_obpm"].value + obpm_season_adjustment
-			new_season_obpm = new_season_obpm * 100
-			new_season_obpm = new_season_obpm.round / 100.0
+			# obpm_season_adjustment = (@season_team_rating * 1.2 - @season_bpm_sums[1])/5
+			# new_season_obpm = bpm["new_obpm"].value + obpm_season_adjustment
+			# new_season_obpm = new_season_obpm * 100
+			# new_season_obpm = new_season_obpm.round / 100.0
 
-			season_stat = SeasonAdvancedStat.where(stat_list_id: 40, member_id: bpm["member_id"], season_id: @season_id).take
-			if season_stat
-				season_stat.value = new_season_obpm
-				season_stat.constituent_stats = {
-					"team_adjustment" => obpm_season_adjustment,
-					"raw_bpm" => bpm["new_obpm"].value
-				}
-				season_stat.save
-			else
-				SeasonAdvancedStat.create({
-					stat_list_id: 40,
-					member_id: bpm["member_id"],
-					constituent_stats: {
-						"team_adjustment" => obpm_season_adjustment,
-						"raw_bpm" =>  bpm["new_obpm"].value
-					},
-					value: new_season_obpm,
-					season_id: @season_id
-				})
-			end
+			# season_stat = SeasonAdvancedStat.where(stat_list_id: 40, member_id: bpm["member_id"], season_id: @season_id).take
+			# if season_stat
+			# 	season_stat.value = new_season_obpm
+			# 	season_stat.constituent_stats = {
+			# 		"team_adjustment" => obpm_season_adjustment,
+			# 		"raw_bpm" => bpm["new_obpm"].value
+			# 	}
+			# 	season_stat.save
+			# else
+			# 	SeasonAdvancedStat.create({
+			# 		stat_list_id: 40,
+			# 		member_id: bpm["member_id"],
+			# 		constituent_stats: {
+			# 			"team_adjustment" => obpm_season_adjustment,
+			# 			"raw_bpm" =>  bpm["new_obpm"].value
+			# 		},
+			# 		value: bpm["new_obpm"].value,
+			# 		season_id: @season_id
+			# 	})
+			# end
 
 		end
 	end

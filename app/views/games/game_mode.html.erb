@@ -7,7 +7,7 @@
 					<div id = "home-score" class = "squad-score"> 0 </div>
 				</div>
 				<button id = "time" onclick = "toggleClock()">
-					<div id = "period">Q1</div>
+					<div id = "period"></div>
 					<div class = "dash">
 						<svg style = "height: 1px; width: 20px;" class = "time-dash">
 					      <line x1="0" y1="0" x2="20" y2="1" style="stroke:#3E3E3E;stroke-width:2"/>
@@ -73,20 +73,23 @@
 				<table class = "gm-stats-table" id = "player-stats-table">
 				</table>
 				<div id = "gm-table-buttons">
-					<button class = "gm-table-button active-table" onclick = "toggle_table(0, this)">Team Totals</button>
-					<button class = "gm-table-button inactive-table-label" onclick = "toggle_table(1, this)">First Half</button>
-					<button class = "gm-table-button inactive-table-label" onclick = "toggle_table(2, this)">Second Half</button>
-					<button class = "gm-table-button inactive-table-label" onclick = "toggle_table(3, this)">Q1</button>
-					<button class = "gm-table-button inactive-table-label" onclick = "toggle_table(4, this)">Q2</button>
-					<button class = "gm-table-button inactive-table-label" onclick = "toggle_table(5, this)">Q3</button>
-					<button class = "gm-table-button inactive-table-label" onclick = "toggle_table(6, this)">Q4</button>
+					<button class = "gm-table-button active-table" onclick = "toggle_gm_table(0, this)">Team Totals</button>
+					<button class = "gm-table-button inactive-table-label" onclick = "toggle_gm_table(1, this)">First Half</button>
+					<button class = "gm-table-button inactive-table-label" onclick = "toggle_gm_table(2, this)">Second Half</button>
+					<% if @team.num_periods ==4%>
+						<button class = "gm-table-button inactive-table-label" onclick = "toggle_gm_table(3, this)">Q1</button>
+						<button class = "gm-table-button inactive-table-label" onclick = "toggle_gm_table(4, this)">Q2</button>
+						<button class = "gm-table-button inactive-table-label" onclick = "toggle_gm_table(5, this)">Q3</button>
+						<button class = "gm-table-button inactive-table-label" onclick = "toggle_gm_table(6, this)">Q4</button>
+					<%end%>
 				</div>
-				<table class = "gm-stats-table" id = "team-stats-table">	
+				<table class = "gm-stats-table" id = "gm-team-stats-table">	
 				</table>
 				<table class = "gm-stats-table" id = "half-1-table" style = "display: none;">	
 				</table>
 				<table class = "gm-stats-table" id = "half-2-table" style = "display: none;">	
 				</table>
+				<% if @team.num_periods ==4%>
 				<table class = "gm-stats-table" id = "quarter-1-table" style = "display: none;">	
 				</table>
 				<table class = "gm-stats-table" id = "quarter-2-table" style = "display: none;">	
@@ -95,6 +98,7 @@
 				</table>
 				<table class = "gm-stats-table" id = "quarter-4-table" style = "display: none;">	
 				</table>
+				<%end%>
 
 			</div>
 			<div id = "gm-log-wrapper" style = "display: none;">
@@ -103,7 +107,8 @@
 						<th>Player</th>
 						<th>Stat</th>
 						<th>Timestamp</th>
-						<th>Edit</th>
+						<th>Edit/Save</th>
+						<th>Delete</th>
 					</tr>
 				</table>
 			</div>
@@ -144,7 +149,7 @@
 	var on_game_page = false;
 
 	var player_stats_table = document.getElementById("player-stats-table");
-	var team_stats_table = document.getElementById("team-stats-table");
+	var team_stats_table = document.getElementById("gm-team-stats-table");
 	var first_half_table = document.getElementById("half-1-table");
 	var second_half_table = document.getElementById("half-2-table");
 	var first_quarter_table = document.getElementById("quarter-1-table");
@@ -212,7 +217,7 @@
 
 	var player_charts_toggle = false;
 
-	var periods = 4;
+	var periods = gon.num_periods;
 	var curr_period = 1;
 
 	var minutes_per_period = <%=@per_minutes%>;

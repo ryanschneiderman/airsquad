@@ -156,10 +156,6 @@ function populate_game_log_data(table, stats){
 	for(var i = 0; i < num_games; i++){
 		populate_game_data(table, stats.game_data[i], i)
 	}
-	populate_game_data(table, stats.game_data[0], i)
-	populate_game_data(table, stats.game_data[0], i+1)
-	populate_game_data(table, stats.game_data[0], i+2)
-	populate_game_data(table, stats.game_data[0], i+3)
 	populate_game_log_season_data(table, stats, num_games*3+1)
 }
 

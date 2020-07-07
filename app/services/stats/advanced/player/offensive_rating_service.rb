@@ -28,51 +28,51 @@ class Stats::Advanced::Player::OffensiveRatingService
 		@assists = params[:assists]
 		@turnovers = params[:turnovers]
 		@team_turnovers = params[:team_turnovers]
-		puts "team minutes in orating"
-		puts @team_minutes
+		#puts "team minutes in orating"
+		#puts @team_minutes
 
 	end
 
 	def call()
 		@qassists = get_qassists()
 
-		puts "@qassists"
-		puts @qassists
+		#puts "@qassists"
+		#puts @qassists
 
 		@fg_part = get_fg_part()
-		puts "@fg_part"
-		puts @fg_part
+		#puts "@fg_part"
+		#puts @fg_part
 
 		@assists_part = get_assists_part()
-		puts "@assists_part"
-		puts @assists_part
+		#puts "@assists_part"
+		#puts @assists_part
 
 
 		@ft_part = get_ft_part()
-		puts "@ft_part"
-		puts @ft_part
+		#puts "@ft_part"
+		#puts @ft_part
 
 		@team_scoring_poss = get_team_scoring_poss()
 
-		puts "@team_scoring_poss"
-		puts @team_scoring_poss
+		#puts "@team_scoring_poss"
+		#puts @team_scoring_poss
 
 		@team_off_reb_pct = get_team_off_reb_pct()
-		puts "@team_off_reb_pct"
-		puts @team_off_reb_pct
+		#puts "@team_off_reb_pct"
+		#puts @team_off_reb_pct
 		@team_play_pct = get_team_play_pct()
-		puts "@team_play_pct"
-		puts @team_play_pct
+		#puts "@team_play_pct"
+		#puts @team_play_pct
 		@team_off_reb_weight = get_team_off_reb_weight()
-		puts "@team_off_reb_weight"
-		puts @team_off_reb_weight
+		#puts "@team_off_reb_weight"
+		#puts @team_off_reb_weight
 		@off_reb_part = get_off_reb_part()
-		puts "@off_reb_part"
-		puts @off_reb_part
+		#puts "@off_reb_part"
+		#puts @off_reb_part
 		@sc_poss = get_sc_poss()
 
-		puts "sc_poss"
-		puts @sc_poss
+		#puts "sc_poss"
+		#puts @sc_poss
 
 
 		@fg_x_poss = get_fg_x_poss()
@@ -88,11 +88,11 @@ class Stats::Advanced::Player::OffensiveRatingService
 		@pprod_off_reb_part = get_pprod_off_reb_part()
 
 		@pprod = get_pprod()
-		puts "PPROD"
-		puts @pprod
+		#puts "PPROD"
+		#puts @pprod
 
-		puts "tot_poss"
-		puts @tot_poss
+		#puts "tot_poss"
+		#puts @tot_poss
 
 		if @tot_poss == 0 
 			return 0.0
@@ -106,37 +106,37 @@ class Stats::Advanced::Player::OffensiveRatingService
 	private
 	## CORRECT
 	def get_qassists()
-		puts "@minutes"
-		puts @minutes
-		puts "@team_minutes"
-		puts @team_minutes
-		puts "@assists"
-		puts @assists
-		puts "@team_assists"
-		puts @team_assists
-		puts "@team_field_goals_made"
-		puts @team_field_goals_made
-		puts "@field_goals_made"
-		puts @field_goals_made
-		puts "Pre qassists"
+		#puts "@minutes"
+		#puts @minutes
+		#puts "@team_minutes"
+		#puts @team_minutes
+		#puts "@assists"
+		#puts @assists
+		#puts "@team_assists"
+		#puts @team_assists
+		#puts "@team_field_goals_made"
+		#puts @team_field_goals_made
+		#puts "@field_goals_made"
+		#puts @field_goals_made
+		#puts "Pre qassists"
 		val_1 = (@minutes / (@team_minutes / 5))
-		puts val_1
+		#puts val_1
 		val_2 = (1.14 * ((@team_assists - @assists) / @team_field_goals_made ))
-		puts val_2
+		#puts val_2
 		val_3 = ((@team_assists / @team_minutes) * @minutes * 5 - @assists)
-		puts val_3
+		#puts val_3
 		val_4 = ((@team_field_goals_made / @team_minutes) * @minutes * 5 - @field_goals_made)
-		puts val_4
+		#puts val_4
 		val_5 = (1 -  (@minutes / (@team_minutes / 5)))
-		puts val_5
+		#puts val_5
 
 		if val_4 == 0
 			val_4 = 0.01
 		end
-		puts (val_1 * val_2) + ((val_3 / val_4) * val_5)
+		#puts (val_1 * val_2) + ((val_3 / val_4) * val_5)
 
 
-		##puts (( @minutes / (@team_minutes / 5)) * (1.14 * ((@team_assists - @assists) / @team_field_goals_made ))) + ((((@team_assists / @team_minutes) * @minutes * 5 - @assists) / ((@team_field_goals_made / @team_minutes) * @minutes * 5 - @field_goals_made)) *  (1 -  (@minutes / (@team_minutes / 5))))
+		###puts (( @minutes / (@team_minutes / 5)) * (1.14 * ((@team_assists - @assists) / @team_field_goals_made ))) + ((((@team_assists / @team_minutes) * @minutes * 5 - @assists) / ((@team_field_goals_made / @team_minutes) * @minutes * 5 - @field_goals_made)) *  (1 -  (@minutes / (@team_minutes / 5))))
 		return (val_1 * val_2) + ((val_3 / val_4) * val_5)
 	end
 	## CORRECT

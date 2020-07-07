@@ -5,7 +5,8 @@
 class Stats::Advanced::RecalcAdvancedStatsService
 
 	def initialize(params)
-		@players = Assignment.joins(:role).joins(:member).select("roles.name as name, members.*").where("members.team_id" => params[:team_id], "roles.id" => 1)
+		@season_id = params[:season_id]
+		@players = Member.where(season_id: @curr_season_id, team_id: @team_id, is_player: true)
 
 		@member_id = nil
 		
@@ -14,13 +15,14 @@ class Stats::Advanced::RecalcAdvancedStatsService
 		@bpm_sums = [0, 0]
 		@season_bpm_sums = [0, 0]
 		@all_bpms = []
-		@offensive_efficiency = SeasonTeamAdvStat.where(stat_list_id: 30, team_id: @team_id, is_opponent: false).take.value
-		@defensive_efficiency = SeasonTeamAdvStat.where(stat_list_id: 31, team_id: @team_id, is_opponent: false).take.value
-		@team_rating = @offensive_efficiency - @defensive_efficiency
+		# @offensive_efficiency = SeasonTeamAdvStat.where(stat_list_id: 30, team_id: @team_id, is_opponent: false, season_id: @season_id).take.value
+		# @defensive_efficiency = SeasonTeamAdvStat.where(stat_list_id: 31, team_id: @team_id, is_opponent: false, season_id: @season_id).take.value
+		# @team_rating = @offensive_efficiency - @defensive_efficiency
+
 	end
 
 	def call
-		#update_advanced_team_stats
+		update_advanced_team_stats
 		update_advanced_player_stats
 		adjust_bpm
 	end
@@ -30,8 +32,9 @@ class Stats::Advanced::RecalcAdvancedStatsService
 
 	def update_advanced_team_stats
 		## create team advanced stats 
-		team_adv_stats = Advanced::SeasonTeamAdvancedStatsService.new({
+		team_adv_stats = Stats::Advanced::Team::SeasonTeamAdvancedStatsService.new({
 			team_id: @team_id,
+			season_id: @season_id
 		}).call
 
 		@defensive_efficiency = team_adv_stats["defensive_efficiency"]
@@ -47,9 +50,10 @@ class Stats::Advanced::RecalcAdvancedStatsService
 
 	def update_advanced_player_stats
 		@players.each do |player|
-			bpms = Advanced::SeasonAdvancedStatsService.new({
+			bpms = Stats::Advanced::Player::SeasonAdvancedStatsService.new({
 				member_id: player.id,
 				team_id: @team_id.to_i,
+				season_id: @season_id
 			}).call
 			@minutes = player.season_minutes / 60.0
 			puts "PLAYER MINUTES in update"
@@ -68,13 +72,7 @@ class Stats::Advanced::RecalcAdvancedStatsService
 	## TODO: MOVE TO DIFFERENT SERVICE -- come back to later
 	def adjust_bpm
 		bpm_team_adjustment = (@team_rating * 1.2 - @bpm_sums[1])/5
-		puts "BPM TEAM ADJUSTMENT"
-		puts bpm_team_adjustment
 		@all_bpms.each do |bpm|
-			puts "old bpm"
-			puts  bpm["bpm"].value
-			puts "new bpm"
-			puts bpm["bpm"].value + bpm_team_adjustment
 			new_bpm = bpm["bpm"].value + bpm_team_adjustment
 			new_bpm = new_bpm * 100 
 			new_bpm = new_bpm.round / 100.0
@@ -86,7 +84,7 @@ class Stats::Advanced::RecalcAdvancedStatsService
 			new_obpm = new_obpm.round / 100.0
 			
 
-			season_stat = SeasonAdvancedStat.where(stat_list_id: 42, member_id: bpm["member_id"]).take
+			season_stat = SeasonAdvancedStat.where(stat_list_id: 42, member_id: bpm["member_id"], season_id: @season_id).take
 			season_stat.value = new_bpm
 			season_stat.constituent_stats = {
 				"team_adjustment" => bpm_team_adjustment,
@@ -94,7 +92,7 @@ class Stats::Advanced::RecalcAdvancedStatsService
 			}
 			season_stat.save
 
-			season_stat = SeasonAdvancedStat.where(stat_list_id: 40, member_id: bpm["member_id"]).take
+			season_stat = SeasonAdvancedStat.where(stat_list_id: 40, member_id: bpm["member_id"], season_id: @season_id).take
 			season_stat.value = new_obpm
 			season_stat.constituent_stats = {
 				"team_adjustment" => bpm_team_adjustment,

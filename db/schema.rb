@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_02_034033) do
+ActiveRecord::Schema.define(version: 2020_07_06_171110) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -175,6 +175,8 @@ ActiveRecord::Schema.define(version: 2020_07_02_034033) do
     t.datetime "updated_at", null: false
     t.bigint "team_id"
     t.integer "season_minutes"
+    t.bigint "season_id"
+    t.index ["season_id"], name: "index_lineups_on_season_id"
     t.index ["team_id"], name: "index_lineups_on_team_id"
   end
 
@@ -226,6 +228,20 @@ ActiveRecord::Schema.define(version: 2020_07_02_034033) do
     t.string "notif_kind"
     t.index ["notif_type_type", "notif_type_id"], name: "index_notifications_on_notif_type_type_and_notif_type_id"
     t.index ["team_id"], name: "index_notifications_on_team_id"
+  end
+
+  create_table "opponent_granules", force: :cascade do |t|
+    t.json "metadata"
+    t.bigint "opponent_id"
+    t.bigint "game_id"
+    t.bigint "stat_list_id"
+    t.bigint "season_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_id"], name: "index_opponent_granules_on_game_id"
+    t.index ["opponent_id"], name: "index_opponent_granules_on_opponent_id"
+    t.index ["season_id"], name: "index_opponent_granules_on_season_id"
+    t.index ["stat_list_id"], name: "index_opponent_granules_on_stat_list_id"
   end
 
   create_table "opponents", force: :cascade do |t|

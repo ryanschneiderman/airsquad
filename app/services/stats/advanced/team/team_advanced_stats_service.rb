@@ -234,7 +234,6 @@ class Stats::Advanced::Team::TeamAdvancedStatsService
 			})
 			@new_off_eff = @offensive_efficiency
 		end
-		puts season_stat.value
 	end
 
 	def def_efficiency()

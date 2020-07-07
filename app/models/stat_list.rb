@@ -11,4 +11,5 @@ class StatList < ApplicationRecord
 	has_many :season_advanced_stats
 	has_many :lineup_stats
 	has_many :lineup_adv_stats
+	has_many :opponent_granules
 end

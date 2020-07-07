@@ -7,12 +7,12 @@ class Stats::Advanced::Team::PaceService
 	end
 
 	def call()
-		puts @possessions
-		puts @opp_possessions
-		puts @team_minutes
-		puts @minutes_per_game
+		#puts @possessions
+		#puts @opp_possessions
+		#puts @team_minutes
+		#puts @minutes_per_game
 		pace = @minutes_per_game * ((@possessions + @opp_possessions) / (2 * (@team_minutes / 5))) * 100
-		puts pace
+		#puts pace
 		pace = pace.round / 100.0
 		return pace
 	end

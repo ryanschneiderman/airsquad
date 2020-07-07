@@ -1,46 +1,3 @@
-<!-- <div class = "modal-overlay"></div>
-<div class = "GM-modal modal-overlay">
-	<div id = "GM-initializer" style = "display: none;" class = "modal-container">
-		<div id = "GM-init-wrapper" class = "GM-modal-wrapper">
-			<div id = "GM-init-header" class = "GM-modal-header">Welcome to Game Mode!</div>
-			<div id = "GM-init-body" class = "GM-modal-body">
-				
-				<div id = "personel-selection-wrapper">
-					<div id = "personel-selection-header" class = "GM-modal-content">Select Inactives</div>
-					<div id = "personel-selection-body">
-
-					</div>
-				</div>
-			</div>
-			<div id = "GM-init-footer" class = "GM-init">Next</div>
-		</div>
-	</div>
-	<div id = "GM-submit" class = "modal-container">
-		<div id = "GM-submit-wrapper" class = "GM-modal-wrapper">
-			<div id = "GM-submit-header" class = "GM-modal-header"> Are you sure you want to submit? </div>
-			<div id = "GM-submit-body" class = "GM-modal-body">
-				<div id = "confirm-message" class = "GM-modal-content"> Once you submit, all data from this game will be final.</div>
-				<div id = "confirm-buttons">
-					<button id = "dont-submit" class = "confirm-buttons" onclick = "close_game_mode()">I'm not finished</button>
-					<button id = "confirm-submit" class = "confirm-buttons" onclick = "submit_game_mode()">Yes, Submit</button>
-				</div>
-			</div>
-			<div id = "loader-container"><span class="loader" style = "display:none;"><span class="loader-inner"></span></span></div>
-		</div>
-	</div>
-	<div id = "GM-load" style = "display: none;"class = "modal-container">
-		<div id = "GM-submit-wrapper" class = "GM-modal-wrapper">
-			<div id = "GM-submit-header" class = "GM-modal-header"> It appears you already have some data for this game, would you like to load this data? </div>
-			<div id = "GM-submit-body" class = "GM-modal-body">
-				<div id = "confirm-buttons">
-					<button id = "confirm-submit" class = "confirm-buttons" onclick = "load_game()">Yes, load</button>
-					<button id = "dont-submit" class = "confirm-buttons" onclick = "pre_game_mode()">No, start from scratch</button>
-				</div>
-			</div>
-		</div>
-	</div>
-</div> -->
-
 
 
 
@@ -53,7 +10,7 @@
       </div>
       <div class = "modal-inner-content" id = "game-mode-modal-content">
         <div class = "modal-body" id = "game-mode-modal-body">
-        	<div id = "load-game-state-wrapper">
+        	<div id = "load-game-state-wrapper"class = "GM-modal-inner-block"> 
 	            <div id = "load-game-state">
 	                <div class = "modal-subheading">It appears you already have some data for this game, would you like to load this data?</div>
 	            </div>
@@ -62,13 +19,13 @@
 					<button id = "dont-submit" class = "confirm-buttons" onclick = "pre_game_mode()">No, start from scratch</button>
 				</div>
 	        </div>
-	        <div id = "personel-selection-wrapper" style = "display: none">
+	        <div id = "personel-selection-wrapper" style = "display: none" class = "GM-modal-inner-block">
 	        	<div id = "personel-selection-header" class = "modal-subheader">Select Inactives</div>
 				<div id = "personel-selection-body">
 
 				</div>
 	        </div>
-	        <div id = "GM-submit-wrapper" style = "display: none">
+	        <div id = "GM-submit-wrapper" style = "display: none" class = "GM-modal-inner-block">
 				<div id = "GM-submit-header" class = "modal-subheading"> Are you sure you want to submit? </div>
 				<div id = "GM-submit-body">
 					<div id = "confirm-buttons">

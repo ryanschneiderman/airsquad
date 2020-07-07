@@ -24,6 +24,8 @@ class Stats::Lineups::LineupAdvancedService
 		@team_id = params[:team_id]
 		@game_id = params[:game_id]
 		@season_id = params[:season_id]
+		@create_hash = []
+		@season_create_hash = []
 	end
 
 	def call()
@@ -57,20 +59,26 @@ class Stats::Lineups::LineupAdvancedService
 			end
 		end
 
+		create_stats()
+		create_season_stats()
+
+		if is_ortg && is_drtg
+			net_rating()
+		end
+
 
 		#PIE
 	end
 
 	private
 	def possessions()
-		@poss = Advanced::PossessionsService.new({
+		@poss = Stats::Advanced::Team::PossessionsService.new({
 			team_field_goal_att:  @field_goal_att,
 			team_free_throw_att:  @free_throw_att,
 			team_turnovers:  @turnovers,
 			team_off_reb: @off_reb
 		}).call
-
-		LineupGameAdvancedStat.create({
+		@create_hash.push({
 			stat_list_id: 43,
 			lineup_id: @lineup_id, 
 			season_id: @season_id,
@@ -84,10 +92,11 @@ class Stats::Lineups::LineupAdvancedService
 			value: @poss,
 			is_opponent: false
 		})
+		# LineupGameAdvancedStat.create()
 
-		@season_poss = LineupAdvStat.where(stat_list_id: 43, lineup_id: @lineup_id, season_id: @season_id, is_opponent: false).take
+		@season_poss = LineupAdvStat.where(stat_list_id: 43, lineup_id: @lineup_id, season_id: @season_id, is_opponent: false).select(:value, :constituent_stats).take
 		if @season_poss
-			new_poss = Advanced::PossessionsService.new({
+			new_poss = Stats::Advanced::Team::PossessionsService.new({
 				team_field_goal_att: @field_goal_att + @season_poss.constituent_stats["field_goal_att"],
 				team_free_throw_att: @free_throw_att + @season_poss.constituent_stats["free_throw_att"],
 				team_turnovers: @turnovers + @season_poss.constituent_stats["turnovers"],
@@ -103,7 +112,7 @@ class Stats::Lineups::LineupAdvancedService
 			}
 			@season_poss.save
 		else
-			@season_poss = LineupAdvStat.create({
+			@season_create_hash.push({
 				stat_list_id: 43,
 				lineup_id: @lineup_id, 
 				season_id: @season_id,
@@ -116,17 +125,29 @@ class Stats::Lineups::LineupAdvancedService
 				value: @poss,
 				is_opponent: false
 			})
+			# @season_poss = LineupAdvStat.create({
+			# 	stat_list_id: 43,
+			# 	lineup_id: @lineup_id, 
+			# 	season_id: @season_id,
+			# 	constituent_stats: {
+			# 		"field_goal_att" => @field_goal_att,
+			# 		"free_throw_att" => @free_throw_att,
+			# 		"turnovers" => @turnovers,
+			# 		"off_reb" => @off_reb
+			# 	},
+			# 	value: @poss,
+			# 	is_opponent: false
+			# })
 		end
 
-		@opp_poss = Advanced::PossessionsService.new({
+		@opp_poss = Stats::Advanced::Team::PossessionsService.new({
 			team_field_goal_att:  @opp_field_goal_att,
 			team_free_throw_att:  @opp_free_throw_att,
 			team_turnovers:  @opp_turnovers,
 			team_off_reb: @opp_off_reb
 		}).call
 
-
-		LineupGameAdvancedStat.create({
+		@create_hash.push({
 			stat_list_id: 43,
 			lineup_id: @lineup_id, 
 			season_id: @season_id,
@@ -140,10 +161,24 @@ class Stats::Lineups::LineupAdvancedService
 			value: @opp_poss,
 			is_opponent: true
 		})
+		# LineupGameAdvancedStat.create({
+		# 	stat_list_id: 43,
+		# 	lineup_id: @lineup_id, 
+		# 	season_id: @season_id,
+		# 	game_id: @game_id,
+		# 	constituent_stats: {
+		# 		"field_goal_att" => @opp_field_goal_att,
+		# 		"free_throw_att" => @opp_free_throw_att,
+		# 		"turnovers" => @opp_turnovers,
+		# 		"off_reb" => @opp_off_reb
+		# 	},
+		# 	value: @opp_poss,
+		# 	is_opponent: true
+		# })
 
-		@season_opp_poss = LineupAdvStat.where(stat_list_id: 43, lineup_id: @lineup_id, season_id: @season_id, is_opponent: true).take
+		@season_opp_poss = LineupAdvStat.where(stat_list_id: 43, lineup_id: @lineup_id, season_id: @season_id, is_opponent: true).select(:value, :constituent_stats).take
 		if @season_opp_poss
-			new_poss = Advanced::PossessionsService.new({
+			new_poss = Stats::Advanced::Team::PossessionsService.new({
 				team_field_goal_att: @opp_field_goal_att + @season_opp_poss.constituent_stats["field_goal_att"],
 				team_free_throw_att: @opp_free_throw_att + @season_opp_poss.constituent_stats["free_throw_att"],
 				team_turnovers: @opp_turnovers + @season_opp_poss.constituent_stats["turnovers"],
@@ -159,7 +194,7 @@ class Stats::Lineups::LineupAdvancedService
 			}
 			@season_opp_poss.save
 		else
-			@season_opp_poss = LineupAdvStat.create({
+			@season_create_hash.push({
 				stat_list_id: 43,
 				lineup_id: @lineup_id, 
 				season_id: @season_id,
@@ -172,16 +207,29 @@ class Stats::Lineups::LineupAdvancedService
 				value: @opp_poss,
 				is_opponent: true
 			})
+			# @season_opp_poss = LineupAdvStat.create({
+			# 	stat_list_id: 43,
+			# 	lineup_id: @lineup_id, 
+			# 	season_id: @season_id,
+			# 	constituent_stats: {
+			# 		"field_goal_att" => @opp_field_goal_att,
+			# 		"free_throw_att" => @opp_free_throw_att,
+			# 		"turnovers" => @opp_turnovers,
+			# 		"off_reb" => @opp_off_reb
+			# 	},
+			# 	value: @opp_poss,
+			# 	is_opponent: true
+			# })
 		end
 	end
 
 	def offensive_rating()
-		@off_rating = Advanced::OffensiveEfficiencyService.new({
+		@off_rating = Stats::Advanced::Team::OffensiveEfficiencyService.new({
 			possessions: @poss,
 			team_points: @points
 		}).call
 
-		LineupGameAdvancedStat.create({
+		@create_hash.push({
 			stat_list_id: 30,
 			lineup_id: @lineup_id, 
 			season_id: @season_id,
@@ -194,9 +242,22 @@ class Stats::Lineups::LineupAdvancedService
 			is_opponent: false
 		})
 
-		season_off_rtg = LineupAdvStat.where(stat_list_id: 30, lineup_id: @lineup_id, season_id: @season_id, is_opponent: false).take
+		# LineupGameAdvancedStat.create({
+		# 	stat_list_id: 30,
+		# 	lineup_id: @lineup_id, 
+		# 	season_id: @season_id,
+		# 	game_id: @game_id,
+		# 	constituent_stats: {
+		# 			"possessions" => @poss,
+		# 			"points" => @points,
+		# 		},
+		# 	value: @off_rating,
+		# 	is_opponent: false
+		# })
+
+		season_off_rtg = LineupAdvStat.where(stat_list_id: 30, lineup_id: @lineup_id, season_id: @season_id, is_opponent: false).select(:value, :constituent_stats).take
 		if season_off_rtg
-			@new_off_eff = Advanced::OffensiveEfficiencyService.new({
+			@new_off_eff = Stats::Advanced::Team::OffensiveEfficiencyService.new({
 				possessions: @poss + season_off_rtg.constituent_stats["possessions"],
 				team_points: @points + season_off_rtg.constituent_stats["points"],
 			}).call
@@ -208,7 +269,7 @@ class Stats::Lineups::LineupAdvancedService
 			}
 			season_off_rtg.save
 		else
-			season_off_rtg = LineupAdvStat.create({
+			@season_create_hash.push({
 				stat_list_id: 30,
 				lineup_id: @lineup_id, 
 				season_id: @season_id,
@@ -219,17 +280,28 @@ class Stats::Lineups::LineupAdvancedService
 				value: @off_rating,
 				is_opponent: false
 			})
+			# season_off_rtg = LineupAdvStat.create({
+			# 	stat_list_id: 30,
+			# 	lineup_id: @lineup_id, 
+			# 	season_id: @season_id,
+			# 	constituent_stats: {
+			# 		"possessions" => @poss,
+			# 		"points" => @points,
+			# 	},
+			# 	value: @off_rating,
+			# 	is_opponent: false
+			# })
 			@new_off_eff = @off_rating
 		end
 	end
 
 	def defensive_rating()
-		@def_rating = Advanced::DefensiveEfficiencyService.new({
+		@def_rating = Stats::Advanced::Team::DefensiveEfficiencyService.new({
 			opp_possessions: @opp_poss,
 			opp_points: @opp_points
 		}).call
 
-		LineupGameAdvancedStat.create({
+		@create_hash.push({
 			stat_list_id: 31,
 			lineup_id: @lineup_id, 
 			season_id: @season_id,
@@ -242,9 +314,22 @@ class Stats::Lineups::LineupAdvancedService
 			is_opponent: false
 		})
 
-		season_def_rtg = LineupAdvStat.where(stat_list_id: 31, lineup_id: @lineup_id, season_id: @season_id, is_opponent: false).take
+		# LineupGameAdvancedStat.create({
+		# 	stat_list_id: 31,
+		# 	lineup_id: @lineup_id, 
+		# 	season_id: @season_id,
+		# 	game_id: @game_id,
+		# 	constituent_stats: {
+		# 			"opp_possessions" => @opp_poss,
+		# 			"opp_points" => @opp_points,
+		# 		},
+		# 	value: @def_rating,
+		# 	is_opponent: false
+		# })
+
+		season_def_rtg = LineupAdvStat.where(stat_list_id: 31, lineup_id: @lineup_id, season_id: @season_id, is_opponent: false).select(:value, :constituent_stats).take
 		if season_def_rtg
-			@new_def_eff = Advanced::DefensiveEfficiencyService.new({
+			@new_def_eff = Stats::Advanced::Team::DefensiveEfficiencyService.new({
 				opp_possessions: @opp_poss + season_def_rtg.constituent_stats["opp_possessions"],
 				opp_points: @opp_points + season_def_rtg.constituent_stats["opp_points"],
 			}).call
@@ -256,7 +341,7 @@ class Stats::Lineups::LineupAdvancedService
 			}
 			season_def_rtg.save
 		else
-			season_def_rtg = LineupAdvStat.create({
+			@season_create_hash.push({
 				stat_list_id: 31,
 				lineup_id: @lineup_id, 
 				season_id: @season_id,
@@ -267,21 +352,90 @@ class Stats::Lineups::LineupAdvancedService
 				value: @def_rating,
 				is_opponent: false
 			})
+			# season_def_rtg = LineupAdvStat.create({
+			# 	stat_list_id: 31,
+			# 	lineup_id: @lineup_id, 
+			# 	season_id: @season_id,
+			# 	constituent_stats: {
+			# 		"opp_possessions" => @opp_poss,
+			# 		"opp_points" => @opp_points,
+			# 	},
+			# 	value: @def_rating,
+			# 	is_opponent: false
+			# })
 			@new_def_eff = @def_rating
 		end
 	end
 
 	def net_rating()
 		@net_rating = @off_rating - @def_rating 
+
+		@create_hash.push({
+			stat_list_id: 26,
+			lineup_id: @lineup_id, 
+			season_id: @season_id,
+			game_id: @game_id,
+			constituent_stats: {
+					"off_rating" => @off_rating,
+					"def_rating" => @def_rating,
+				},
+			value: @net_rating,
+			is_opponent: false
+		})
+		# LineupGameAdvancedStat.create({
+		# 	stat_list_id: 26,
+		# 	lineup_id: @lineup_id, 
+		# 	season_id: @season_id,
+		# 	game_id: @game_id,
+		# 	constituent_stats: {
+		# 			"off_rating" => @off_rating,
+		# 			"def_rating" => @def_rating,
+		# 		},
+		# 	value: @net_rating,
+		# 	is_opponent: false
+		# })
+
+		season_net_rtg = LineupAdvStat.where(stat_list_id: 26, lineup_id: @lineup_id, season_id: @season_id, is_opponent: false).select(:value, :constituent_stats).take
+		if season_net_rtg
+			season_net_rtg.value = @new_off_eff - @new_def_eff
+			season_net_rtg.constituent_stats = {
+				"off_rating" => @new_off_eff,
+				"def_rating" =>  @new_def_eff,
+			}
+			season_net_rtg.save
+		else
+			@season_create_hash.push({
+				stat_list_id: 26,
+				lineup_id: @lineup_id, 
+				season_id: @season_id,
+				constituent_stats: {
+					"off_rating" => @off_rating,
+					"def_rating" => @def_rating,
+				},
+				value: @net_rating,
+				is_opponent: false
+			})
+			# season_net_rtg = LineupAdvStat.create({
+			# 	stat_list_id: 26,
+			# 	lineup_id: @lineup_id, 
+			# 	season_id: @season_id,
+			# 	constituent_stats: {
+			# 		"off_rating" => @off_rating,
+			# 		"def_rating" => @def_rating,
+			# 	},
+			# 	value: @net_rating,
+			# 	is_opponent: false
+			# })
+		end
 	end
 
 	def ast_ratio()
-		@ast_ratio = Advanced::AssistRatioService.new({
+		@ast_ratio = Stats::Advanced::Team::AssistRatioService.new({
 			possessions: @poss,
 			assists: @assists
 		}).call
 
-		LineupGameAdvancedStat.create({
+		@create_hash.push({
 			stat_list_id: 52,
 			lineup_id: @lineup_id, 
 			season_id: @season_id,
@@ -294,9 +448,22 @@ class Stats::Lineups::LineupAdvancedService
 			is_opponent: false
 		})
 
-		season_ast_ratio = LineupAdvStat.where(stat_list_id: 52, lineup_id: @lineup_id, season_id: @season_id, is_opponent: false).take
+		# LineupGameAdvancedStat.create({
+		# 	stat_list_id: 52,
+		# 	lineup_id: @lineup_id, 
+		# 	season_id: @season_id,
+		# 	game_id: @game_id,
+		# 	constituent_stats: {
+		# 			"possessions" => @poss,
+		# 			"assists" => @assists,
+		# 		},
+		# 	value: @ast_ratio,
+		# 	is_opponent: false
+		# })
+
+		season_ast_ratio = LineupAdvStat.where(stat_list_id: 52, lineup_id: @lineup_id, season_id: @season_id, is_opponent: false).select(:value, :constituent_stats).take
 		if season_ast_ratio
-			@new_ast_ratio = Advanced::AssistRatioService.new({
+			@new_ast_ratio = Stats::Advanced::Team::AssistRatioService.new({
 				opp_possessions: @poss + season_ast_ratio.constituent_stats["possessions"],
 				assists: @assists + season_ast_ratio.constituent_stats["assists"],
 			}).call
@@ -308,7 +475,7 @@ class Stats::Lineups::LineupAdvancedService
 			}
 			season_ast_ratio.save
 		else
-			season_ast_ratio = LineupAdvStat.create({
+			@season_create_hash.push({
 				stat_list_id: 52,
 				lineup_id: @lineup_id, 
 				season_id: @season_id,
@@ -319,16 +486,27 @@ class Stats::Lineups::LineupAdvancedService
 				value: @ast_ratio,
 				is_opponent: false
 			})
+			# season_ast_ratio = LineupAdvStat.create({
+			# 	stat_list_id: 52,
+			# 	lineup_id: @lineup_id, 
+			# 	season_id: @season_id,
+			# 	constituent_stats: {
+			# 		"possessions" => @poss,
+			# 		"assists" => @assists,
+			# 	},
+			# 	value: @ast_ratio,
+			# 	is_opponent: false
+			# })
 		end
 	end
 
 	def oreb_pct()
-		@oreb_pct = Advanced::TeamOffensiveRebPctService.new({
+		@oreb_pct = Stats::Advanced::Team::TeamOffensiveRebPctService.new({
 			team_off_reb: @off_reb,
 			opp_def_reb: @opp_def_reb
 		}).call
 
-		LineupGameAdvancedStat.create({
+		@create_hash.push({
 			stat_list_id: 33,
 			lineup_id: @lineup_id, 
 			season_id: @season_id,
@@ -341,10 +519,23 @@ class Stats::Lineups::LineupAdvancedService
 			is_opponent: false
 		})
 
+		# LineupGameAdvancedStat.create({
+		# 	stat_list_id: 33,
+		# 	lineup_id: @lineup_id, 
+		# 	season_id: @season_id,
+		# 	game_id: @game_id,
+		# 	constituent_stats: {
+		# 			"off_reb" => @off_reb,
+		# 			"opp_def_reb" => @opp_def_reb,
+		# 		},
+		# 	value: @oreb_pct,
+		# 	is_opponent: false
+		# })
 
-		season_off_reb = LineupAdvStat.where(stat_list_id: 33, lineup_id: @lineup_id, season_id: @season_id, is_opponent: false).take
+
+		season_off_reb = LineupAdvStat.where(stat_list_id: 33, lineup_id: @lineup_id, season_id: @season_id, is_opponent: false).select(:value, :constituent_stats).take
 		if season_off_reb
-			new_oreb = Advanced::TeamOffensiveRebPctService.new({
+			new_oreb = Stats::Advanced::Team::TeamOffensiveRebPctService.new({
 				team_off_reb: @off_reb + season_off_reb.constituent_stats["off_reb"],
 				opp_def_reb: @opp_def_reb + season_off_reb.constituent_stats["opp_def_reb"],
 			}).call
@@ -356,7 +547,7 @@ class Stats::Lineups::LineupAdvancedService
 			}
 			season_off_reb.save
 		else
-			season_off_reb = LineupAdvStat.create({
+			@season_create_hash.push({
 				stat_list_id: 33,
 				lineup_id: @lineup_id, 
 				season_id: @season_id,
@@ -367,16 +558,27 @@ class Stats::Lineups::LineupAdvancedService
 				value: @oreb_pct,
 				is_opponent: false
 			})
+			# season_off_reb = LineupAdvStat.create({
+			# 	stat_list_id: 33,
+			# 	lineup_id: @lineup_id, 
+			# 	season_id: @season_id,
+			# 	constituent_stats: {
+			# 		"off_reb" => @off_reb,
+			# 		"opp_def_reb" => @opp_def_reb,
+			# 	},
+			# 	value: @oreb_pct,
+			# 	is_opponent: false
+			# })
 		end
 	end
 
 	def dreb_pct()
-		@dreb_pct = Advanced::TeamDefensiveRebPctService.new({
+		@dreb_pct = Stats::Advanced::Team::TeamDefensiveRebPctService.new({
 			team_def_reb: @def_reb,
 			opp_off_reb: @opp_off_reb
 		}).call
 
-		LineupGameAdvancedStat.create({
+		@create_hash.push({
 			stat_list_id: 34,
 			lineup_id: @lineup_id, 
 			season_id: @season_id,
@@ -389,9 +591,22 @@ class Stats::Lineups::LineupAdvancedService
 			is_opponent: false
 		})
 
-		season_def_reb = LineupAdvStat.where(stat_list_id: 34, lineup_id: @lineup_id, season_id: @season_id, is_opponent: false).take
+		# LineupGameAdvancedStat.create({
+		# 	stat_list_id: 34,
+		# 	lineup_id: @lineup_id, 
+		# 	season_id: @season_id,
+		# 	game_id: @game_id,
+		# 	constituent_stats: {
+		# 			"opp_off_reb" => @opp_off_reb,
+		# 			"def_reb" => @def_reb,
+		# 		},
+		# 	value: @dreb_pct,
+		# 	is_opponent: false
+		# })
+
+		season_def_reb = LineupAdvStat.where(stat_list_id: 34, lineup_id: @lineup_id, season_id: @season_id, is_opponent: false).select(:value, :constituent_stats).take
 		if season_def_reb
-			new_dreb = Advanced::TeamDefensiveRebPctService.new({
+			new_dreb = Stats::Advanced::Team::TeamDefensiveRebPctService.new({
 				opp_off_reb: @opp_off_reb + season_def_reb.constituent_stats["opp_off_reb"],
 				team_def_reb: @def_reb + season_def_reb.constituent_stats["def_reb"],
 			}).call
@@ -403,7 +618,7 @@ class Stats::Lineups::LineupAdvancedService
 			}
 			season_def_reb.save
 		else
-			season_def_reb = LineupAdvStat.create({
+			@season_create_hash.push({
 				stat_list_id: 34,
 				lineup_id: @lineup_id, 
 				season_id: @season_id,
@@ -414,17 +629,28 @@ class Stats::Lineups::LineupAdvancedService
 				value: @dreb_pct,
 				is_opponent: false
 			})
+			# season_def_reb = LineupAdvStat.create({
+			# 	stat_list_id: 34,
+			# 	lineup_id: @lineup_id, 
+			# 	season_id: @season_id,
+			# 	constituent_stats: {
+			# 		"opp_off_reb" => @opp_off_reb,
+			# 		"def_reb" => @def_reb,
+			# 	},
+			# 	value: @dreb_pct,
+			# 	is_opponent: false
+			# })
 		end
 	end
 
 	def efg_pct()
-		@efg_pct = Advanced::EffectiveFgPctService.new({
+		@efg_pct = Stats::Advanced::EffectiveFgPctService.new({
 			field_goals: @field_goals,
 			field_goal_att: @field_goal_att,
 			three_point_fg: @three_point_fg
 		}).call
 
-		LineupGameAdvancedStat.create({
+		@create_hash.push({
 			stat_list_id: 18,
 			lineup_id: @lineup_id, 
 			season_id: @season_id,
@@ -438,9 +664,23 @@ class Stats::Lineups::LineupAdvancedService
 			is_opponent: false
 		})
 
-		season_efg = LineupAdvStat.where(stat_list_id: 18, lineup_id: @lineup_id, season_id: @season_id, is_opponent: false).take
+		# LineupGameAdvancedStat.create({
+		# 	stat_list_id: 18,
+		# 	lineup_id: @lineup_id, 
+		# 	season_id: @season_id,
+		# 	game_id: @game_id,
+		# 	constituent_stats: {
+		# 			"field_goals" => @field_goals,
+		# 			"field_goal_att" => @field_goal_att,
+		# 			"three_point_fg" => @three_point_fg,
+		# 		},
+		# 	value: @efg_pct,
+		# 	is_opponent: false
+		# })
+
+		season_efg = LineupAdvStat.where(stat_list_id: 18, lineup_id: @lineup_id, season_id: @season_id, is_opponent: false).select(:value, :constituent_stats).take
 		if season_efg
-			new_efg = Advanced::EffectiveFgPctService.new({
+			new_efg = Stats::Advanced::EffectiveFgPctService.new({
 				field_goals: @field_goals + season_efg.constituent_stats["field_goals"],
 				field_goal_att: @field_goal_att + season_efg.constituent_stats["field_goal_att"],
 				three_point_fg: @three_point_fg + season_efg.constituent_stats["three_point_fg"],
@@ -454,7 +694,7 @@ class Stats::Lineups::LineupAdvancedService
 			}
 			season_efg.save
 		else
-			season_efg = LineupAdvStat.create({
+			@season_create_hash.push({
 				stat_list_id: 18,
 				lineup_id: @lineup_id, 
 				season_id: @season_id,
@@ -466,17 +706,29 @@ class Stats::Lineups::LineupAdvancedService
 				value: @efg_pct,
 				is_opponent: false
 			})
+			# season_efg = LineupAdvStat.create({
+			# 	stat_list_id: 18,
+			# 	lineup_id: @lineup_id, 
+			# 	season_id: @season_id,
+			# 	constituent_stats: {
+			# 		"field_goals" => @field_goals,
+			# 		"field_goal_att" => @field_goal_att,
+			# 		"three_point_fg" => @three_point_fg,
+			# 	},
+			# 	value: @efg_pct,
+			# 	is_opponent: false
+			# })
 		end
 	end
 
 	def ts_pct()
-		@ts_pct = Advanced::TrueShootingPctService.new({
+		@ts_pct = Stats::Advanced::TrueShootingPctService.new({
 			points: @points,
 			field_goal_att: @field_goal_att,
 			free_throw_att: @free_throw_att
 		}).call
 
-		LineupGameAdvancedStat.create({
+		@create_hash.push({
 			stat_list_id: 19,
 			lineup_id: @lineup_id, 
 			season_id: @season_id,
@@ -490,9 +742,23 @@ class Stats::Lineups::LineupAdvancedService
 			is_opponent: false
 		})
 
-		season_ts = LineupAdvStat.where(stat_list_id: 19, lineup_id: @lineup_id, season_id: @season_id, is_opponent: false).take
+		# LineupGameAdvancedStat.create({
+		# 	stat_list_id: 19,
+		# 	lineup_id: @lineup_id, 
+		# 	season_id: @season_id,
+		# 	game_id: @game_id,
+		# 	constituent_stats: {
+		# 			"points" => @points,
+		# 			"field_goal_att" => @field_goal_att,
+		# 			"free_throw_att" => @free_throw_att,
+		# 		},
+		# 	value: @ts_pct,
+		# 	is_opponent: false
+		# })
+
+		season_ts = LineupAdvStat.where(stat_list_id: 19, lineup_id: @lineup_id, season_id: @season_id, is_opponent: false).select(:value, :constituent_stats).take
 		if season_ts
-			new_ts = Advanced::TrueShootingPctService.new({
+			new_ts = Stats::Advanced::TrueShootingPctService.new({
 				points: @points + season_ts.constituent_stats["points"],
 				field_goal_att: @field_goal_att + season_ts.constituent_stats["field_goal_att"],
 				free_throw_att: @free_throw_att + season_ts.constituent_stats["free_throw_att"],
@@ -506,7 +772,7 @@ class Stats::Lineups::LineupAdvancedService
 			}
 			season_ts.save
 		else
-			season_ts = LineupAdvStat.create({
+			@season_create_hash.push({
 				stat_list_id: 19,
 				lineup_id: @lineup_id, 
 				season_id: @season_id,
@@ -518,7 +784,27 @@ class Stats::Lineups::LineupAdvancedService
 				value: @ts_pct,
 				is_opponent: false
 			})
+			# season_ts = LineupAdvStat.create({
+			# 	stat_list_id: 19,
+			# 	lineup_id: @lineup_id, 
+			# 	season_id: @season_id,
+			# 	constituent_stats: {
+			# 		"points" => @points,
+			# 		"field_goal_att" => @field_goal_att,
+			# 		"free_throw_att" => @free_throw_att,
+			# 	},
+			# 	value: @ts_pct,
+			# 	is_opponent: false
+			# })
 		end
+	end
+
+	def create_stats()
+		LineupGameAdvancedStat.create(@create_hash)
+	end
+
+	def create_season_stats()
+		LineupAdvStat.create(@season_create_hash)
 	end
 
 end

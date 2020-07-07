@@ -30,15 +30,16 @@ class StatsController < ApplicationController
 		@stat_table_columns = @stat_table_columns.sort_by{|e| [e[:stat_kind], e[:display_priority]]}
 
 
-		@adv_stat_table_columns = Stats::AdvancedStatListService.new({
+		@adv_stat_table_columns = Stats::Advanced::AdvancedStatListService.new({
 			team_id: params[:team_id]
 		}).call
 
 
-		@team_adv_stat_table_columns = Stats::TeamAdvancedStatListService.new({
+		@team_adv_stat_table_columns = Stats::Advanced::TeamAdvancedStatListService.new({
 			team_id: params[:team_id]
 		}).call
 
+		## player stats
 		@player_stats = []
 
 		player_stats_ungrouped = SeasonStat.joins(:stat_list, :member).select("members.games_played as games_played, members.season_minutes as season_minutes, stat_lists.stat as stat, members.nickname as nickname, stat_lists.display_priority as display_priority, season_stats.*").where('members.team_id' => @team.id, "season_stats.season_id" => curr_season.id).sort_by{|e| [e.member_id, e.stat_list_id]}
@@ -64,6 +65,10 @@ class StatsController < ApplicationController
 		shot_chart_data_ungrouped.group_by(&:member_id).each do |member_id, data|
 			@shot_chart_data.push({member_id: member_id, data: data, name: data[0].nickname})
 		end
+
+		opponent_shot_chart_data = OpponentGranule.joins(:opponent).select("opponent_granules.*, opponents.team_id as team_id").where('opponents.team_id' => @team.id).where("opponent_granules.season_id" => curr_season.id, "opponent_granules.stat_list_id"=> [1,2])
+
+
 
 
 		@lineups = Lineup.where(team_id: @team_id)
@@ -97,6 +102,7 @@ class StatsController < ApplicationController
 		gon.opponent_stats = @opponent_stats
 		gon.team_advanced_stats = @team_advanced_stats
 		gon.shot_chart_data = @shot_chart_data
+		gon.opponent_shot_chart_data = opponent_shot_chart_data
 		gon.off_stat_lists = @off_stat_lists
 		gon.def_stat_lists = @def_stat_lists
 		

@@ -117,122 +117,193 @@ class Stats::Advanced::Player::SeasonAdvancedStatsService
 		end
 
 		## return box plus minus values to adjust later
-		return {"obpm" => @obpm, "bpm" => @bpm , "new_obpm" => @season_obpm, "new_bpm" => @season_bpm, "member_id" => @member_id}
+		return {"obpm" => @off_box_plus_minus, "bpm" => @box_plus_minus , "new_obpm" => @season_obpm, "new_bpm" => @season_bpm, "member_id" => @member_id}
 	end
 
 	private 
 
 	def steal_pct()
-		season_stat = SeasonAdvancedStat.where(stat_list_id: 36, member_id: @member_id, season_id: @season_id).take
 		new_steal_pct = Stats::Advanced::Player::StealPctService.new({
-			steals: @steals,
-			team_minutes: @team_minutes,
+			steals: @steals ,
+			team_minutes: @team_minutes ,
 			minutes: @minutes,
-			opp_poss: @opp_possessions,
+			opp_poss: @opp_possessions 
 		}).call
 
-		season_stat.value = new_steal_pct
-		season_stat.constituent_stats = {
-			"steals" => @steals,
-			"team_minutes" => @team_minutes,
-			"minutes" => @minutes,
-			"opp_poss" => @opp_possessions,
-		}
-		season_stat.save
+		season_stat = SeasonAdvancedStat.where(stat_list_id: 36, member_id: @member_id, season_id: @season_id).take
+		if season_stat
+			season_stat.value = new_steal_pct
+			season_stat.constituent_stats = {
+				"steals" => @steals ,
+				"team_minutes" => @team_minutes,
+				"minutes" => @minutes ,
+				"opp_poss" => @opp_possessions,
+			}
+			season_stat.save
+		else
+
+			SeasonAdvancedStat.create({
+				stat_list_id: 36,
+				member_id: @member_id,
+				constituent_stats: {
+					"steals" => @steals,
+					"team_minutes" => @team_minutes,
+					"minutes" => @minutes,
+					"opp_poss" => @opp_possessions,
+				},
+				value: new_steal_pct,
+				season_id: @season_id
+			})
+		end
 	end
 
 	def turnover_pct()
-		turnover_pct = Stats::Advanced::Player::TurnoverPctService.new({
-			turnovers: @turnovers,
+		new_tov_pct = Stats::Advanced::Player::TurnoverPctService.new({
+			turnovers: @turnovers ,
 			field_goal_att: @field_goal_att,
-			free_throw_att: @free_throw_att,
+			free_throw_att: @free_throw_att ,
 		}).call
-	
 		season_stat = SeasonAdvancedStat.where(stat_list_id: 38, member_id: @member_id, season_id: @season_id).take
-
-		season_stat.value = turnover_pct
-		season_stat.constituent_stats = {
-			"turnovers" => @turnovers,
-			"field_goal_att" => @field_goal_att,
-			"free_throw_att" => @free_throw_att,
-		}
-		season_stat.save
+		if season_stat
+			season_stat.value = new_tov_pct
+			season_stat.constituent_stats = {
+				"turnovers" => @turnovers,
+				"field_goal_att" => @field_goal_att,
+				"free_throw_att" => @free_throw_att,
+			}
+			season_stat.save
+		else
+			
+			SeasonAdvancedStat.create({
+				stat_list_id: 38,
+				member_id: @member_id,
+				constituent_stats: {
+					"turnovers" => @turnovers,
+					"field_goal_att" => @field_goal_att,
+					"free_throw_att" => @free_throw_att,
+				},
+				value: new_tov_pct,
+				season_id: @season_id
+			})
+		end
 	end
 
 	def offensive_rb_pct()
-		## CORRECT
-		offensive_rebound_pct = Stats::Advanced::Player::OffensiveReboundPctService.new({
+		new_oreb_pct = Stats::Advanced::Player::OffensiveReboundPctService.new({
 			off_reb: @off_reb,
 			opp_def_reb: @opp_def_reb,
 			team_minutes: @team_minutes,
 			minutes: @minutes,
-			team_off_reb: @team_off_reb
+			team_off_reb: @team_off_reb,
 		}).call
-
-
 		season_stat = SeasonAdvancedStat.where(stat_list_id: 33, member_id: @member_id, season_id: @season_id).take
+		if season_stat
 
-		season_stat.value = offensive_rebound_pct
-		season_stat.constituent_stats = {
-			"off_reb" => @off_reb,
-			"opp_def_reb" => @opp_def_reb,
-			"team_minutes" => @team_minutes,
-			"minutes" => @minutes,
-			"team_off_reb" => @team_off_reb,
-		}
-		season_stat.save
+			season_stat.value = new_oreb_pct
+			season_stat.constituent_stats = {
+				"off_reb" => @off_reb ,
+				"opp_def_reb" => @opp_def_reb,
+				"team_minutes" => @team_minutes,
+				"minutes" => @minutes,
+				"team_off_reb" => @team_off_reb,
+			}
+			season_stat.save
+		else
+			
+			SeasonAdvancedStat.create({
+				stat_list_id: 33,
+				member_id: @member_id,
+				constituent_stats: {
+					"off_reb" => @off_reb,
+					"opp_def_reb" => @opp_def_reb,
+					"team_minutes" => @team_minutes,
+					"minutes" => @minutes,
+					"team_off_reb" => @team_off_reb
+				},
+				value: new_oreb_pct,
+				season_id: @season_id
+			})
+		end
 	end
 
 	def block_pct()
-		## CORRECT
-		block_pct = Stats::Advanced::Player::BlockPctService.new({
+		new_block_pct = Stats::Advanced::Player::BlockPctService.new({
 			blocks: @blocks,
 			team_minutes: @team_minutes,
 			minutes: @minutes,
 			opp_field_goal_att: @opp_field_goal_att,
 			opp_three_point_att: @opp_three_point_att,
 		}).call
-
-
 		season_stat = SeasonAdvancedStat.where(stat_list_id: 37, member_id: @member_id, season_id: @season_id).take
+		if season_stat
 
-		season_stat.value = block_pct
-		season_stat.constituent_stats = {
-			"blocks" => @blocks,
-			"team_minutes" => @team_minutes,
-			"minutes" => @minutes,
-			"opp_field_goal_att" => @opp_field_goal_att,
-			"opp_three_point_att" => @opp_three_point_att,
-		}
-		season_stat.save
+			season_stat.value = new_block_pct
+			season_stat.constituent_stats = {
+				"blocks" => @blocks,
+				"team_minutes" => @team_minutes,
+				"minutes" => @minutes ,
+				"opp_field_goal_att" => @opp_field_goal_att ,
+				"opp_three_point_att" => @opp_three_point_att,
+			}
+			season_stat.save
+		else
+			
+			SeasonAdvancedStat.create({
+				stat_list_id: 37,
+				member_id: @member_id,
+				constituent_stats: {
+					"blocks" => @blocks,
+					"team_minutes" => @team_minutes,
+					"minutes" => @minutes,
+					"opp_field_goal_att" => @opp_field_goal_att,
+					"opp_three_point_att" => @opp_three_point_att,
+				},
+				value: new_block_pct,
+				season_id: @season_id
+			})
+		end
 	end
 
 	def assist_pct()
-		## CORRECT
-		assist_pct = Stats::Advanced::Player::AssistPctService.new({
+		new_assist_pct = Stats::Advanced::Player::AssistPctService.new({
 			assists: @assists,
-			minutes: @minutes,
+			minutes: @minutes ,
 			team_minutes: @team_minutes,
 			team_field_goals: @team_field_goals,
 			field_goals: @field_goals,
 		}).call
-
 		season_stat = SeasonAdvancedStat.where(stat_list_id: 39, member_id: @member_id, season_id: @season_id).take
+		if season_stat
 
-		season_stat.value = assist_pct
-		season_stat.constituent_stats = {
-			"assists" => @assists,
-			"minutes" => @minutes,
-			"team_minutes" => @team_minutes,
-			"team_field_goals" => @team_field_goals,
-			"field_goals" => @field_goals,
-		}
-		season_stat.save
+			season_stat.value = new_assist_pct
+			season_stat.constituent_stats = {
+				"assists" => @assists,
+				"minutes" => @minutes ,
+				"team_minutes" => @team_minutes,
+				"team_field_goals" => @team_field_goals,
+				"field_goals" => @field_goals,
+			}
+			season_stat.save
+		else
+			
+			SeasonAdvancedStat.create({
+				stat_list_id: 39,
+				member_id: @member_id,
+				constituent_stats: {
+					"assists" => @assists,
+					"minutes" => @minutes,
+					"team_minutes" => @team_minutes,
+					"team_field_goals" => @team_field_goals,
+					"field_goals" => @field_goals,
+				},
+				value: new_assist_pct,
+				season_id: @season_id
+			})
+		end
 	end
 
 	def usage_rate()
-		## CORRECT
-		usage_rate = Stats::Advanced::Player::UsageRateService.new({
+		new_usage_rate = Stats::Advanced::Player::UsageRateService.new({
 			field_goal_att: @field_goal_att,
 			turnovers: @turnovers,
 			free_throw_att: @free_throw_att,
@@ -242,25 +313,44 @@ class Stats::Advanced::Player::SeasonAdvancedStatsService
 			team_turnovers: @team_turnovers,
 			team_free_throw_att: @team_free_throw_att,
 		}).call
+		season_stat = SeasonAdvancedStat.where(stat_list_id: 23, member_id: @member_id,season_id: @season_id).take
+		if season_stat
 
-		season_stat = SeasonAdvancedStat.where(stat_list_id: 23, member_id: @member_id, season_id: @season_id).take
-
-		season_stat.value = usage_rate
-		season_stat.constituent_stats = {
-			"field_goal_att" => @field_goal_att,
-			"turnovers" => @turnovers,
-			"free_throw_att" => @free_throw_att,
-			"team_minutes" => @team_minutes,
-			"minutes" => @minutes,
-			"team_field_goal_att" => @team_field_goal_att,
-			"team_turnovers" => @team_turnovers,
-			"team_free_throw_att" => @team_free_throw_att,
-		}
-		season_stat.save
+			season_stat.value = new_usage_rate
+			season_stat.constituent_stats = {
+				"field_goal_att" => @field_goal_att,
+				"turnovers" => @turnovers,
+				"free_throw_att" => @free_throw_att,
+				"team_minutes" => @team_minutes,
+				"minutes" => @minutes,
+				"team_field_goal_att" => @team_field_goal_att,
+				"team_turnovers" => @team_turnovers,
+				"team_free_throw_att" => @team_free_throw_att,
+			}
+			season_stat.save
+		else
+			
+			SeasonAdvancedStat.create({
+				stat_list_id: 23,
+				member_id: @member_id,
+				constituent_stats: {
+					"field_goal_att" => @field_goal_att,
+					"turnovers" => @turnovers,
+					"free_throw_att" => @free_throw_att,
+					"team_minutes" => @team_minutes,
+					"minutes" => @minutes,
+					"team_field_goal_att" => @team_field_goal_att,
+					"team_turnovers" => @team_turnovers,
+					"team_free_throw_att" => @team_free_throw_att,
+				},
+				value: new_usage_rate,
+				season_id: @season_id
+			})
+		end
 	end
 
 	def total_reb_pct()
-		total_rebound_pct = Stats::Advanced::TotalReboundPctService.new({
+		new_treb_pct = Stats::Advanced::TotalReboundPctService.new({
 			total_reb: @total_reb,
 			team_minutes: @team_minutes,
 			minutes: @minutes,
@@ -268,133 +358,241 @@ class Stats::Advanced::Player::SeasonAdvancedStatsService
 			opp_total_reb: @opp_total_reb,
 		}).call
 
-
 		season_stat = SeasonAdvancedStat.where(stat_list_id: 35, member_id: @member_id, season_id: @season_id).take
-
-		season_stat.value = total_rebound_pct
-		season_stat.constituent_stats = {
-			"total_reb" => @total_reb,
-			"team_minutes" => @team_minutes,
-			"minutes" => @minutes,
-			"team_total_reb" => @team_total_reb,
-			"opp_total_reb" =>  @opp_total_reb,
-		}
-		season_stat.save
+		if season_stat
+			
+			season_stat.value = new_treb_pct
+			season_stat.constituent_stats = {
+				"total_reb" => @total_reb,
+				"team_minutes" => @team_minutes,
+				"minutes" => @minutes,
+				"team_total_reb" => @team_total_reb,
+				"opp_total_reb" =>  @opp_total_reb,
+			}
+			season_stat.save
+		else
+			
+			SeasonAdvancedStat.create({
+				stat_list_id: 35,
+				member_id: @member_id,
+				constituent_stats: {
+					"total_reb" => @total_reb,
+					"team_minutes" => @team_minutes,
+					"minutes" => @minutes,
+					"team_total_reb" => @team_total_reb,
+					"opp_total_reb" =>  @opp_total_reb,
+				},
+				value: new_treb_pct,
+				season_id: @season_id
+			})
+		end
 	end
 
 	def defensive_reb_pct()
-		## CORRECT
-		defensive_rebound_pct = Stats::Advanced::Player::DefensiveReboundPctService.new({
+		new_def_reb_pct = Stats::Advanced::Player::DefensiveReboundPctService.new({
 			def_reb: @def_reb,
 			opp_off_reb: @opp_off_reb,
 			team_minutes: @team_minutes,
 			minutes: @minutes,
-			team_def_reb: @team_def_reb
+			team_def_reb: @team_def_reb,
 		}).call
-
-
-
 		season_stat = SeasonAdvancedStat.where(stat_list_id: 34, member_id: @member_id, season_id: @season_id).take
-
-		season_stat.value = defensive_rebound_pct
-		season_stat.constituent_stats = {
-			"def_reb" => @def_reb,
-			"opp_off_reb" => @opp_off_reb,
-			"team_minutes" => @team_minutes,
-			"minutes" => @minutes,
-			"team_def_reb" => @team_def_reb,
-		}
-		season_stat.save
+		if season_stat
+			
+			season_stat.value = new_def_reb_pct
+			season_stat.constituent_stats = {
+				"def_reb" => @def_reb,
+				"opp_off_reb" => @opp_off_reb,
+				"team_minutes" => @team_minutes,
+				"minutes" => @minutes,
+				"team_def_reb" => @team_def_reb + @opp_off_reb,
+			}
+			season_stat.save
+		else
+			
+			SeasonAdvancedStat.create({
+				stat_list_id: 34,
+				member_id: @member_id, 
+				season_id: @season_id,
+				constituent_stats: {
+					"def_reb" => @def_reb,
+					"opp_off_reb" => @opp_off_reb,
+					"team_minutes" => @team_minutes,
+					"minutes" => @minutes,
+					"team_def_reb" => @team_def_reb,
+				},
+				value: new_def_reb_pct
+			})
+		end
 	end
 
 	def three_pt_attempt_rate()
-		three_point_attempt_rate = Stats::Advanced::ThreePtAttemptRateService.new({
+		new_three_par = Stats::Advanced::ThreePtAttemptRateService.new({
 			three_point_att: @three_point_att,
-			field_goal_att: @field_goal_att 
+			field_goal_att: @field_goal_att,
 		}).call
-
 		season_stat = SeasonAdvancedStat.where(stat_list_id: 21, member_id: @member_id, season_id: @season_id).take
+		if season_stat
+			
 
-		season_stat.value = three_point_attempt_rate
-		season_stat.constituent_stats = {
-			"three_point_att" => @three_point_att,
-			"field_goal_att" => @field_goal_att,
-		}
-		season_stat.save
+			season_stat.value = new_three_par
+			season_stat.constituent_stats = {
+				"three_point_att" => @three_point_att,
+				"field_goal_att" => @field_goal_att ,
+			}
+			season_stat.save
+		else
+			
+			SeasonAdvancedStat.create({
+				stat_list_id: 21,
+				member_id: @member_id, 
+				season_id: @season_id,
+				constituent_stats: {
+					"three_point_att" => @three_point_att,
+					"field_goal_att" => @field_goal_att 
+				},
+				value: new_three_par
+			})
+		end
 	end
 
 	def linear_per()
-		linear_per = Stats::Advanced::Player::LinearPerService.new({
+		new_per = Stats::Advanced::Player::LinearPerService.new({
 			field_goals: @field_goals,
 			steals: @steals,
 			three_point_makes: @three_point_fg,
-			free_throw_makes: @free_throw_makes,
-			blocks: @blocks,
-			off_reb: @off_reb,
-			assists: @assists,
+			free_throw_makes: @free_throw_makes ,
+			blocks: @blocks ,
+			off_reb: @off_reb ,
+			assists: @assists ,
 			def_reb: @def_reb,
 			fouls: @fouls,
-			free_throw_misses: @free_throw_misses,
-			field_goal_misses: @field_goal_misses,
+			free_throw_misses: @free_throw_misses ,
+			field_goal_misses: @field_goal_misses ,
 			turnovers: @turnovers,
-			minutes: @minutes
+			minutes: @minutes,
 		}).call
-
 		season_stat = SeasonAdvancedStat.where(stat_list_id: 20, member_id: @member_id, season_id: @season_id).take
+		if season_stat
+			
 
-		season_stat.value = linear_per
-		season_stat.constituent_stats = {
-			"field_goals" => @field_goals,
-			"steals" => @steals,
-			"three_point_makes" => @three_point_fg,
-			"free_throw_makes" => @free_throw_makes,
-			"blocks" => @blocks,
-			"off_reb" => @off_reb,
-			"assists" => @assists,
-			"def_reb" => @def_reb,
-			"fouls" => @fouls,
-			"free_throw_misses" => @free_throw_misses,
-			"field_goal_misses" => @field_goal_misses,
-			"turnovers" => @turnovers,
-			"minutes" => @minutes,
-		}
-		season_stat.save
+			season_stat.value = new_per
+			season_stat.constituent_stats = {
+				"field_goals" => @field_goals,
+				"steals" => @steals,
+				"three_point_makes" => @three_point_fg,
+				"free_throw_makes" => @free_throw_makes ,
+				"blocks" => @blocks ,
+				"off_reb" => @off_reb ,
+				"assists" => @assists ,
+				"def_reb" => @def_reb,
+				"fouls" => @fouls,
+				"free_throw_misses" => @free_throw_misses ,
+				"field_goal_misses" => @field_goal_misses ,
+				"turnovers" => @turnovers,
+				"minutes" => @minutes,
+			}
+			season_stat.save
+		else
+			
+			SeasonAdvancedStat.create({
+				stat_list_id: 20,
+				member_id: @member_id, 
+				season_id: @season_id,
+				constituent_stats: {
+					"field_goals" => @field_goals,
+					"steals" => @steals,
+					"three_point_makes" => @three_point_fg,
+					"free_throw_makes" => @free_throw_makes,
+					"blocks" => @blocks,
+					"off_reb" => @off_reb,
+					"assists" => @assists,
+					"def_reb" => @def_reb,
+					"fouls" => @fouls,
+					"free_throw_misses" => @free_throw_misses,
+					"field_goal_misses" => @field_goal_misses,
+					"turnovers" => @turnovers,
+					"minutes" => @minutes
+				},
+				value: new_per
+			})
+		end
 	end
 
 
 	def free_throw_att_rate()
-		free_throw_attempt_rate = Stats::Advanced::FreeThrowAttemptRateService.new({
+		new_ft_ar = Stats::Advanced::FreeThrowAttemptRateService.new({
 			free_throw_att: @free_throw_att,
-			field_goal_att: @field_goal_att
+			field_goal_att: @field_goal_att,
 		}).call
 
 		season_stat = SeasonAdvancedStat.where(stat_list_id: 22, member_id: @member_id, season_id: @season_id).take
+		if season_stat
 
-		season_stat.value = free_throw_attempt_rate
-		season_stat.constituent_stats = {
-			"free_throw_att" => @free_throw_att,
-			"field_goal_att" => @field_goal_att,
-		}
-		season_stat.save
+			season_stat.value = new_ft_ar
+			season_stat.constituent_stats = {
+				"free_throw_att" => @free_throw_att,
+				"field_goal_att" => @field_goal_att ,
+			}
+			season_stat.save
+		else
+			SeasonAdvancedStat.create({
+				stat_list_id: 22,
+				member_id: @member_id, 
+				season_id: @season_id,
+				constituent_stats: {
+					"free_throw_att" => @free_throw_att,
+					"field_goal_att" => @field_goal_att
+				},
+				value: new_ft_ar
+			})
+		end
 	end
 
 	def effective_fg_pct()
-		effective_fg_pct = Stats::Advanced::EffectiveFgPctService.new({
+		new_eff_fg_pct = Stats::Advanced::EffectiveFgPctService.new({
 			field_goals: @field_goals,
 			field_goal_att: @field_goal_att,
 			three_point_fg: @three_point_fg,
 		}).call
-
 		season_stat = SeasonAdvancedStat.where(stat_list_id: 18, member_id: @member_id, season_id: @season_id).take
+		if season_stat
 
-		season_stat.value = effective_fg_pct
-		season_stat.constituent_stats = {
-			"field_goals" => @field_goals,
-			"field_goal_att" => @field_goal_att,
-			"three_point_fg" => @three_point_fg,
-		}
-		season_stat.save
+			season_stat.value = new_eff_fg_pct
+			season_stat.constituent_stats = {
+				"field_goals" => @field_goals,
+				"field_goal_att" => @field_goal_att,
+				"three_point_fg" => @three_point_fg,
+			}
+			season_stat.save
+		else
+			SeasonAdvancedStat.create({
+				stat_list_id: 18,
+				member_id: @member_id, 
+				season_id: @season_id,
+				constituent_stats: {
+					"field_goals" => @field_goals,
+					"field_goal_att" => @field_goal_att,
+					"three_point_fg" => @three_point_fg,
+				},
+				value: new_eff_fg_pct
+			})
+		end
 	end
+
+
+
+
+
+	########################################################################################################################################################
+	########################################################################################################################################################
+	########################################################################################################################################################
+
+
+
+
+
+
 
 	def true_shooting()
 		true_shooting = Stats::Advanced::TrueShootingPctService.new({
@@ -405,13 +603,28 @@ class Stats::Advanced::Player::SeasonAdvancedStatsService
 
 
 		season_stat = SeasonAdvancedStat.where(stat_list_id: 19, member_id: @member_id, season_id: @season_id).take
-		season_stat.value = true_shooting
-		season_stat.constituent_stats = {
-			"points" => @points,
-			"field_goal_att" => @field_goal_att,
-			"free_throw_att" => @free_throw_att,
-		}
-		season_stat.save
+		if season_stat
+			season_stat.value = true_shooting
+			season_stat.constituent_stats = {
+				"points" => @points,
+				"field_goal_att" => @field_goal_att,
+				"free_throw_att" => @free_throw_att,
+			}
+			season_stat.save
+		else
+			
+			SeasonAdvancedStat.create({
+				stat_list_id: 19,
+				member_id: @member_id, 
+				season_id: @season_id,
+				constituent_stats: {
+					"points" => @points,
+					"field_goal_att" => @field_goal_att,
+					"free_throw_att" => @free_throw_att,
+				},
+				value: true_shooting
+			})
+		end
 	end
 
 	def defensive_rating()
@@ -438,30 +651,60 @@ class Stats::Advanced::Player::SeasonAdvancedStatsService
 		}).call
 
 		season_stat = SeasonAdvancedStat.where(stat_list_id: 25, member_id: @member_id, season_id: @season_id).take
-
-		season_stat.value = @defensive_rating
-		season_stat.constituent_stats = {
-			"steals" => @steals,
-			"team_steals" => @team_steals,
-			"blocks" => @blocks,
-			"team_blocks" => @team_blocks,
-			"def_reb" => @def_reb,
-			"team_def_reb" => @team_def_reb,
-			"opp_off_reb" => @opp_off_reb,
-			"opp_field_goals_made" => @opp_field_goals,
-			"opp_field_goal_att" => @opp_field_goal_att,
-			"minutes" => @minutes,
-			"team_minutes" => @team_minutes,
-			"opp_minutes" => @opp_minutes,
-			"opp_turnovers" => @opp_turnovers,
-			"fouls" => @fouls,
-			"team_fouls" => @team_fouls,
-			"opp_free_throw_att" => @opp_free_throw_att,
-			"opp_free_throws_made" => @opp_free_throw_makes,
-			"opp_points" => @opp_points,
-			"opp_possessions" => @opp_possessions,
-		}
-		season_stat.save
+		if season_stat
+			season_stat.value = @defensive_rating
+			season_stat.constituent_stats = {
+				"steals" => @steals,
+				"team_steals" => @team_steals,
+				"blocks" => @blocks,
+				"team_blocks" => @team_blocks,
+				"def_reb" => @def_reb,
+				"team_def_reb" => @team_def_reb,
+				"opp_off_reb" => @opp_off_reb,
+				"opp_field_goals_made" => @opp_field_goals,
+				"opp_field_goal_att" => @opp_field_goal_att,
+				"minutes" => @minutes,
+				"team_minutes" => @team_minutes,
+				"opp_minutes" => @opp_minutes,
+				"opp_turnovers" => @opp_turnovers,
+				"fouls" => @fouls,
+				"team_fouls" => @team_fouls,
+				"opp_free_throw_att" => @opp_free_throw_att,
+				"opp_free_throws_made" => @opp_free_throw_makes,
+				"opp_points" => @opp_points,
+				"opp_possessions" => @opp_possessions
+			}
+			season_stat.save
+		else	
+			SeasonAdvancedStat.create({
+				stat_list_id: 25,
+				member_id: @member_id, 
+				season_id: @season_id,
+				constituent_stats: {
+					"steals" => @steals, 
+					"team_steals" => @team_steals, 
+					"blocks" => @blocks, 
+					"team_blocks" => @team_blocks, 
+					"def_reb" => @def_reb, 
+					"team_def_reb" => @team_def_reb, 
+					"opp_off_reb" => @opp_off_reb, 
+					"opp_field_goals_made" => @opp_field_goals, 
+					"opp_field_goal_att" => @opp_field_goal_att, 
+					"minutes" => @minutes,
+					"team_minutes" => @team_minutes,
+					"opp_minutes" => @opp_minutes,
+					"opp_turnovers" => @opp_turnovers,
+					"fouls" => @fouls,
+					"team_fouls" => @team_fouls,
+					"opp_free_throw_att" => @opp_free_throw_att,
+					"opp_free_throws_made" => @opp_free_throw_makes,
+					"opp_points" => @opp_points,
+					"opp_possessions" => @opp_possessions,
+				},
+				value: @defensive_rating
+			})
+			@new_def_rtg = @defensive_rating
+		end
 	end
 
 	def offensive_rating()
@@ -492,33 +735,66 @@ class Stats::Advanced::Player::SeasonAdvancedStatsService
 
 	
 		season_stat = SeasonAdvancedStat.where(stat_list_id: 24, member_id: @member_id, season_id: @season_id).take
-
-		season_stat.value = @offensive_rating
-		season_stat.constituent_stats = {
-			"team_off_reb" => @team_off_reb,
-			"off_reb" => @off_reb,
-			"opp_total_reb" => @opp_total_reb,
-			"opp_off_reb" => @opp_off_reb,
-			"field_goals" => @field_goals,
-			"team_field_goals" => @team_field_goals,
-			"team_three_point_fg" => @team_three_point_fg,
-			"three_point_fg" => @three_point_fg,
-			"points" => @points,
-			"team_points" => @team_points,
-			"free_throw_att" => @free_throw_att,
-			"free_throw_makes" => @free_throw_makes,
-			"team_free_throw_att" => @team_free_throw_att,
-			"team_free_throw_makes" => @team_free_throw_makes,
-			"field_goal_att" => @field_goal_att,
-			"team_field_goal_att" => @team_field_goal_att,
-			"minutes" => @minutes ,
-			"team_minutes" => @team_minutes,
-			"team_assists" => @team_assists,
-			"assists" => @assists,
-			"turnovers" => @turnovers,
-			"team_turnovers" => @team_turnovers,
-		}
-		season_stat.save
+		if season_stat
+			season_stat.value = @offensive_rating
+			season_stat.constituent_stats = {
+				"team_off_reb" => @team_off_reb,
+				"off_reb" => @off_reb,
+				"opp_total_reb" => @opp_total_reb,
+				"opp_off_reb" => @opp_off_reb,
+				"field_goals" => @field_goals,
+				"team_field_goals" => @team_field_goals,
+				"team_three_point_fg" => @team_three_point_fg,
+				"three_point_fg" => @three_point_fg,
+				"points" => @points,
+				"team_points" => @team_points,
+				"free_throw_att" => @free_throw_att,
+				"free_throw_makes" => @free_throw_makes,
+				"team_free_throw_att" => @team_free_throw_att,
+				"team_free_throw_makes" => @team_free_throw_makes,
+				"field_goal_att" => @field_goal_att,
+				"team_field_goal_att" => @team_field_goal_att,
+				"minutes" => @minutes,
+				"team_minutes" => @team_minutes,
+				"team_assists" => @team_assists,
+				"assists" => @assists,
+				"turnovers" => @turnovers,
+				"team_turnovers" => @team_turnovers,
+			}
+			season_stat.save
+		else	
+			SeasonAdvancedStat.create({
+				stat_list_id: 24,
+				member_id: @member_id, 
+				season_id: @season_id,
+				constituent_stats: {
+					"team_off_reb" => @team_off_reb,
+					"off_reb" => @off_reb,
+					"opp_total_reb" => @opp_total_reb,
+					"opp_off_reb" => @opp_off_reb,
+					"field_goals" => @field_goals,
+					"team_field_goals" => @team_field_goals,
+					"team_three_point_fg" => @team_three_point_fg,
+					"three_point_fg" => @three_point_fg,
+					"points" => @points,
+					"team_points" => @team_points,
+					"free_throw_att" => @free_throw_att,
+					"free_throw_makes" => @free_throw_makes,
+					"team_free_throw_att" => @team_free_throw_att,
+					"team_free_throw_makes" => @team_free_throw_makes,
+					"field_goal_att" => @field_goal_att,
+					"team_field_goal_att" => @team_field_goal_att,
+					"minutes" => @minutes,
+					"team_minutes" => @team_minutes,
+					"team_assists" => @team_assists,
+					"assists" => @assists,
+					"turnovers" => @turnovers,
+					"team_turnovers" => @team_turnovers,
+				},
+				value: @offensive_rating
+			})
+			@new_off_rtg = @offensive_rating
+		end
 	end
 
 	def net_rating()
@@ -527,13 +803,26 @@ class Stats::Advanced::Player::SeasonAdvancedStatsService
 		net_rating = net_rating.round / 100.0
 
 		season_stat = SeasonAdvancedStat.where(stat_list_id: 26, member_id: @member_id, season_id: @season_id).take
-
-		season_stat.value = net_rating
-		season_stat.constituent_stats = {
-			"offensive_rating" => @offensive_rating,
-			"defensive_rating" => @defensive_rating,
-		}
-		season_stat.save
+		if season_stat
+			season_stat.value = net_rating
+			season_stat.constituent_stats = {
+				"offensive_rating" => @new_off_rtg,
+				"defensive_rating" => @new_def_rtg,
+			}
+			season_stat.save
+		else
+			
+			SeasonAdvancedStat.create({
+				stat_list_id: 26,
+				member_id: @member_id, 
+				season_id: @season_id,
+				constituent_stats: {
+					"offensive_rating" => @offensive_rating,
+					"defensive_rating" => @defensive_rating,
+				},
+				value: net_rating
+			})
+		end
 	end
 
 	def box_plus_minus()
@@ -572,42 +861,84 @@ class Stats::Advanced::Player::SeasonAdvancedStatsService
 		}).call
 
 		season_stat = SeasonAdvancedStat.where(stat_list_id: 44, member_id: @member_id, season_id: @season_id).take
-		
-		season_stat.value = @box_plus_minus
-		season_stat.constituent_stats = {
-			"off_reb" => @off_reb,
-			"def_reb" => @def_reb,
-			"opp_def_reb" => @opp_def_reb,
-			"opp_off_reb" => @opp_off_reb,
-			"team_off_reb" => @team_off_reb,
-			"team_def_reb" => @team_def_reb,
-			"steals" => @steals,
-			"minutes" => @minutes,
-			"team_minutes" => @team_minutes,
-			"opp_field_goal_att" => @opp_field_goal_att,
-			"opp_field_goals" => @opp_field_goals,
-			"opp_free_throw_att" => @opp_free_throw_att,
-			"opp_three_point_att" => @opp_three_point_att,
-			"blocks" => @blocks,
-			"team_field_goals" => @team_field_goals,
-			"field_goals" => @field_goals,
-			"assists" => @assists,
-			"turnovers" => @turnovers,
-			"opp_turnovers" => @opp_turnovers,
-			"free_throw_att" => @free_throw_att,
-			"field_goal_att" => @field_goal_att,
-			"team_turnovers" => @team_turnovers,
-			"points" => @points,
-			"team_points" => @team_points,
-			"team_field_goal_att" => @team_field_goal_att,
-			"team_free_throw_att" => @team_free_throw_att,
-			"three_point_att" => @three_point_att,
-			"team_three_point_att" => @team_three_point_att,
-			"possessions" => @possessions,
-			"opp_possessions" => @opp_possessions,
-		}
-		season_stat.save
-		@bpm = season_stat
+		if season_stat
+
+			season_stat.value = @box_plus_minus
+			season_stat.constituent_stats = {
+				"off_reb" => @off_reb,
+				"def_reb" => @def_reb,
+				"opp_def_reb" => @opp_def_reb,
+				"opp_off_reb" => @opp_off_reb,
+				"team_off_reb" => @team_off_reb,
+				"team_def_reb" => @team_def_reb,
+				"steals" => @steals,
+				"minutes" => @minutes,
+				"team_minutes" => @team_minutes,
+				"opp_field_goal_att" => @opp_field_goal_att,
+				"opp_field_goals" => @opp_field_goals,
+				"opp_free_throw_att" => @opp_free_throw_att,
+				"opp_three_point_att" => @opp_three_point_att,
+				"blocks" => @blocks,
+				"team_field_goals" => @team_field_goals,
+				"field_goals" => @field_goals,
+				"assists" => @assists,
+				"turnovers" => @turnovers,
+				"opp_turnovers" => @opp_turnovers,
+				"free_throw_att" => @free_throw_att,
+				"field_goal_att" => @field_goal_att,
+				"team_turnovers" => @team_turnovers,
+				"points" => @points,
+				"team_points" => @team_points,
+				"team_field_goal_att" => @team_field_goal_att,
+				"team_free_throw_att" => @team_free_throw_att,
+				"three_point_att" => @three_point_att,
+				"team_three_point_att" => @team_three_point_att,
+				"possessions" => @possessions,
+				"opp_possessions" => @opp_possessions,
+			}
+			season_stat.save
+			@season_bpm = season_stat
+		else	
+			@season_bpm = SeasonAdvancedStat.create({
+				stat_list_id: 44,
+				member_id: @member_id, 
+				season_id: @season_id,
+				constituent_stats: {
+					"off_reb" => @off_reb,
+					"def_reb" => @def_reb,
+					"opp_def_reb" => @opp_def_reb,
+					"opp_off_reb" => @opp_off_reb,
+					"team_off_reb" => @team_off_reb,
+					"team_def_reb" => @team_def_reb,
+					"steals" => @steals,
+					"minutes" => @minutes,
+					"team_minutes" => @team_minutes,
+					"opp_field_goal_att" => @opp_field_goal_att,
+					"opp_field_goals" => @opp_field_goals,
+					"opp_free_throw_att" => @opp_free_throw_att,
+					"opp_three_point_att" => @opp_three_point_att,
+					"blocks" => @blocks,
+					"team_field_goals" => @team_field_goals,
+					"field_goals" => @field_goals,
+					"assists" => @assists,
+					"turnovers" => @turnovers,
+					"opp_turnovers" => @opp_turnovers,
+					"free_throw_att" => @free_throw_att,
+					"field_goal_att" => @field_goal_att,
+					"team_turnovers" => @team_turnovers,
+					"points" => @points,
+					"team_points" => @team_points,
+					"team_field_goal_att" => @team_field_goal_att,
+					"team_free_throw_att" => @team_free_throw_att,
+					"three_point_att" => @three_point_att,
+					"team_three_point_att" => @team_three_point_att,
+					"possessions" => @possessions,
+					"opp_possessions" => @opp_possessions
+				},
+				value: @box_plus_minus
+			})
+			@new_bpm = @box_plus_minus
+		end
 
 	end
 
@@ -647,42 +978,84 @@ class Stats::Advanced::Player::SeasonAdvancedStatsService
 		}).call
 
 		season_stat = SeasonAdvancedStat.where(stat_list_id: 45, member_id: @member_id, season_id: @season_id).take
+		if season_stat
 
-		season_stat.value = @off_box_plus_minus
-		season_stat.constituent_stats = {
-			"off_reb" => @off_reb,
-			"def_reb" => @def_reb,
-			"opp_def_reb" => @opp_def_reb,
-			"opp_off_reb" => @opp_off_reb,
-			"team_off_reb" => @team_off_reb ,
-			"team_def_reb" => @team_def_reb ,
-			"steals" => @steals,
-			"minutes" => @minutes,
-			"team_minutes" => @team_minutes,
-			"opp_field_goal_att" => @opp_field_goal_att,
-			"opp_field_goals" => @opp_field_goals,
-			"opp_free_throw_att" => @opp_free_throw_att,
-			"opp_three_point_att" => @opp_three_point_att,
-			"blocks" => @blocks,
-			"team_field_goals" => @team_field_goals,
-			"field_goals" => @field_goals,
-			"assists" => @assists,
-			"turnovers" => @turnovers,
-			"opp_turnovers" => @opp_turnovers,
-			"free_throw_att" => @free_throw_att,
-			"field_goal_att" => @field_goal_att,
-			"team_turnovers" => @team_turnovers,
-			"points" => @points,
-			"team_points" => @team_points,
-			"team_field_goal_att" => @team_field_goal_att,
-			"team_free_throw_att" => @team_free_throw_att,
-			"three_point_att" => @three_point_att,
-			"team_three_point_att" => @team_three_point_att,
-			"possessions" => @possessions,
-			"opp_possessions" => @opp_possessions,
-		}
-		season_stat.save
-		@obpm = season_stat
+			season_stat.value = @off_box_plus_minus
+			season_stat.constituent_stats = {
+				"off_reb" => @off_reb,
+				"def_reb" => @def_reb,
+				"opp_def_reb" => @opp_def_reb,
+				"opp_off_reb" => @opp_off_reb,
+				"team_off_reb" => @team_off_reb,
+				"team_def_reb" => @team_def_reb,
+				"steals" => @steals,
+				"minutes" => @minutes,
+				"team_minutes" => @team_minutes,
+				"opp_field_goal_att" => @opp_field_goal_att,
+				"opp_field_goals" => @opp_field_goals,
+				"opp_free_throw_att" => @opp_free_throw_att,
+				"opp_three_point_att" => @opp_three_point_att,
+				"blocks" => @blocks,
+				"team_field_goals" => @team_field_goals,
+				"field_goals" => @field_goals,
+				"assists" => @assists,
+				"turnovers" => @turnovers,
+				"opp_turnovers" => @opp_turnovers,
+				"free_throw_att" => @free_throw_att,
+				"field_goal_att" => @field_goal_att,
+				"team_turnovers" => @team_turnovers,
+				"points" => @points,
+				"team_points" => @team_points,
+				"team_field_goal_att" => @team_field_goal_att,
+				"team_free_throw_att" => @team_free_throw_att,
+				"three_point_att" => @three_point_att,
+				"team_three_point_att" => @team_three_point_att,
+				"possessions" => @possessions,
+				"opp_possessions" => @opp_possessions,
+			}
+			season_stat.save
+			@season_obpm = season_stat
+		else	
+			@season_obpm = SeasonAdvancedStat.create({
+				stat_list_id: 45,
+				member_id: @member_id, 
+				season_id: @season_id,
+				constituent_stats: {
+					"off_reb" => @off_reb,
+					"def_reb" => @def_reb,
+					"opp_def_reb" => @opp_def_reb,
+					"opp_off_reb" => @opp_off_reb,
+					"team_off_reb" => @team_off_reb,
+					"team_def_reb" => @team_def_reb,
+					"steals" => @steals,
+					"minutes" => @minutes,
+					"team_minutes" => @team_minutes,
+					"opp_field_goal_att" => @opp_field_goal_att,
+					"opp_field_goals" => @opp_field_goals,
+					"opp_free_throw_att" => @opp_free_throw_att,
+					"opp_three_point_att" => @opp_three_point_att,
+					"blocks" => @blocks,
+					"team_field_goals" => @team_field_goals,
+					"field_goals" => @field_goals,
+					"assists" => @assists,
+					"turnovers" => @turnovers,
+					"opp_turnovers" => @opp_turnovers,
+					"free_throw_att" => @free_throw_att,
+					"field_goal_att" => @field_goal_att,
+					"team_turnovers" => @team_turnovers,
+					"points" => @points,
+					"team_points" => @team_points,
+					"team_field_goal_att" => @team_field_goal_att,
+					"team_free_throw_att" => @team_free_throw_att,
+					"three_point_att" => @three_point_att,
+					"team_three_point_att" => @team_three_point_att,
+					"possessions" => @possessions,
+					"opp_possessions" => @opp_possessions
+				},
+				value: @off_box_plus_minus
+			})
+			@new_obpm = @off_box_plus_minus
+		end
 	end
 
 	def def_box_plus_minus()
@@ -691,12 +1064,24 @@ class Stats::Advanced::Player::SeasonAdvancedStatsService
 		def_box_plus_minus = def_box_plus_minus.round / 100.0
 
 		season_stat = SeasonAdvancedStat.where(stat_list_id: 41, member_id: @member_id, season_id: @season_id).take
-
-		season_stat.value = def_box_plus_minus
-		season_stat.constituent_stats = {
-			"obpm" => @box_plus_minus,
-			"bpm" => @box_plus_minus,
-		}
-		season_stat.save
+		if season_stat
+			season_stat.value = def_box_plus_minus
+			season_stat.constituent_stats = {
+				"obpm" => @new_bpm,
+				"bpm" => @new_obpm,
+			}
+			season_stat.save
+		else
+			
+			SeasonAdvancedStat.create({
+				stat_list_id: 41,
+				member_id: @member_id, season_id: @season_id,
+				constituent_stats: {
+					"obpm" => @off_box_plus_minus,
+					"bpm" => @box_plus_minus,
+				},
+				value: def_box_plus_minus
+			})
+		end
 	end
 end

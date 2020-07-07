@@ -1,4 +1,4 @@
-class Stats::TeamAdvancedStatListService
+class Stats::Advanced::TeamAdvancedStatListService
 	def initialize(params)
 		@team_id = params[:team_id]
 	end

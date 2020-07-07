@@ -9,4 +9,5 @@ class Game < ApplicationRecord
 	has_many :posts, :as => :post_type
 	has_many :notifications, :as => :notif_type
 	belongs_to :season
+	has_many :opponent_granules
 end

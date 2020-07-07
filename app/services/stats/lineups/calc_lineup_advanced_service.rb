@@ -73,7 +73,7 @@ class Stats::Lineups::CalcLineupAdvancedStatsService
 
 
 	def possessions()
-		@poss = Advanced::PossessionsService.new({
+		@poss = Stats::Advanced::Team::PossessionsService.new({
 			team_field_goal_att:  @field_goal_att,
 			team_free_throw_att:  @free_throw_att,
 			team_turnovers:  @turnovers,
@@ -93,7 +93,7 @@ class Stats::Lineups::CalcLineupAdvancedStatsService
 		@season_poss.save
 		
 
-		@opp_poss = Advanced::PossessionsService.new({
+		@opp_poss = Stats::Advanced::Team::PossessionsService.new({
 			team_field_goal_att:  @opp_field_goal_att,
 			team_free_throw_att:  @opp_free_throw_att,
 			team_turnovers:  @opp_turnovers,
@@ -113,7 +113,7 @@ class Stats::Lineups::CalcLineupAdvancedStatsService
 	end
 
 	def offensive_rating()
-		@off_rating = Advanced::OffensiveEfficiencyService.new({
+		@off_rating = Stats::Advanced::Team::OffensiveEfficiencyService.new({
 			possessions: @poss,
 			team_points: @points
 		}).call
@@ -131,7 +131,7 @@ class Stats::Lineups::CalcLineupAdvancedStatsService
 	end
 
 	def defensive_rating()
-		@def_rating = Advanced::DefensiveEfficiencyService.new({
+		@def_rating = Stats::Advanced::Team::DefensiveEfficiencyService.new({
 			opp_possessions: @opp_poss,
 			opp_points: @opp_points
 		}).call
@@ -152,7 +152,7 @@ class Stats::Lineups::CalcLineupAdvancedStatsService
 	end
 
 	def ast_ratio()
-		@ast_ratio = Advanced::AssistRatioService.new({
+		@ast_ratio = Stats::Advanced::Team::AssistRatioService.new({
 			possessions: @poss,
 			assists: @assists
 		}).call
@@ -168,7 +168,7 @@ class Stats::Lineups::CalcLineupAdvancedStatsService
 	end
 
 	def oreb_pct()
-		@oreb_pct = Advanced::TeamOffensiveRebPctService.new({
+		@oreb_pct = Stats::Advanced::Team::TeamOffensiveRebPctService.new({
 			team_off_reb: @off_reb,
 			opp_def_reb: @opp_def_reb
 		}).call
@@ -184,7 +184,7 @@ class Stats::Lineups::CalcLineupAdvancedStatsService
 	end
 
 	def dreb_pct()
-		@dreb_pct = Advanced::TeamDefensiveRebPctService.new({
+		@dreb_pct = Stats::Advanced::Team::TeamDefensiveRebPctService.new({
 			team_def_reb: @def_reb,
 			opp_off_reb: @opp_off_reb
 		}).call
@@ -199,7 +199,7 @@ class Stats::Lineups::CalcLineupAdvancedStatsService
 	end
 
 	def efg_pct()
-		@efg_pct = Advanced::EffectiveFgPctService.new({
+		@efg_pct = Stats::Advanced::EffectiveFgPctService.new({
 			field_goals: @field_goals,
 			field_goal_att: @field_goal_att,
 			three_point_fg: @three_point_fg
@@ -216,7 +216,7 @@ class Stats::Lineups::CalcLineupAdvancedStatsService
 	end
 
 	def ts_pct()
-		@ts_pct = Advanced::TrueShootingPctService.new({
+		@ts_pct = Stats::Advanced::TrueShootingPctService.new({
 			points: @points,
 			field_goal_att: @field_goal_att,
 			free_throw_att: @free_throw_att

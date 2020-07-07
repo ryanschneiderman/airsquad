@@ -18,4 +18,5 @@ class Season < ApplicationRecord
 	has_many :team_advanced_stats 
 	has_many :team_season_stats 
 	has_many :members
+	has_many :opponent_granules
 end

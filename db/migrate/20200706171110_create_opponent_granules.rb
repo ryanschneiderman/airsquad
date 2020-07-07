@@ -1,8 +1,8 @@
-class CreateStatGranules < ActiveRecord::Migration[5.2]
+class CreateOpponentGranules < ActiveRecord::Migration[5.2]
   def change
-    create_table :stat_granules do |t|
-      t.string :metadata
-      t.belongs_to :member, index: true
+    create_table :opponent_granules do |t|
+      t.json :metadata
+      t.belongs_to :opponent, index: true 
       t.belongs_to :game, index: true
       t.belongs_to :stat_list, index: true
       t.belongs_to :season, index: true

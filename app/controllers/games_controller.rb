@@ -1,6 +1,10 @@
 require 'json'
 
 class GamesController < ApplicationController
+	after_action only: [:show] do
+	  stat_ranking(@team_id, @curr_season_id)
+	end
+
 	def index
 		team_id = params[:team_id]
 		gon.team_id = team_id
@@ -109,6 +113,7 @@ class GamesController < ApplicationController
 		@team = Team.find_by_id(params[:team_id])
 		@game = Game.find_by_id(params[:id])
 		@played = @game.played
+		@team_id = team_id
 
 		@team_name = @team.name
 
@@ -116,6 +121,8 @@ class GamesController < ApplicationController
 		if curr_season.nil?
 			curr_season = Season.where(team_id: team_id, year1: Date.current.year).take
 		end
+
+		@curr_season_id = curr_season.id
 
 		@curr_member =   Member.where(user_id: current_user.id, season_id: curr_season.id, team_id: team_id).take
 
@@ -137,21 +144,43 @@ class GamesController < ApplicationController
 			team_id: params[:team_id]
 		}).call
 
-		@team_adv_stat_table_columns = Stats::TeamAdvancedStatListService.new({
+		@team_adv_stat_table_columns = Stats::Advanced::TeamAdvancedStatListService.new({
 			team_id: params[:team_id]
 		}).call
 
 		@per_minutes = @team.num_periods * @team.period_length / 3
 
-		@player_stats = Stat.select("*").joins(:stat_list).select("*").joins(:member).where(game_id: @game.id, season_id: curr_season.id).sort_by{|e| [e.member_id, e.stat_list_id]}
+		
+		@player_stats = []
+		player_stats_ungrouped = Stat.joins(:stat_list, :member).select("stat_lists.stat as stat, members.nickname as nickname, stat_lists.display_priority as display_priority, stats.*").where('members.team_id' => @team.id, "stats.season_id" => curr_season.id).sort_by{|e| [e.member_id, e.stat_list_id]}
+		
+		player_stats_ungrouped.group_by(&:member_id).each do |member_id, stats|
+			@player_stats.push({member_id: member_id, stats: stats, nickname: stats[0].nickname, games_played: 1})
+		end
 
 		@team_stats = StatTotal.select("*").joins(:stat_list).where(team_id: params[:team_id], game_id: @game.id, is_opponent: false, season_id: curr_season.id)
 
 		@opponent_stats = StatTotal.select("*").joins(:stat_list).where(team_id: params[:team_id], game_id: @game.id, is_opponent: true, season_id: curr_season.id)
 
-		@shot_chart_data = StatGranule.select("*").joins(:member).where(game_id: @game.id).where("stat_granules.season_id"=> curr_season.id, "stat_granules.stat_list_id"=> [1,2])
+		@shot_chart_data = []
+		shot_chart_data_ungrouped = StatGranule.joins(:member).select("stat_granules.*, members.*").where("stat_granules.game_id" => @game.id, "stat_granules.stat_list_id"=> [1,2])
 
-		@advanced_stats = AdvancedStat.select("*").joins(:stat_list).where(game_id: @game.id, season_id: curr_season.id).sort_by{|e| [e.member_id, e.stat_list_id]}
+		shot_chart_data_ungrouped.group_by(&:member_id).each do |member_id, data|
+			@shot_chart_data.push({member_id: member_id, data: data, name: data[0].nickname})
+		end
+
+		opponent_shot_chart_data = OpponentGranule.where("opponent_granules.game_id" => @game.id, "opponent_granules.stat_list_id"=> [1,2])
+
+		#@shot_chart_data = StatGranule.select("*").joins(:member).where(game_id: @game.id).where("stat_granules.season_id"=> curr_season.id, "stat_granules.stat_list_id"=> [1,2])
+
+		@advanced_stats = []
+		advanced_stats_ungrouped = AdvancedStat.joins(:stat_list, :member).select("stat_lists.stat as stat, members.nickname as nickname, stat_lists.stat_description as stat_description, stat_lists.display_priority as display_priority, advanced_stats.*").where('members.team_id' => @team.id, "advanced_stats.season_id" => curr_season.id).sort_by{|e| [e.member_id, e.stat_list_id]}
+		advanced_stats_ungrouped.group_by(&:member_id).each do |member_id, stats|
+			@advanced_stats.push({member_id: member_id, stats: stats, nickname: stats[0].nickname})
+		end
+
+		#@advanced_stats = AdvancedStat.select("*").joins(:stat_list).where(game_id: @game.id, season_id: curr_season.id).sort_by{|e| [e.member_id, e.stat_list_id]}
+
 
 		@team_advanced_stats = TeamAdvancedStat.select("*").joins(:stat_list).select("*").where(game_id: @game.id, season_id: curr_season.id)
 
@@ -180,6 +209,8 @@ class GamesController < ApplicationController
 		gon.opponent_stats = @opponent_stats
 		gon.team_advanced_stats = @team_advanced_stats
 		gon.shot_chart_data = @shot_chart_data
+		gon.opponent_shot_chart_data = opponent_shot_chart_data
+		gon.opponent_name = @opponent_name
 
 	end
 
@@ -221,6 +252,7 @@ class GamesController < ApplicationController
 		@team_id = params[:team_id]
 		@team = Team.find_by_id(@team_id)
 		@per_minutes = @team.num_periods * @team.period_length / 3
+
 		curr_season = Season.where(team_id: @team_id, year2: Date.current.year)
 		if curr_season.nil?
 			curr_season = Season.where(team_id: @team_id, year1: Date.current.year)
@@ -295,14 +327,17 @@ class GamesController < ApplicationController
 		gon.game_id = @game_id
 		gon.team_id = team_id
 		gon.team_name = @team.name
-
-		gon.current_user = current_user
+		
 		
 
 		curr_season = Season.where(team_id: team_id, year2: Date.current.year).take
 		if curr_season.nil?
 			curr_season = Season.where(team_id: team_id, year1: Date.current.year).take
 		end
+
+		curr_member =  Member.where(user_id: current_user.id, season_id: curr_season.id, team_id: team_id).take
+		gon.current_member = curr_member
+		gon.current_user = current_user
 
 
 		@players = Member.where(season_id: curr_season.id, team_id: team_id, is_player: true)
@@ -311,7 +346,9 @@ class GamesController < ApplicationController
 		@opponent = Opponent.where(game_id: @game_id).take
 		gon.opponent = @opponent
 		team_stats = TeamStat.where(team_id: params[:team_id])
-		@per_minutes = @team.num_periods * @team.period_length / 3
+		@per_minutes = @team.period_length 
+		gon.num_periods = @team.num_periods
+		gon.period_length = @team.period_length
 
 
 		collection_stat_list = []
@@ -350,20 +387,23 @@ class GamesController < ApplicationController
 
 	## service
 	def game_mode_submit
+		start = Time.now
 		player_stats = params[:player_stats]
 		team_stats = params[:team_stats]
 		opponent_stats = params[:opponent_stats]
 		lineup_stats = params[:lineup_stats]
 		game_id = params[:id]
-		team_id = params[:team_id]
+		@team_id = params[:team_id]
 
-		curr_season = Season.where(team_id: team_id, year2: Date.current.year).take
+		curr_season = Season.where(team_id: @team_id, year2: Date.current.year).take
 		if curr_season.nil?
-			curr_season = Season.where(team_id: team_id, year1: Date.current.year).take
+			curr_season = Season.where(team_id: @team_id, year1: Date.current.year).take
 		end
 
+		@curr_season_id = curr_season.id
 
-		team = Team.find_by_id(team_id)
+
+		team = Team.find_by_id(@team_id)
 		game = Game.find_by_id(game_id)
 		schedule_event = ScheduleEvent.find_by_id(game.schedule_event_id)
 		opponent = Opponent.find_by_id(game.opponent_id)
@@ -371,7 +411,7 @@ class GamesController < ApplicationController
 
 
 		if game.played
-			Stats::RollbackGameService.new({game_id: game_id, submit: true, team_id: team_id, season_id: curr_season.id}).call
+			Stats::RollbackGameService.new({game_id: game_id, submit: true, team_id: @team_id, season_id: curr_season.id}).call
 		end
 
 		SubmitGameModeService.new({
@@ -380,41 +420,31 @@ class GamesController < ApplicationController
 			opponent_stats: opponent_stats,
 			lineup_stats: lineup_stats,
 			game_id: game_id,
-			team_id: team_id,
+			team_id: @team_id,
 			minutes_p_q: team.num_periods * team.period_length / 3,
 			season_id: curr_season.id
 		}).call
 
 		post = Post.create(
 			title: "Game data vs " + opponent.name + " available",
-			team_id: team_id,
+			team_id: @team_id,
 			member_id: member.id,
 			post_type_type: "Game",
 			post_type_id: game_id,
 		)
-
-		Stats::StatRankingsService.new({
-			team_id: team_id,
-			season_id: curr_season.id
-		}).call
-
-		Stats::Lineups::LineupStatRankingService.new({
-			team_id: team_id,
-			season_id: curr_season.id
-		}).call
 
 		game.update(played: true)
 		game.save
 
 		notif = Notification.create(
 			content: "Stats added for game vs. " + opponent.name + " @ " + schedule_event.place,
-			team_id: team_id,
+			team_id: @team_id,
 			notif_type_type: "Game",
 			notif_type_id: game.id,
 			notif_kind: "added"
 		)
 
-		members = Member.where(team_id: team_id)
+		members = Member.where(team_id: @team_id)
 		members.each do |team_member|
 			if team_member.id != member.id
 				MemberNotif.create(
@@ -433,6 +463,21 @@ class GamesController < ApplicationController
 			end
 		end
 
-		redirect_to team_game_path(team_id, game_id)
+		# code to time
+		finish = Time.now
+		puts "**************************************** EXECUTE TIME ****************************************"
+		puts finish-start
+		redirect_to team_game_path(@team_id, game_id)
+
+
+	end
+
+	private
+
+	def stat_ranking(team_id, curr_season_id)
+		Stats::GameModeCallbackService.new({
+			team_id: team_id,
+			curr_season_id: curr_season_id
+		}).call
 	end
 end

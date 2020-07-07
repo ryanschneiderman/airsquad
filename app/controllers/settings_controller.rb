@@ -49,9 +49,9 @@ class SettingsController < ApplicationController
 		@non_default_indiv_advanced = StatList.where(advanced: true, team_stat: false, default_stat: false, hidden: false)
 		@non_default_team_advanced = StatList.where(advanced: true, team_stat: true, default_stat: false, hidden: false)
 
-		@advanced_stats = AdvStatDependenciesService.new({adv_stats: @non_default_indiv_advanced}).call
+		@advanced_stats = Stats::Advanced::AdvStatDependenciesService.new({adv_stats: @non_default_indiv_advanced}).call
 
-		@team_advanced_stats = TeamAdvStatDependenciesService.new({adv_stats: @non_default_team_advanced}).call
+		@team_advanced_stats = Stats::Advanced::TeamAdvStatDependenciesService.new({adv_stats: @non_default_team_advanced}).call
 
 
 		gon.default_collectable = @default_collectable

@@ -64,12 +64,13 @@ class Stats::StatRankingsService
 				end
 			else
 				if(ranking[0].stat_list_id == 7 || ranking[0].stat_list_id == 17)
-					per_game_ranks = ranking.sort{|a, b| (a.value/a.games_played.to_f) <=> (b.value/b.games_played.to_f)}
-					per_minute_ranks = ranking.sort{|a, b| (a.value/a.season_minutes.to_f) <=> (b.value/b.season_minutes.to_f)}
+					per_game_ranks = ranking.sort{|a, b| (get_per_game_val(a.value, a.games_played)) <=> (get_per_game_val(b.value, b.games_played))}
+					per_minute_ranks = ranking.sort{|a, b| (get_per_minute_val(a.value, a.season_minutes)) <=> (get_per_minute_val(b.value, b.season_minutes))}
 				else	
-					per_game_ranks = ranking.sort{|a, b| (b.value/b.games_played.to_f) <=> (a.value/a.games_played.to_f)}
-					per_minute_ranks = ranking.sort{|a, b| (b.value/b.season_minutes.to_f) <=> (a.value/a.season_minutes.to_f)}
+					per_game_ranks = ranking.sort{|a, b| (get_per_game_val(b.value, b.games_played)) <=> (get_per_game_val(a.value, a.games_played))}
+					per_minute_ranks = ranking.sort{|a, b| (get_per_minute_val(b.value, b.season_minutes)) <=> (get_per_minute_val(a.value, a.season_minutes))}
 				end
+
 				per_game_rank = 0
 				per_game_ranks.each do |stat|
 					stat.update_attribute(:per_game_rank, per_game_rank)
@@ -83,5 +84,16 @@ class Stats::StatRankingsService
 			end
 		end
 	end
+
+	private 
+
+	def get_per_minute_val(val, minutes)
+		return (val/(minutes.nonzero? || 1)).to_f 
+	end
+
+	def get_per_game_val(val, games)
+		return (val/(games.nonzero?|| 1)).to_f
+	end
+
 end
 
